@@ -1,4 +1,4 @@
-package cmc.readit.rsvp_reader.ui;
+package cmc.readit.rsvp_reader.ui.utils;
 
 import android.content.Context;
 import android.view.GestureDetector;

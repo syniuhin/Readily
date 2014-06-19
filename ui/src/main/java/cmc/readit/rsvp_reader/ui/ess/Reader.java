@@ -1,10 +1,12 @@
-package cmc.readit.rsvp_reader.ui;
+package cmc.readit.rsvp_reader.ui.ess;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.view.View;
+
+import cmc.readit.rsvp_reader.ui.SettingsActivity;
 
 /**
  * infm : 17/05/14. Enjoy it ;)

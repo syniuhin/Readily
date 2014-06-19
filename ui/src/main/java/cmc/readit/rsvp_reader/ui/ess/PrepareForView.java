@@ -1,8 +1,7 @@
-package cmc.readit.rsvp_reader.ui;
+package cmc.readit.rsvp_reader.ui.ess;
 
 import android.content.SharedPreferences;
 import android.graphics.Point;
-import android.graphics.Typeface;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.DisplayMetrics;
@@ -15,6 +14,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
+
+import cmc.readit.rsvp_reader.ui.R;
+import cmc.readit.rsvp_reader.ui.SettingsActivity;
 
 /**
  * infm : 16/05/14. Enjoy it ;)
@@ -35,7 +37,7 @@ public class PrepareForView {
      * @param _display : display instance to get size of screen
      * @param prefs    : prefs. Needed only as a parameter to the parser
      */
-    public PrepareForView(Readable readable, Display _display, SharedPreferences prefs) {
+    public PrepareForView(cmc.readit.rsvp_reader.ui.readable.Readable readable, Display _display, SharedPreferences prefs) {
         Log.d(PFVTAG, "constructor called");
         parser = new TextParser(readable, prefs);
         wordList = parser.getReadable().getWordList();
@@ -141,6 +143,7 @@ public class PrepareForView {
         RelativeLayout.LayoutParams paramsBot = (RelativeLayout.LayoutParams) bot.getLayoutParams();
         paramsBot.setMargins(paddingLeft, 0, 0, 0);
         bot.setLayoutParams(paramsBot);
+/*
 
         TextView leftTextView = (TextView) v.findViewById(R.id.leftWordTextView);
         RelativeLayout.LayoutParams paramsLeft = (RelativeLayout.LayoutParams) leftTextView.getLayoutParams();
@@ -172,6 +175,8 @@ public class PrepareForView {
                 centerTextView.setTypeface(Typeface.SERIF);
                 break;
         }
+
+*/
     }
 
     public void showSpeedo(int wpm, View v) {

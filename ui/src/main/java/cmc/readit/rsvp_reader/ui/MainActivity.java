@@ -7,11 +7,8 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.text.ClipboardManager;
 import android.util.Log;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,24 +19,13 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
-
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.epub.EpubReader;
+import cmc.readit.rsvp_reader.ui.utils.ClipboardUtils;
+import cmc.readit.rsvp_reader.ui.utils.FileUtils;
+import cmc.readit.rsvp_reader.ui.utils.LastReadContentProvider;
+import cmc.readit.rsvp_reader.ui.utils.LastReadDBHelper;
 
 public class MainActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    public static final int TYPE_CLIPBOARD = 0;
-    public static final int TYPE_TXT = 1;
-    public static final int TYPE_EPUB = 2;
     public static final String LOGTAG = "MainActivity";
 
     private static final int FILE_SELECT_CODE = 0;
@@ -135,21 +121,12 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
     }
 
     /**
-     * Gets text from a clipboard. Need to fix deprecated classes.
+     * This section is handled using abstract class Utils. Hope it's ok.
      */
     private void getFromClipboard() {
-        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-        if (clipboard.hasText()) {
-            String text = clipboard.getText().toString();
-            startReceiverActivity(text, null, TYPE_CLIPBOARD);
-        } else {
-            Toast.makeText(getApplicationContext(), "There's nothing in clipboard", Toast.LENGTH_SHORT).show();
-        }
+        ReceiverActivity.startReceiverActivity(this, new ClipboardUtils(this));
     }
 
-    /**
-     * Gets a file to parse. Currently supports `.txt` & `.epub` files.
-     */
     private void getFromFile() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -162,75 +139,13 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         }
     }
 
-    /**
-     * Start receiver activity
-     *
-     * @param text : plain text. Needs
-     * @param existingData : pair of position and path. Both cannot exists, default: existingData = (0, null)
-     * @param type : type of source
-     */
-    private void startReceiverActivity(String text, Pair<Integer, String> existingData, int type) {
-        Intent intent = new Intent(MainActivity.this, ReceiverActivity.class);
-
-        // why should I use MIME types?
-        if (type != TYPE_EPUB)
-            intent.setType("text/plain");
-        else
-            intent.setType("text/html");
-
-        intent.putExtra(Intent.EXTRA_TEXT, text);
-        intent.putExtra("source_type", type);
-        intent.putExtra("position", existingData.first);
-        intent.putExtra("path", existingData.second);
-        startActivity(intent);
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case FILE_SELECT_CODE:
-                if (resultCode == RESULT_OK) {
-                    Uri uri = data.getData();
-                    String path = null;
-                    StringBuilder sb = new StringBuilder();
-                    try {
-                        path = FileUtils.getPath(this, uri);
-                        Pair<Integer, String> existingData =
-                                Readable.getRowData(getContentResolver().query(LastReadContentProvider.CONTENT_URI,
-                                        null, null, null, null), path);
-                        int type = -1;
-                        int position = 0;
-                        if (existingData != null)
-                            position = existingData.first;
-                        if ("txt".equals(path.substring(path.lastIndexOf(".") + 1))) {
-                            FileReader fileReader = new FileReader(path);
-                            BufferedReader br = new BufferedReader(fileReader);
-                            String sCurrentLine;
-                            while ((sCurrentLine = br.readLine()) != null)
-                                sb.append(sCurrentLine).append('\n');
-                            br.close();
-                            type = TYPE_TXT;
-                        }
-
-                        if ("epub".equals(path.substring(path.lastIndexOf(".") + 1))) {
-                            Book book = (new EpubReader()).readEpub(new FileInputStream(path));
-                            for (Resource res : book.getContents())
-                                sb.append(new String(res.getData()));
-                            type = TYPE_EPUB;
-
-                        }
-                        if (type == -1)
-                            Toast.makeText(this, getResources().getString(R.string.wrong_ext), Toast.LENGTH_SHORT).show();
-                        else
-                            startReceiverActivity(sb.toString(), new Pair<Integer, String>(position, path), type);
-                    } catch (URISyntaxException e) {
-                        e.printStackTrace();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+                if (resultCode == RESULT_OK)
+                    ReceiverActivity.startReceiverActivity(this, new FileUtils(this, data.getData()));
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);

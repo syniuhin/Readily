@@ -1,4 +1,4 @@
-package cmc.readit.rsvp_reader.ui;
+package cmc.readit.rsvp_reader.ui.utils;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -24,11 +24,13 @@ public class LastReadContentProvider extends ContentProvider {
     public static final int URI_LAST_READ = 1;
     public static final int URI_LAST_READ_ID = 2;
     private static final UriMatcher uriMatcher;
+
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(AUTHORITY, PATH, URI_LAST_READ);
         uriMatcher.addURI(AUTHORITY, PATH + "/#", URI_LAST_READ_ID);
     }
+
     LastReadDBHelper dbHelper;
     SQLiteDatabase db;
     private String LOGTAG = "LastReadContentProvider";

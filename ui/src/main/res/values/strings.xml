@@ -12,6 +12,7 @@
     <string name="top_pointer_description">points to emphasis from top</string>
     <string name="bottom_pointer_description">points to emphasis from bottom</string>
     <string name="clipboard_button">Read text from clipboard</string>
+    <string name="clipboard_empty">There is nothing in the clipboard</string>
     <string name="choose_chapter">Choose a chapter</string>
     <string name="last_reading_title">Last reading title</string>
     <string name="last_reading_percent">%</string>

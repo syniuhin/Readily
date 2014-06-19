@@ -1,4 +1,4 @@
-package cmc.readit.rsvp_reader.ui;
+package cmc.readit.rsvp_reader.ui.utils;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -10,15 +10,15 @@ import android.util.Log;
  * Created by infm on 5/22/14. Enjoy ;)
  */
 public class LastReadDBHelper extends SQLiteOpenHelper {
-    static final String NAME = "last_read";
-    static final String TABLE = "last_read_table";
-    static final int VERSION = 1;
-    static final String KEY_ROWID = "_id";
-    static final String KEY_HEADER = "header";
-    static final String KEY_PATH = "text";
-    static final String KEY_POSITION = "position";
-    static final String KEY_PERCENT = "percent_left";
-    static final String KEY_TIME_MODIFIED = "time_modified";
+    public static final String NAME = "last_read";
+    public static final String TABLE = "last_read_table";
+    public static final int VERSION = 1;
+    public static final String KEY_ROWID = "_id";
+    public static final String KEY_HEADER = "header";
+    public static final String KEY_PATH = "text";
+    public static final String KEY_POSITION = "position";
+    public static final String KEY_PERCENT = "percent_left";
+    public static final String KEY_TIME_MODIFIED = "time_modified";
 
     static final String CREATE =
             "CREATE TABLE " + TABLE + " (" +

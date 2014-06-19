@@ -1,7 +1,9 @@
-package cmc.readit.rsvp_reader.ui;
+package cmc.readit.rsvp_reader.ui.readable;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
+
+import cmc.readit.rsvp_reader.ui.SettingsActivity;
 
 /**
  * Created by infm on 6/12/14. Enjoy ;)
@@ -20,22 +22,22 @@ public class CopiedFromClipboard extends Readable {
     }
 
     @Override
-    protected String getLink() {
+    public String getLink() {
         return null;
     }
 
     @Override
-    protected void setLink(String link) {
+    public void setLink(String link) {
 
     }
 
     @Override
-    protected ChunkData getChunkData() {
+    public ChunkData getChunkData() {
         return null;
     }
 
     @Override
-    protected void setChunkData(ChunkData data) {
+    public void setChunkData(ChunkData data) {
 
     }
 }

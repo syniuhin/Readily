@@ -39,7 +39,7 @@
         </activity>
         <provider
             android:authorities="cmc.readit.rsvp_reader.provider"
-            android:name="cmc.readit.rsvp_reader.ui.LastReadContentProvider"
+            android:name=".utils.LastReadContentProvider"
             android:enabled="true"
             android:exported="true">
         </provider>

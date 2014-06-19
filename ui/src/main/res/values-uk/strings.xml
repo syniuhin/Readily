@@ -12,6 +12,7 @@
     <string name="top_pointer_description">указує на виділене зверху</string>
     <string name="bottom_pointer_description">указує на виділене знизу</string>
     <string name="clipboard_button">Прочитати текст з буфера обміну</string>
+    <string name="clipboard_empty">Буфер обміну пустий</string>
     <string name="choose_chapter">Виберіть главу</string>
     <string name="last_reading_title">Last reading title</string>
     <string name="continue_reading">Продовжити</string>

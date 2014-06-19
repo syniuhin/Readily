@@ -12,6 +12,7 @@
     <string name="top_pointer_description">указывает на выделенную букву сверху</string>
     <string name="bottom_pointer_description">указывает на выделенную букву снизу</string>
     <string name="clipboard_button">Прочитать текст из буфера обмена</string>
+    <string name="clipboard_empty">Буфер обмена пуст</string>
     <string name="choose_chapter">Выберите главу</string>
     <string name="continue_reading">Продолжить</string>
 

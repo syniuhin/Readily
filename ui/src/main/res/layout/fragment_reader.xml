@@ -61,8 +61,8 @@
                 android:singleLine="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
-                android:layout_alignBottom="@+id/currentWordTextView"
-                android:layout_alignTop="@+id/currentWordTextView"/>
+                android:layout_alignBaseline="@+id/currentWordTextView"
+                android:layout_toLeftOf="@+id/currentWordTextView" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -74,8 +74,8 @@
                 android:singleLine="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
-                android:layout_alignBottom="@+id/currentWordTextView"
-                android:layout_alignTop="@+id/currentWordTextView" />
+                android:layout_toRightOf="@+id/currentWordTextView"
+                android:layout_alignBaseline="@+id/currentWordTextView" />
 
             <ImageView
                 android:layout_width="wrap_content"

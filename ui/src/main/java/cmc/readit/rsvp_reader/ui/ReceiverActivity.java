@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.database.sqlite.SQLiteCursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -24,6 +23,19 @@ import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import cmc.readit.rsvp_reader.ui.ess.PrepareForView;
+import cmc.readit.rsvp_reader.ui.ess.Reader;
+import cmc.readit.rsvp_reader.ui.ess.TextParser;
+import cmc.readit.rsvp_reader.ui.readable.CopiedFromClipboard;
+import cmc.readit.rsvp_reader.ui.readable.FileReadable;
+import cmc.readit.rsvp_reader.ui.readable.HtmlReadable;
+import cmc.readit.rsvp_reader.ui.readable.Readable;
+import cmc.readit.rsvp_reader.ui.readable.TestSettingsText;
+import cmc.readit.rsvp_reader.ui.utils.FileUtils;
+import cmc.readit.rsvp_reader.ui.utils.LastReadContentProvider;
+import cmc.readit.rsvp_reader.ui.utils.OnSwipeTouchListener;
+import cmc.readit.rsvp_reader.ui.utils.Utils;
+
 public class ReceiverActivity extends Activity {
 
     public static final int TYPE_SHARED_LINK = 3;
@@ -33,7 +45,38 @@ public class ReceiverActivity extends Activity {
     private Reader reader;
     private SharedPreferences sPref;
     private RelativeLayout readerLayout;
-    private Readable readable;
+    private cmc.readit.rsvp_reader.ui.readable.Readable readable;
+
+    /**
+     * Starts receiver activity
+     *
+     * @param utils = all needed is put in Utils abstract class
+     */
+    public static void startReceiverActivity(Context context, Utils utils) {
+        utils.process();
+        if (utils.isProcessFailed())
+            return;
+
+        Intent intent = new Intent(context, ReceiverActivity.class);
+
+        String text = utils.getSb().toString();
+        Pair<Integer, String> existingData = utils.getExistingData();
+        int type = utils.getType();
+
+        // why should I use MIME types?
+        if (type != FileUtils.TYPE_EPUB)
+            intent.setType("text/plain");
+        else
+            intent.setType("text/html");
+
+        intent.putExtra(Intent.EXTRA_TEXT, text);
+        intent.putExtra("source_type", type);
+        if (existingData != null) {
+            intent.putExtra("position", existingData.first);
+            intent.putExtra("path", existingData.second);
+        }
+        context.startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,17 +93,17 @@ public class ReceiverActivity extends Activity {
         if (TextUtils.isEmpty(text))
             readable = new TestSettingsText(this);
         else switch (type) {
-            case MainActivity.TYPE_CLIPBOARD:
+            case Utils.TYPE_CLIPBOARD:
                 readable = new CopiedFromClipboard(this);
                 readable.setText(text);
                 break;
-            case MainActivity.TYPE_TXT:
+            case Utils.TYPE_TXT:
                 readable = new FileReadable();
                 readable.setText(text);
                 readable.setTextType("text/plain");
                 readable.setPath(path);
                 break;
-            case MainActivity.TYPE_EPUB:
+            case Utils.TYPE_EPUB:
                 readable = new FileReadable();
                 readable.setText(text);
                 readable.setTextType("text/html");
@@ -269,6 +312,7 @@ public class ReceiverActivity extends Activity {
         Log.d(LOGTAG, "onPause() called");
         super.onPause();
     }
+
     @Override
     public void onStop() {
         Log.d(LOGTAG, "onStop() called");
@@ -291,4 +335,5 @@ public class ReceiverActivity extends Activity {
             cr.update(ContentUris.withAppendedId(LastReadContentProvider.CONTENT_URI, existingData.first),
                     vals, null, null);
     }
+
 }
