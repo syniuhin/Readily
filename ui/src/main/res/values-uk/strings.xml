@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Basic -->
+    <string name="app_name">RSVP-Reader</string>
+    <string name="title_activity_main">ReadIt!</string>
+    <string name="title_activity_receiver">ReadIt!</string>
+
+    <!-- UI -->
+    <string name="current_word">Приклад</string>
+    <string name="next_words">наступні слова</string>
+    <string name="top_pointer_description">указує на виділене зверху</string>
+    <string name="bottom_pointer_description">указує на виділене знизу</string>
+    <string name="clipboard_button">Прочитати текст з буфера обміну</string>
+    <string name="choose_chapter">Виберіть главу</string>
+    <string name="last_reading_title">Last reading title</string>
+    <string name="continue_reading">Продовжити</string>
+
+    <!-- Preferences.xml -->
+    <string name="preferences_clipboard">Прочитати текст з буферу обміну</string>
+    <string name="preferences_clipboard_summary"> </string>
+    <string name="preferences_pick_file">Прочитати текст із файлу</string>
+    <string name="preferences_pick_file_summary">Виберіть .txt чи .epub файл, з якого будете читати</string>
+    <string name="preferences_test">Перевірити налаштування</string>
+    <string name="preferences_basic_settings">Базові налаштування</string>
+    <string name="preferences_set_wpm">Встановити швидкість(слів у хвилину)</string>
+    <string name="preferences_punctuation_settings">Швидкість при пунктуації</string>
+    <string name="preferences_different_speed_punctuation">Змінити швидкість при пунктуації</string>
+    <string name="preferences_different_speed_punctuation_summary">наприклад кома або двокрапка</string>
+    <string name="preferences_comaOrLong_coeff">Кома / складне слово</string>
+    <string name="preferences_endOfSentence_coeff">Кінець речення</string>
+    <string name="preferences_dashOrColon_coeff">Тире, дефіс, двокрапка або крапка з комою</string>
+    <string name="preferences_begOfPar_coeff">Початок абзацу</string>
+    <string name="preferences_advanced">Розширені налаштування</string>
+    <string name="preferences_showContext">Показувати контекст</string>
+    <string name="preferences_showContext_summary">Наступні слова у реченні</string>
+    <string name="preferences_getStarted">Інструкції</string>
+    <string name="preferences_swipe">Свайп для прокрутки</string>
+    <string name="preferences_swipe_summary">Наліво для наступного, направо для попереднього слова</string>
+    <string name="preferences_share_feedback">Контакти</string>
+    <string name="preferences_send_feedback">Зворотній зв’язок</string>
+    <string name="preferences_send_feedback_summary">Розкажіть мені свої ідеї :)</string>
+    <string name="about">Загальна інформація</string>
+    <string name="file_manager_required">Будь ласка, встановіть файловий менеджер</string>
+    <string name="wrong_ext">Неправильне розширення</string>
+
+    <string name="sample_text">А коли приходив той прекрасний брат смерті і брав мене до себе - люди і там чигали на мене. Вони сплітали своє існування з моїм в химерну сітку, намагались налити мої вуха та моє серце тим, чим самі були повні. Слухай-но, слухай! Ти й тут несеш до мене свої страждання? Своє мерзенство? Моє серце не може більше вмістити. Воно повне ущерть. Дай мені спокій.
+     Так було по ночах.
+     А вдень я здригався, коли чув за собою тінь від людини, і з огидою слухав ревучі потоки людського життя, що мчали назустріч, як дикі коні, з усіх городських вулиць.</string>
+</resources>

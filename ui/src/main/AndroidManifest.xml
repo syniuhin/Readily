@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="cmc.readit.rsvp_reader.ui" >
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/title_activity_main"
+        android:theme="@style/AppTheme"
+        android:installLocation="preferExternal">
+        <activity
+            android:name="cmc.readit.rsvp_reader.ui.MainActivity"
+            android:label="@string/title_activity_main" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="cmc.readit.rsvp_reader.ui.ReceiverActivity"
+            android:clearTaskOnLaunch="true"
+            android:configChanges="orientation|screenSize"
+            android:exported="true"
+            android:label="@string/title_activity_receiver"
+            android:launchMode="singleInstance"
+            android:theme="@style/Theme.Transparent">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="cmc.readit.rsvp_reader.ui.SettingsActivity"
+            android:label="@string/title_activity_main" >
+        </activity>
+        <provider
+            android:authorities="cmc.readit.rsvp_reader.provider"
+            android:name="cmc.readit.rsvp_reader.ui.LastReadContentProvider"
+            android:enabled="true"
+            android:exported="true">
+        </provider>
+        <meta-data
+            android:name="com.crashlytics.ApiKey"
+            android:value="0db4f67b016e755d7cc9ec045205dcab746e7c46"/>
+    </application>
+
+</manifest>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:title="@string/preferences_getStarted">
+    </Preference>
+    <Preference
+        android:title="@string/preferences_test">
+        <intent
+            android:targetPackage="cmc.readit.rsvp_reader.ui"
+            android:targetClass="cmc.readit.rsvp_reader.ui.ReceiverActivity" />
+    </Preference>
+    <PreferenceCategory
+        android:title="@string/preferences_basic_settings">
+        <EditTextPreference
+            android:key="pref_wpm"
+            android:title="@string/preferences_set_wpm"
+            android:defaultValue="250"
+            android:inputType="number"
+            android:hint="i.e. 250" />
+        <CheckBoxPreference
+            android:key="pref_punct"
+            android:title="@string/preferences_different_speed_punctuation"
+            android:summary="@string/preferences_different_speed_punctuation_summary"
+            android:defaultValue="true" />
+        <PreferenceScreen
+            android:key="pref_punct_screen"
+            android:title="@string/preferences_punctuation_settings"
+            android:dependency="pref_punct">
+            <EditTextPreference
+                android:key="pref_comaOrLong"
+                android:title="@string/preferences_comaOrLong_coeff"
+                android:defaultValue="15"
+                android:inputType="number"/>
+            <EditTextPreference
+                android:key="pref_endOfSentence"
+                android:title="@string/preferences_endOfSentence_coeff"
+                android:defaultValue="20"
+                android:inputType="number" />
+            <EditTextPreference
+                android:key="pref_dashOrColon"
+                android:title="@string/preferences_endOfSentence_coeff"
+                android:defaultValue="18"
+                android:inputType="number" />
+            <EditTextPreference
+                android:key="pref_begOfPar"
+                android:title="@string/preferences_begOfPar_coeff"
+                android:defaultValue="20"
+                android:inputType="number" />
+        </PreferenceScreen>
+        <CheckBoxPreference
+            android:key="pref_save_clipboard"
+            android:title="Cache readings from clipboard"
+            android:summary="Reading will appear in list of saved files"
+            android:defaultValue="false"/>
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/preferences_advanced">
+        <ListPreference
+            android:key="pref_typeface"
+            android:title="@string/preferences_typeface_title"
+            android:dialogTitle="@string/preferences_typeface_title"
+            android:entries="@array/typeface"
+            android:entryValues="@array/typeface_values"
+            android:defaultValue="0" />
+        <CheckBoxPreference
+            android:key="pref_showContext"
+            android:title="@string/preferences_showContext"
+            android:summary="@string/preferences_showContext_summary"
+            android:defaultValue="true"/>
+        <CheckBoxPreference
+            android:key="pref_swipe"
+            android:title="@string/preferences_swipe"
+            android:summary="@string/preferences_swipe_summary"
+            android:defaultValue="false" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/preferences_share_feedback">
+        <Preference
+            android:key="pref_feedback"
+            android:title="@string/preferences_send_feedback"
+            android:summary="@string/preferences_send_feedback_summary">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="@string/mail_to_me"/>
+        </Preference>
+    </PreferenceCategory>
+</PreferenceScreen>
