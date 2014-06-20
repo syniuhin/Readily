@@ -50,16 +50,16 @@ In this particular case, if you encounter a file which is 200 mb in size, youre 
 * you should either create a library project or compile it into jar file. Doesn't make sense to keep under version control something you're not going to modify. If you ARE going to modify the sources, it's fine to keep them as is. 
 
 ###drawable folder
-* I think it's just a mistake, but you shouldn't put sub-folders into the drawable folder
+* **FIXED** I think it's just a mistake, but you shouldn't put sub-folders into the drawable folder
 
 ###Layouts
 ####activity_main.xml 
-* line 8 - use wrap_content
-* line 73 - I don't think you actually need 'center' property set
-* line 39 - you should combine two text views into one and append the '%' sign in the format method. In case you want to use different fonts, you can apply Spans
+* **FIXED** line 8 - use wrap_content
+* **FIXED** line 73 - I don't think you actually need 'center' property set
+* **FIXED** line 39 - you should combine two text views into one and append the '%' sign in the format method. In case you want to use different fonts, you can apply Spans
  
 ###fragment_reader.xml
-* I feel like you rely on RelativeLayout too much. Can't say for sure, but it seems that some parts of the layout can be simplified by using LinearLayout (no need for toLeftOf/toRightOf, etc)
+* **?** I feel like you rely on RelativeLayout too much. Can't say for sure, but it seems that some parts of the layout can be simplified by using LinearLayout (no need for toLeftOf/toRightOf, etc)
 
 
 ###Activities
