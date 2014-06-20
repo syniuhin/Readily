@@ -29,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/last_reading_percent"
-            android:id="@+id/textView_last_reading_percent"
+            android:id="@+id/textView_last_reading_info"
             android:layout_below="@+id/textView_last_reading_title"
             android:layout_alignLeft="@+id/textView_last_reading_title"
             android:layout_marginLeft="20dp"

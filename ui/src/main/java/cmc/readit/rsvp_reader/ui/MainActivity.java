@@ -12,9 +12,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,18 +31,28 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
     public static final String LOGTAG = "MainActivity";
 
     private static final int FILE_SELECT_CODE = 0;
-    SimpleCursorAdapter adapter;
+    private SimpleCursorAdapter adapter;
+
+    private TextView tvTitle;
+    private TextView tvInfo;
+    private TextView tvEmpty;
+    private Button btnContinue;
+    private ListView listView;
+    private RelativeLayout lastReadLayout;
+
+    private String lastReadPath;
+    private int lastReadPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initLastReadingView();
         // disable it for now
         // Crashlytics.start(this);
 
         LoaderManager loaderManager = getLoaderManager();
-        if (null != loaderManager)
-            loaderManager.initLoader(0, null, this);
+        loaderManager.initLoader(0, null, this);
     }
 
 
@@ -65,59 +77,6 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void initLastReadingView(final Cursor cursor) {
-        TextView tvTitle = (TextView) findViewById(R.id.textView_last_reading_title);
-        TextView tvPercent = (TextView) findViewById(R.id.textView_last_reading_percent);
-        TextView tvTimeModified = (TextView) findViewById(R.id.textView_last_reading_time_modified);
-        Button btnContinue = (Button) findViewById(R.id.button_continue_reading);
-
-        ListView listView = (ListView) findViewById(R.id.listView);
-        TextView tvEmpty = new TextView(this);
-        tvEmpty.setText(R.string.list_empty_view);
-        listView.setEmptyView(tvEmpty);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(LOGTAG, "listView's onItemClick called()");
-            }
-        });
-
-        adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, null,
-                new String[]{LastReadDBHelper.KEY_HEADER, LastReadDBHelper.KEY_PATH},
-                new int[]{android.R.id.text1, android.R.id.text2}, 0);
-        listView.setAdapter(adapter);
-
-        if (cursor != null) {
-            tvTitle.setVisibility(View.VISIBLE);
-            tvPercent.setVisibility(View.VISIBLE);
-            tvTimeModified.setVisibility(View.VISIBLE);
-            btnContinue.setVisibility(View.VISIBLE);
-            tvTitle.setText(cursor.getString(1));
-            tvPercent.setText(cursor.getInt(4) + "%");
-            tvTimeModified.setText(cursor.getInt(3) + " sec");
-            btnContinue.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(MainActivity.this, ReceiverActivity.class);
-                    String path = cursor.getString(2);
-                    intent.putExtra("path", path);
-                    intent.putExtra("position", cursor.getInt(5));
-                    if ("txt".equals(path.substring(path.lastIndexOf(".") + 1)))
-                        intent.setType("text/plain");
-                    if ("epub".equals(path.substring(path.lastIndexOf(".") + 1)))
-                        intent.setType("text/html");
-
-                    startActivity(intent);
-                }
-            });
-        } else {
-            tvTitle.setVisibility(View.INVISIBLE);
-            tvPercent.setVisibility(View.INVISIBLE);
-            tvTimeModified.setVisibility(View.INVISIBLE);
-            btnContinue.setVisibility(View.INVISIBLE);
-        }
     }
 
     /**
@@ -159,7 +118,8 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         data.moveToNext();
-        initLastReadingView(data);
+        initLastReadParams(data);
+        updateView(data);
         data.moveToFirst();
         adapter.swapCursor(data);
     }
@@ -167,5 +127,73 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
     @Override
     public void onLoaderReset(Loader loader) {
         adapter.swapCursor(null);
+    }
+
+    /**
+     * Is it ok to update it on onLoadFinished()?
+     * @param data: Cursor to db
+     */
+    private void initLastReadParams(Cursor data){
+        if (data != null && data.getCount() > 0) {
+            lastReadPath = data.getString(2);
+            lastReadPosition = data.getInt(5);
+        }
+    }
+
+    private void initLastReadingView(){
+        tvTitle = (TextView) findViewById(R.id.textView_last_reading_title);
+        tvInfo = (TextView) findViewById(R.id.textView_last_reading_info);
+        btnContinue = (Button) findViewById(R.id.button_continue_reading);
+
+        listView = (ListView) findViewById(R.id.listView);
+        tvEmpty = new TextView(this);
+
+        lastReadLayout = (RelativeLayout) findViewById(R.id.last_reading);
+
+        tvEmpty.setText(R.string.list_empty_view);
+        listView.setEmptyView(tvEmpty);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(LOGTAG, "listView's onItemClick called()");
+            }
+        });
+
+        adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, null,
+                new String[]{LastReadDBHelper.KEY_HEADER, LastReadDBHelper.KEY_PATH},
+                new int[]{android.R.id.text1, android.R.id.text2}, 0);
+        listView.setAdapter(adapter);
+
+        btnContinue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //is it ok to pass context in such way?
+                ReceiverActivity.startReceiverActivity(MainActivity.this, new FileUtils(MainActivity.this, lastReadPath));
+                Intent intent = new Intent(MainActivity.this, ReceiverActivity.class);
+                intent.putExtra("path", lastReadPath);
+                intent.putExtra("position", lastReadPosition);
+                /**
+                 * Should do it with static Map in FileUtils class
+                 */
+                if ("txt".equals(MimeTypeMap.getFileExtensionFromUrl(lastReadPath)))
+                    intent.setType("text/plain");
+                if ("epub".equals(MimeTypeMap.getFileExtensionFromUrl(lastReadPath)))
+                    intent.setType("text/html");
+
+                startActivity(intent);
+            }
+        });
+    }
+
+    private void updateView(final Cursor cursor) {
+        if (cursor != null && cursor.getCount() > 0) {
+            lastReadLayout.setVisibility(View.VISIBLE);
+            tvTitle.setText(cursor.getString(1));
+            tvInfo.setText(cursor.getInt(4) + getResources().getString(R.string.last_reading_percent) +
+                    " " + cursor.getInt(3) + getResources().getString(R.string.last_reading_time));
+
+        } else {
+            lastReadLayout.setVisibility(View.INVISIBLE);
+        }
     }
 }

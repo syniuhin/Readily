@@ -15,7 +15,8 @@
     <string name="clipboard_empty">There is nothing in the clipboard</string>
     <string name="choose_chapter">Choose a chapter</string>
     <string name="last_reading_title">Last reading title</string>
-    <string name="last_reading_percent">% + sec</string>
+    <string name="last_reading_percent">%</string>
+    <string name="last_reading_time">sec</string>
     <string name="monospace">Monospace</string>
     <string name="sans">Sans</string>
     <string name="serif">Serif</string>

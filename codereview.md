@@ -1,5 +1,5 @@
 ###build.gradle:
-* **?** - minSdk is 13. Ideally, should be lower
+* ? - minSdk is 13. Ideally, should be lower
 * **PARTIALLY FIXED** - don't need this line "compile fileTree(dir: 'libs', include: ['*.jar'])"
 
 ###AndroidManifest: 
@@ -30,7 +30,7 @@ In this particular case, if you encounter a file which is 200 mb in size, youre 
 
 ##New comments
 ###libs folder 
-* **?** instead of libs folder, add dependencies via build.gradle. You can use [http://gradleplease.appspot.com/](Gradle, please) in order to find libs you need
+* instead of libs folder, add dependencies via build.gradle. You can use [http://gradleplease.appspot.com/](Gradle, please) in order to find libs you need
 
 ###Project structure
 * I think the project structure is incorrect. The actual name of the application in Studio is 'ui'. You also have two copies of 'build' and 'gradle' folders
@@ -41,7 +41,7 @@ In this particular case, if you encounter a file which is 200 mb in size, youre 
 * try to provide package names which are easy to understand. For your own ease of work in future. It's unclear to me what 'ess' means
 
 ###code organization
-* it's totally up to you, but I would recommend coming up with a code style and following it everywhere. This applies for variables' names, method names, etc. I personally like to group methods/variables in a class as such: public methods go first, then private
+* it's totally up to you, but I would recommend coming up with a code style and following it everywhere. This applies for variables' names, method names, etc. I personally like to group methods/variables in a class as such: public methods go first, then private    
 * this also applies to how you name variables: using underscores, camelCase, or anything other. Try to be consistent throughout the app
 * also, just to keep code clean don't forget to apply private/protected to variables and methods. Try to minimize the number of public methods
 
@@ -50,29 +50,30 @@ In this particular case, if you encounter a file which is 200 mb in size, youre 
 * you should either create a library project or compile it into jar file. Doesn't make sense to keep under version control something you're not going to modify. If you ARE going to modify the sources, it's fine to keep them as is. 
 
 ###drawable folder
-* I think it's just a mistake, but you shouldn't put sub-folders into the drawable folder
+* **FIXED** I think it's just a mistake, but you shouldn't put sub-folders into the drawable folder
 
 ###Layouts
 ####activity_main.xml 
-* line 8 - use wrap_content
-* line 73 - I don't think you actually need 'center' property set
-* line 39 - you should combine two text views into one and append the '%' sign in the format method. In case you want to use different fonts, you can apply Spans
+* **FIXED** line 8 - use wrap_content
+* **FIXED** line 73 - I don't think you actually need 'center' property set
+* **FIXED** line 39 - you should combine two text views into one and append the '%' sign in the format method. In case you want to use different fonts, you can apply Spans
  
 ###fragment_reader.xml
-* I feel like you rely on RelativeLayout too much. Can't say for sure, but it seems that some parts of the layout can be simplified by using LinearLayout (no need for toLeftOf/toRightOf, etc)
+* **?** I feel like you rely on RelativeLayout too much. Can't say for sure, but it seems that some parts of the layout can be simplified by using LinearLayout (no need for toLeftOf/toRightOf, etc)
 
 
 ###Activities
 
 ####MainActivity
-* line 42 - no need for this check
-* line 71 - extract all 'findView' and views initialization code into a separate method and do it only once in onCreate. Loaders can be 'reloaded' multiple times, there is no need to find views over and over again 
-* line 93 - consider hiding/showing a parent view group to simplify code. No need to do that for all the particular views.
-* line 93 - someView.setVisibility(cursor != null ? View.Visible : View.Gone)
-* line 98/99 - use strings.xml
-* line 100 - set the listener once on onCreate. Just store the path as member variable in the MainActivity and use it when button is clicked
-* line 32 - nit: use private
-* line 103 - use RecieverActivity.start method
+* **FIXED** line 42 - no need for this check
+* **FIXED** line 71 - extract all 'findView' and views initialization code into a separate method and do it only once in onCreate. Loaders can be 'reloaded' multiple times, there is no need to find views over and over again 
+* **FIXED** line 93 - consider hiding/showing a parent view group to simplify code. No need to do that for all the particular views.
+* **?** line 93 - someView.setVisibility(cursor != null ? View.Visible : View.Gone)
+* **FIXED** line 98/99 - use strings.xml
+* **FIXED** line 100 - set the listener once on onCreate. Just store the path as member variable in the MainActivity and use it when button is clicked
+* **FIXED** line 32 - nit: use private
+* **?** line 103 - use RecieverActivity.start method
+#####*actually now I can't design it properly because of data handling, which has become harder to implement*
 
 ###PrepareForView
 * this is very unusual! :)

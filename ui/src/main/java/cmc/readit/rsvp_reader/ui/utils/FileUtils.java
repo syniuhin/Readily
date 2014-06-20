@@ -3,6 +3,8 @@ package cmc.readit.rsvp_reader.ui.utils;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.text.TextUtils;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
@@ -23,14 +25,22 @@ import nl.siegmann.epublib.epub.EpubReader;
  */
 public class FileUtils extends Utils {
 
-    Context context;
-    Uri uri;
-    String path;
+    private Context context;
+    private Uri uri;
+    private String path;
+
+    public static final String LOGTAG = "FileUtils";
 
     public FileUtils(Context context, Uri uri) {
         super();
         this.context = context;
         this.uri = uri;
+    }
+
+    public FileUtils(Context context, String path){
+        super();
+        this.context = context;
+        this.path = path;
     }
 
     public static String getPath(Context context, Uri uri) throws URISyntaxException {
@@ -80,7 +90,13 @@ public class FileUtils extends Utils {
 
     public void process() {
         try {
-            path = getPath(context, uri);
+            if (path == null) {
+                if (uri != null) path = getPath(context, uri);
+                else {
+                    Log.d(LOGTAG, "path is null && uri is null");
+                    return;
+                }
+            }
             existingData =
                     cmc.readit.rsvp_reader.ui.readable.Readable.getRowData(context.getContentResolver().query(LastReadContentProvider.CONTENT_URI,
                             null, null, null, null), path);
