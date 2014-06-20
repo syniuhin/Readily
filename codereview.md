@@ -1,5 +1,5 @@
 ###build.gradle:
-* ? - minSdk is 13. Ideally, should be lower
+* **?** - minSdk is 13. Ideally, should be lower
 * **PARTIALLY FIXED** - don't need this line "compile fileTree(dir: 'libs', include: ['*.jar'])"
 
 ###AndroidManifest: 
@@ -30,7 +30,7 @@ In this particular case, if you encounter a file which is 200 mb in size, youre 
 
 ##New comments
 ###libs folder 
-* instead of libs folder, add dependencies via build.gradle. You can use [http://gradleplease.appspot.com/](Gradle, please) in order to find libs you need
+* **?** instead of libs folder, add dependencies via build.gradle. You can use [http://gradleplease.appspot.com/](Gradle, please) in order to find libs you need
 
 ###Project structure
 * I think the project structure is incorrect. The actual name of the application in Studio is 'ui'. You also have two copies of 'build' and 'gradle' folders
@@ -41,7 +41,7 @@ In this particular case, if you encounter a file which is 200 mb in size, youre 
 * try to provide package names which are easy to understand. For your own ease of work in future. It's unclear to me what 'ess' means
 
 ###code organization
-* it's totally up to you, but I would recommend coming up with a code style and following it everywhere. This applies for variables' names, method names, etc. I personally like to group methods/variables in a class as such: public methods go first, then private    
+* it's totally up to you, but I would recommend coming up with a code style and following it everywhere. This applies for variables' names, method names, etc. I personally like to group methods/variables in a class as such: public methods go first, then private
 * this also applies to how you name variables: using underscores, camelCase, or anything other. Try to be consistent throughout the app
 * also, just to keep code clean don't forget to apply private/protected to variables and methods. Try to minimize the number of public methods
 

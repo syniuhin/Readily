@@ -5,7 +5,7 @@
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:id="@+id/last_reading">
@@ -36,17 +36,6 @@
             android:layout_marginTop="10dp"
             android:textSize="18sp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/last_reading_time_left"
-            android:id="@+id/textView_last_reading_time_modified"
-            android:layout_below="@+id/textView_last_reading_title"
-            android:layout_toRightOf="@+id/textView_last_reading_percent"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
-            android:textSize="18sp" />
-
         <Button
             android:layout_width="150dp"
             android:layout_height="wrap_content"
@@ -54,7 +43,7 @@
             android:id="@+id/button_continue_reading"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
+            android:layout_alignParentBottom="false"
             android:background="#29142eff"
             android:singleLine="true"
             android:textSize="22sp"
@@ -70,8 +59,6 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/listView"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
         android:layout_below="@+id/last_reading"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp" />
