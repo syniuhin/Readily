@@ -161,7 +161,7 @@ public class PrepareForView {
         switch (Integer.parseInt(preferences.getString(SettingsActivity.PREF_TYPEFACE, "0"))) {
             case 0:
                 leftTextView.setTypeface(Typeface.MONOSPACE);
-                rightTextView.setTypeface(Typeface.MONOSPACE);
+                rightText1View.setTypeface(Typeface.MONOSPACE);
                 centerTextView.setTypeface(Typeface.MONOSPACE);
                 break;
             case 1:

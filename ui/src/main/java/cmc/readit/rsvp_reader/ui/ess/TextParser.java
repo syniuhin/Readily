@@ -258,9 +258,8 @@ public class TextParser {
         /* abbreviations */
         text = res.toString();
         res = new StringBuilder();
-        res.append(text.charAt(0));
-        for (int i = 1; i < text.length(); ++i) {
-            if (text.charAt(i - 1) == '.') {
+        for (int i = 0; i < text.length(); ++i) {
+            if (i > 0 && text.charAt(i - 1) == '.') {
                 if (!(i + 2 < text.length() && text.charAt(i + 2) == '.'))
                     res.append(text.charAt(i));
             } else res.append(text.charAt(i));
@@ -375,9 +374,11 @@ public class TextParser {
                 if (!Character.isLetter(word.charAt(i))) continue;
 
                 String ch = word.substring(i, i + 1).toLowerCase();
-                if (priorities.get(ch) == null || priorities.get(ch).first < PRIORITIES.get(ch) * 100 / Math.max(1, Math.abs(len / 2 - i))) {
+                if (PRIORITIES.get(ch) != null &&
+                        (priorities.get(ch) == null ||
+                                priorities.get(ch).first < PRIORITIES.get(ch) * 100 / Math.max(1, Math.abs(len / 2 - i)))) {
                     priorities.put(ch, new Pair<Integer, Integer>(PRIORITIES.get(ch) * 100 / Math.max(1, Math.abs(len / 2 - i)), i));
-                }
+                } else priorities.put(ch, new Pair<Integer, Integer>(0, i));
                 if (i + 1 < word.length() && word.charAt(i) == word.charAt(i + 1)) {
                     priorities.put(ch, new Pair<Integer, Integer>(priorities.get(ch).first * 4, i));
                 }

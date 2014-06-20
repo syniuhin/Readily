@@ -32,7 +32,7 @@
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="80dp"
+        android:layout_height="70dp"
         android:layout_centerInParent="true"
         android:background="@android:color/transparent"
         android:layout_toRightOf="@id/previousWordImageButton"
@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/currentWordTextView"
                 android:typeface="monospace"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:singleLine="true"
                 android:layout_gravity="center"
                 android:text="C"
@@ -57,7 +57,7 @@
                 android:id="@+id/leftWordTextView"
                 android:typeface="monospace"
                 android:text="Left"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:singleLine="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
@@ -70,7 +70,7 @@
                 android:id="@+id/rightWordTextView"
                 android:typeface="monospace"
                 android:text="Right"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:singleLine="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
@@ -85,8 +85,8 @@
                 android:contentDescription="@string/top_pointer_description"
                 android:layout_alignParentLeft="false"
                 android:layout_alignParentTop="true"
-                android:minWidth="14sp"
-                android:layout_marginLeft="220dp" />
+                android:minWidth="12sp"
+                android:layout_marginLeft="100dp" />
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -95,8 +95,8 @@
                 android:src="@drawable/pointer"
                 android:contentDescription="@string/bottom_pointer_description"
                 android:layout_alignParentBottom="true"
-                android:minWidth="14sp"
-                android:layout_marginLeft="220dp" />
+                android:minWidth="12sp"
+                android:layout_marginLeft="100dp" />
 
             <TextView
                 android:layout_width="wrap_content"
