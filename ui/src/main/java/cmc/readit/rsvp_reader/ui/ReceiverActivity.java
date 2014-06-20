@@ -136,7 +136,6 @@ public class ReceiverActivity extends Activity {
     }
 
     private void setViewProperties() {
-        requestWindowFeature(Window.FEATURE_ACTION_BAR);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND,
                 WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 

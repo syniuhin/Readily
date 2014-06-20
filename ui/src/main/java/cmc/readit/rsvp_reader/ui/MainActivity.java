@@ -89,7 +89,7 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
                 new int[]{android.R.id.text1, android.R.id.text2}, 0);
         listView.setAdapter(adapter);
 
-        if (cursor.getCount() > 0) {
+        if (cursor != null) {
             tvTitle.setVisibility(View.VISIBLE);
             tvPercent.setVisibility(View.VISIBLE);
             tvTimeModified.setVisibility(View.VISIBLE);

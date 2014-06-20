@@ -46,7 +46,7 @@
                 android:textSize="22sp"
                 android:singleLine="true"
                 android:layout_gravity="center"
-                android:text="@string/current_word"
+                android:text="C"
                 android:layout_centerVertical="true"
                 android:layout_alignRight="@+id/pointerTopImageView"
                 android:layout_alignLeft="@+id/pointerTopImageView" />
@@ -83,9 +83,10 @@
                 android:id="@+id/pointerTopImageView"
                 android:src="@drawable/pointer"
                 android:contentDescription="@string/top_pointer_description"
-                android:layout_alignParentLeft="true"
+                android:layout_alignParentLeft="false"
                 android:layout_alignParentTop="true"
-                android:minWidth="13sp" />
+                android:minWidth="14sp"
+                android:layout_marginLeft="220dp" />
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -93,9 +94,9 @@
                 android:id="@+id/pointerBottomImageView"
                 android:src="@drawable/pointer"
                 android:contentDescription="@string/bottom_pointer_description"
-                android:layout_alignParentLeft="true"
                 android:layout_alignParentBottom="true"
-                android:minWidth="13sp" />
+                android:minWidth="14sp"
+                android:layout_marginLeft="220dp" />
 
             <TextView
                 android:layout_width="wrap_content"

@@ -132,6 +132,7 @@ public class PrepareForView {
     }
 
     public void initializeView(View v) {
+/*
         int paddingLeft = (int) (getAppWidth() * 150f / 480f + .5f);
 
         ImageView top = (ImageView) v.findViewById(R.id.pointerTopImageView);
@@ -143,7 +144,6 @@ public class PrepareForView {
         RelativeLayout.LayoutParams paramsBot = (RelativeLayout.LayoutParams) bot.getLayoutParams();
         paramsBot.setMargins(paddingLeft, 0, 0, 0);
         bot.setLayoutParams(paramsBot);
-/*
 
         TextView leftTextView = (TextView) v.findViewById(R.id.leftWordTextView);
         RelativeLayout.LayoutParams paramsLeft = (RelativeLayout.LayoutParams) leftTextView.getLayoutParams();
