@@ -1,6 +1,6 @@
 ###build.gradle:
 * ? - minSdk is 13. Ideally, should be lower
-* **FIXED** - don't need this line "compile fileTree(dir: 'libs', include: ['*.jar'])"
+* **PARTIALLY FIXED** - don't need this line "compile fileTree(dir: 'libs', include: ['*.jar'])"
 
 ###AndroidManifest: 
 * **FIXED** - kinda weird, why SettingsActivity is launched by default, not MainActivity	
