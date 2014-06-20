@@ -131,53 +131,6 @@ public class PrepareForView {
         }
     }
 
-    public void initializeView(View v) {
-/*
-        int paddingLeft = (int) (getAppWidth() * 150f / 480f + .5f);
-
-        ImageView top = (ImageView) v.findViewById(R.id.pointerTopImageView);
-        RelativeLayout.LayoutParams paramsTop = (RelativeLayout.LayoutParams) top.getLayoutParams();
-        paramsTop.setMargins(paddingLeft, 0, 0, 0);
-        top.setLayoutParams(paramsTop);
-
-        ImageView bot = (ImageView) v.findViewById(R.id.pointerBottomImageView);
-        RelativeLayout.LayoutParams paramsBot = (RelativeLayout.LayoutParams) bot.getLayoutParams();
-        paramsBot.setMargins(paddingLeft, 0, 0, 0);
-        bot.setLayoutParams(paramsBot);
-
-        TextView leftTextView = (TextView) v.findViewById(R.id.leftWordTextView);
-        RelativeLayout.LayoutParams paramsLeft = (RelativeLayout.LayoutParams) leftTextView.getLayoutParams();
-        paramsLeft.addRule(RelativeLayout.LEFT_OF, R.id.currentWordTextView);
-        paramsLeft.addRule(RelativeLayout.ALIGN_BASELINE, R.id.currentWordTextView);
-        leftTextView.setLayoutParams(paramsLeft);
-
-        TextView rightTextView = (TextView) v.findViewById(R.id.rightWordTextView);
-        RelativeLayout.LayoutParams paramsRight = (RelativeLayout.LayoutParams) rightTextView.getLayoutParams();
-        paramsRight.addRule(RelativeLayout.RIGHT_OF, R.id.currentWordTextView);
-        paramsRight.addRule(RelativeLayout.ALIGN_BASELINE, R.id.currentWordTextView);
-        rightTextView.setLayoutParams(paramsRight);
-
-        TextView centerTextView = (TextView) v.findViewById(R.id.currentWordTextView);
-        switch (Integer.parseInt(preferences.getString(SettingsActivity.PREF_TYPEFACE, "0"))) {
-            case 0:
-                leftTextView.setTypeface(Typeface.MONOSPACE);
-                rightText1View.setTypeface(Typeface.MONOSPACE);
-                centerTextView.setTypeface(Typeface.MONOSPACE);
-                break;
-            case 1:
-                leftTextView.setTypeface(Typeface.SANS_SERIF);
-                rightTextView.setTypeface(Typeface.SANS_SERIF);
-                centerTextView.setTypeface(Typeface.SANS_SERIF);
-                break;
-            case 2:
-                leftTextView.setTypeface(Typeface.SERIF);
-                rightTextView.setTypeface(Typeface.SERIF);
-                centerTextView.setTypeface(Typeface.SERIF);
-                break;
-        }
-
-*/
-    }
 
     public void showSpeedo(int wpm, View v) {
         TextView speedo = (TextView) v.findViewById(R.id.speedo);

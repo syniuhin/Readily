@@ -149,7 +149,6 @@ public class ReceiverActivity extends Activity {
     public View mkView(ViewGroup parent, int pos) {
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final RelativeLayout readerLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_reader, parent, false);
-        prep.initializeView(readerLayout);
         prep.updateView(readerLayout, pos);
 
         /* why there?? */
@@ -284,7 +283,6 @@ public class ReceiverActivity extends Activity {
         if (!reader.isCancelled())
             reader.incCancelled();
         setLayoutSize();
-        prep.initializeView(readerLayout);
         reader.setPosition(Math.max(0, reader.getPosition() - 5));
         prep.updateView(readerLayout, reader.getPosition());
         setContentView(readerLayout);
