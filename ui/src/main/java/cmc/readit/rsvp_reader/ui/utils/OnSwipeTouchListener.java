@@ -58,9 +58,6 @@ public class OnSwipeTouchListener implements OnTouchListener {
                             onSwipeLeft();
                         }
                         return true;
-                    } else {
-                        onClick();
-                        return true;
                     }
                 } else {
                     if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
@@ -70,15 +67,18 @@ public class OnSwipeTouchListener implements OnTouchListener {
                             onSwipeTop();
                         }
                         return true;
-                    } else {
-                        onClick();
-                        return true;
                     }
                 }
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
             return false;
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e){
+            onClick();
+            return true;
         }
     }
 }
