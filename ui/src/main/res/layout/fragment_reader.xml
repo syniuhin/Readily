@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@drawable/reader_border">
 
@@ -23,7 +23,7 @@
         android:contentDescription="@string/top_pointer_description"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
         android:src="@drawable/abc_ic_ab_back_holo_light"
         android:background="#53ededed"
         android:layout_above="@+id/progressBar"
@@ -31,8 +31,8 @@
         android:layout_margin="3dp" />
 
     <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="70dp"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
         android:layout_centerInParent="true"
         android:background="@android:color/transparent"
         android:layout_toRightOf="@id/previousWordImageButton"
@@ -45,10 +45,8 @@
                 android:typeface="monospace"
                 android:textSize="20sp"
                 android:singleLine="true"
-                android:layout_gravity="center"
                 android:text="C"
                 android:layout_centerVertical="true"
-                android:layout_alignRight="@+id/pointerTopImageView"
                 android:layout_alignLeft="@+id/pointerTopImageView" />
 
             <TextView
@@ -56,11 +54,10 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/leftWordTextView"
                 android:typeface="monospace"
-                android:text="Left"
+                android:text="L"
                 android:textSize="20sp"
                 android:singleLine="true"
                 android:layout_centerVertical="true"
-                android:layout_gravity="center"
                 android:layout_alignBaseline="@+id/currentWordTextView"
                 android:layout_toLeftOf="@+id/currentWordTextView" />
 
@@ -69,34 +66,34 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/rightWordTextView"
                 android:typeface="monospace"
-                android:text="Right"
+                android:text="R"
                 android:textSize="20sp"
                 android:singleLine="true"
                 android:layout_centerVertical="true"
-                android:layout_gravity="center"
                 android:layout_toRightOf="@+id/currentWordTextView"
                 android:layout_alignBaseline="@+id/currentWordTextView" />
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="10dp"
+                android:layout_height="12sp"
                 android:id="@+id/pointerTopImageView"
                 android:src="@drawable/pointer"
                 android:contentDescription="@string/top_pointer_description"
-                android:layout_alignParentLeft="false"
                 android:layout_alignParentTop="true"
-                android:minWidth="12sp"
-                android:layout_marginLeft="100dp" />
+                android:layout_centerHorizontal="true"
+                android:paddingRight="80dp"
+                android:paddingLeft="4sp" />
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="10dp"
+                android:layout_height="12sp"
                 android:id="@+id/pointerBottomImageView"
                 android:src="@drawable/pointer"
                 android:contentDescription="@string/bottom_pointer_description"
                 android:layout_alignParentBottom="true"
-                android:minWidth="12sp"
-                android:layout_marginLeft="100dp" />
+                android:layout_centerHorizontal="true"
+                android:paddingRight="80dp"
+                android:paddingLeft="4sp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -106,8 +103,7 @@
                 android:textSize="14sp"
                 android:layout_toRightOf="@+id/pointerTopImageView"
                 android:layout_alignBaseline="@+id/pointerTopImageView"
-                android:typeface="monospace"
-                android:text="wpm" />
+                android:typeface="monospace" />
 
     </RelativeLayout>
 
