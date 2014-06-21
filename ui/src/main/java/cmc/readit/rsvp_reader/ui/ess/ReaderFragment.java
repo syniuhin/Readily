@@ -36,7 +36,7 @@ public class ReaderFragment extends Fragment {
     private TextParser parser;
 
     private long localTime = 0;
-    private int position;
+    private int position; //consider converting it to a local val
     private boolean speedoHided = true;
     private Reader reader;
     private SharedPreferences sPref;
@@ -47,6 +47,7 @@ public class ReaderFragment extends Fragment {
     private TextView rightTextView;
     private TextView speedo;
     private ProgressBar pBar;
+    private ImageButton prevButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,30 +55,18 @@ public class ReaderFragment extends Fragment {
 
         final RelativeLayout readerLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_reader, container, false);
         findViews(readerLayout);
+        initPrevButton();
 
         RelativeLayout rl = (RelativeLayout) readerLayout.findViewById(R.id.reader_layout);
         rl.setOnTouchListener(new OnSwipeTouchListener(getActivity()) {
-            /**
-             * Changes speed through swipes.
-             */
             @Override
             public void onSwipeTop() {
-                int wpm = Integer.parseInt(sPref.getString(SettingsActivity.PREF_WPM, "250"));
-                SharedPreferences.Editor q = sPref.edit();
-                q.putString(SettingsActivity.PREF_WPM, Integer.toString(wpm + 50));
-                q.commit();
-                Log.d(LOGTAG, "WPM increase to " + Integer.toString(wpm + 50));
-                showSpeedo(wpm + 50);
+                changeWPM(50);
             }
 
             @Override
             public void onSwipeBottom() {
-                int wpm = Integer.parseInt(sPref.getString(SettingsActivity.PREF_WPM, "250"));
-                SharedPreferences.Editor q = sPref.edit();
-                q.putString(SettingsActivity.PREF_WPM, Integer.toString(Math.max(wpm - 50, 50)));
-                q.commit();
-                Log.d(LOGTAG, "WPM decreased to " + Integer.toString(Math.max(wpm - 50, 50)));
-                showSpeedo(Math.max(wpm - 50, 50));
+                changeWPM(-50);
             }
 
             /**
@@ -92,24 +81,8 @@ public class ReaderFragment extends Fragment {
                         updateView(pos - 1);
                         reader.setPosition(pos - 1);
                     }
-                } else if (!reader.isCancelled()) {
+                } else if (!reader.isCancelled())
                     Toast.makeText(getActivity(), getResources().getString(R.string.pause), Toast.LENGTH_SHORT).show();
-                    if (!sPref.getBoolean(SettingsActivity.PREF_SWIPE, false)) {
-                        ImageButton prevButton = (ImageButton) readerLayout.findViewById(R.id.previousWordImageButton);
-                        prevButton.setVisibility(View.VISIBLE);
-                        prevButton.setImageResource(R.drawable.abc_ic_ab_back_holo_light);
-                        prevButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                int pos = reader.getPosition();
-                                if (pos > 0) {
-                                    updateView(pos - 1);
-                                    reader.setPosition(pos - 1);
-                                }
-                            }
-                        });
-                    }
-                }
             }
 
             @Override
@@ -120,24 +93,8 @@ public class ReaderFragment extends Fragment {
                         updateView(pos + 1);
                         reader.setPosition(pos + 1);
                     }
-                } else if (!reader.isCancelled()) {
+                } else if (!reader.isCancelled())
                     Toast.makeText(getActivity(), getResources().getString(R.string.pause), Toast.LENGTH_SHORT).show();
-                    if (!sPref.getBoolean(SettingsActivity.PREF_SWIPE, false)) {
-                        ImageButton prevButton = (ImageButton) readerLayout.findViewById(R.id.previousWordImageButton);
-                        prevButton.setVisibility(View.VISIBLE);
-                        prevButton.setImageResource(R.drawable.abc_ic_ab_back_holo_light);
-                        prevButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                int pos = reader.getPosition();
-                                if (pos > 0) {
-                                    updateView(pos - 1);
-                                    reader.setPosition(pos - 1);
-                                }
-                            }
-                        });
-                    }
-                }
             }
 
             @Override
@@ -146,28 +103,10 @@ public class ReaderFragment extends Fragment {
                     getActivity().getFragmentManager().popBackStack();
                 } else {
                     reader.incCancelled();
-                    if (reader.isCancelled()) {
-                        Toast.makeText(getActivity(), getResources().getString(R.string.pause), Toast.LENGTH_SHORT).show();
-                        if (!sPref.getBoolean(SettingsActivity.PREF_SWIPE, false)) {
-                            ImageButton prevButton = (ImageButton) readerLayout.findViewById(R.id.previousWordImageButton);
-                            prevButton.setVisibility(View.VISIBLE);
-                            prevButton.setImageResource(R.drawable.abc_ic_ab_back_holo_light);
-                            prevButton.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    int pos = reader.getPosition();
-                                    if (pos > 0) {
-                                        updateView(pos - 1);
-                                        reader.setPosition(pos - 1);
-                                    }
-                                }
-                            });
-                        }
-                    } else {
-                        Toast.makeText(getActivity(), getResources().getString(R.string.play), Toast.LENGTH_SHORT).show();
-                        ImageButton prevButton = (ImageButton) readerLayout.findViewById(R.id.previousWordImageButton);
-                        prevButton.setVisibility(View.INVISIBLE);
-                    }
+                    String toShow = (reader.isCancelled())
+                            ? getResources().getString(R.string.pause)
+                            : getResources().getString(R.string.play);
+                    Toast.makeText(getActivity(), toShow, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -247,6 +186,25 @@ public class ReaderFragment extends Fragment {
         rightTextView = (TextView) v.findViewById(R.id.rightWordTextView);
         pBar = (ProgressBar) v.findViewById(R.id.progressBar);
         speedo = (TextView) v.findViewById(R.id.speedo);
+        prevButton = (ImageButton) v.findViewById(R.id.previousWordImageButton);
+    }
+
+    private void initPrevButton() {
+        if (!sPref.getBoolean(SettingsActivity.PREF_SWIPE, false)) {
+            prevButton.setImageResource(R.drawable.abc_ic_ab_back_holo_light);
+            prevButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int pos = reader.getPosition();
+                    if (pos > 0) {
+                        updateView(pos - 1);
+                        reader.setPosition(pos - 1);
+                    }
+                }
+            });
+            prevButton.setVisibility(View.VISIBLE);
+        } else
+            prevButton.setVisibility(View.GONE); //consider INVISIBLE
     }
 
     private void updateView(int pos) {
@@ -268,6 +226,23 @@ public class ReaderFragment extends Fragment {
         speedo.setText(wpm + " wpm");
         speedo.setVisibility(View.VISIBLE);
         setTime(System.currentTimeMillis());
+    }
+
+    /**
+     * TODO: make max/min optional
+     *
+     * @param delta: delta itself. Default value: 50
+     */
+    private void changeWPM(int delta) {
+        int wpm = Integer.parseInt(sPref.getString(SettingsActivity.PREF_WPM, "250"));
+        int wpmNew = Math.min(1200, Math.max(wpm + delta, 50));
+
+        SharedPreferences.Editor q = sPref.edit();
+        q.putString(SettingsActivity.PREF_WPM, Integer.toString(wpmNew));
+        q.commit();
+
+        Log.d(LOGTAG, "WPM changed from " + wpm + " to " + wpmNew);
+        showSpeedo(wpmNew);
     }
 
     private void mkReadable(Context context) {

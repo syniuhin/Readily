@@ -33,7 +33,6 @@ public class ReceiverActivity extends Activity {
         Pair<Integer, String> existingData = utils.getExistingData();
         int type = utils.getType();
 
-        // why should I use MIME types?
         if (type != FileUtils.TYPE_EPUB)
             intent.setType("text/plain");
         else
@@ -56,22 +55,6 @@ public class ReceiverActivity extends Activity {
         startReaderFragment();
     }
 
-    /**
-     * updates view on orientation change.
-     * Checks if reader is paused, otherwise click on a TextView
-     */
-/*
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (!reader.isCancelled())
-            reader.incCancelled();
-        setLayoutSize();
-        reader.setPosition(Math.max(0, reader.getPosition() - 5));
-        prep.updateView(readerLayout, reader.getPosition());
-        setContentView(readerLayout);
-    }
-*/
     @Override
     public void onPause() {
         Log.d(LOGTAG, "onPause() called");
@@ -83,35 +66,9 @@ public class ReceiverActivity extends Activity {
      */
     @Override
     public void onStop() {
-/*
-        if (!reader.isCancelled()) {
-            reader.isCancelled();
-            reader.setPosition(Math.max(0, reader.getPosition() - 2));
-        }
-        insertReading();
-*/
         Log.d(LOGTAG, "onStop() called");
         super.onStop();
     }
-
-    /**
-     * actually, updates it as well
-     */
-/*
-    protected void insertReading() {
-        readable.setPosition(reader.getPosition());
-        ContentValues vals = readable.getContentValues();
-        ContentResolver cr = getContentResolver();
-        Pair<Integer, String> existingData = Readable.getRowData(cr.query(LastReadContentProvider.CONTENT_URI,
-                null, null, null, null), readable.getPath());
-
-        if (existingData == null)
-            cr.insert(LastReadContentProvider.CONTENT_URI, vals);
-        else
-            cr.update(ContentUris.withAppendedId(LastReadContentProvider.CONTENT_URI, existingData.first),
-                    vals, null, null);
-    }
-*/
 
     /**
      * it seems crappy, really
