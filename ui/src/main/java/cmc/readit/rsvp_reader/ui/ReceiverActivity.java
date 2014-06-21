@@ -301,17 +301,17 @@ public class ReceiverActivity extends Activity {
 
     @Override
     public void onPause() {
-        if (!reader.isCancelled()) {
-            reader.isCancelled();
-            reader.setPosition(Math.max(0, reader.getPosition() - 2));
-        }
-        insertReading();
         Log.d(LOGTAG, "onPause() called");
         super.onPause();
     }
 
     @Override
     public void onStop() {
+        if (!reader.isCancelled()) {
+            reader.isCancelled();
+            reader.setPosition(Math.max(0, reader.getPosition() - 2));
+        }
+        insertReading();
         Log.d(LOGTAG, "onStop() called");
         super.onStop();
     }
