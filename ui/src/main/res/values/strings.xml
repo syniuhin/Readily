@@ -22,6 +22,8 @@
     <string name="serif">Serif</string>
     <string name="continue_reading">Continue</string>
     <string name="list_empty_view">Hey, take some reading!</string>
+    <string name="pause">Pause</string>
+    <string name="play">Play</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Read a text from the clipboard</string>

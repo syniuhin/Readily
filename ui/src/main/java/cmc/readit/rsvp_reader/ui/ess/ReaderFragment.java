@@ -1,0 +1,352 @@
+package cmc.readit.rsvp_reader.ui.ess;
+
+import android.app.Activity;
+import android.app.Fragment;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.text.Html;
+import android.text.Spanned;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.List;
+
+import cmc.readit.rsvp_reader.ui.R;
+import cmc.readit.rsvp_reader.ui.SettingsActivity;
+import cmc.readit.rsvp_reader.ui.utils.OnSwipeTouchListener;
+
+/**
+ * infm : 16/05/14. Enjoy it ;)
+ */
+public class ReaderFragment extends Fragment {
+    public static final String LOGTAG = "ReaderFragment";
+
+    private List<String> wordList;
+    private List<Integer> emphasisList;
+    private TextParser parser;
+
+    private long localTime = 0;
+    private int position;
+    private boolean speedoHided = true;
+    private Reader reader;
+    private SharedPreferences sPref;
+    private cmc.readit.rsvp_reader.ui.readable.Readable readable;
+
+    private TextView currentTextView;
+    private TextView leftTextView;
+    private TextView rightTextView;
+    private TextView speedo;
+    private ProgressBar pBar;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.d(LOGTAG, "onCreateView() called");
+
+        final RelativeLayout readerLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_reader, container, false);
+        findViews(readerLayout);
+
+        RelativeLayout rl = (RelativeLayout) readerLayout.findViewById(R.id.reader_layout);
+        rl.setOnTouchListener(new OnSwipeTouchListener(getActivity()) {
+            /**
+             * Changes speed through swipes.
+             */
+            @Override
+            public void onSwipeTop() {
+                int wpm = Integer.parseInt(sPref.getString(SettingsActivity.PREF_WPM, "250"));
+                SharedPreferences.Editor q = sPref.edit();
+                q.putString(SettingsActivity.PREF_WPM, Integer.toString(wpm + 50));
+                q.commit();
+                Log.d(LOGTAG, "WPM increase to " + Integer.toString(wpm + 50));
+                showSpeedo(wpm + 50);
+            }
+
+            @Override
+            public void onSwipeBottom() {
+                int wpm = Integer.parseInt(sPref.getString(SettingsActivity.PREF_WPM, "250"));
+                SharedPreferences.Editor q = sPref.edit();
+                q.putString(SettingsActivity.PREF_WPM, Integer.toString(Math.max(wpm - 50, 50)));
+                q.commit();
+                Log.d(LOGTAG, "WPM decreased to " + Integer.toString(Math.max(wpm - 50, 50)));
+                showSpeedo(Math.max(wpm - 50, 50));
+            }
+
+            /**
+             * If pref set to true, perform orientation through swipes.
+             * Conflicts with currentTextView, need to be fixed
+             */
+            @Override
+            public void onSwipeRight() {
+                if (reader.isCancelled() && sPref.getBoolean(SettingsActivity.PREF_SWIPE, false)) {
+                    int pos = reader.getPosition();
+                    if (pos > 0) {
+                        updateView(pos - 1);
+                        reader.setPosition(pos - 1);
+                    }
+                } else if (!reader.isCancelled()) {
+                    Toast.makeText(getActivity(), getResources().getString(R.string.pause), Toast.LENGTH_SHORT).show();
+                    if (!sPref.getBoolean(SettingsActivity.PREF_SWIPE, false)) {
+                        ImageButton prevButton = (ImageButton) readerLayout.findViewById(R.id.previousWordImageButton);
+                        prevButton.setVisibility(View.VISIBLE);
+                        prevButton.setImageResource(R.drawable.abc_ic_ab_back_holo_light);
+                        prevButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                int pos = reader.getPosition();
+                                if (pos > 0) {
+                                    updateView(pos - 1);
+                                    reader.setPosition(pos - 1);
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onSwipeLeft() {
+                if (reader.isCancelled() && sPref.getBoolean(SettingsActivity.PREF_SWIPE, false)) {
+                    int pos = reader.getPosition();
+                    if (pos < getParser().getReadable().getWordList().size() - 1) {
+                        updateView(pos + 1);
+                        reader.setPosition(pos + 1);
+                    }
+                } else if (!reader.isCancelled()) {
+                    Toast.makeText(getActivity(), getResources().getString(R.string.pause), Toast.LENGTH_SHORT).show();
+                    if (!sPref.getBoolean(SettingsActivity.PREF_SWIPE, false)) {
+                        ImageButton prevButton = (ImageButton) readerLayout.findViewById(R.id.previousWordImageButton);
+                        prevButton.setVisibility(View.VISIBLE);
+                        prevButton.setImageResource(R.drawable.abc_ic_ab_back_holo_light);
+                        prevButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                int pos = reader.getPosition();
+                                if (pos > 0) {
+                                    updateView(pos - 1);
+                                    reader.setPosition(pos - 1);
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onClick() {
+                if (reader.isCompleted()) {
+                    getActivity().getFragmentManager().popBackStack();
+                } else {
+                    reader.incCancelled();
+                    if (reader.isCancelled()) {
+                        Toast.makeText(getActivity(), getResources().getString(R.string.pause), Toast.LENGTH_SHORT).show();
+                        if (!sPref.getBoolean(SettingsActivity.PREF_SWIPE, false)) {
+                            ImageButton prevButton = (ImageButton) readerLayout.findViewById(R.id.previousWordImageButton);
+                            prevButton.setVisibility(View.VISIBLE);
+                            prevButton.setImageResource(R.drawable.abc_ic_ab_back_holo_light);
+                            prevButton.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    int pos = reader.getPosition();
+                                    if (pos > 0) {
+                                        updateView(pos - 1);
+                                        reader.setPosition(pos - 1);
+                                    }
+                                }
+                            });
+                        }
+                    } else {
+                        Toast.makeText(getActivity(), getResources().getString(R.string.play), Toast.LENGTH_SHORT).show();
+                        ImageButton prevButton = (ImageButton) readerLayout.findViewById(R.id.previousWordImageButton);
+                        prevButton.setVisibility(View.INVISIBLE);
+                    }
+                }
+            }
+        });
+        return readerLayout;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Log.d(LOGTAG, "onActivityCreated() called");
+
+        Activity activity = getActivity();
+        mkReadable(activity);
+        sPref = PreferenceManager.getDefaultSharedPreferences(activity);
+
+        parser = new TextParser(readable, sPref);
+        initParserData();
+        position = getArguments().getInt("position", 0);
+
+        final Handler handler = new Handler();
+        reader = new Reader(handler, activity, position);
+        handler.postDelayed(reader, 2000);
+    }
+
+    public void setTime(long localTime) {
+        this.localTime = localTime;
+        speedoHided = false;
+    }
+
+    public TextParser getParser() {
+        return parser;
+    }
+
+    public Spanned getLeftFormattedText(int pos) {
+        String word = wordList.get(pos);
+        int emphasisPosition = emphasisList.get(pos);
+        String wordLeft = word.substring(0, emphasisPosition);
+        String format = "<font color='#0A0A0A'>" + wordLeft + "</font>";
+        return Html.fromHtml(format);
+    }
+
+    public Spanned getCurrentFormattedText(int pos) {
+        String word = wordList.get(pos);
+        int emphasisPosition = emphasisList.get(pos);
+        String wordEmphasis = word.substring(emphasisPosition, emphasisPosition + 1);
+        String format = "<font color='#FA2828'>" + wordEmphasis + "</font>";
+        return Html.fromHtml(format);
+    }
+
+    public Spanned getRightFormattedText(int pos) {
+        String word = wordList.get(pos);
+        int emphasisPosition = emphasisList.get(pos);
+        String wordRight = word.substring(emphasisPosition + 1, word.length());
+        String format = "<font><font color='#0A0A0A'>" + wordRight + "</font>";
+        if (sPref.getBoolean(SettingsActivity.PREF_SHOW_CONTEXT, true))
+            format += getNextFormat(pos);
+        format += "</font>";
+        return Html.fromHtml(format);
+    }
+
+    public String getNextFormat(int pos) {
+        int charLen = 0;
+        int i = pos;
+        StringBuilder format = new StringBuilder("&nbsp;<font color='#AAAAAA'>");
+        while (charLen < 40 && i < wordList.size() - 1 && wordList.get(i).charAt(wordList.get(i).length() - 1) != '\n') {
+            String word = wordList.get(++i);
+            charLen += word.length() + 1;
+            format.append(word).append(" ");
+        }
+        format.append("</font>");
+        return format.toString();
+    }
+
+    private void findViews(View v) {
+        currentTextView = (TextView) v.findViewById(R.id.currentWordTextView);
+        leftTextView = (TextView) v.findViewById(R.id.leftWordTextView);
+        rightTextView = (TextView) v.findViewById(R.id.rightWordTextView);
+        pBar = (ProgressBar) v.findViewById(R.id.progressBar);
+        speedo = (TextView) v.findViewById(R.id.speedo);
+    }
+
+    private void updateView(int pos) {
+        currentTextView.setText(getCurrentFormattedText(pos));
+        leftTextView.setText(getLeftFormattedText(pos));
+        rightTextView.setText(getRightFormattedText(pos));
+
+        pBar.setProgress((int) (100f / wordList.size() * (pos + 1) + .5f));
+
+        if (!speedoHided) {
+            if (System.currentTimeMillis() - localTime > 1500) {
+                speedo.setVisibility(View.INVISIBLE);
+                speedoHided = true;
+            }
+        }
+    }
+
+    private void showSpeedo(int wpm) {
+        speedo.setText(wpm + " wpm");
+        speedo.setVisibility(View.VISIBLE);
+        setTime(System.currentTimeMillis());
+    }
+
+    private void mkReadable(Context context) {
+        readable = cmc.readit.rsvp_reader.ui.readable.Readable.newInstance(context,
+                getArguments().getInt("source_type", -1),
+                getArguments().getString("text", getResources().getString(R.string.sample_text)),
+                getArguments().getString("path", ""));
+    }
+
+    private void initParserData() {
+        wordList = parser.getReadable().getWordList();
+        emphasisList = parser.getReadable().getEmphasisList();
+    }
+
+    /**
+     * don't sure that it must be inner class
+     */
+    private class Reader implements Runnable, SharedPreferences.OnSharedPreferenceChangeListener {
+        private Handler handler;
+        private Context context;
+        private int cancelled;
+        private int pos = 0;
+        private double SPM;
+        private boolean completed = false;
+
+        public Reader(Handler handler, Context context, int pos) {
+            this.handler = handler;
+            this.context = context;
+            this.pos = pos;
+
+            SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(this.context);
+            PreferenceManager.getDefaultSharedPreferences(this.context).registerOnSharedPreferenceChangeListener(this);
+
+            final int WPM = Integer.parseInt(sPref.getString(SettingsActivity.PREF_WPM, "250"));
+            SPM = 60 * 1f / WPM;
+        }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (SettingsActivity.PREF_WPM.equals(key))
+                SPM = 60f / Integer.parseInt(sharedPreferences.getString(key, "250"));
+        }
+
+        @Override
+        public void run() {
+            int wlen = getParser().getReadable().getWordList().size();
+            int i = pos;
+            if (i < wlen) {
+                completed = false;
+                if (!isCancelled()) {
+                    updateView(i % wlen);
+                    handler.postDelayed(this, getParser().getReadable().getDelayList().get(pos++ % wlen) * Math.round(100 * SPM));
+                } else {
+                    handler.postDelayed(this, 500);
+                }
+            } else {
+                completed = true;
+                cancelled = 1;
+            }
+        }
+
+        public int getPosition() {
+            return pos;
+        }
+
+        public void setPosition(int pos) {
+            this.pos = pos;
+        }
+
+        public boolean isCompleted() {
+            return completed;
+        }
+
+        public boolean isCancelled() {
+            return cancelled % 2 == 1;
+        }
+
+        public void incCancelled() {
+            cancelled++;
+        }
+    }
+}

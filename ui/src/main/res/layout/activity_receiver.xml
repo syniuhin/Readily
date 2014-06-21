@@ -3,4 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="${packageName}.${activityClass}">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/fragment_container"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp" />
 </RelativeLayout>

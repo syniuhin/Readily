@@ -1,13 +1,16 @@
 package cmc.readit.rsvp_reader.ui.readable;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Pair;
 
 import java.util.List;
 
+import cmc.readit.rsvp_reader.ui.ess.TextParser;
 import cmc.readit.rsvp_reader.ui.utils.LastReadDBHelper;
+import cmc.readit.rsvp_reader.ui.utils.Utils;
 
 /**
  * Created by infm on 6/12/14. Enjoy ;)
@@ -32,6 +35,37 @@ abstract public class Readable {
                 if (path.equals(cursor.getString(2)))
                     return new Pair<Integer, String>(cursor.getInt(5), cursor.getString(2));
         return null;
+    }
+
+    public static Readable newInstance(Context context, Integer intentType, String intentText, String intentPath) {
+        Readable readable;
+        if (TextUtils.isEmpty(intentText))
+            readable = new TestSettingsText(context);
+        else switch (intentType) {
+            case Utils.TYPE_CLIPBOARD:
+                readable = new CopiedFromClipboard(context);
+                readable.setText(intentText);
+                break;
+            case Utils.TYPE_TXT:
+                readable = new FileReadable();
+                readable.setText(intentText);
+                readable.setTextType("text/plain");
+                readable.setPath(intentPath);
+                break;
+            case Utils.TYPE_EPUB:
+                readable = new FileReadable();
+                readable.setText(intentText);
+                readable.setTextType("text/html");
+                readable.setPath(intentPath);
+                break;
+            default:
+                String link = TextParser.findLink(intentText);
+                if (!TextUtils.isEmpty(link))
+                    readable = new HtmlReadable(link);
+                else
+                    readable = new CopiedFromClipboard(context); // actually I don't know what to do here
+        }
+        return readable;
     }
 
     public String getText() {

@@ -3,7 +3,6 @@ package cmc.readit.rsvp_reader.ui.utils;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
@@ -25,11 +24,10 @@ import nl.siegmann.epublib.epub.EpubReader;
  */
 public class FileUtils extends Utils {
 
+    public static final String LOGTAG = "FileUtils";
     private Context context;
     private Uri uri;
     private String path;
-
-    public static final String LOGTAG = "FileUtils";
 
     public FileUtils(Context context, Uri uri) {
         super();
@@ -37,7 +35,7 @@ public class FileUtils extends Utils {
         this.uri = uri;
     }
 
-    public FileUtils(Context context, String path){
+    public FileUtils(Context context, String path) {
         super();
         this.context = context;
         this.path = path;

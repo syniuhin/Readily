@@ -131,16 +131,17 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
 
     /**
      * Is it ok to update it on onLoadFinished()?
+     *
      * @param data: Cursor to db
      */
-    private void initLastReadParams(Cursor data){
+    private void initLastReadParams(Cursor data) {
         if (data != null && data.getCount() > 0) {
             lastReadPath = data.getString(2);
             lastReadPosition = data.getInt(5);
         }
     }
 
-    private void initLastReadingView(){
+    private void initLastReadingView() {
         tvTitle = (TextView) findViewById(R.id.textView_last_reading_title);
         tvInfo = (TextView) findViewById(R.id.textView_last_reading_info);
         btnContinue = (Button) findViewById(R.id.button_continue_reading);

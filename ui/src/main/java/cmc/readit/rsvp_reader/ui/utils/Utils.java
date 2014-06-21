@@ -9,6 +9,8 @@ public abstract class Utils {
     public static final int TYPE_CLIPBOARD = 0;
     public static final int TYPE_TXT = 1;
     public static final int TYPE_EPUB = 2;
+    public static final int TYPE_SHARED_LINK = 3;
+    public static final int TYPE_SHARED_TEXT = 4;
 
     StringBuilder sb;
     int type;
@@ -64,4 +66,6 @@ public abstract class Utils {
     }
 
     public abstract void process();
+
+
 }
