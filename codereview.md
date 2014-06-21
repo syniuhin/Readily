@@ -110,7 +110,7 @@ In your case this class is more specific. But it's up to you, of course
 
 ###LastReadContentProvider.java
 * Usually all db-related classes are grouped in a 'database' or similar package
-* line 65 - don't do notify in query. It only applies for insert/update/delete and notifies your loaders that the data has been refreshed and needs to be re-queried from the db
+* **FIXED** line 65 - don't do notify in query. It only applies for insert/update/delete and notifies your loaders that the data has been refreshed and needs to be re-queried from the db
 
 ###And just to remind
 Don't do any file/db operations on main thread! :) Loaders are fine btw, because they are async. But inserting into the ContentResolver is not, just for example
