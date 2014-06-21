@@ -31,17 +31,11 @@ import cmc.readit.rsvp_reader.ui.utils.OnSwipeTouchListener;
 public class ReaderFragment extends Fragment {
     public static final String LOGTAG = "ReaderFragment";
 
-    private List<String> wordList;
-    private List<Integer> emphasisList;
-    private TextParser parser;
-
     private long localTime = 0;
     private int position; //consider converting it to a local val
     private boolean speedoHided = true;
-    private Reader reader;
-    private SharedPreferences sPref;
-    private cmc.readit.rsvp_reader.ui.readable.Readable readable;
 
+    //initialized in onCreateView()
     private TextView currentTextView;
     private TextView leftTextView;
     private TextView rightTextView;
@@ -49,13 +43,20 @@ public class ReaderFragment extends Fragment {
     private ProgressBar pBar;
     private ImageButton prevButton;
 
+    //initialized in onActivityCreated()
+    private Reader reader;
+    private SharedPreferences sPref;
+    private cmc.readit.rsvp_reader.ui.readable.Readable readable;
+    private List<String> wordList;
+    private List<Integer> emphasisList;
+    private TextParser parser;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(LOGTAG, "onCreateView() called");
 
         final RelativeLayout readerLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_reader, container, false);
         findViews(readerLayout);
-        initPrevButton();
 
         RelativeLayout rl = (RelativeLayout) readerLayout.findViewById(R.id.reader_layout);
         rl.setOnTouchListener(new OnSwipeTouchListener(getActivity()) {
@@ -121,6 +122,7 @@ public class ReaderFragment extends Fragment {
         Activity activity = getActivity();
         mkReadable(activity);
         sPref = PreferenceManager.getDefaultSharedPreferences(activity);
+        initPrevButton();
 
         parser = new TextParser(readable, sPref);
         initParserData();
@@ -202,7 +204,7 @@ public class ReaderFragment extends Fragment {
                     }
                 }
             });
-            prevButton.setVisibility(View.VISIBLE);
+            prevButton.setVisibility(View.INVISIBLE);
         } else
             prevButton.setVisibility(View.GONE); //consider INVISIBLE
     }
@@ -220,6 +222,11 @@ public class ReaderFragment extends Fragment {
                 speedoHided = true;
             }
         }
+
+        if (sPref.getBoolean(SettingsActivity.PREF_SWIPE, false) && reader.isCancelled())
+            prevButton.setVisibility(View.VISIBLE);
+        else if (!reader.isCancelled())
+            prevButton.setVisibility(View.INVISIBLE); //consider GONE
     }
 
     private void showSpeedo(int wpm) {
