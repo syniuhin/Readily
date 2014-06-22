@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="snacktory">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/ui/libs/snacktory.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

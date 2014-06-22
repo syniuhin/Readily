@@ -47,7 +47,7 @@ In this particular case, if you encounter a file which is 200 mb in size, youre 
 
 
 ###sancktory library 
-* you should either create a library project or compile it into jar file. Doesn't make sense to keep under version control something you're not going to modify. If you ARE going to modify the sources, it's fine to keep them as is. 
+* **FIXED** you should either create a library project or compile it into jar file. Doesn't make sense to keep under version control something you're not going to modify. If you ARE going to modify the sources, it's fine to keep them as is. 
 
 ###drawable folder
 * **FIXED** I think it's just a mistake, but you shouldn't put sub-folders into the drawable folder

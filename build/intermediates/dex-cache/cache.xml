@@ -26,6 +26,12 @@
         revision="19.1.0"
         sha1="f1c194a0753f5005eb57d69bccc7091460edd15a"/>
     <item
+        dex="/home/infm/Coding/as_workspace/readit/ui/build/intermediates/pre-dexed/debug/snacktory-9f7d5a1b01fd5fc2ff10049b6b62d14e527f02fb.jar"
+        jar="/home/infm/Coding/as_workspace/readit/ui/libs/snacktory.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="78aa41e9d59b4d3f056c9171e88747fe048e2ee0"/>
+    <item
         dex="/home/infm/Coding/as_workspace/readit/ui/build/intermediates/pre-dexed/debug/support-v4-19.1.0-c932418c8bc80c39bc2f4572e939ea7f15c89c7d.jar"
         jar="/home/infm/Coding/android-studio/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
         jumboMode="false"
