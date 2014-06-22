@@ -2,52 +2,36 @@
 <pre-dex-items>
 
     <item
-        dex="/home/infm/Coding/as_workspace/readit/ui/build/intermediates/pre-dexed/debug/epublib-core-latest-305a40f7c36a39294825706420d310307f159287.jar"
-        jar="/home/infm/Coding/as_workspace/readit/ui/libs/epublib-core-latest.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="ca916295c8af907b0c2d877b5f3a392e5ceb80ea"/>
-    <item
-        dex="/home/infm/Coding/as_workspace/readit/ui/build/intermediates/pre-dexed/debug/slf4j-api-1.7.7-4cdc84e07c84e7342337605eb21143f9219999d4.jar"
+        dex="/home/infm/Coding/as_workspace/ReadIt/ui/build/intermediates/pre-dexed/debug/slf4j-api-1.7.7-4cdc84e07c84e7342337605eb21143f9219999d4.jar"
         jar="/home/infm/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/1.7.7/2b8019b6249bb05d81d3a3094e468753e2b21311/slf4j-api-1.7.7.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="2b8019b6249bb05d81d3a3094e468753e2b21311"/>
+        jumboMode="false" revision="19.1.0" sha1="2b8019b6249bb05d81d3a3094e468753e2b21311" />
     <item
-        dex="/home/infm/Coding/as_workspace/readit/ui/build/intermediates/pre-dexed/debug/classes-4dfd8c46d0095b0ac2307ea285a2fd5d9e3ebcfd.jar"
-        jar="/home/infm/Coding/as_workspace/readit/build/intermediates/exploded-aar/com.android.support/appcompat-v7/19.1.0/classes.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="3499ceba05ca1f6037c6a2fad73df8f636224a28"/>
-    <item
-        dex="/home/infm/Coding/as_workspace/readit/ui/build/intermediates/pre-dexed/debug/slf4j-android-1.7.7-947d03c06b9bb1cff76dea6b382ca1f7bba393b5.jar"
-        jar="/home/infm/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-android/1.7.7/f1c194a0753f5005eb57d69bccc7091460edd15a/slf4j-android-1.7.7.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="f1c194a0753f5005eb57d69bccc7091460edd15a"/>
-    <item
-        dex="/home/infm/Coding/as_workspace/readit/ui/build/intermediates/pre-dexed/debug/snacktory-9f7d5a1b01fd5fc2ff10049b6b62d14e527f02fb.jar"
-        jar="/home/infm/Coding/as_workspace/readit/ui/libs/snacktory.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="78aa41e9d59b4d3f056c9171e88747fe048e2ee0"/>
-    <item
-        dex="/home/infm/Coding/as_workspace/readit/ui/build/intermediates/pre-dexed/debug/support-v4-19.1.0-c932418c8bc80c39bc2f4572e939ea7f15c89c7d.jar"
-        jar="/home/infm/Coding/android-studio/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67"/>
-    <item
-        dex="/home/infm/Coding/as_workspace/readit/ui/build/intermediates/pre-dexed/debug/crashlytics-1.1.11-6c739642c25514c6b7184e14d317815857bc4e3b.jar"
+        dex="/home/infm/Coding/as_workspace/ReadIt/ui/build/intermediates/pre-dexed/debug/crashlytics-1.1.11-6c739642c25514c6b7184e14d317815857bc4e3b.jar"
         jar="/home/infm/.gradle/caches/modules-2/files-2.1/com.crashlytics.android/crashlytics/1.1.11/b8189e9eef2f07fae743e05d7fe7e69daebe98d1/crashlytics-1.1.11.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="b8189e9eef2f07fae743e05d7fe7e69daebe98d1"/>
+        jumboMode="false" revision="19.1.0" sha1="b8189e9eef2f07fae743e05d7fe7e69daebe98d1" />
     <item
-        dex="/home/infm/Coding/as_workspace/readit/ui/build/intermediates/pre-dexed/debug/jsoup-1.7.3-daa0126a83f15ff160cabc9b32644a0e4a1510a5.jar"
+        dex="/home/infm/Coding/as_workspace/ReadIt/ui/build/intermediates/pre-dexed/debug/jsoup-1.7.3-daa0126a83f15ff160cabc9b32644a0e4a1510a5.jar"
         jar="/home/infm/.gradle/caches/modules-2/files-2.1/org.jsoup/jsoup/1.7.3/92568d7167ce1bf9eb1fd815b022d5a2c113547a/jsoup-1.7.3.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="92568d7167ce1bf9eb1fd815b022d5a2c113547a"/>
+        jumboMode="false" revision="19.1.0" sha1="92568d7167ce1bf9eb1fd815b022d5a2c113547a" />
+    <item
+        dex="/home/infm/Coding/as_workspace/ReadIt/ui/build/intermediates/pre-dexed/debug/slf4j-android-1.7.7-947d03c06b9bb1cff76dea6b382ca1f7bba393b5.jar"
+        jar="/home/infm/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-android/1.7.7/f1c194a0753f5005eb57d69bccc7091460edd15a/slf4j-android-1.7.7.jar"
+        jumboMode="false" revision="19.1.0" sha1="f1c194a0753f5005eb57d69bccc7091460edd15a" />
+    <item
+        dex="/home/infm/Coding/as_workspace/ReadIt/ui/build/intermediates/pre-dexed/debug/epublib-core-latest-b273cc6c6d234407b7c42002133eb10be1ebb01f.jar"
+        jar="/home/infm/Coding/as_workspace/ReadIt/ui/libs/epublib-core-latest.jar"
+        jumboMode="false" revision="19.1.0" sha1="ca916295c8af907b0c2d877b5f3a392e5ceb80ea" />
+    <item
+        dex="/home/infm/Coding/as_workspace/ReadIt/ui/build/intermediates/pre-dexed/debug/classes-5498d84ded3637bba5c89bbec0669db4685df7eb.jar"
+        jar="/home/infm/Coding/as_workspace/ReadIt/build/intermediates/exploded-aar/com.android.support/appcompat-v7/19.1.0/classes.jar"
+        jumboMode="false" revision="19.1.0" sha1="3499ceba05ca1f6037c6a2fad73df8f636224a28" />
+    <item
+        dex="/home/infm/Coding/as_workspace/ReadIt/ui/build/intermediates/pre-dexed/debug/support-v4-19.1.0-c932418c8bc80c39bc2f4572e939ea7f15c89c7d.jar"
+        jar="/home/infm/Coding/android-studio/sdk/extras/android/m2repository/com/android/support/support-v4/19.1.0/support-v4-19.1.0.jar"
+        jumboMode="false" revision="19.1.0" sha1="85f201b380937e61a9dce6ca90ccf6872abbfb67" />
+    <item
+        dex="/home/infm/Coding/as_workspace/ReadIt/ui/build/intermediates/pre-dexed/debug/snacktory-6428d5e43d06c7079dc75fb980154de9f782cf6b.jar"
+        jar="/home/infm/Coding/as_workspace/ReadIt/ui/libs/snacktory.jar" jumboMode="false"
+        revision="19.1.0" sha1="78aa41e9d59b4d3f056c9171e88747fe048e2ee0" />
 
 </pre-dex-items>

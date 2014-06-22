@@ -12,8 +12,6 @@ import android.util.Pair;
 import com.infm.readit.utils.FileUtils;
 import com.infm.readit.utils.Utils;
 
-import cmc.readit.rsvp_reader.ui.R;
-
 public class ReceiverActivity extends Activity {
 
     public static final String LOGTAG = "ReceiverActivity";

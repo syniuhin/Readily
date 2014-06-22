@@ -26,8 +26,6 @@ import com.infm.readit.utils.FileUtils;
 import com.infm.readit.utils.LastReadContentProvider;
 import com.infm.readit.utils.LastReadDBHelper;
 
-import cmc.readit.rsvp_reader.ui.R;
-
 public class MainActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String LOGTAG = "MainActivity";

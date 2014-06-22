@@ -1,4 +1,4 @@
-package com.infm.readit.ess;
+package com.infm.readit.essential;
 
 import android.content.SharedPreferences;
 import android.os.AsyncTask;

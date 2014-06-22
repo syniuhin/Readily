@@ -19,12 +19,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.infm.readit.ess.TextParser;
+import com.infm.readit.essential.TextParser;
 import com.infm.readit.utils.OnSwipeTouchListener;
 
 import java.util.List;
-
-import cmc.readit.rsvp_reader.ui.R;
 
 /**
  * infm : 16/05/14. Enjoy it ;)

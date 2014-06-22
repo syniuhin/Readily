@@ -7,6 +7,8 @@ import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
+import com.infm.readit.R;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -14,7 +16,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import cmc.readit.rsvp_reader.ui.R;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubReader;

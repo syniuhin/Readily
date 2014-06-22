@@ -4,8 +4,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 
-import cmc.readit.rsvp_reader.ui.R;
-
 public class SettingsActivity extends PreferenceActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String PREF_SAVE_CLIPBOARD = "pref_save_clipboard";
     public static final String PREF_WPM = "pref_wpm";

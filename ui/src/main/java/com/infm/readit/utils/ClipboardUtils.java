@@ -4,7 +4,7 @@ import android.content.Context;
 import android.text.ClipboardManager;
 import android.widget.Toast;
 
-import cmc.readit.rsvp_reader.ui.R;
+import com.infm.readit.R;
 
 /**
  * Created by infm on 6/19/14. Enjoy ;)
