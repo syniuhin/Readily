@@ -1,4 +1,4 @@
-package cmc.readit.rsvp_reader.ui.ess;
+package cmc.readit.rsvp_reader.ui;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -22,8 +21,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import cmc.readit.rsvp_reader.ui.R;
-import cmc.readit.rsvp_reader.ui.SettingsActivity;
+import cmc.readit.rsvp_reader.ui.ess.TextParser;
 import cmc.readit.rsvp_reader.ui.utils.OnSwipeTouchListener;
 
 /**

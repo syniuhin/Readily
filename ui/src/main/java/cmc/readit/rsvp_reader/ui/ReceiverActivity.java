@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
 
-import cmc.readit.rsvp_reader.ui.ess.ReaderFragment;
 import cmc.readit.rsvp_reader.ui.utils.FileUtils;
 import cmc.readit.rsvp_reader.ui.utils.Utils;
 
