@@ -1,4 +1,4 @@
-package cmc.readit.rsvp_reader.ui.readable;
+package com.infm.readit.readable;
 
 /**
  * Created by infm on 6/13/14. Enjoy ;)

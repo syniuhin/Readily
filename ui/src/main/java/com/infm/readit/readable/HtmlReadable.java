@@ -1,27 +1,23 @@
-package cmc.readit.rsvp_reader.ui.readable;
+package com.infm.readit.readable;
 
 /**
  * Created by infm on 6/13/14. Enjoy ;)
  */
-public class FileReadable extends Readable {
-    String extension;
+public class HtmlReadable extends Readable {
+    String link;
 
-    public String getExtension() {
-        return extension;
-    }
-
-    public void setExtension() {
-        extension = getPath().substring(getPath().lastIndexOf(".") + 1);
+    public HtmlReadable(String link) {
+        this.link = link;
     }
 
     @Override
     public String getLink() {
-        return null;
+        return link;
     }
 
     @Override
     public void setLink(String link) {
-
+        this.link = link;
     }
 
     @Override

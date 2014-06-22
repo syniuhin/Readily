@@ -1,4 +1,4 @@
-package cmc.readit.rsvp_reader.ui;
+package com.infm.readit;
 
 import android.app.Activity;
 import android.app.LoaderManager;
@@ -21,10 +21,12 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import cmc.readit.rsvp_reader.ui.utils.ClipboardUtils;
-import cmc.readit.rsvp_reader.ui.utils.FileUtils;
-import cmc.readit.rsvp_reader.ui.utils.LastReadContentProvider;
-import cmc.readit.rsvp_reader.ui.utils.LastReadDBHelper;
+import com.infm.readit.utils.ClipboardUtils;
+import com.infm.readit.utils.FileUtils;
+import com.infm.readit.utils.LastReadContentProvider;
+import com.infm.readit.utils.LastReadDBHelper;
+
+import cmc.readit.rsvp_reader.ui.R;
 
 public class MainActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
 

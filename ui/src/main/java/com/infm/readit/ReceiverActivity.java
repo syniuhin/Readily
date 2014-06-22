@@ -1,4 +1,4 @@
-package cmc.readit.rsvp_reader.ui;
+package com.infm.readit;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -9,8 +9,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
 
-import cmc.readit.rsvp_reader.ui.utils.FileUtils;
-import cmc.readit.rsvp_reader.ui.utils.Utils;
+import com.infm.readit.utils.FileUtils;
+import com.infm.readit.utils.Utils;
+
+import cmc.readit.rsvp_reader.ui.R;
 
 public class ReceiverActivity extends Activity {
 

@@ -1,9 +1,9 @@
-package cmc.readit.rsvp_reader.ui.readable;
+package com.infm.readit.readable;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
 
-import cmc.readit.rsvp_reader.ui.SettingsActivity;
+import com.infm.readit.SettingsActivity;
 
 /**
  * Created by infm on 6/12/14. Enjoy ;)

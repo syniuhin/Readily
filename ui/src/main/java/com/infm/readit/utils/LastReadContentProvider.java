@@ -1,4 +1,4 @@
-package cmc.readit.rsvp_reader.ui.utils;
+package com.infm.readit.utils;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;

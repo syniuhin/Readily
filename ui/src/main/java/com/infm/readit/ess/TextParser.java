@@ -1,10 +1,13 @@
-package cmc.readit.rsvp_reader.ui.ess;
+package com.infm.readit.ess;
 
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
+
+import com.infm.readit.SettingsActivity;
+import com.infm.readit.readable.Readable;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,8 +22,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cmc.readit.rsvp_reader.ui.SettingsActivity;
-import cmc.readit.rsvp_reader.ui.readable.Readable;
 import de.jetwick.snacktory.HtmlFetcher;
 import de.jetwick.snacktory.JResult;
 
@@ -115,7 +116,7 @@ public class TextParser {
     }
 
     public static final String makeMeSpecial = " " + "." + "!" + "?" + "-" + "—" + ":" + ";" + "," + "\n" + '\"' + "(" + ")" + "\t";
-    private cmc.readit.rsvp_reader.ui.readable.Readable readable;
+    private com.infm.readit.readable.Readable readable;
     private int lengthPreference;
     private List<Integer> delayCoefficients;
 

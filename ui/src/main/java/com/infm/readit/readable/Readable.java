@@ -1,4 +1,4 @@
-package cmc.readit.rsvp_reader.ui.readable;
+package com.infm.readit.readable;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,11 +6,11 @@ import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Pair;
 
-import java.util.List;
+import com.infm.readit.ess.TextParser;
+import com.infm.readit.utils.LastReadDBHelper;
+import com.infm.readit.utils.Utils;
 
-import cmc.readit.rsvp_reader.ui.ess.TextParser;
-import cmc.readit.rsvp_reader.ui.utils.LastReadDBHelper;
-import cmc.readit.rsvp_reader.ui.utils.Utils;
+import java.util.List;
 
 /**
  * Created by infm on 6/12/14. Enjoy ;)

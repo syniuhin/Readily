@@ -1,4 +1,4 @@
-package cmc.readit.rsvp_reader.ui.utils;
+package com.infm.readit.utils;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -96,7 +96,7 @@ public class FileUtils extends Utils {
                 }
             }
             existingData =
-                    cmc.readit.rsvp_reader.ui.readable.Readable.getRowData(context.getContentResolver().query(LastReadContentProvider.CONTENT_URI,
+                    com.infm.readit.readable.Readable.getRowData(context.getContentResolver().query(LastReadContentProvider.CONTENT_URI,
                             null, null, null, null), path);
             if (existingData != null)
                 position = existingData.first;

@@ -1,4 +1,4 @@
-package cmc.readit.rsvp_reader.ui.readable;
+package com.infm.readit.readable;
 
 import android.content.Context;
 
@@ -7,7 +7,7 @@ import cmc.readit.rsvp_reader.ui.R;
 /**
  * Created by infm on 6/13/14. Enjoy ;)
  */
-public class TestSettingsText extends cmc.readit.rsvp_reader.ui.readable.Readable {
+public class TestSettingsText extends com.infm.readit.readable.Readable {
     public TestSettingsText(Context context) {
         setText(context.getResources().getString(R.string.sample_text));
         setTextType("text/plain");

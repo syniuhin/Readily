@@ -1,4 +1,4 @@
-package cmc.readit.rsvp_reader.ui.utils;
+package com.infm.readit.utils;
 
 import android.util.Pair;
 

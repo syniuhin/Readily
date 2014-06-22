@@ -1,4 +1,4 @@
-package cmc.readit.rsvp_reader.ui.utils;
+package com.infm.readit.utils;
 
 import android.content.Context;
 import android.view.GestureDetector;
@@ -76,7 +76,7 @@ public class OnSwipeTouchListener implements OnTouchListener {
         }
 
         @Override
-        public boolean onSingleTapUp(MotionEvent e){
+        public boolean onSingleTapUp(MotionEvent e) {
             onClick();
             return true;
         }

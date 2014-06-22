@@ -1,32 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="cmc.readit.rsvp_reader.ui.MainActivity">
+    tools:context="com.infm.readit.MainActivity">
 
     <item
         android:id="@+id/action_file"
-        android:title="@string/preferences_pick_file"
+        android:enabled="true"
         android:icon="@drawable/ic_action_storage"
         android:showAsAction="ifRoom"
-        android:enabled="true"
+        android:title="@string/preferences_pick_file"
         android:visible="true" />
 
     <item
         android:id="@+id/action_clipboard"
-        android:title="@string/preferences_clipboard"
+        android:enabled="true"
         android:icon="@drawable/ic_action_paste"
         android:showAsAction="ifRoom"
-        android:enabled="true"
+        android:title="@string/preferences_clipboard"
         android:visible="true" />
 
     <item
         android:id="@+id/action_settings"
-        android:title="@string/title_activity_settings"
+        android:enabled="true"
         android:icon="@drawable/ic_action_settings"
         android:showAsAction="ifRoom"
-        android:enabled="true"
+        android:title="@string/title_activity_settings"
         android:visible="true" />
 
 </menu>

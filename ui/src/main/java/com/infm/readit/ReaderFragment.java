@@ -1,4 +1,4 @@
-package cmc.readit.rsvp_reader.ui;
+package com.infm.readit;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -19,10 +19,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.infm.readit.ess.TextParser;
+import com.infm.readit.utils.OnSwipeTouchListener;
+
 import java.util.List;
 
-import cmc.readit.rsvp_reader.ui.ess.TextParser;
-import cmc.readit.rsvp_reader.ui.utils.OnSwipeTouchListener;
+import cmc.readit.rsvp_reader.ui.R;
 
 /**
  * infm : 16/05/14. Enjoy it ;)
@@ -45,7 +47,7 @@ public class ReaderFragment extends Fragment {
     //initialized in onActivityCreated()
     private Reader reader;
     private SharedPreferences sPref;
-    private cmc.readit.rsvp_reader.ui.readable.Readable readable;
+    private com.infm.readit.readable.Readable readable;
     private List<String> wordList;
     private List<Integer> emphasisList;
     private TextParser parser;
@@ -252,7 +254,7 @@ public class ReaderFragment extends Fragment {
     }
 
     private void mkReadable(Context context) {
-        readable = cmc.readit.rsvp_reader.ui.readable.Readable.newInstance(context,
+        readable = com.infm.readit.readable.Readable.newInstance(context,
                 getArguments().getInt("source_type", -1),
                 getArguments().getString("text", getResources().getString(R.string.sample_text)),
                 getArguments().getString("path", ""));
