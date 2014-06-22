@@ -6,16 +6,16 @@
 * **FIXED** - kinda weird, why SettingsActivity is launched by default, not MainActivity	
 
 ###src folder: 
-* **FIXED** - there are not many files right now, but ideally you should group files into subfolders. For example, FileUtils & LastReadDbHelper should be placed into 'utils' or similar subfolder. 
+* **FIXED** there are not many files right now, but ideally you should group files into subfolders. For example, FileUtils & LastReadDbHelper should be placed into 'utils' or similar subfolder. 
 
 ###MainActivity: 
-* **FIXED?** - ok, I don't really understand what it does and why it's like that right now :)
+* **FIXED?** ok, I don't really understand what it does and why it's like that right now :)
 
 ###SettingsActivity:
-* **FIXED** - line 56. Toast should use text from strings.xml
-* **FIXED** - operations with Clipboard should ideally be placed in a ClipboardHelper or similar class
-* **FIXED** - similar, for opening a file - use a helper. Idea is that such code could be potentially reused in other places. So you should strive to extract it for easier reuse. 
-* **FIXED** - use 'MimeTypeMap.getFileExtensionFromUrl(myfile.toURL().toString())' to check file extension - it's more robust. There might be files with no '.' in file name - you'd get a crash in such case
+* **FIXED** line 56. Toast should use text from strings.xml
+* **FIXED** operations with Clipboard should ideally be placed in a ClipboardHelper or similar class
+* **FIXED** similar, for opening a file - use a helper. Idea is that such code could be potentially reused in other places. So you should strive to extract it for easier reuse. 
+* **FIXED** use 'MimeTypeMap.getFileExtensionFromUrl(myfile.toURL().toString())' to check file extension - it's more robust. There might be files with no '.' in file name - you'd get a crash in such case
 * - Never do any database, file or network operation on main thread. I suggest taking a look at 'http://developer.android.com/reference/android/os/StrictMode.html' to control yourself. 
 In this particular case, if you encounter a file which is 200 mb in size, youre app is going to freeze for some time while it reads the file. 
  You should put the code which reads the file into a service or an AsyncTask, although AsyncTasks are generally considered bad and should be avoided. 
@@ -24,8 +24,8 @@ In this particular case, if you encounter a file which is 200 mb in size, youre 
 * **FIXED** - 'startReceiverActivity' should actually be a public static member of the RecieverActivity
 
 ###ReceiverActivity:
-* - you should never have a function which doesn't fit one screen (when you have to scroll to see the whole function body). The 'onCreate' method should be broken down into smaller pieces 
-* **FIXED** - I don't think you need this call 'requestWindowFeature(Window.FEATURE_ACTION_BAR);' on sdk v13 and up
+* **FIXED** you should never have a function which doesn't fit one screen (when you have to scroll to see the whole function body). The 'onCreate' method should be broken down into smaller pieces 
+* **FIXED** I don't think you need this call 'requestWindowFeature(Window.FEATURE_ACTION_BAR);' on sdk v13 and up
 
 
 ##New comments
@@ -36,9 +36,9 @@ In this particular case, if you encounter a file which is 200 mb in size, youre 
 * I think the project structure is incorrect. The actual name of the application in Studio is 'ui'. You also have two copies of 'build' and 'gradle' folders
 
 ###package names
-* it's unusual to see underscores '_' in package names
-* usually package name starts with a web domain. So 'cmc' looks weird
-* try to provide package names which are easy to understand. For your own ease of work in future. It's unclear to me what 'ess' means
+* **FIXED** it's unusual to see underscores '_' in package names
+* **FIXED** usually package name starts with a web domain. So 'cmc' looks weird
+* **FIXED** try to provide package names which are easy to understand. For your own ease of work in future. It's unclear to me what 'ess' means
 
 ###code organization
 * it's totally up to you, but I would recommend coming up with a code style and following it everywhere. This applies for variables' names, method names, etc. I personally like to group methods/variables in a class as such: public methods go first, then private    
