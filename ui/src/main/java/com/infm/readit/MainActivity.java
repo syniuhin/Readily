@@ -21,10 +21,10 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.infm.readit.database.LastReadContentProvider;
+import com.infm.readit.database.LastReadDBHelper;
 import com.infm.readit.utils.ClipboardUtils;
 import com.infm.readit.utils.FileUtils;
-import com.infm.readit.utils.LastReadContentProvider;
-import com.infm.readit.utils.LastReadDBHelper;
 
 public class MainActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
 

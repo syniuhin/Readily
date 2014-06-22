@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.infm.readit">
 
-<uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
@@ -38,7 +38,7 @@
             android:label="@string/title_activity_main"></activity>
 
         <provider
-            android:name="com.infm.readit.utils.LastReadContentProvider"
+            android:name=".database.LastReadContentProvider"
             android:authorities="cmc.readit.rsvp_reader.provider"
             android:enabled="true"
             android:exported="true"></provider>

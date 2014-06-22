@@ -6,8 +6,8 @@ import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import com.infm.readit.database.LastReadDBHelper;
 import com.infm.readit.essential.TextParser;
-import com.infm.readit.utils.LastReadDBHelper;
 import com.infm.readit.utils.Utils;
 
 import java.util.List;

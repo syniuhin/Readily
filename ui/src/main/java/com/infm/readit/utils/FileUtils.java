@@ -8,6 +8,7 @@ import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import com.infm.readit.R;
+import com.infm.readit.database.LastReadContentProvider;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

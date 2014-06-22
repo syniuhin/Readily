@@ -1,4 +1,4 @@
-package com.infm.readit.utils;
+package com.infm.readit.database;
 
 import android.content.Context;
 import android.database.Cursor;
