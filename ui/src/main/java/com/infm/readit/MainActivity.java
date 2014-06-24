@@ -12,11 +12,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -91,7 +88,6 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         }
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -127,6 +123,10 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ReceiverActivity.startReceiverActivity(MainActivity.this,
+                        new FileUtils(MainActivity.this,
+                                ((TextView) view.findViewById(R.id.text_view_path)).getText().toString())
+                );
                 Log.d(LOGTAG, "listView's onItemClick called()");
             }
         });
