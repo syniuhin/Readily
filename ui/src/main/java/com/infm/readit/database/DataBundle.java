@@ -48,7 +48,7 @@ public class DataBundle {
         this.percent = percent;
     }
 
-    public String mkString(){
+    public String mkString() {
         return "header: " + header + "; path: " + path + "; position: " + position + "; percent: " + percent;
     }
 }

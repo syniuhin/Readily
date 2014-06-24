@@ -72,16 +72,16 @@ In this particular case, if you encounter a file which is 200 mb in size, youre 
 * **FIXED** line 98/99 - use strings.xml
 * **FIXED** line 100 - set the listener once on onCreate. Just store the path as member variable in the MainActivity and use it when button is clicked
 * **FIXED** line 32 - nit: use private
-* **?** line 103 - use RecieverActivity.start method
+* **FIXED** line 103 - use RecieverActivity.start method
 #####*actually now I can't design it properly because of data handling, which has become harder to implement*
 
 ###PrepareForView
 * **FIXED ;)** this is very unusual! :)
 * **FIXED** rename this class to be FragmentReader or similar 
-* extend this class from fragment. Override methods onCreateView (inflate xml, find views), onActivityCreated (everything is ready for display)
-* move logic from RecieverActivity.mkView into this class
+* **FIXED** extend this class from fragment. Override methods onCreateView (inflate xml, find views), onActivityCreated (everything is ready for display)
+* **FIXED** move logic from RecieverActivity.mkView into this class
 * **?** make this class implement the OnSwipeTouchListener logic (instead of having a separate anonymous class)
-* **!?** in the methods of OnSwipeTouchListener don't do findView over and over again. Do it once 
+* **KIND OF FIXED** in the methods of OnSwipeTouchListener don't do findView over and over again. Do it once 
 
 ###RecieverActivity
 Add PrepareForView (ReaderFragment) as a normal fragment. You can declare it in the xml, or add on the fly. 
@@ -90,11 +90,11 @@ The modifications you're doing to the window and decor view of the activity look
 In fact, as I think about it more, tt may actually be better to drop the receiver activity at all if it's transparent. Instead, you can intercept the 'shared' text in the MainActivity. 
 Then you can have two fragments in the main activity: one for list of recent files, one for reading text. You can easily switch between them in runtime 
 
-* **?** line 93 - this is basically called a [http://en.wikipedia.org/wiki/Abstract_factory_pattern](Factory Pattern). Nice that you come up with it, I'd just propose to extract these lines into a UtilsFactory class with a static method 'createUtil' and use it there. 
+* **KIND OF FIXED** line 93 - this is basically called a [http://en.wikipedia.org/wiki/Abstract_factory_pattern](Factory Pattern). Nice that you come up with it, I'd just propose to extract these lines into a UtilsFactory class with a static method 'createUtil' and use it there. 
 * line 138 + transparent style - it's not super clear what the point of those manipulations with the view and window... What happens if someone will share text to your app, will this activity be transparent over whatever is visible at the moment in the other app?
 * **?** line 282 - onConfigurationChanged. I don't think you really need this. If you create two xmls for the reader_fragment and put them into normal layout folder and layout-land folder - system will do most of work for you automatically
 * **?** line 293 - I don't think you need to modify the size of activity window. At least if I understand everything correctly. Instead set the dimensions of the fragment in xml
-* line 324 - potentially move this method into ReaderFragment. But, don't do any database operations on the main thread (that's what happens now). Come up with a service for that. 
+* **FIXED** line 324 - potentially move this method into ReaderFragment. But, don't do any database operations on the main thread (that's what happens now). Come up with a service for that. 
 * **FIXED** line 324 - also, it might be a better idea to do this save/update in onStop to reduce the number of db operations
 
 ###ChunkData.java
@@ -108,11 +108,11 @@ Same here. Usually Utils is a representation of a collection of generic methods 
 In your case this class is more specific. But it's up to you, of course
 
 ###LastReadContentProvider.java
-* Usually all db-related classes are grouped in a 'database' or similar package
+* **FIXED** Usually all db-related classes are grouped in a 'database' or similar package
 * **FIXED** line 65 - don't do notify in query. It only applies for insert/update/delete and notifies your loaders that the data has been refreshed and needs to be re-queried from the db
 
 ###And just to remind
-Don't do any file/db operations on main thread! :) Loaders are fine btw, because they are async. But inserting into the ContentResolver is not, just for example
+**FIXED** Don't do any file/db operations on main thread! :) Loaders are fine btw, because they are async. But inserting into the ContentResolver is not, just for example
 
 ##Books to read:
 * Code Complete by Steve McConnell

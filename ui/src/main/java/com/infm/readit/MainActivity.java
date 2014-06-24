@@ -21,7 +21,6 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.infm.readit.database.LastReadContentProvider;
 import com.infm.readit.database.LastReadDBHelper;
 import com.infm.readit.utils.ClipboardUtils;

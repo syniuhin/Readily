@@ -66,6 +66,7 @@ public abstract class Utils {
     }
 
     public abstract String getPath();
+
     public abstract void setPath(String path);
 
     public abstract void process();
