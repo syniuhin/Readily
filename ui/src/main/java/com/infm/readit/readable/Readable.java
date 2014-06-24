@@ -184,7 +184,7 @@ abstract public class Readable {
     private void makeHeader() {
         int charLen = 0;
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < wordList.size() && charLen < 15; ++i) {
+        for (int i = 0; i < wordList.size() && charLen < 20; ++i) {
             String word = wordList.get(i);
             sb.append(word).append(" ");
             charLen += word.length() + 1;
