@@ -123,7 +123,6 @@ public class ReaderFragment extends Fragment {
         sPref = PreferenceManager.getDefaultSharedPreferences(activity);
         initPrevButton();
         mkParser();
-        initParserData(); //parses whole text, which isn't ok even because of readable.position
 
         final Handler handler = new Handler();
         reader = new Reader(handler, activity, readable.getPosition());
@@ -262,6 +261,7 @@ public class ReaderFragment extends Fragment {
      */
     private void mkParser() {
         parser = new TextParser(readable, sPref);
+        initParserData();
     }
 
     private void initParserData() {
@@ -296,6 +296,13 @@ public class ReaderFragment extends Fragment {
         return intent;
     }
 
+    @Override
+    public void onPause() {
+        if (!reader.isCancelled())
+            reader.incCancelled();
+        Log.d(LOGTAG, "onPause() called");
+        super.onPause();
+    }
     @Override
     public void onStop() {
         getActivity().startService(makeLastReadServiceIntent());
