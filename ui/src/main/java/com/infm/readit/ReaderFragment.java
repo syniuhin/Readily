@@ -3,6 +3,7 @@ package com.infm.readit;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +20,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.infm.readit.database.LastReadDBHelper;
+import com.infm.readit.database.LastReadService;
 import com.infm.readit.essential.TextParser;
 import com.infm.readit.utils.OnSwipeTouchListener;
 
@@ -31,10 +34,10 @@ public class ReaderFragment extends Fragment {
     public static final String LOGTAG = "ReaderFragment";
 
     private long localTime = 0;
-    private int position; //consider converting it to a local val
     private boolean speedoHided = true;
 
     //initialized in onCreateView()
+    private RelativeLayout fragmentLayout;
     private TextView currentTextView;
     private TextView leftTextView;
     private TextView rightTextView;
@@ -48,16 +51,17 @@ public class ReaderFragment extends Fragment {
     private com.infm.readit.readable.Readable readable;
     private List<String> wordList;
     private List<Integer> emphasisList;
+    private List<Integer> delayList;
     private TextParser parser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d(LOGTAG, "onCreateView() called");
 
-        final RelativeLayout readerLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_reader, container, false);
-        findViews(readerLayout);
+        fragmentLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_reader, container, false);
+        findViews(fragmentLayout);
 
-        RelativeLayout rl = (RelativeLayout) readerLayout.findViewById(R.id.reader_layout);
+        RelativeLayout rl = (RelativeLayout) fragmentLayout.findViewById(R.id.reader_layout);
         rl.setOnTouchListener(new OnSwipeTouchListener(getActivity()) {
             @Override
             public void onSwipeTop() {
@@ -69,10 +73,6 @@ public class ReaderFragment extends Fragment {
                 changeWPM(-50);
             }
 
-            /**
-             * If pref set to true, perform orientation through swipes.
-             * Conflicts with currentTextView, need to be fixed
-             */
             @Override
             public void onSwipeRight() {
                 if (reader.isCancelled() && sPref.getBoolean(SettingsActivity.PREF_SWIPE, false)) {
@@ -110,7 +110,7 @@ public class ReaderFragment extends Fragment {
                 }
             }
         });
-        return readerLayout;
+        return fragmentLayout;
     }
 
     @Override
@@ -122,13 +122,11 @@ public class ReaderFragment extends Fragment {
         mkReadable(activity);
         sPref = PreferenceManager.getDefaultSharedPreferences(activity);
         initPrevButton();
-
-        parser = new TextParser(readable, sPref);
-        initParserData();
-        position = getArguments().getInt("position", 0);
+        mkParser();
+        initParserData(); //parses whole text, which isn't ok even because of readable.position
 
         final Handler handler = new Handler();
-        reader = new Reader(handler, activity, position);
+        reader = new Reader(handler, activity, readable.getPosition());
         handler.postDelayed(reader, 2000);
     }
 
@@ -255,12 +253,54 @@ public class ReaderFragment extends Fragment {
         readable = com.infm.readit.readable.Readable.newInstance(context,
                 getArguments().getInt("source_type", -1),
                 getArguments().getString("text", getResources().getString(R.string.sample_text)),
-                getArguments().getString("path", ""));
+                getArguments().getString(LastReadDBHelper.KEY_PATH));
+        readable.setPosition(Math.max(getArguments().getInt(LastReadDBHelper.KEY_POSITION), 0));
+    }
+
+    /**
+     * just in order to wrap this in ProgressBar
+     */
+    private void mkParser() {
+        parser = new TextParser(readable, sPref);
     }
 
     private void initParserData() {
         wordList = parser.getReadable().getWordList();
         emphasisList = parser.getReadable().getEmphasisList();
+        delayList = parser.getReadable().getDelayList();
+    }
+
+/*
+    private void wrapInProgressBar(View v){
+        ProgressDialog progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setIndeterminate(true);
+        progressDialog.setTitle("Loading...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setProgress(0);
+
+        progressDialog.show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mkParser();
+                progressDialog.dismiss();
+            }
+        }).start();
+    }
+*/
+
+    private Intent makeLastReadServiceIntent() {
+        Intent intent = new Intent(getActivity(), LastReadService.class);
+        readable.setPosition(reader.getPosition());
+        readable.putDataInIntent(intent);
+        return intent;
+    }
+
+    @Override
+    public void onStop() {
+        getActivity().startService(makeLastReadServiceIntent());
+        Log.d(LOGTAG, "OnStop() called");
+        super.onStop();
     }
 
     /**
@@ -294,13 +334,13 @@ public class ReaderFragment extends Fragment {
 
         @Override
         public void run() {
-            int wlen = getParser().getReadable().getWordList().size();
+            int wlen = wordList.size();
             int i = pos;
             if (i < wlen) {
                 completed = false;
                 if (!isCancelled()) {
                     updateView(i % wlen);
-                    handler.postDelayed(this, getParser().getReadable().getDelayList().get(pos++ % wlen) * Math.round(100 * SPM));
+                    handler.postDelayed(this, delayList.get(pos++ % wlen) * Math.round(100 * SPM));
                 } else {
                     handler.postDelayed(this, 500);
                 }

@@ -12,11 +12,11 @@ public abstract class Utils {
     public static final int TYPE_SHARED_LINK = 3;
     public static final int TYPE_SHARED_TEXT = 4;
 
-    StringBuilder sb;
-    int type;
-    int position;
-    Pair<Integer, String> existingData;
-    boolean processFailed;
+    protected StringBuilder sb;
+    protected int type;
+    protected int position;
+    protected Pair<Integer, Integer> existingData;
+    protected boolean processFailed;
 
     public Utils() {
         this.sb = new StringBuilder();
@@ -49,11 +49,11 @@ public abstract class Utils {
         this.position = position;
     }
 
-    public Pair<Integer, String> getExistingData() {
+    public Pair<Integer, Integer> getExistingData() {
         return existingData;
     }
 
-    public void setExistingData(Pair<Integer, String> existingData) {
+    public void setExistingData(Pair<Integer, Integer> existingData) {
         this.existingData = existingData;
     }
 
@@ -65,7 +65,9 @@ public abstract class Utils {
         this.processFailed = processFailed;
     }
 
-    public abstract void process();
+    public abstract String getPath();
+    public abstract void setPath(String path);
 
+    public abstract void process();
 
 }

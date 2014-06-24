@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.infm.readit">
+    package="com.infm.readit" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -10,41 +10,50 @@
         android:icon="@drawable/ic_launcher"
         android:installLocation="preferExternal"
         android:label="@string/title_activity_main"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
         <activity
-            android:name="com.infm.readit.MainActivity"
-            android:label="@string/title_activity_main">
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name="com.infm.readit.ReceiverActivity"
+            android:name=".ReceiverActivity"
             android:clearTaskOnLaunch="true"
             android:configChanges="orientation|screenSize"
             android:exported="true"
             android:label="@string/title_activity_receiver"
             android:launchMode="singleInstance"
-            android:theme="@style/Theme.Transparent">
+            android:theme="@style/Theme.Transparent" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
         <activity
-            android:name="com.infm.readit.SettingsActivity"
-            android:label="@string/title_activity_main"></activity>
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_main" />
 
         <provider
             android:name=".database.LastReadContentProvider"
             android:authorities="cmc.readit.rsvp_reader.provider"
             android:enabled="true"
-            android:exported="true"></provider>
+            android:exported="true" />
+
         <meta-data
             android:name="com.crashlytics.ApiKey"
             android:value="0db4f67b016e755d7cc9ec045205dcab746e7c46" />
+
+        <service
+            android:name=".database.LastReadService"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

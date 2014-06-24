@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
 
+import com.infm.readit.database.LastReadDBHelper;
 import com.infm.readit.utils.FileUtils;
 import com.infm.readit.utils.Utils;
 
@@ -29,7 +30,7 @@ public class ReceiverActivity extends Activity {
         Intent intent = new Intent(context, ReceiverActivity.class);
 
         String text = utils.getSb().toString();
-        Pair<Integer, String> existingData = utils.getExistingData();
+        Pair<Integer, Integer> existingData = utils.getExistingData();
         int type = utils.getType();
 
         if (type != FileUtils.TYPE_EPUB)
@@ -39,9 +40,10 @@ public class ReceiverActivity extends Activity {
 
         intent.putExtra(Intent.EXTRA_TEXT, text);
         intent.putExtra("source_type", type);
+        intent.putExtra(LastReadDBHelper.KEY_PATH, utils.getPath());
         if (existingData != null) {
-            intent.putExtra("position", existingData.first);
-            intent.putExtra("path", existingData.second);
+            intent.putExtra(LastReadDBHelper.KEY_ROWID, existingData.first);
+            intent.putExtra(LastReadDBHelper.KEY_POSITION, existingData.second);
         }
         context.startActivity(intent);
     }
@@ -78,14 +80,16 @@ public class ReceiverActivity extends Activity {
         Intent intent = getIntent();
         Integer type = intent.getIntExtra("source_type", -1);
         String text = intent.getStringExtra(Intent.EXTRA_TEXT);
-        String path = intent.getStringExtra("path");
-        Integer pos = intent.getIntExtra("position", 0);
+        String path = intent.getStringExtra(LastReadDBHelper.KEY_PATH);
+        Integer pos = intent.getIntExtra(LastReadDBHelper.KEY_POSITION, -1);
 
         Bundle bundle = new Bundle();
         bundle.putInt("source_type", type);
         bundle.putString("text", text);
-        bundle.putString("path", path);
-        bundle.putInt("position", pos);
+        bundle.putString(LastReadDBHelper.KEY_PATH, path);
+        bundle.putInt(LastReadDBHelper.KEY_POSITION, pos);
+
+        Log.d(LOGTAG, "bundle: " + bundle.toString());
         return bundle;
     }
 

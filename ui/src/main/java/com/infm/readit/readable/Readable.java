@@ -2,10 +2,13 @@ package com.infm.readit.readable;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
 
+import com.infm.readit.database.DataBundle;
 import com.infm.readit.database.LastReadDBHelper;
 import com.infm.readit.essential.TextParser;
 import com.infm.readit.utils.Utils;
@@ -16,25 +19,39 @@ import java.util.List;
  * Created by infm on 6/12/14. Enjoy ;)
  */
 abstract public class Readable {
-    String text;
-    String header;
-    String textType;
-    Long seconds;
-    String path;
-    Integer position;
 
-    List<String> wordList;
-    List<Integer> delayList;
-    List<Integer> emphasisList;
-    List<Integer> timeSuffixSum;
+    public static String LOGTAG = "Readable";
 
-    public static Pair<Integer, String> getRowData(Cursor cursor, String path) {
+    protected String text;
+    protected String header;
+    protected String textType;
+    protected Long seconds;
+    protected String path;
+    protected Integer position;
+
+    protected List<String> wordList;
+    protected List<Integer> delayList;
+    protected List<Integer> emphasisList;
+    protected List<Integer> timeSuffixSum;
+
+    public static Pair<Integer, Integer> getRowData(Cursor cursor, String path) {
+        Log.d(LOGTAG, "getRowData() called; cursor size: " + cursor.getCount() + "; path: " + path);
         cursor.moveToFirst();
-        if (!TextUtils.isEmpty(path))
-            while (cursor.moveToNext())
-                if (path.equals(cursor.getString(2)))
-                    return new Pair<Integer, String>(cursor.getInt(5), cursor.getString(2));
-        return null;
+        Integer rowId = -1;
+        Integer position = -1;
+        if (!TextUtils.isEmpty(path)) {
+            while (cursor.moveToNext() && rowId == -1) {
+                if (path.equals(cursor.getString(2))) {
+                    rowId = cursor.getInt(LastReadDBHelper.N_KEY_ROWID);
+                    position = cursor.getInt(LastReadDBHelper.N_KEY_POSITION);
+                }
+            }
+        }
+        cursor.close();
+        Log.d(LOGTAG, "getRowData(); rowId = " + rowId);
+        if (rowId == -1)
+            return null;
+        return new Pair<Integer, Integer>(rowId, position);
     }
 
     public static Readable newInstance(Context context, Integer intentType, String intentText, String intentPath) {
@@ -66,6 +83,15 @@ abstract public class Readable {
                     readable = new CopiedFromClipboard(context); // actually I don't know what to do here
         }
         return readable;
+    }
+
+    public static ContentValues getContentValues(DataBundle dataBundle) {
+        ContentValues vals = new ContentValues();
+        vals.put(LastReadDBHelper.KEY_HEADER, dataBundle.getHeader());
+        vals.put(LastReadDBHelper.KEY_PATH, dataBundle.getPath());
+        vals.put(LastReadDBHelper.KEY_POSITION, dataBundle.getPosition());
+        vals.put(LastReadDBHelper.KEY_PERCENT, dataBundle.getPercent());
+        return vals;
     }
 
     public String getText() {
@@ -156,7 +182,7 @@ abstract public class Readable {
 
     abstract public void setChunkData(ChunkData data);
 
-    public void makeHeader() {
+    private void makeHeader() {
         int charLen = 0;
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < wordList.size() && charLen < 15; ++i) {
@@ -164,9 +190,10 @@ abstract public class Readable {
             sb.append(word).append(" ");
             charLen += word.length() + 1;
         }
-        setHeader(sb.toString());
+        header = sb.toString();
     }
 
+    @Deprecated
     public ContentValues getContentValues() {
         makeHeader();
         ContentValues vals = new ContentValues();
@@ -175,5 +202,18 @@ abstract public class Readable {
         vals.put(LastReadDBHelper.KEY_POSITION, position);
         vals.put(LastReadDBHelper.KEY_PERCENT, (int) (position * 100f / wordList.size() + .5f) + "% of text read");
         return vals;
+    }
+
+    /**
+     * TODO: design class that contain all this data (completed)
+     *
+     * @param intent: intent to put
+     */
+    public void putDataInIntent(Intent intent) {
+        makeHeader();
+        intent.putExtra(LastReadDBHelper.KEY_HEADER, header);
+        intent.putExtra(LastReadDBHelper.KEY_PATH, path);
+        intent.putExtra(LastReadDBHelper.KEY_POSITION, position);
+        intent.putExtra(LastReadDBHelper.KEY_PERCENT, (int) (position * 100f / wordList.size() + .5f) + "% of text read");
     }
 }

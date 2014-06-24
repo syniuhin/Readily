@@ -15,11 +15,18 @@ public class LastReadDBHelper extends SQLiteOpenHelper {
     public static final int VERSION = 1;
     public static final String KEY_ROWID = "_id";
     public static final String KEY_HEADER = "header";
-    public static final String KEY_PATH = "text";
+    public static final String KEY_PATH = "path";
     public static final String KEY_POSITION = "position";
     public static final String KEY_PERCENT = "percent_left";
     public static final String KEY_TIME_MODIFIED = "time_modified";
 
+    public static final Integer N_KEY_ROWID = 0;
+    public static final Integer N_KEY_HEADER = 1;
+    public static final Integer N_KEY_PATH = 2;
+    public static final Integer N_KEY_POSITION = 5;
+    public static final Integer N_KEY_PERCENT = 4;
+    public static final Integer N_KEY_TIME_MODIFIED = 3;
+    
     static final String CREATE =
             "CREATE TABLE " + TABLE + " (" +
                     KEY_ROWID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -41,10 +48,5 @@ public class LastReadDBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.d("DBHelper", "helper updates db??");
-    }
-
-    public Cursor getData(SQLiteDatabase db) {
-        return db.query(TABLE, null,
-                null, null, null, null, null);
     }
 }

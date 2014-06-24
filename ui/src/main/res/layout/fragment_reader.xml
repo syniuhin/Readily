@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     android:layout_width="match_parent"
-    android:layout_height="80dp"
+    android:layout_height="90dp"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@drawable/reader_border">
 
@@ -45,7 +45,7 @@
                 android:typeface="monospace"
                 android:textSize="20sp"
                 android:singleLine="true"
-                android:text="C"
+                android:text="."
                 android:layout_centerVertical="true"
                 android:layout_alignLeft="@+id/pointerTopImageView" />
 
@@ -54,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/leftWordTextView"
                 android:typeface="monospace"
-                android:text="L"
+                android:text=".."
                 android:textSize="20sp"
                 android:singleLine="true"
                 android:layout_centerVertical="true"
@@ -66,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/rightWordTextView"
                 android:typeface="monospace"
-                android:text="R"
+                android:text="..."
                 android:textSize="20sp"
                 android:singleLine="true"
                 android:layout_centerVertical="true"

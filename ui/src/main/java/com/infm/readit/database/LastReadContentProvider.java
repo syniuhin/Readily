@@ -31,8 +31,8 @@ public class LastReadContentProvider extends ContentProvider {
         uriMatcher.addURI(AUTHORITY, PATH + "/#", URI_LAST_READ_ID);
     }
 
-    LastReadDBHelper dbHelper;
-    SQLiteDatabase db;
+    private LastReadDBHelper dbHelper;
+    private SQLiteDatabase db;
     private String LOGTAG = "LastReadContentProvider";
 
     @Override

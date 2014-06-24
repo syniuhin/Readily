@@ -33,12 +33,19 @@ public class FileUtils extends Utils {
 
     public FileUtils(Context context, Uri uri) {
         super();
+        Log.d(LOGTAG, "constructor with uri: " + uri.toString() + " called");
         this.context = context;
         this.uri = uri;
+        try {
+            this.path = getPath(context, uri);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
     }
 
     public FileUtils(Context context, String path) {
         super();
+        Log.d(LOGTAG, "constructor with path: " + path + " called");
         this.context = context;
         this.path = path;
     }
@@ -52,13 +59,17 @@ public class FileUtils extends Utils {
                 cursor = context.getContentResolver().query(uri, projection, null, null, null);
                 int column_index = cursor.getColumnIndexOrThrow("_data");
                 if (cursor.moveToFirst()) {
-                    return cursor.getString(column_index);
-                }
+                    String toReturn = cursor.getString(column_index);
+                    cursor.close();
+                    return toReturn;
+                } else cursor.close();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else if ("file".equalsIgnoreCase(uri.getScheme())) {
-            return uri.getPath();
+            String path = uri.getPath();
+            Log.d(LOGTAG, "path: " + path);
+            return path;
         }
 
         return null;
@@ -89,19 +100,13 @@ public class FileUtils extends Utils {
     }
 
     public void process() {
+        Log.d(LOGTAG, "process() is called");
         try {
             if (path == null) {
-                if (uri != null) path = getPath(context, uri);
-                else {
-                    Log.d(LOGTAG, "path is null && uri is null");
-                    return;
-                }
+                Log.d(LOGTAG, "path is null");
+                return;
             }
-            existingData =
-                    com.infm.readit.readable.Readable.getRowData(context.getContentResolver().query(LastReadContentProvider.CONTENT_URI,
-                            null, null, null, null), path);
-            if (existingData != null)
-                position = existingData.first;
+
             String extension = MimeTypeMap.getFileExtensionFromUrl(path);
             if ("txt".equals(extension)) {
                 FileReader fileReader = new FileReader(path);
@@ -111,15 +116,15 @@ public class FileUtils extends Utils {
                     sb.append(sCurrentLine).append('\n');
                 br.close();
                 type = TYPE_TXT;
+                Log.d(LOGTAG, "type: txt");
             }
             if ("epub".equals(extension)) {
                 Book book = (new EpubReader()).readEpub(new FileInputStream(path));
                 for (Resource res : book.getContents())
                     sb.append(new String(res.getData()));
                 type = TYPE_EPUB;
+                Log.d(LOGTAG, "type: epub");
             }
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -127,5 +132,9 @@ public class FileUtils extends Utils {
         }
         if (processFailed = type == -1)
             Toast.makeText(context, context.getResources().getString(R.string.wrong_ext), Toast.LENGTH_SHORT).show();
+        else
+            existingData =
+                    com.infm.readit.readable.Readable.getRowData(context.getContentResolver().query(LastReadContentProvider.CONTENT_URI,
+                            null, null, null, null), path); //looks weird, actually
     }
 }

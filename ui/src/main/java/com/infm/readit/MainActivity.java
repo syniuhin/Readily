@@ -21,6 +21,7 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.infm.readit.database.LastReadContentProvider;
 import com.infm.readit.database.LastReadDBHelper;
 import com.infm.readit.utils.ClipboardUtils;
@@ -117,10 +118,12 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+/*
         data.moveToNext();
         initLastReadParams(data);
         updateView(data);
         data.moveToFirst();
+*/
         adapter.swapCursor(data);
     }
 
@@ -192,7 +195,6 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
             tvTitle.setText(cursor.getString(1));
             tvInfo.setText(cursor.getInt(4) + getResources().getString(R.string.last_reading_percent) +
                     " " + cursor.getInt(3) + getResources().getString(R.string.last_reading_time));
-
         } else {
             lastReadLayout.setVisibility(View.INVISIBLE);
         }
