@@ -36,16 +36,15 @@ abstract public class Readable {
 
     public static Pair<Integer, Integer> getRowData(Cursor cursor, String path) {
         Log.d(LOGTAG, "getRowData() called; cursor size: " + cursor.getCount() + "; path: " + path);
-        cursor.moveToFirst();
         Integer rowId = -1;
         Integer position = -1;
         if (!TextUtils.isEmpty(path)) {
-            do {
+            while (cursor.moveToNext() && rowId == -1) {
                 if (path.equals(cursor.getString(LastReadDBHelper.N_KEY_PATH))) {
                     rowId = cursor.getInt(LastReadDBHelper.N_KEY_ROWID);
                     position = cursor.getInt(LastReadDBHelper.N_KEY_POSITION);
                 }
-            } while (cursor.moveToNext() && rowId == -1);
+            }
         }
         cursor.close();
         Log.d(LOGTAG, "getRowData(); rowId = " + rowId + "; position = " + position);
@@ -200,7 +199,7 @@ abstract public class Readable {
         vals.put(LastReadDBHelper.KEY_HEADER, header);
         vals.put(LastReadDBHelper.KEY_PATH, path);
         vals.put(LastReadDBHelper.KEY_POSITION, position);
-        vals.put(LastReadDBHelper.KEY_PERCENT, (int) (position * 100f / wordList.size() + .5f) + "% of text read");
+        vals.put(LastReadDBHelper.KEY_PERCENT, 100 - (int) (position * 100f / wordList.size() + .5f) + "% left");
         return vals;
     }
 
@@ -214,6 +213,6 @@ abstract public class Readable {
         intent.putExtra(LastReadDBHelper.KEY_HEADER, header);
         intent.putExtra(LastReadDBHelper.KEY_PATH, path);
         intent.putExtra(LastReadDBHelper.KEY_POSITION, position);
-        intent.putExtra(LastReadDBHelper.KEY_PERCENT, (int) (position * 100f / wordList.size() + .5f) + "% of text read");
+        intent.putExtra(LastReadDBHelper.KEY_PERCENT, 100 - (int) (position * 100f / wordList.size() + .5f) + "% left");
     }
 }

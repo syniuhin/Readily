@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:minHeight="60dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_view_title"
+        android:text="Title"
+        android:textSize="22sp"
+        android:typeface="serif"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="22dp"
+        android:singleLine="true"
+        android:paddingBottom="10dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="path"
+        android:id="@+id/text_view_path"
+        android:layout_below="@+id/text_view_title"
+        android:layout_marginTop="15dp"
+        android:layout_alignLeft="@+id/text_view_title"
+        android:layout_marginLeft="-5dp"
+        android:textSize="12sp"
+        android:typeface="serif"
+        android:textColor="@android:color/secondary_text_dark"
+        android:singleLine="true"
+        android:layout_toLeftOf="@+id/text_view_percent"
+        android:layout_marginRight="15dp"
+        android:layout_alignParentRight="false"
+        android:layout_alignParentLeft="false"
+        android:textAlignment="viewEnd" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="percent"
+        android:id="@+id/text_view_percent"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textColor="@android:color/secondary_text_light"
+        android:layout_marginRight="20dp"
+        android:layout_alignBaseline="@+id/text_view_path"
+        android:textStyle="bold"
+        android:typeface="monospace"
+        android:textSize="12sp"
+        android:textIsSelectable="false"
+        android:singleLine="true"
+        android:layout_marginTop="15dp" />
+</RelativeLayout>

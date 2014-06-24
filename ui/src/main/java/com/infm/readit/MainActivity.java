@@ -33,15 +33,8 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
     private static final int FILE_SELECT_CODE = 0;
     private SimpleCursorAdapter adapter;
 
-    private TextView tvTitle;
-    private TextView tvInfo;
     private TextView tvEmpty;
-    private Button btnContinue;
     private ListView listView;
-    private RelativeLayout lastReadLayout;
-
-    private String lastReadPath;
-    private int lastReadPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,12 +110,6 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-/*
-        data.moveToNext();
-        initLastReadParams(data);
-        updateView(data);
-        data.moveToFirst();
-*/
         adapter.swapCursor(data);
     }
 
@@ -131,27 +118,9 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         adapter.swapCursor(null);
     }
 
-    /**
-     * Is it ok to update it on onLoadFinished()?
-     *
-     * @param data: Cursor to db
-     */
-    private void initLastReadParams(Cursor data) {
-        if (data != null && data.getCount() > 0) {
-            lastReadPath = data.getString(2);
-            lastReadPosition = data.getInt(5);
-        }
-    }
-
     private void initLastReadingView() {
-        tvTitle = (TextView) findViewById(R.id.textView_last_reading_title);
-        tvInfo = (TextView) findViewById(R.id.textView_last_reading_info);
-        btnContinue = (Button) findViewById(R.id.button_continue_reading);
-
         listView = (ListView) findViewById(R.id.listView);
         tvEmpty = new TextView(this);
-
-        lastReadLayout = (RelativeLayout) findViewById(R.id.last_reading);
 
         tvEmpty.setText(R.string.list_empty_view);
         listView.setEmptyView(tvEmpty);
@@ -162,40 +131,9 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
             }
         });
 
-        adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1, null,
-                new String[]{LastReadDBHelper.KEY_HEADER, LastReadDBHelper.KEY_PATH},
-                new int[]{android.R.id.text1, android.R.id.text2}, 0);
+        adapter = new SimpleCursorAdapter(this, R.layout.list_element_main, null,
+                new String[]{LastReadDBHelper.KEY_HEADER, LastReadDBHelper.KEY_PATH, LastReadDBHelper.KEY_PERCENT},
+                new int[]{R.id.text_view_title, R.id.text_view_path, R.id.text_view_percent}, 0);
         listView.setAdapter(adapter);
-
-        btnContinue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //is it ok to pass context in such way?
-                ReceiverActivity.startReceiverActivity(MainActivity.this, new FileUtils(MainActivity.this, lastReadPath));
-                Intent intent = new Intent(MainActivity.this, ReceiverActivity.class);
-                intent.putExtra("path", lastReadPath);
-                intent.putExtra("position", lastReadPosition);
-                /**
-                 * Should do it with static Map in FileUtils class
-                 */
-                if ("txt".equals(MimeTypeMap.getFileExtensionFromUrl(lastReadPath)))
-                    intent.setType("text/plain");
-                if ("epub".equals(MimeTypeMap.getFileExtensionFromUrl(lastReadPath)))
-                    intent.setType("text/html");
-
-                startActivity(intent);
-            }
-        });
-    }
-
-    private void updateView(final Cursor cursor) {
-        if (cursor != null && cursor.getCount() > 0) {
-            lastReadLayout.setVisibility(View.VISIBLE);
-            tvTitle.setText(cursor.getString(1));
-            tvInfo.setText(cursor.getInt(4) + getResources().getString(R.string.last_reading_percent) +
-                    " " + cursor.getInt(3) + getResources().getString(R.string.last_reading_time));
-        } else {
-            lastReadLayout.setVisibility(View.INVISIBLE);
-        }
     }
 }
