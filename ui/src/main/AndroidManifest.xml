@@ -42,7 +42,7 @@
 
         <provider
             android:name=".database.LastReadContentProvider"
-            android:authorities="cmc.readit.rsvp_reader.provider"
+            android:authorities="com.infm.readit.provider"
             android:enabled="true"
             android:exported="true" />
 

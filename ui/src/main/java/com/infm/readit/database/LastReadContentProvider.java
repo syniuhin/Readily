@@ -14,7 +14,7 @@ import android.util.Log;
  * Created by infm on 6/10/14. Enjoy ;)
  */
 public class LastReadContentProvider extends ContentProvider {
-    public static final String AUTHORITY = "cmc.readit.rsvp_reader.provider";
+    public static final String AUTHORITY = "com.infm.readit.provider";
     public static final String PATH = LastReadDBHelper.TABLE;
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + PATH);
     static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd."

@@ -40,15 +40,15 @@ abstract public class Readable {
         Integer rowId = -1;
         Integer position = -1;
         if (!TextUtils.isEmpty(path)) {
-            while (cursor.moveToNext() && rowId == -1) {
-                if (path.equals(cursor.getString(2))) {
+            do {
+                if (path.equals(cursor.getString(LastReadDBHelper.N_KEY_PATH))) {
                     rowId = cursor.getInt(LastReadDBHelper.N_KEY_ROWID);
                     position = cursor.getInt(LastReadDBHelper.N_KEY_POSITION);
                 }
-            }
+            } while (cursor.moveToNext() && rowId == -1);
         }
         cursor.close();
-        Log.d(LOGTAG, "getRowData(); rowId = " + rowId);
+        Log.d(LOGTAG, "getRowData(); rowId = " + rowId + "; position = " + position);
         if (rowId == -1)
             return null;
         return new Pair<Integer, Integer>(rowId, position);
