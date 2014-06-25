@@ -1,5 +1,9 @@
 package com.infm.readit.database;
 
+import android.content.Intent;
+
+import com.infm.readit.Constants;
+
 /**
  * Created by infm on 6/24/14. Enjoy ;)
  */
@@ -14,6 +18,13 @@ public class DataBundle {
         this.path = path;
         this.position = position;
         this.percent = percent;
+    }
+
+    public static DataBundle createFromIntent(Intent intent) {
+        return new DataBundle(intent.getStringExtra(Constants.EXTRA_HEADER),
+                intent.getStringExtra(Constants.EXTRA_PATH),
+                intent.getIntExtra(Constants.EXTRA_POSITION, 0),
+                intent.getStringExtra(Constants.EXTRA_PERCENT));
     }
 
     public String getHeader() {

@@ -20,8 +20,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.infm.readit.database.LastReadDBHelper;
 import com.infm.readit.essential.TextParser;
+import com.infm.readit.readable.Readable;
 import com.infm.readit.service.LastReadService;
 import com.infm.readit.utils.OnSwipeTouchListener;
 
@@ -32,10 +32,13 @@ import java.util.List;
  */
 public class ReaderFragment extends Fragment {
     public static final String LOGTAG = "ReaderFragment";
-
+    private static final String EXTRA_PATH = "path";
+    private static final String EXTRA_ROWID = "_id";
+    private static final String EXTRA_POSITION = "position";
+    private static final String EXTRA_TYPE = "source_type";
+    private static final String EXTRA_TEXT = "text";
     private long localTime = 0;
     private boolean speedoHided = true;
-
     //initialized in onCreateView()
     private RelativeLayout fragmentLayout;
     private TextView currentTextView;
@@ -44,11 +47,10 @@ public class ReaderFragment extends Fragment {
     private TextView speedo;
     private ProgressBar pBar;
     private ImageButton prevButton;
-
     //initialized in onActivityCreated()
     private Reader reader;
     private SharedPreferences sPref;
-    private com.infm.readit.readable.Readable readable;
+    private Readable readable;
     private List<String> wordList;
     private List<Integer> emphasisList;
     private List<Integer> delayList;
@@ -119,10 +121,10 @@ public class ReaderFragment extends Fragment {
         Log.d(LOGTAG, "onActivityCreated() called");
 
         Activity activity = getActivity();
-        mkReadable(activity);
+        createReadable(activity);
         sPref = PreferenceManager.getDefaultSharedPreferences(activity);
         initPrevButton();
-        mkParser();
+        createParser();
 
         final Handler handler = new Handler();
         reader = new Reader(handler, activity, readable.getPosition());
@@ -248,23 +250,20 @@ public class ReaderFragment extends Fragment {
         showSpeedo(wpmNew);
     }
 
-    private void mkReadable(Context context) {
-        readable = com.infm.readit.readable.Readable.newInstance(context,
-                getArguments().getInt("source_type", -1),
-                getArguments().getString("text", getResources().getString(R.string.sample_text)),
-                getArguments().getString(LastReadDBHelper.KEY_PATH));
-        readable.setPosition(Math.max(getArguments().getInt(LastReadDBHelper.KEY_POSITION), 0));
+    private void createReadable(Context context) {
+        readable = Readable.newInstance(context,
+                getArguments().getInt(EXTRA_TYPE, -1),
+                getArguments().getString(EXTRA_TEXT, getResources().getString(R.string.sample_text)),
+                getArguments().getString(EXTRA_PATH));
+        readable.setPosition(Math.max(getArguments().getInt(EXTRA_POSITION), 0));
     }
 
     /**
      * just in order to wrap this in ProgressBar
      */
-    private void mkParser() {
+    private void createParser() {
         parser = new TextParser(readable, sPref);
-        initParserData();
-    }
 
-    private void initParserData() {
         wordList = parser.getReadable().getWordList();
         emphasisList = parser.getReadable().getEmphasisList();
         delayList = parser.getReadable().getDelayList();

@@ -83,7 +83,7 @@ public class LastReadContentProvider extends ContentProvider {
             throw new IllegalArgumentException("Wrong URI: " + uri);
 
         db = dbHelper.getWritableDatabase();
-        long rowId = db.insert(LastReadDBHelper.TABLE, null, values);
+        long rowId = db.insertWithOnConflict(LastReadDBHelper.TABLE, null, values, SQLiteDatabase.CONFLICT_REPLACE);
         Uri resultUri = ContentUris.withAppendedId(CONTENT_URI, rowId);
         getContext().getContentResolver().notifyChange(resultUri, null);
         return resultUri;

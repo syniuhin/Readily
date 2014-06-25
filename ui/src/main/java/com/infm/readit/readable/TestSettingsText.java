@@ -7,7 +7,7 @@ import com.infm.readit.R;
 /**
  * Created by infm on 6/13/14. Enjoy ;)
  */
-public class TestSettingsText extends com.infm.readit.readable.Readable {
+public class TestSettingsText extends Readable {
     public TestSettingsText(Context context) {
         setText(context.getResources().getString(R.string.sample_text));
         setTextType("text/plain");

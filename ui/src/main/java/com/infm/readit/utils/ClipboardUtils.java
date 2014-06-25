@@ -12,8 +12,8 @@ import com.infm.readit.R;
  */
 public class ClipboardUtils extends Utils {
 
-    public static final String LOGTAG = "ClipboardUtils";
-    protected Context context;
+    private static final String LOGTAG = "ClipboardUtils";
+    private Context context;
 
     public ClipboardUtils(Context context) {
         super();

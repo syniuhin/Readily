@@ -35,34 +35,11 @@ public class TextParser {
          * a 	b 	c 	d 	e 	f 	g 	h 	i 	j 	k 	l 	m 	n 	o 	p 	q 	r 	s 	t 	u 	v 	w 	x 	y 	z
          * 9    4   4   4   10  12  10  12  8   10  8   6   6   5   8   6   12  5   15  12  14  12  14  13  14  12
          */
-        final int[] p = {10, 4, 4, 4, 9, 12, 10, 12, 8, 10, 8, 6, 6, 5, 8, 6, 12, 5, 15, 12, 14, 12, 14, 13, 14, 12};
-        Map<String, Integer> mMap = new HashMap<String, Integer>();
-        mMap.put("a", p[0]);
-        mMap.put("b", p[1]);
-        mMap.put("c", p[2]);
-        mMap.put("d", p[3]);
-        mMap.put("e", p[4]);
-        mMap.put("f", p[5]);
-        mMap.put("g", p[6]);
-        mMap.put("h", p[7]);
-        mMap.put("i", p[8]);
-        mMap.put("j", p[9]);
-        mMap.put("k", p[10]);
-        mMap.put("l", p[11]);
-        mMap.put("m", p[12]);
-        mMap.put("n", p[13]);
-        mMap.put("o", p[14]);
-        mMap.put("p", p[15]);
-        mMap.put("q", p[16]);
-        mMap.put("r", p[17]);
-        mMap.put("s", p[18]);
-        mMap.put("t", p[19]);
-        mMap.put("u", p[20]);
-        mMap.put("v", p[21]);
-        mMap.put("w", p[22]);
-        mMap.put("x", p[23]);
-        mMap.put("y", p[24]);
-        mMap.put("z", p[25]);
+        final int[] englishPriorities = {10, 4, 4, 4, 9, 12, 10, 12, 8, 10, 8, 6, 6, 5, 8, 6, 12, 5, 15, 12, 14, 12, 14, 13, 14, 12};
+        Map<String, Integer> priorityMap = new HashMap<String, Integer>();
+        int i = 0;
+        for (char c = 'a'; c <= 'z'; ++i, ++c)
+            priorityMap.put(Character.toString(c), englishPriorities[i]);
 
         /**
          А а 	Б б 	В в 	Г г 	Д д 	Е е 	Ё ё
@@ -71,54 +48,31 @@ public class TextParser {
          Ф ф 	Х х 	Ц ц 	Ч ч 	Ш ш 	Щ щ 	Ъ ъ
          Ы ы 	Ь ь 	Э э 	Ю ю 	Я я
          */
-        mMap.put("а", 10);
-        mMap.put("б", 4);
-        mMap.put("в", 4);
-        mMap.put("г", 7);
-        mMap.put("д", 4);
-        mMap.put("е", 7);
-        mMap.put("ё", 14);
-        mMap.put("ж", 9);
-        mMap.put("з", 9);
-        mMap.put("и", 6);
-        mMap.put("й", 7);
-        mMap.put("к", 5);
-        mMap.put("л", 4);
-        mMap.put("м", 4);
-        mMap.put("н", 4);
-        mMap.put("о", 10);
-        mMap.put("п", 8);
-        mMap.put("р", 10);
-        mMap.put("с", 12);
-        mMap.put("т", 5);
-        mMap.put("у", 9);
-        mMap.put("ф", 15);
-        mMap.put("х", 14);
-        mMap.put("ц", 14);
-        mMap.put("ч", 13);
-        mMap.put("ш", 10);
-        mMap.put("щ", 10);
-        mMap.put("ъ", 0);
-        mMap.put("ы", 10);
-        mMap.put("ь", 0);
-        mMap.put("э", 10);
-        mMap.put("ю", 12);
-        mMap.put("я", 11);
+        final String russianAlpha = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
+        final int[] russianPriorities = {10, 4, 4, 7, 4, 7, 14, 9, 9, 6, 7, 5, 4, 4, 4, 10, 8, 10, 12, 5, 9, 15, 14, 14, 13, 10, 10, 0, 10, 0, 10, 12, 11};
+
+        i = 0;
+        for (char c : russianAlpha.toCharArray())
+            priorityMap.put(Character.toString(c), russianPriorities[i++]);
 
         /**
          * ґ і ї є
          */
-        mMap.put("ґ", 15);
-        mMap.put("і", 14);
-        mMap.put("ї", 18);
-        mMap.put("є", 12);
-        PRIORITIES = Collections.unmodifiableMap(mMap);
+        final String uniqueUkrainianChars = "ґіїє";
+        final int[] ukrainianPriorities = {15, 14, 18, 12};
+
+        i = 0;
+        for (char c : uniqueUkrainianChars.toCharArray())
+            priorityMap.put(Character.toString(c), ukrainianPriorities[i++]);
+
+        PRIORITIES = Collections.unmodifiableMap(priorityMap);
     }
 
     public static final String makeMeSpecial = " " + "." + "!" + "?" + "-" + "—" + ":" + ";" + "," + "\n" + '\"' + "(" + ")" + "\t";
-    private com.infm.readit.readable.Readable readable;
+    private Readable readable;
     private int lengthPreference;
     private List<Integer> delayCoefficients;
+    private Pattern pattern;
 
     /**
      * TODO: design it in more elegant way
@@ -129,6 +83,8 @@ public class TextParser {
         // for now, lol
         lengthPreference = 13;
         delayCoefficients = buildDelayListCoefficients(sPref);
+
+        pattern = compilePattern();
 
         String mText = readable.getText();
         String mTextType = readable.getTextType();
@@ -165,27 +121,30 @@ public class TextParser {
         buildEmphasis(readable);
     }
 
-    public static String findLink(String text) {
+    public static String findLink(Pattern pattern, String text) {
         if (text.isEmpty()) return "";
         else if (text.length() < 500) {
-            Pattern pattern = Pattern.compile(
-                    "\\b(((ht|f)tp(s?)\\:\\/\\/|~\\/|\\/)|www.)" +
-                            "(\\w+:\\w+@)?(([-\\w]+\\.)+(com|org|net|gov" +
-                            "|mil|biz|info|mobi|name|aero|jobs|museum" +
-                            "|travel|[a-z]{2}))(:[\\d]{1,5})?" +
-                            "(((\\/([-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|\\/)+|\\?|#)?" +
-                            "((\\?([-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
-                            "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)" +
-                            "(&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
-                            "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*" +
-                            "(#([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?\\b"
-            );
             Matcher matcher = pattern.matcher(text);
             if (matcher.find())
                 return matcher.group();
         }
 
         return "";
+    }
+
+    public static Pattern compilePattern() {
+        return Pattern.compile(
+                "\\b(((ht|f)tp(s?)\\:\\/\\/|~\\/|\\/)|www.)" +
+                        "(\\w+:\\w+@)?(([-\\w]+\\.)+(com|org|net|gov" +
+                        "|mil|biz|info|mobi|name|aero|jobs|museum" +
+                        "|travel|[a-z]{2}))(:[\\d]{1,5})?" +
+                        "(((\\/([-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|\\/)+|\\?|#)?" +
+                        "((\\?([-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
+                        "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)" +
+                        "(&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
+                        "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*" +
+                        "(#([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?\\b"
+        );
     }
 
     public int getLengthPreference() {

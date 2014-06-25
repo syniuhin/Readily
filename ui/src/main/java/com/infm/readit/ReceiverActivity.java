@@ -45,7 +45,7 @@ public class ReceiverActivity extends Activity {
             intent.setType("text/html");
 
         Bundle bundle = new Bundle();
-        bundle.putInt(EXTRA_TEXT, type);
+        bundle.putInt(EXTRA_TYPE, type);
         bundle.putString(EXTRA_TEXT, text);
         bundle.putString(EXTRA_PATH, utils.getPath());
         if (existingData != null)

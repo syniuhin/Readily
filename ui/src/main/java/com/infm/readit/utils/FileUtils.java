@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.infm.readit.R;
 import com.infm.readit.database.LastReadContentProvider;
+import com.infm.readit.readable.Readable;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -26,7 +27,7 @@ import nl.siegmann.epublib.epub.EpubReader;
  */
 public class FileUtils extends Utils {
 
-    public static final String LOGTAG = "FileUtils";
+    private static final String LOGTAG = "FileUtils";
     private Context context;
     private Uri uri;
     private String path;
@@ -134,7 +135,7 @@ public class FileUtils extends Utils {
             Toast.makeText(context, context.getResources().getString(R.string.wrong_ext), Toast.LENGTH_SHORT).show();
         else
             existingData =
-                    com.infm.readit.readable.Readable.getRowData(context.getContentResolver().query(LastReadContentProvider.CONTENT_URI,
+                    Readable.getRowData(context.getContentResolver().query(LastReadContentProvider.CONTENT_URI,
                             null, null, null, null), path); //looks weird, actually
     }
 }

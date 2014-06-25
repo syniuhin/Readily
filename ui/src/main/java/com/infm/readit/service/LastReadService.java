@@ -10,11 +10,11 @@ import android.util.Pair;
 
 import com.infm.readit.database.DataBundle;
 import com.infm.readit.database.LastReadContentProvider;
-import com.infm.readit.database.LastReadDBHelper;
+import com.infm.readit.readable.Readable;
 
 public class LastReadService extends IntentService {
 
-    public static final String LOGTAG = "LastReadService";
+    private static final String LOGTAG = "LastReadService";
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -31,17 +31,13 @@ public class LastReadService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        DataBundle dataBundle = new DataBundle(intent.getStringExtra(LastReadDBHelper.KEY_HEADER),
-                intent.getStringExtra(LastReadDBHelper.KEY_PATH),
-                intent.getIntExtra(LastReadDBHelper.KEY_POSITION, 0),
-                intent.getStringExtra(LastReadDBHelper.KEY_PERCENT));
-
+        DataBundle dataBundle = DataBundle.createFromIntent(intent);
         Log.d(LOGTAG, "DataBundle received: " + dataBundle.toString());
 
-        ContentValues contentValues = com.infm.readit.readable.Readable.getContentValues(dataBundle);
+        ContentValues contentValues = Readable.getContentValues(dataBundle);
         ContentResolver contentResolver = getContentResolver();
         Pair<Integer, Integer> existingData =
-                com.infm.readit.readable.Readable.getRowData(contentResolver.query(LastReadContentProvider.CONTENT_URI,
+                Readable.getRowData(contentResolver.query(LastReadContentProvider.CONTENT_URI,
                         null, null, null, null), dataBundle.getPath());
         if (existingData == null)
             contentResolver.insert(LastReadContentProvider.CONTENT_URI, contentValues);

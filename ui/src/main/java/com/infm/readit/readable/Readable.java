@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 
+import com.infm.readit.Constants;
 import com.infm.readit.database.DataBundle;
 import com.infm.readit.database.LastReadDBHelper;
 import com.infm.readit.essential.TextParser;
@@ -75,7 +76,7 @@ abstract public class Readable {
                 readable.setPath(intentPath);
                 break;
             default:
-                String link = TextParser.findLink(intentText);
+                String link = TextParser.findLink(TextParser.compilePattern(), intentText);
                 if (!TextUtils.isEmpty(link))
                     readable = new HtmlReadable(link);
                 else
@@ -192,17 +193,6 @@ abstract public class Readable {
         header = sb.toString();
     }
 
-    @Deprecated
-    public ContentValues getContentValues() {
-        makeHeader();
-        ContentValues vals = new ContentValues();
-        vals.put(LastReadDBHelper.KEY_HEADER, header);
-        vals.put(LastReadDBHelper.KEY_PATH, path);
-        vals.put(LastReadDBHelper.KEY_POSITION, position);
-        vals.put(LastReadDBHelper.KEY_PERCENT, 100 - (int) (position * 100f / wordList.size() + .5f) + "% left");
-        return vals;
-    }
-
     /**
      * TODO: design class that contain all this data (completed)
      *
@@ -210,9 +200,9 @@ abstract public class Readable {
      */
     public void putDataInIntent(Intent intent) {
         makeHeader();
-        intent.putExtra(LastReadDBHelper.KEY_HEADER, header);
-        intent.putExtra(LastReadDBHelper.KEY_PATH, path);
-        intent.putExtra(LastReadDBHelper.KEY_POSITION, position);
-        intent.putExtra(LastReadDBHelper.KEY_PERCENT, 100 - (int) (position * 100f / wordList.size() + .5f) + "% left");
+        intent.putExtra(Constants.EXTRA_HEADER, header);
+        intent.putExtra(Constants.EXTRA_PATH, path);
+        intent.putExtra(Constants.EXTRA_POSITION, position);
+        intent.putExtra(Constants.EXTRA_PERCENT, 100 - (int) (position * 100f / wordList.size() + .5f) + "% left");
     }
 }
