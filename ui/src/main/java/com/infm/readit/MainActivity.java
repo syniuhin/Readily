@@ -107,6 +107,8 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         adapter.swapCursor(data);
+        if (data.getCount() > 0)
+            tvEmpty.setVisibility(View.GONE);
     }
 
     @Override
@@ -116,9 +118,9 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
 
     private void initLastReadingView() {
         listView = (ListView) findViewById(R.id.listView);
-        tvEmpty = new TextView(this);
+        tvEmpty = (TextView) findViewById(R.id.text_view_empty);
+        tvEmpty.setVisibility(View.VISIBLE);
 
-        tvEmpty.setText(R.string.list_empty_view);
         listView.setEmptyView(tvEmpty);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
