@@ -10,13 +10,18 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.WindowManager;
 
-import com.infm.readit.database.LastReadDBHelper;
 import com.infm.readit.utils.FileUtils;
 import com.infm.readit.utils.Utils;
 
 public class ReceiverActivity extends Activity {
 
     public static final String LOGTAG = "ReceiverActivity";
+
+    private static final String EXTRA_PATH = "path";
+    private static final String EXTRA_ROWID = "_id";
+    private static final String EXTRA_POSITION = "position";
+    private static final String EXTRA_TYPE = "source_type";
+    private static final String EXTRA_TEXT = "text";
 
     /**
      * Starts receiver activity
@@ -39,13 +44,14 @@ public class ReceiverActivity extends Activity {
         else
             intent.setType("text/html");
 
-        intent.putExtra(Intent.EXTRA_TEXT, text);
-        intent.putExtra("source_type", type);
-        intent.putExtra(LastReadDBHelper.KEY_PATH, utils.getPath());
-        if (existingData != null) {
-            intent.putExtra(LastReadDBHelper.KEY_ROWID, existingData.first);
-            intent.putExtra(LastReadDBHelper.KEY_POSITION, existingData.second);
-        }
+        Bundle bundle = new Bundle();
+        bundle.putInt(EXTRA_TEXT, type);
+        bundle.putString(EXTRA_TEXT, text);
+        bundle.putString(EXTRA_PATH, utils.getPath());
+        if (existingData != null)
+            bundle.putInt(EXTRA_POSITION, existingData.second);
+
+        intent.putExtras(bundle);
         context.startActivity(intent);
     }
 
@@ -78,18 +84,7 @@ public class ReceiverActivity extends Activity {
      * @return Bundle instance, which will be passed to ReaderFragment as bundle of args
      */
     private Bundle bundleReceivedData() {
-        Intent intent = getIntent();
-        Integer type = intent.getIntExtra("source_type", -1);
-        String text = intent.getStringExtra(Intent.EXTRA_TEXT);
-        String path = intent.getStringExtra(LastReadDBHelper.KEY_PATH);
-        Integer pos = intent.getIntExtra(LastReadDBHelper.KEY_POSITION, -1);
-
-        Bundle bundle = new Bundle();
-        bundle.putInt("source_type", type);
-        bundle.putString("text", text);
-        bundle.putString(LastReadDBHelper.KEY_PATH, path);
-        bundle.putInt(LastReadDBHelper.KEY_POSITION, pos);
-
+        Bundle bundle = getIntent().getExtras();
         Log.d(LOGTAG, "bundle: " + bundle.toString());
         return bundle;
     }

@@ -1,4 +1,4 @@
-package com.infm.readit.database;
+package com.infm.readit.service;
 
 import android.app.IntentService;
 import android.content.ContentResolver;
@@ -7,6 +7,10 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.util.Log;
 import android.util.Pair;
+
+import com.infm.readit.database.DataBundle;
+import com.infm.readit.database.LastReadContentProvider;
+import com.infm.readit.database.LastReadDBHelper;
 
 public class LastReadService extends IntentService {
 
@@ -32,7 +36,7 @@ public class LastReadService extends IntentService {
                 intent.getIntExtra(LastReadDBHelper.KEY_POSITION, 0),
                 intent.getStringExtra(LastReadDBHelper.KEY_PERCENT));
 
-        Log.d(LOGTAG, "DataBundle received: " + dataBundle.mkString());
+        Log.d(LOGTAG, "DataBundle received: " + dataBundle.toString());
 
         ContentValues contentValues = com.infm.readit.readable.Readable.getContentValues(dataBundle);
         ContentResolver contentResolver = getContentResolver();

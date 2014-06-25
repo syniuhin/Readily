@@ -21,8 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.infm.readit.database.LastReadDBHelper;
-import com.infm.readit.database.LastReadService;
 import com.infm.readit.essential.TextParser;
+import com.infm.readit.service.LastReadService;
 import com.infm.readit.utils.OnSwipeTouchListener;
 
 import java.util.List;
@@ -82,7 +82,7 @@ public class ReaderFragment extends Fragment {
                         reader.setPosition(pos - 1);
                     }
                 } else if (!reader.isCancelled())
-                    Toast.makeText(getActivity(), getResources().getString(R.string.pause), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), R.string.pause, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -94,7 +94,7 @@ public class ReaderFragment extends Fragment {
                         reader.setPosition(pos + 1);
                     }
                 } else if (!reader.isCancelled())
-                    Toast.makeText(getActivity(), getResources().getString(R.string.pause), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), R.string.pause, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -103,9 +103,9 @@ public class ReaderFragment extends Fragment {
                     getActivity().getFragmentManager().popBackStack();
                 } else {
                     reader.incCancelled();
-                    String toShow = (reader.isCancelled())
-                            ? getResources().getString(R.string.pause)
-                            : getResources().getString(R.string.play);
+                    Integer toShow = (reader.isCancelled())
+                            ? R.string.pause
+                            : R.string.play;
                     Toast.makeText(getActivity(), toShow, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -138,7 +138,7 @@ public class ReaderFragment extends Fragment {
         return parser;
     }
 
-    public Spanned getLeftFormattedText(int pos) {
+    private Spanned getLeftFormattedText(int pos) {
         String word = wordList.get(pos);
         int emphasisPosition = emphasisList.get(pos);
         String wordLeft = word.substring(0, emphasisPosition);
@@ -146,7 +146,7 @@ public class ReaderFragment extends Fragment {
         return Html.fromHtml(format);
     }
 
-    public Spanned getCurrentFormattedText(int pos) {
+    private Spanned getCurrentFormattedText(int pos) {
         String word = wordList.get(pos);
         int emphasisPosition = emphasisList.get(pos);
         String wordEmphasis = word.substring(emphasisPosition, emphasisPosition + 1);
@@ -154,7 +154,7 @@ public class ReaderFragment extends Fragment {
         return Html.fromHtml(format);
     }
 
-    public Spanned getRightFormattedText(int pos) {
+    private Spanned getRightFormattedText(int pos) {
         String word = wordList.get(pos);
         int emphasisPosition = emphasisList.get(pos);
         String wordRight = word.substring(emphasisPosition + 1, word.length());

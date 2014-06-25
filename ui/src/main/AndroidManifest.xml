@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.infm.readit" >
+    package="com.infm.readit">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -10,10 +10,10 @@
         android:icon="@drawable/ic_launcher"
         android:installLocation="preferExternal"
         android:label="@string/title_activity_main"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:label="@string/title_activity_main" >
+            android:label="@string/title_activity_main">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,7 +27,7 @@
             android:exported="true"
             android:label="@string/title_activity_receiver"
             android:launchMode="singleInstance"
-            android:theme="@style/Theme.Transparent" >
+            android:theme="@style/Theme.Transparent">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
 
@@ -51,9 +51,8 @@
             android:value="0db4f67b016e755d7cc9ec045205dcab746e7c46" />
 
         <service
-            android:name=".database.LastReadService"
-            android:exported="false" >
-        </service>
+            android:name=".service.LastReadService"
+            android:exported="false"></service>
     </application>
 
 </manifest>
