@@ -16,6 +16,8 @@
     <string name="clipboard_empty">Буфер обмена пуст</string>
     <string name="choose_chapter">Выберите главу</string>
     <string name="continue_reading">Продолжить</string>
+    <string name="file_manager_required">Пожалуйста, установите файловый менеджер</string>
+    <string name="wrong_ext">Неправильное расширение</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитать текст из буфера обмена</string>
@@ -41,8 +43,8 @@
     <string name="preferences_share_feedback">Контакты</string>
     <string name="preferences_send_feedback">Обратная связь</string>
     <string name="preferences_send_feedback_summary">Расскажите мне ваши идеи :)</string>
-    <string name="file_manager_required">Пожалуйста, установите файловый менеджер</string>
-    <string name="wrong_ext">Неправильное расширение</string>
+    <string name="preference_cache">Сохранять чтения</string>
+    <string name="preference_cache_summary">Кэширует незаконченные чтения</string>
 
     <string name="sample_text">
         Он бродил без цели. Солнце заходило. Какая-то особенная тоска начала сказываться ему в последнее время. В ней не было чего-нибудь особенно едкого, жгучего; но от неё веяло чем-то постоянным, вечным, предчувствовались безысходные годы этой холодной мертвящей тоски, предчувствовалась какая-то вечность на "аршине пространства". В вечерний час это ощущение обыкновенно ещё сильней начинало его мучить.

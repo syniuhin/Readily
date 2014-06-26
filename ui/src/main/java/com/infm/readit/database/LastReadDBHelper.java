@@ -26,12 +26,12 @@ public class LastReadDBHelper extends SQLiteOpenHelper {
                     KEY_TIME_MODIFIED + " INTEGER, " +
                     KEY_PERCENT + " INTEGER, " +
                     KEY_POSITION + " INTEGER" + ");";
-    public static final Integer N_KEY_ROWID = 0;
-    public static final Integer N_KEY_HEADER = 1;
-    public static final Integer N_KEY_PATH = 2;
-    public static final Integer N_KEY_POSITION = 5;
-    public static final Integer N_KEY_PERCENT = 4;
-    public static final Integer N_KEY_TIME_MODIFIED = 3;
+    public static final Integer COLUMN_ROWID = 0;
+    public static final Integer COLUMN_HEADER = 1;
+    public static final Integer COLUMN_PATH = 2;
+    public static final Integer COLUMN_POSITION = 5;
+    public static final Integer COLUMN_PERCENT = 4;
+    public static final Integer COLUMN_TIME_MODIFIED = 3;
 
     public LastReadDBHelper(Context context) {
         super(context, NAME, null, VERSION);

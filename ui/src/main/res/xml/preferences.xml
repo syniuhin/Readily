@@ -7,79 +7,79 @@
     <Preference
         android:title="@string/preferences_test">
         <intent
-            android:targetPackage="cmc.readit.rsvp_reader.ui"
-            android:targetClass="cmc.readit.rsvp_reader.ui.ReceiverActivity" />
+            android:targetClass="com.infm.readit.ReceiverActivity"
+            android:targetPackage="com.infm.readit" />
     </Preference>
     <PreferenceCategory
         android:title="@string/preferences_basic_settings">
         <EditTextPreference
-            android:key="pref_wpm"
-            android:title="@string/preferences_set_wpm"
             android:defaultValue="250"
+            android:hint="i.e. 250"
             android:inputType="number"
-            android:hint="i.e. 250" />
+            android:key="pref_wpm"
+            android:title="@string/preferences_set_wpm" />
         <CheckBoxPreference
+            android:defaultValue="true"
             android:key="pref_punct"
-            android:title="@string/preferences_different_speed_punctuation"
             android:summary="@string/preferences_different_speed_punctuation_summary"
-            android:defaultValue="true" />
+            android:title="@string/preferences_different_speed_punctuation" />
         <PreferenceScreen
+            android:dependency="pref_punct"
             android:key="pref_punct_screen"
-            android:title="@string/preferences_punctuation_settings"
-            android:dependency="pref_punct">
+            android:title="@string/preferences_punctuation_settings">
             <EditTextPreference
-                android:key="pref_comaOrLong"
-                android:title="@string/preferences_comaOrLong_coeff"
                 android:defaultValue="15"
-                android:inputType="number"/>
+                android:inputType="number"
+                android:key="pref_comaOrLong"
+                android:title="@string/preferences_comaOrLong_coeff" />
             <EditTextPreference
+                android:defaultValue="20"
+                android:inputType="number"
                 android:key="pref_endOfSentence"
-                android:title="@string/preferences_endOfSentence_coeff"
-                android:defaultValue="20"
-                android:inputType="number" />
+                android:title="@string/preferences_endOfSentence_coeff" />
             <EditTextPreference
-                android:key="pref_dashOrColon"
-                android:title="@string/preferences_endOfSentence_coeff"
                 android:defaultValue="18"
-                android:inputType="number" />
+                android:inputType="number"
+                android:key="pref_dashOrColon"
+                android:title="@string/preferences_endOfSentence_coeff" />
             <EditTextPreference
-                android:key="pref_begOfPar"
-                android:title="@string/preferences_begOfPar_coeff"
                 android:defaultValue="20"
-                android:inputType="number" />
+                android:inputType="number"
+                android:key="pref_begOfPar"
+                android:title="@string/preferences_begOfPar_coeff" />
         </PreferenceScreen>
         <CheckBoxPreference
-            android:key="pref_save_clipboard"
-            android:title="Cache readings from clipboard"
-            android:summary="Reading will appear in list of saved files"
-            android:defaultValue="false"/>
+            android:defaultValue="true"
+            android:key="pref_cache"
+            android:summary="@string/preference_cache_summary"
+            android:title="@string/preference_cache" />
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/preferences_advanced">
         <ListPreference
-            android:key="pref_typeface"
-            android:title="@string/preferences_typeface_title"
+            android:defaultValue="0"
             android:dialogTitle="@string/preferences_typeface_title"
             android:entries="@array/typeface"
             android:entryValues="@array/typeface_values"
-            android:defaultValue="0" />
+            android:key="pref_typeface"
+            android:title="@string/preferences_typeface_title" />
         <CheckBoxPreference
+            android:defaultValue="true"
             android:key="pref_showContext"
-            android:title="@string/preferences_showContext"
             android:summary="@string/preferences_showContext_summary"
-            android:defaultValue="true"/>
+            android:title="@string/preferences_showContext" />
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="pref_swipe"
-            android:title="@string/preferences_swipe"
             android:summary="@string/preferences_swipe_summary"
-            android:defaultValue="false" />
+            android:title="@string/preferences_swipe" />
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/preferences_share_feedback">
         <Preference
             android:key="pref_feedback"
-            android:title="@string/preferences_send_feedback"
-            android:summary="@string/preferences_send_feedback_summary">
+            android:summary="@string/preferences_send_feedback_summary"
+            android:title="@string/preferences_send_feedback">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="@string/mail_to_me"/>

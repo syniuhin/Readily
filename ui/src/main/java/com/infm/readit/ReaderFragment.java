@@ -24,6 +24,7 @@ import com.infm.readit.essential.TextParser;
 import com.infm.readit.readable.Readable;
 import com.infm.readit.service.LastReadService;
 import com.infm.readit.utils.OnSwipeTouchListener;
+import com.infm.readit.utils.SettingsBundle;
 
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class ReaderFragment extends Fragment {
 
     private long localTime = 0;
     private boolean speedoHided = true;
+
     //initialized in onCreateView()
     private RelativeLayout fragmentLayout;
     private TextView currentTextView;
@@ -51,6 +53,7 @@ public class ReaderFragment extends Fragment {
     private List<Integer> emphasisList;
     private List<Integer> delayList;
     private TextParser parser;
+    private SettingsBundle settingsBundle;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -73,7 +76,7 @@ public class ReaderFragment extends Fragment {
 
             @Override
             public void onSwipeRight() {
-                if (reader.isCancelled() && sPref.getBoolean(SettingsActivity.PREF_SWIPE, false)) {
+                if (reader.isCancelled() && sPref.getBoolean(Constants.PREF_SWIPE, false)) {
                     int pos = reader.getPosition();
                     if (pos > 0) {
                         updateView(pos - 1);
@@ -85,7 +88,7 @@ public class ReaderFragment extends Fragment {
 
             @Override
             public void onSwipeLeft() {
-                if (reader.isCancelled() && sPref.getBoolean(SettingsActivity.PREF_SWIPE, false)) {
+                if (reader.isCancelled() && sPref.getBoolean(Constants.PREF_SWIPE, false)) {
                     int pos = reader.getPosition();
                     if (pos < getParser().getReadable().getWordList().size() - 1) {
                         updateView(pos + 1);
@@ -98,7 +101,7 @@ public class ReaderFragment extends Fragment {
             @Override
             public void onClick() {
                 if (reader.isCompleted()) {
-                    getActivity().getFragmentManager().popBackStack();
+                    getActivity().getFragmentManager().beginTransaction().remove(ReaderFragment.this).commit();
                 } else {
                     reader.incCancelled();
                     Integer toShow = (reader.isCancelled())
@@ -117,14 +120,16 @@ public class ReaderFragment extends Fragment {
         Log.d(LOGTAG, "onActivityCreated() called");
 
         Activity activity = getActivity();
-        createReadable(activity);
+
         sPref = PreferenceManager.getDefaultSharedPreferences(activity);
+        settingsBundle = new SettingsBundle(sPref);
+        createReadable(activity);
         initPrevButton();
         createParser();
 
         final Handler handler = new Handler();
-        reader = new Reader(handler, activity, readable.getPosition());
-        handler.postDelayed(reader, 2000);
+        reader = new Reader(handler, readable.getPosition());
+        handler.postDelayed(reader, 2000); //magic number indeed, I don't know what it does
     }
 
     public void setTime(long localTime) {
@@ -157,7 +162,7 @@ public class ReaderFragment extends Fragment {
         int emphasisPosition = emphasisList.get(pos);
         String wordRight = word.substring(emphasisPosition + 1, word.length());
         String format = "<font><font color='#0A0A0A'>" + wordRight + "</font>";
-        if (sPref.getBoolean(SettingsActivity.PREF_SHOW_CONTEXT, true))
+        if (settingsBundle.isShowingContextEnabled())
             format += getNextFormat(pos);
         format += "</font>";
         return Html.fromHtml(format);
@@ -186,7 +191,7 @@ public class ReaderFragment extends Fragment {
     }
 
     private void initPrevButton() {
-        if (!sPref.getBoolean(SettingsActivity.PREF_SWIPE, false)) {
+        if (!settingsBundle.isSwipesEnabled()) {
             prevButton.setImageResource(R.drawable.abc_ic_ab_back_holo_light);
             prevButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -211,13 +216,13 @@ public class ReaderFragment extends Fragment {
         pBar.setProgress((int) (100f / wordList.size() * (pos + 1) + .5f));
 
         if (!speedoHided) {
-            if (System.currentTimeMillis() - localTime > 1500) {
+            if (System.currentTimeMillis() - localTime > Constants.SPEEDO_SHOWING_LENGTH) {
                 speedo.setVisibility(View.INVISIBLE);
                 speedoHided = true;
             }
         }
 
-        if (sPref.getBoolean(SettingsActivity.PREF_SWIPE, false) && reader.isCancelled())
+        if (settingsBundle.isSwipesEnabled() && reader.isCancelled())
             prevButton.setVisibility(View.VISIBLE);
         else if (!reader.isCancelled())
             prevButton.setVisibility(View.INVISIBLE); //consider GONE
@@ -235,15 +240,16 @@ public class ReaderFragment extends Fragment {
      * @param delta: delta itself. Default value: 50
      */
     private void changeWPM(int delta) {
-        int wpm = Integer.parseInt(sPref.getString(SettingsActivity.PREF_WPM, "250"));
+        int wpm = settingsBundle.getWPM();
         int wpmNew = Math.min(1200, Math.max(wpm + delta, 50));
 
-        SharedPreferences.Editor q = sPref.edit();
-        q.putString(SettingsActivity.PREF_WPM, Integer.toString(wpmNew));
-        q.commit();
-
-        Log.d(LOGTAG, "WPM changed from " + wpm + " to " + wpmNew);
-        showSpeedo(wpmNew);
+        if (wpm != wpmNew) {
+            settingsBundle.setWPM(wpmNew);
+            Log.d(LOGTAG, "WPM changed from " + wpm + " to " + wpmNew);
+            showSpeedo(wpmNew);
+        } else {
+            Log.d(LOGTAG, "WPM remained the same: " + wpm);
+        }
     }
 
     private void createReadable(Context context) {
@@ -284,7 +290,7 @@ public class ReaderFragment extends Fragment {
     }
 */
 
-    private Intent makeLastReadServiceIntent() {
+    private Intent createLastReadServiceIntent() {
         Intent intent = new Intent(getActivity(), LastReadService.class);
         readable.setPosition(reader.getPosition());
         readable.putDataInIntent(intent);
@@ -298,9 +304,11 @@ public class ReaderFragment extends Fragment {
         Log.d(LOGTAG, "onPause() called");
         super.onPause();
     }
+
     @Override
     public void onStop() {
-        getActivity().startService(makeLastReadServiceIntent());
+        getActivity().startService(createLastReadServiceIntent());
+        settingsBundle.updatePreferences();
         Log.d(LOGTAG, "OnStop() called");
         super.onStop();
     }
@@ -308,30 +316,15 @@ public class ReaderFragment extends Fragment {
     /**
      * don't sure that it must be inner class
      */
-    private class Reader implements Runnable, SharedPreferences.OnSharedPreferenceChangeListener {
+    private class Reader implements Runnable {
         private Handler handler;
-        private Context context;
         private int cancelled;
         private int pos = 0;
-        private double secondsPerWord;
         private boolean completed = false;
 
-        public Reader(Handler handler, Context context, int pos) {
+        public Reader(Handler handler, int pos) {
             this.handler = handler;
-            this.context = context;
             this.pos = pos;
-
-            SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(this.context);
-            PreferenceManager.getDefaultSharedPreferences(this.context).registerOnSharedPreferenceChangeListener(this);
-
-            final int wordsPerMinute = Integer.parseInt(sPref.getString(Constants.PREF_WPM, Constants.DEFAULT_WPM));
-            secondsPerWord = 60 * 1f / wordsPerMinute;
-        }
-
-        @Override
-        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if (Constants.PREF_WPM.equals(key))
-                secondsPerWord = 60f / Integer.parseInt(sharedPreferences.getString(key, Constants.DEFAULT_WPM));
         }
 
         @Override
@@ -342,7 +335,8 @@ public class ReaderFragment extends Fragment {
                 completed = false;
                 if (!isCancelled()) {
                     updateView(i % wlen);
-                    handler.postDelayed(this, delayList.get(pos++ % wlen) * Math.round(100 * secondsPerWord));
+                    handler.postDelayed(this,
+                            delayList.get(pos++ % wlen) * Math.round(100 * 60 * 1f / settingsBundle.getWPM()));
                 } else {
                     handler.postDelayed(this, Constants.READER_SLEEP_IDLE);
                 }

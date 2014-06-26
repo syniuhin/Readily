@@ -78,7 +78,7 @@ public class ReceiverActivity extends Activity {
      */
     private Bundle bundleReceivedData() {
         Bundle bundle = getIntent().getExtras();
-        Log.d(LOGTAG, "bundle: " + bundle.toString());
+        Log.d(LOGTAG, "bundle: " + ((bundle == null) ? "null" : bundle.toString()));
         return bundle;
     }
 

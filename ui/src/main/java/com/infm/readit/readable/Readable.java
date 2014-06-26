@@ -41,9 +41,9 @@ abstract public class Readable {
         Integer position = -1;
         if (!TextUtils.isEmpty(path)) {
             while (cursor.moveToNext() && rowId == -1) {
-                if (path.equals(cursor.getString(LastReadDBHelper.N_KEY_PATH))) {
-                    rowId = cursor.getInt(LastReadDBHelper.N_KEY_ROWID);
-                    position = cursor.getInt(LastReadDBHelper.N_KEY_POSITION);
+                if (path.equals(cursor.getString(LastReadDBHelper.COLUMN_PATH))) {
+                    rowId = cursor.getInt(LastReadDBHelper.COLUMN_ROWID);
+                    position = cursor.getInt(LastReadDBHelper.COLUMN_POSITION);
                 }
             }
         }
@@ -76,8 +76,9 @@ abstract public class Readable {
                 readable.setPath(intentPath);
                 break;
             default:
-                String link = TextParser.findLink(TextParser.compilePattern(), intentText);
-                if (!TextUtils.isEmpty(link))
+                String link;
+                if (intentText.length() < Constants.NON_LINK_LENGTH &&
+                        !TextUtils.isEmpty(link = TextParser.findLink(TextParser.compilePattern(), intentText)))
                     readable = new HtmlReadable(link);
                 else
                     readable = new CopiedFromClipboard(context); // actually I don't know what to do here

@@ -6,9 +6,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 
-import com.infm.readit.Constants;
-import com.infm.readit.SettingsActivity;
 import com.infm.readit.readable.Readable;
+import com.infm.readit.utils.SettingsBundle;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -79,10 +78,8 @@ public class TextParser {
      */
     public TextParser(Readable mReadable, SharedPreferences sPref) {
         readable = mReadable;
-
-        // for now, lol
-        lengthPreference = 13;
-        delayCoefficients = buildDelayListCoefficients(sPref);
+        lengthPreference = 13; //TODO:implement it optional
+        delayCoefficients = (new SettingsBundle(sPref)).getDelayCoefficients();
 
         String mText = readable.getText();
         String mTextType = readable.getTextType();
@@ -120,8 +117,7 @@ public class TextParser {
     }
 
     public static String findLink(Pattern pattern, String text) {
-        if (text.isEmpty()) return "";
-        else if (text.length() < Constants.NON_LINK_LENGTH) { //TODO: move that check in Readable creator
+        if (!text.isEmpty()) {
             Matcher matcher = pattern.matcher(text);
             if (matcher.find())
                 return matcher.group();
@@ -352,24 +348,6 @@ public class TextParser {
         readable.setEmphasisList(res);
     }
 
-    /**
-     * delayList: {default; coma/long word; end of sentence; '-' or ':' or ';'; beginning of a paragraph}
-     * default value is 10
-     */
-    private ArrayList<Integer> buildDelayListCoefficients(SharedPreferences sPref) {
-        ArrayList<Integer> delayCoeffs = new ArrayList<Integer>();
-        delayCoeffs.add(10);
-        if (!sPref.getBoolean(SettingsActivity.PREF_PUNCTUATION_DIFFERS, false))
-            for (int i = 0; i < 4; ++i) delayCoeffs.add(10);
-        else {
-            delayCoeffs.add(Integer.parseInt(sPref.getString(SettingsActivity.PREF_COMA_OR_LONG, "15")));
-            delayCoeffs.add(Integer.parseInt(sPref.getString(SettingsActivity.PREF_END_OF_SENTENCE, "20")));
-            delayCoeffs.add(Integer.parseInt(sPref.getString(SettingsActivity.PREF_DASH_OR_COLON, "18")));
-            delayCoeffs.add(Integer.parseInt(sPref.getString(SettingsActivity.PREF_BEGINNING_OF_PARAGRAPH, "20")));
-        }
-        return delayCoeffs;
-    }
-
     private class InnerHtmlParser extends AsyncTask<String, Void, Document> {
         @Override
         protected Document doInBackground(String... params) {
@@ -391,7 +369,7 @@ public class TextParser {
             JResult res = null;
             try {
                 res = fetcher.fetchAndExtract(url, 10000, true);
-                return res.getTitle() + " || " + res.getText();
+                return res.getTitle() + " . " + res.getText();
             } catch (Exception e) {
                 e.printStackTrace();
             }
