@@ -17,12 +17,6 @@ public class ReceiverActivity extends Activity {
 
     public static final String LOGTAG = "ReceiverActivity";
 
-    private static final String EXTRA_PATH = "path";
-    private static final String EXTRA_ROWID = "_id";
-    private static final String EXTRA_POSITION = "position";
-    private static final String EXTRA_TYPE = "source_type";
-    private static final String EXTRA_TEXT = "text";
-
     /**
      * Starts receiver activity
      *
@@ -35,7 +29,6 @@ public class ReceiverActivity extends Activity {
 
         Intent intent = new Intent(context, ReceiverActivity.class);
 
-        String text = utils.getSb().toString();
         Pair<Integer, Integer> existingData = utils.getExistingData();
         int type = utils.getType();
 
@@ -45,11 +38,11 @@ public class ReceiverActivity extends Activity {
             intent.setType("text/html");
 
         Bundle bundle = new Bundle();
-        bundle.putInt(EXTRA_TYPE, type);
-        bundle.putString(EXTRA_TEXT, text);
-        bundle.putString(EXTRA_PATH, utils.getPath());
+        bundle.putInt(Constants.EXTRA_TYPE, type);
+        bundle.putString(Intent.EXTRA_TEXT, utils.getSb().toString());
+        bundle.putString(Constants.EXTRA_PATH, utils.getPath());
         if (existingData != null)
-            bundle.putInt(EXTRA_POSITION, existingData.second);
+            bundle.putInt(Constants.EXTRA_POSITION, existingData.second);
 
         intent.putExtras(bundle);
         context.startActivity(intent);

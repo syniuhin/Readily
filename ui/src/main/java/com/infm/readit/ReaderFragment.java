@@ -31,12 +31,8 @@ import java.util.List;
  * infm : 16/05/14. Enjoy it ;)
  */
 public class ReaderFragment extends Fragment {
-    public static final String LOGTAG = "ReaderFragment";
-    private static final String EXTRA_PATH = "path";
-    private static final String EXTRA_ROWID = "_id";
-    private static final String EXTRA_POSITION = "position";
-    private static final String EXTRA_TYPE = "source_type";
-    private static final String EXTRA_TEXT = "text";
+    private static final String LOGTAG = "ReaderFragment";
+
     private long localTime = 0;
     private boolean speedoHided = true;
     //initialized in onCreateView()
@@ -252,10 +248,10 @@ public class ReaderFragment extends Fragment {
 
     private void createReadable(Context context) {
         readable = Readable.newInstance(context,
-                getArguments().getInt(EXTRA_TYPE, -1),
-                getArguments().getString(EXTRA_TEXT, getResources().getString(R.string.sample_text)),
-                getArguments().getString(EXTRA_PATH));
-        readable.setPosition(Math.max(getArguments().getInt(EXTRA_POSITION), 0));
+                getArguments().getInt(Constants.EXTRA_TYPE, -1),
+                getArguments().getString(Intent.EXTRA_TEXT, getResources().getString(R.string.sample_text)),
+                getArguments().getString(Constants.EXTRA_PATH));
+        readable.setPosition(Math.max(getArguments().getInt(Constants.EXTRA_POSITION), 0));
     }
 
     /**
@@ -317,7 +313,7 @@ public class ReaderFragment extends Fragment {
         private Context context;
         private int cancelled;
         private int pos = 0;
-        private double SPM;
+        private double secondsPerWord;
         private boolean completed = false;
 
         public Reader(Handler handler, Context context, int pos) {
@@ -328,14 +324,14 @@ public class ReaderFragment extends Fragment {
             SharedPreferences sPref = PreferenceManager.getDefaultSharedPreferences(this.context);
             PreferenceManager.getDefaultSharedPreferences(this.context).registerOnSharedPreferenceChangeListener(this);
 
-            final int WPM = Integer.parseInt(sPref.getString(SettingsActivity.PREF_WPM, "250"));
-            SPM = 60 * 1f / WPM;
+            final int wordsPerMinute = Integer.parseInt(sPref.getString(Constants.PREF_WPM, Constants.DEFAULT_WPM));
+            secondsPerWord = 60 * 1f / wordsPerMinute;
         }
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-            if (SettingsActivity.PREF_WPM.equals(key))
-                SPM = 60f / Integer.parseInt(sharedPreferences.getString(key, "250"));
+            if (Constants.PREF_WPM.equals(key))
+                secondsPerWord = 60f / Integer.parseInt(sharedPreferences.getString(key, Constants.DEFAULT_WPM));
         }
 
         @Override
@@ -346,9 +342,9 @@ public class ReaderFragment extends Fragment {
                 completed = false;
                 if (!isCancelled()) {
                     updateView(i % wlen);
-                    handler.postDelayed(this, delayList.get(pos++ % wlen) * Math.round(100 * SPM));
+                    handler.postDelayed(this, delayList.get(pos++ % wlen) * Math.round(100 * secondsPerWord));
                 } else {
-                    handler.postDelayed(this, 500);
+                    handler.postDelayed(this, Constants.READER_SLEEP_IDLE);
                 }
             } else {
                 completed = true;

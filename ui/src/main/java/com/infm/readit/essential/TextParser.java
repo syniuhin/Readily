@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 
+import com.infm.readit.Constants;
 import com.infm.readit.SettingsActivity;
 import com.infm.readit.readable.Readable;
 
@@ -72,7 +73,6 @@ public class TextParser {
     private Readable readable;
     private int lengthPreference;
     private List<Integer> delayCoefficients;
-    private Pattern pattern;
 
     /**
      * TODO: design it in more elegant way
@@ -83,8 +83,6 @@ public class TextParser {
         // for now, lol
         lengthPreference = 13;
         delayCoefficients = buildDelayListCoefficients(sPref);
-
-        pattern = compilePattern();
 
         String mText = readable.getText();
         String mTextType = readable.getTextType();
@@ -123,12 +121,11 @@ public class TextParser {
 
     public static String findLink(Pattern pattern, String text) {
         if (text.isEmpty()) return "";
-        else if (text.length() < 500) {
+        else if (text.length() < Constants.NON_LINK_LENGTH) { //TODO: move that check in Readable creator
             Matcher matcher = pattern.matcher(text);
             if (matcher.find())
                 return matcher.group();
         }
-
         return "";
     }
 
