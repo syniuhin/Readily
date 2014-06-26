@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -256,7 +257,8 @@ public class ReaderFragment extends Fragment {
         readable = Readable.newInstance(context,
                 getArguments().getInt(Constants.EXTRA_TYPE, -1),
                 getArguments().getString(Intent.EXTRA_TEXT, getResources().getString(R.string.sample_text)),
-                getArguments().getString(Constants.EXTRA_PATH));
+                getArguments().getString(Constants.EXTRA_PATH, ""));
+                        //((Integer) getArguments().getInt(Constants.EXTRA_ROWID, 0)).toString() + ".txt"));
         readable.setPosition(Math.max(getArguments().getInt(Constants.EXTRA_POSITION), 0));
     }
 
@@ -307,7 +309,8 @@ public class ReaderFragment extends Fragment {
 
     @Override
     public void onStop() {
-        getActivity().startService(createLastReadServiceIntent());
+        if (!TextUtils.isEmpty(readable.getPath()))
+            getActivity().startService(createLastReadServiceIntent());
         settingsBundle.updatePreferences();
         Log.d(LOGTAG, "OnStop() called");
         super.onStop();

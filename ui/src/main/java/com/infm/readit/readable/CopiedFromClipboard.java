@@ -9,16 +9,9 @@ import com.infm.readit.Constants;
  * Created by infm on 6/12/14. Enjoy ;)
  */
 public class CopiedFromClipboard extends Readable {
-    Context context;
-    Boolean gonnaSaved;
 
-    public CopiedFromClipboard(Context context) {
-        this.context = context;
+    public CopiedFromClipboard() {
         setTextType("text/plain");
-        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_CACHE, false)) {
-            gonnaSaved = true;
-            //need to define the path to save
-        }
     }
 
     @Override

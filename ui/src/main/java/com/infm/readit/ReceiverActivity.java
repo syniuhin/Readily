@@ -23,7 +23,7 @@ public class ReceiverActivity extends Activity {
      * @param utils = all needed is put in Utils abstract class
      */
     public static void startReceiverActivity(Context context, Utils utils) {
-        utils.process();
+        utils.process(); //need to do this in other thread, actually :(
         if (utils.isProcessFailed())
             return;
 
@@ -41,8 +41,10 @@ public class ReceiverActivity extends Activity {
         bundle.putInt(Constants.EXTRA_TYPE, type);
         bundle.putString(Intent.EXTRA_TEXT, utils.getSb().toString());
         bundle.putString(Constants.EXTRA_PATH, utils.getPath());
-        if (existingData != null)
+        if (existingData != null) {
+            bundle.putInt(Constants.EXTRA_ROWID, existingData.first);
             bundle.putInt(Constants.EXTRA_POSITION, existingData.second);
+        }
 
         intent.putExtras(bundle);
         context.startActivity(intent);

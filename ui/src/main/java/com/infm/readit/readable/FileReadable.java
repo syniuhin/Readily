@@ -4,7 +4,7 @@ package com.infm.readit.readable;
  * Created by infm on 6/13/14. Enjoy ;)
  */
 public class FileReadable extends Readable {
-    String extension;
+    private String extension;
 
     public String getExtension() {
         return extension;

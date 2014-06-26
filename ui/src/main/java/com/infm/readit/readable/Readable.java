@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -58,41 +59,44 @@ abstract public class Readable {
         Readable readable;
         if (TextUtils.isEmpty(intentText))
             readable = new TestSettingsText(context);
-        else switch (intentType) {
-            case Utils.TYPE_CLIPBOARD:
-                readable = new CopiedFromClipboard(context);
-                readable.setText(intentText);
-                break;
-            case Utils.TYPE_TXT:
-                readable = new FileReadable();
-                readable.setText(intentText);
-                readable.setTextType("text/plain");
-                readable.setPath(intentPath);
-                break;
-            case Utils.TYPE_EPUB:
-                readable = new FileReadable();
-                readable.setText(intentText);
-                readable.setTextType("text/html");
-                readable.setPath(intentPath);
-                break;
-            default:
-                String link;
-                if (intentText.length() < Constants.NON_LINK_LENGTH &&
-                        !TextUtils.isEmpty(link = TextParser.findLink(TextParser.compilePattern(), intentText)))
-                    readable = new HtmlReadable(link);
-                else
-                    readable = new CopiedFromClipboard(context); // actually I don't know what to do here
+        else {
+            if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_CACHE, true))
+                intentPath = null;
+            switch (intentType) {
+                case Utils.TYPE_CLIPBOARD:
+                    readable = new CopiedFromClipboard();
+                    readable.setText(intentText);
+                    break;
+                case Utils.TYPE_TXT:
+                    readable = new FileReadable();
+                    readable.setText(intentText);
+                    readable.setTextType("text/plain");
+                    break;
+                case Utils.TYPE_EPUB:
+                    readable = new FileReadable();
+                    readable.setText(intentText);
+                    readable.setTextType("text/html");
+                    break;
+                default:
+                    String link;
+                    if (intentText.length() < Constants.NON_LINK_LENGTH &&
+                            !TextUtils.isEmpty(link = TextParser.findLink(TextParser.compilePattern(), intentText)))
+                        readable = new HtmlReadable(link);
+                    else
+                        throw new IllegalArgumentException("wtf, desired Readable doesn't fit any subclass"); // actually I don't know what to do here
+            }
+            readable.setPath(intentPath);
         }
         return readable;
     }
 
     public static ContentValues getContentValues(DataBundle dataBundle) {
-        ContentValues vals = new ContentValues();
-        vals.put(LastReadDBHelper.KEY_HEADER, dataBundle.getHeader());
-        vals.put(LastReadDBHelper.KEY_PATH, dataBundle.getPath());
-        vals.put(LastReadDBHelper.KEY_POSITION, dataBundle.getPosition());
-        vals.put(LastReadDBHelper.KEY_PERCENT, dataBundle.getPercent());
-        return vals;
+        ContentValues values = new ContentValues();
+        values.put(LastReadDBHelper.KEY_HEADER, dataBundle.getHeader());
+        values.put(LastReadDBHelper.KEY_PATH, dataBundle.getPath());
+        values.put(LastReadDBHelper.KEY_POSITION, dataBundle.getPosition());
+        values.put(LastReadDBHelper.KEY_PERCENT, dataBundle.getPercent());
+        return values;
     }
 
     public String getText() {
