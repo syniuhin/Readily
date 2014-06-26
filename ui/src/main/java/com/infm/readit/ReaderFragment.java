@@ -254,12 +254,7 @@ public class ReaderFragment extends Fragment {
     }
 
     private void createReadable(Context context) {
-        readable = Readable.newInstance(context,
-                getArguments().getInt(Constants.EXTRA_TYPE, -1),
-                getArguments().getString(Intent.EXTRA_TEXT, getResources().getString(R.string.sample_text)),
-                getArguments().getString(Constants.EXTRA_PATH, ""));
-                        //((Integer) getArguments().getInt(Constants.EXTRA_ROWID, 0)).toString() + ".txt"));
-        readable.setPosition(Math.max(getArguments().getInt(Constants.EXTRA_POSITION), 0));
+        readable = Readable.newInstance(context, getArguments());
     }
 
     /**

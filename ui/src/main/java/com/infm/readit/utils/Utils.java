@@ -6,11 +6,12 @@ import android.util.Pair;
  * Created by infm on 6/19/14. Enjoy ;)
  */
 public abstract class Utils {
-    public static final int TYPE_CLIPBOARD = 0;
-    public static final int TYPE_TXT = 1;
-    public static final int TYPE_EPUB = 2;
-    public static final int TYPE_SHARED_LINK = 3;
-    public static final int TYPE_SHARED_TEXT = 4;
+    public static final int TYPE_TEST = 0;
+    public static final int TYPE_CLIPBOARD = 1;
+    public static final int TYPE_TXT = 2;
+    public static final int TYPE_EPUB = 3;
+    public static final int TYPE_SHARED_LINK = 4;
+    public static final int TYPE_SHARED_TEXT = 5;
 
     protected StringBuilder sb;
     protected int type;

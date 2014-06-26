@@ -4,12 +4,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 
 import com.infm.readit.Constants;
+import com.infm.readit.R;
 import com.infm.readit.database.DataBundle;
 import com.infm.readit.database.LastReadDBHelper;
 import com.infm.readit.essential.TextParser;
@@ -55,11 +57,30 @@ abstract public class Readable {
         return new Pair<Integer, Integer>(rowId, position);
     }
 
+    public static Readable newInstance(Context context, Bundle bundle) {
+        Readable readable;
+        if (bundle == null) {
+            readable = newInstance(context,
+                    Utils.TYPE_TEST,
+                    "",
+                    "");
+            readable.setPosition(0);
+        } else {
+            readable = newInstance(context,
+                    bundle.getInt(Constants.EXTRA_TYPE, -1),
+                    bundle.getString(Intent.EXTRA_TEXT, context.getResources().getString(R.string.sample_text)),
+                    bundle.getString(Constants.EXTRA_PATH, ""));
+            readable.setPosition(Math.max(bundle.getInt(Constants.EXTRA_POSITION), 0));
+        }
+        return readable;
+    }
+
     public static Readable newInstance(Context context, Integer intentType, String intentText, String intentPath) {
         Readable readable;
-        if (TextUtils.isEmpty(intentText))
-            readable = new TestSettingsText(context);
-        else {
+        if (TextUtils.isEmpty(intentText)) {
+            readable = new TestSettingsText();
+            readable.setText(context.getResources().getString(R.string.sample_text));
+        } else {
             if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_CACHE, true))
                 intentPath = null;
             switch (intentType) {
