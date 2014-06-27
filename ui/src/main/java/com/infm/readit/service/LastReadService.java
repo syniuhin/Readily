@@ -34,15 +34,17 @@ public class LastReadService extends IntentService {
         DataBundle dataBundle = DataBundle.createFromIntent(intent);
         Log.d(LOGTAG, "DataBundle received: " + dataBundle.toString());
 
-        ContentValues contentValues = Readable.getContentValues(dataBundle);
         ContentResolver contentResolver = getContentResolver();
-        Pair<Integer, Integer> existingData =
-                Readable.getRowData(contentResolver.query(LastReadContentProvider.CONTENT_URI,
+        DataBundle rowData = Readable.getRowData(contentResolver.query(LastReadContentProvider.CONTENT_URI,
                         null, null, null, null), dataBundle.getPath());
-        if (existingData == null)
+        ContentValues contentValues = null;
+        contentValues = Readable.getContentValues(dataBundle);
+        if (rowData == null) {
             contentResolver.insert(LastReadContentProvider.CONTENT_URI, contentValues);
-        else
-            contentResolver.update(ContentUris.withAppendedId(LastReadContentProvider.CONTENT_URI, existingData.first),
-                    contentValues, null, null);
+        } else {
+            contentResolver.update(ContentUris.withAppendedId(
+                    LastReadContentProvider.CONTENT_URI, rowData.getRowId()
+            ), contentValues, null, null);
+        }
     }
 }

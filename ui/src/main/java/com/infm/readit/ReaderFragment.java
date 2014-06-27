@@ -2,12 +2,15 @@ package com.infm.readit;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -21,12 +24,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.infm.readit.database.DataBundle;
 import com.infm.readit.essential.TextParser;
 import com.infm.readit.readable.Readable;
 import com.infm.readit.service.LastReadService;
-import com.infm.readit.utils.OnSwipeTouchListener;
-import com.infm.readit.utils.SettingsBundle;
+import com.infm.readit.util.OnSwipeTouchListener;
+import com.infm.readit.util.SettingsBundle;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -55,6 +60,8 @@ public class ReaderFragment extends Fragment {
     private List<Integer> delayList;
     private TextParser parser;
     private SettingsBundle settingsBundle;
+    private TextParserListener textParserListener;
+    private LocalBroadcastManager manager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -124,13 +131,10 @@ public class ReaderFragment extends Fragment {
 
         sPref = PreferenceManager.getDefaultSharedPreferences(activity);
         settingsBundle = new SettingsBundle(sPref);
-        createReadable(activity);
-        initPrevButton();
-        createParser();
 
-        final Handler handler = new Handler();
-        reader = new Reader(handler, readable.getPosition());
-        handler.postDelayed(reader, 2000); //magic number indeed, I don't know what it does
+        createReceiver(activity);
+
+        initPrevButton();
     }
 
     public void setTime(long localTime) {
@@ -253,19 +257,15 @@ public class ReaderFragment extends Fragment {
         }
     }
 
-    private void createReadable(Context context) {
-        readable = Readable.newInstance(context, getArguments());
-    }
+    private void continueParserParty() {
+        readable = parser.getReadable();
 
-    /**
-     * just in order to wrap this in ProgressBar
-     */
-    private void createParser() {
-        parser = new TextParser(readable, sPref);
-
-        wordList = parser.getReadable().getWordList();
-        emphasisList = parser.getReadable().getEmphasisList();
-        delayList = parser.getReadable().getDelayList();
+        wordList = readable.getWordList();
+        emphasisList = readable.getEmphasisList();
+        delayList = readable.getDelayList();
+        final Handler handler = new Handler();
+        reader = new Reader(handler, readable.getPosition());
+        handler.postDelayed(reader, 2000); //magic number indeed, I don't know what it does
     }
 
 /*
@@ -294,9 +294,17 @@ public class ReaderFragment extends Fragment {
         return intent;
     }
 
+    private void createReceiver(Context context){
+        textParserListener = new TextParserListener();
+        manager = LocalBroadcastManager.getInstance(context);
+        IntentFilter intentFilter = new IntentFilter(Constants.TEXT_PARSER_READY);
+        intentFilter.addAction(Constants.TEXT_PARSER_NOT_READY);
+        manager.registerReceiver(textParserListener, intentFilter);
+    }
+
     @Override
     public void onPause() {
-        if (!reader.isCancelled())
+        if (reader != null && !reader.isCancelled())
             reader.incCancelled();
         Log.d(LOGTAG, "onPause() called");
         super.onPause();
@@ -307,6 +315,7 @@ public class ReaderFragment extends Fragment {
         if (!TextUtils.isEmpty(readable.getPath()))
             getActivity().startService(createLastReadServiceIntent());
         settingsBundle.updatePreferences();
+        manager.unregisterReceiver(textParserListener);
         Log.d(LOGTAG, "OnStop() called");
         super.onStop();
     }
@@ -362,6 +371,20 @@ public class ReaderFragment extends Fragment {
 
         public void incCancelled() {
             cancelled++;
+        }
+    }
+
+    private class TextParserListener extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                parser = TextParser.fromString(intent.getStringExtra(Constants.EXTRA_PARSER));
+                continueParserParty();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

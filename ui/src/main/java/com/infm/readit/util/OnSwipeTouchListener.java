@@ -1,4 +1,4 @@
-package com.infm.readit.utils;
+package com.infm.readit.util;
 
 import android.content.Context;
 import android.view.GestureDetector;

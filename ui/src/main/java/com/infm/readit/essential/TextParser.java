@@ -1,17 +1,22 @@
 package com.infm.readit.essential;
 
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 
 import com.infm.readit.readable.Readable;
-import com.infm.readit.utils.SettingsBundle;
+import com.infm.readit.util.SettingsBundle;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,7 +30,7 @@ import java.util.regex.Pattern;
 import de.jetwick.snacktory.HtmlFetcher;
 import de.jetwick.snacktory.JResult;
 
-public class TextParser {
+public class TextParser implements Serializable {
 
     public static final String LOGTAG = "TextParser";
     public static final Map<String, Integer> PRIORITIES;
@@ -35,7 +40,8 @@ public class TextParser {
          * a 	b 	c 	d 	e 	f 	g 	h 	i 	j 	k 	l 	m 	n 	o 	p 	q 	r 	s 	t 	u 	v 	w 	x 	y 	z
          * 9    4   4   4   10  12  10  12  8   10  8   6   6   5   8   6   12  5   15  12  14  12  14  13  14  12
          */
-        final int[] englishPriorities = {10, 4, 4, 4, 9, 12, 10, 12, 8, 10, 8, 6, 6, 5, 8, 6, 12, 5, 15, 12, 14, 12, 14, 13, 14, 12};
+        final int[] englishPriorities =
+                {10, 4, 4, 4, 9, 12, 10, 12, 8, 10, 8, 6, 6, 5, 8, 6, 12, 5, 15, 12, 14, 12, 14, 13, 14, 12};
         Map<String, Integer> priorityMap = new HashMap<String, Integer>();
         int i = 0;
         for (char c = 'a'; c <= 'z'; ++i, ++c)
@@ -49,7 +55,8 @@ public class TextParser {
          Ы ы 	Ь ь 	Э э 	Ю ю 	Я я
          */
         final String russianAlpha = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
-        final int[] russianPriorities = {10, 4, 4, 7, 4, 7, 14, 9, 9, 6, 7, 5, 4, 4, 4, 10, 8, 10, 12, 5, 9, 15, 14, 14, 13, 10, 10, 0, 10, 0, 10, 12, 11};
+        final int[] russianPriorities =
+                {10, 4, 4, 7, 4, 7, 14, 9, 9, 6, 7, 5, 4, 4, 4, 10, 8, 10, 12, 5, 9, 15, 14, 14, 13, 10, 10, 0, 10, 0, 10, 12, 11};
 
         i = 0;
         for (char c : russianAlpha.toCharArray())
@@ -68,19 +75,71 @@ public class TextParser {
         PRIORITIES = Collections.unmodifiableMap(priorityMap);
     }
 
-    public static final String makeMeSpecial = " " + "." + "!" + "?" + "-" + "—" + ":" + ";" + "," + "\n" + '\"' + "(" + ")" + "\t";
+    public static final String makeMeSpecial =
+            " " + "." + "!" + "?" + "-" + "—" + ":" + ";" + "," + "\n" + '\"' + "(" + ")" + "\t";
     private Readable readable;
     private int lengthPreference;
     private List<Integer> delayCoefficients;
 
     /**
+     * stackOverFlow guys told about it
+     */
+    public TextParser() {
+    }
+
+    /**
      * TODO: design it in more elegant way
      */
-    public TextParser(Readable mReadable, SharedPreferences sPref) {
-        readable = mReadable;
+    public TextParser(Readable readable) {
+        this.readable = readable;
         lengthPreference = 13; //TODO:implement it optional
-        delayCoefficients = (new SettingsBundle(sPref)).getDelayCoefficients();
+    }
 
+    public static TextParser newInstance(Readable readable, SettingsBundle settingsBundle) {
+        TextParser textParser = new TextParser(readable);
+        textParser.setDelayCoefficients(settingsBundle.getDelayCoefficients());
+        textParser.process();
+        return textParser;
+    }
+
+    public static String findLink(Pattern pattern, String text) {
+        if (!text.isEmpty()) {
+            Matcher matcher = pattern.matcher(text);
+            if (matcher.find())
+                return matcher.group();
+        }
+        return "";
+    }
+
+    public static Pattern compilePattern() {
+        return Pattern.compile(
+                "\\b(((ht|f)tp(s?)\\:\\/\\/|~\\/|\\/)|www.)" +
+                        "(\\w+:\\w+@)?(([-\\w]+\\.)+(com|org|net|gov" +
+                        "|mil|biz|info|mobi|name|aero|jobs|museum" +
+                        "|travel|[a-z]{2}))(:[\\d]{1,5})?" +
+                        "(((\\/([-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|\\/)+|\\?|#)?" +
+                        "((\\?([-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
+                        "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)" +
+                        "(&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
+                        "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*" +
+                        "(#([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?\\b"
+        );
+    }
+
+    /**
+     * Read the object from Base64 string.
+     */
+    public static TextParser fromString(String s) throws IOException,
+            ClassNotFoundException {
+        byte[] data = Base64Coder.decode(s);
+        ObjectInputStream ois = new ObjectInputStream(
+                new ByteArrayInputStream(data));
+        TextParser o = (TextParser) ois.readObject();
+        ois.close();
+        return o;
+    }
+
+    public void process() {
         String mText = readable.getText();
         String mTextType = readable.getTextType();
         String link = readable.getLink();
@@ -116,28 +175,22 @@ public class TextParser {
         buildEmphasis(readable);
     }
 
-    public static String findLink(Pattern pattern, String text) {
-        if (!text.isEmpty()) {
-            Matcher matcher = pattern.matcher(text);
-            if (matcher.find())
-                return matcher.group();
+    /**
+     * Write the object to a Base64 string.
+     */
+    @Override
+    public String toString() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = null;
+        try {
+            oos = new ObjectOutputStream(baos);
+            oos.writeObject(this);
+            oos.close();
+            return new String(Base64Coder.encode(baos.toByteArray()));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return "";
-    }
-
-    public static Pattern compilePattern() {
-        return Pattern.compile(
-                "\\b(((ht|f)tp(s?)\\:\\/\\/|~\\/|\\/)|www.)" +
-                        "(\\w+:\\w+@)?(([-\\w]+\\.)+(com|org|net|gov" +
-                        "|mil|biz|info|mobi|name|aero|jobs|museum" +
-                        "|travel|[a-z]{2}))(:[\\d]{1,5})?" +
-                        "(((\\/([-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|\\/)+|\\?|#)?" +
-                        "((\\?([-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
-                        "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)" +
-                        "(&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
-                        "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*" +
-                        "(#([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?\\b"
-        );
+        return null;
     }
 
     public int getLengthPreference() {
@@ -146,6 +199,10 @@ public class TextParser {
 
     public List<Integer> getDelayCoefficients() {
         return delayCoefficients;
+    }
+
+    public void setDelayCoefficients(List<Integer> delayCoefficients) {
+        this.delayCoefficients = delayCoefficients;
     }
 
     public Readable getReadable() {

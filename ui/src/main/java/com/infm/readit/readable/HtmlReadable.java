@@ -13,6 +13,7 @@ public class HtmlReadable extends Readable {
     private String link;
 
     public HtmlReadable(String link) {
+        super();
         this.link = link;
         setTextType("text/plain");
     }
@@ -34,6 +35,11 @@ public class HtmlReadable extends Readable {
 
     @Override
     public void setChunkData(ChunkData data) {
+
+    }
+
+    @Override
+    public void process(Context context) {
 
     }
 }

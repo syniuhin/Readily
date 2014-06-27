@@ -7,46 +7,30 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Pair;
 import android.view.WindowManager;
+import android.webkit.MimeTypeMap;
 
-import com.infm.readit.utils.FileUtils;
-import com.infm.readit.utils.Utils;
+import com.infm.readit.readable.Readable;
+import com.infm.readit.service.TextParserService;
 
 public class ReceiverActivity extends Activity {
 
     public static final String LOGTAG = "ReceiverActivity";
 
-    /**
-     * Starts receiver activity
-     *
-     * @param utils = all needed is put in Utils abstract class
-     */
-    public static void startReceiverActivity(Context context, Utils utils) {
-        utils.process(); //need to do this in other thread, actually :(
-        if (utils.isProcessFailed())
-            return;
-
+    public static void startReceiverActivity(Context context, Integer intentType, String intentPath) {
         Intent intent = new Intent(context, ReceiverActivity.class);
 
-        Pair<Integer, Integer> existingData = utils.getExistingData();
-        int type = utils.getType();
-
-        if (type != FileUtils.TYPE_EPUB)
-            intent.setType("text/plain");
-        else
-            intent.setType("text/html");
+        intent.setType(((intentType == Readable.TYPE_EPUB ||
+                (intentType == Readable.TYPE_FILE &&
+                        MimeTypeMap.getFileExtensionFromUrl(intentPath).equals("epub")))
+                ? "text/html"
+                : "text/plain"));
 
         Bundle bundle = new Bundle();
-        bundle.putInt(Constants.EXTRA_TYPE, type);
-        bundle.putString(Intent.EXTRA_TEXT, utils.getSb().toString());
-        bundle.putString(Constants.EXTRA_PATH, utils.getPath());
-        if (existingData != null) {
-            bundle.putInt(Constants.EXTRA_ROWID, existingData.first);
-            bundle.putInt(Constants.EXTRA_POSITION, existingData.second);
-        }
-
+        bundle.putInt(Constants.EXTRA_TYPE, intentType);
+        bundle.putString(Constants.EXTRA_PATH, intentPath);
         intent.putExtras(bundle);
+
         context.startActivity(intent);
     }
 
@@ -56,6 +40,7 @@ public class ReceiverActivity extends Activity {
         setContentView(R.layout.activity_receiver);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         startReaderFragment();
+        startService(createTextParserServiceIntent());
     }
 
     @Override
@@ -91,5 +76,13 @@ public class ReceiverActivity extends Activity {
         transaction.replace(R.id.fragment_container, readerFragment);
         transaction.addToBackStack(null);
         transaction.commit();
+    }
+
+    private Intent createTextParserServiceIntent(){
+        Intent intent = new Intent(this, TextParserService.class);
+        intent.putExtra(Constants.EXTRA_PATH, getIntent().getStringExtra(Constants.EXTRA_PATH));
+        intent.putExtra(Intent.EXTRA_TEXT, getIntent().getStringExtra(Intent.EXTRA_TEXT));
+        intent.putExtra(Constants.EXTRA_TYPE, getIntent().getIntExtra(Constants.EXTRA_TYPE, Readable.TYPE_TEST));
+        return intent;
     }
 }

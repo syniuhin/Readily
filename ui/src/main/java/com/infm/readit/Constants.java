@@ -11,6 +11,7 @@ public class Constants {
     public static final String EXTRA_TEXT = "text";
     public static final String EXTRA_HEADER = "header";
     public static final String EXTRA_PERCENT = "percent_left";
+    public static final String EXTRA_PARSER = "parser";
 
     public static final Integer READER_SLEEP_IDLE = 500;
     public static final String DEFAULT_WPM = "250";
@@ -34,5 +35,8 @@ public class Constants {
 
     public static final Integer NON_LINK_LENGTH = 500; //defines a length, which limits links with description(to reduce working time of regexp)
 
-    public static Integer SPEEDO_SHOWING_LENGTH = 1500; //time in ms for which speedo becomes visible
+    public static final Integer SPEEDO_SHOWING_LENGTH = 1500; //time in ms for which speedo becomes visible
+
+    public static final String TEXT_PARSER_READY = "com.infm.readit.TEXTPARSERISREADY";
+    public static final String TEXT_PARSER_NOT_READY = "com.infm.readit.TEXTPARSERISNOTREADY";
 }

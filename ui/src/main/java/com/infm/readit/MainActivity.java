@@ -20,8 +20,7 @@ import android.widget.Toast;
 
 import com.infm.readit.database.LastReadContentProvider;
 import com.infm.readit.database.LastReadDBHelper;
-import com.infm.readit.utils.ClipboardUtils;
-import com.infm.readit.utils.FileUtils;
+import com.infm.readit.readable.Readable;
 
 public class MainActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -73,7 +72,7 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
      * This section is handled using abstract class Utils. Hope it's ok.
      */
     private void getFromClipboard() {
-        ReceiverActivity.startReceiverActivity(this, new ClipboardUtils(this));
+        ReceiverActivity.startReceiverActivity(this, Readable.TYPE_CLIPBOARD, "");
     }
 
     private void getFromFile() {
@@ -93,7 +92,7 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         switch (requestCode) {
             case FILE_SELECT_CODE:
                 if (resultCode == RESULT_OK)
-                    ReceiverActivity.startReceiverActivity(this, new FileUtils(this, data.getData()));
+                    ReceiverActivity.startReceiverActivity(this, Readable.TYPE_FILE, data.getData().toString());
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -126,9 +125,8 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ReceiverActivity.startReceiverActivity(MainActivity.this,
-                        new FileUtils(MainActivity.this,
-                                ((TextView) view.findViewById(R.id.text_view_path)).getText().toString())
-                );
+                                        Readable.TYPE_FILE,
+                                        ((TextView) view.findViewById(R.id.text_view_path)).getText().toString());
                 Log.d(LOGTAG, "listView's onItemClick called()");
             }
         });

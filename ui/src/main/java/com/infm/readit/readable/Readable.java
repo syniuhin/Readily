@@ -15,59 +15,82 @@ import com.infm.readit.R;
 import com.infm.readit.database.DataBundle;
 import com.infm.readit.database.LastReadDBHelper;
 import com.infm.readit.essential.TextParser;
-import com.infm.readit.utils.Utils;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by infm on 6/12/14. Enjoy ;)
  */
-abstract public class Readable {
+abstract public class Readable implements Serializable {
 
+    public static final int TYPE_TEST = 0;
+    public static final int TYPE_CLIPBOARD = 1;
+    public static final int TYPE_FILE = 2;
+    public static final int TYPE_TXT = 3;
+    public static final int TYPE_EPUB = 4;
+    public static final int TYPE_SHARED_LINK = 5;
+    public static final int TYPE_SHARED_TEXT = 6;
     public static String LOGTAG = "Readable";
-
-    protected String text;
+    protected StringBuilder text;
     protected String header;
     protected String textType;
     protected Long seconds;
     protected String path;
     protected Integer position;
-
+    protected Integer type;
     protected List<String> wordList;
     protected List<Integer> delayList;
     protected List<Integer> emphasisList;
     protected List<Integer> timeSuffixSum;
+    protected Boolean processFailed;
+    protected DataBundle rowData;
+/*
+    protected Pair<Integer, Integer> existingData;
+*/
 
-    public static Pair<Integer, Integer> getRowData(Cursor cursor, String path) {
+    public Readable(){
+        //init all
+        text = new StringBuilder();
+        wordList = new ArrayList<String>();
+        delayList = new ArrayList<Integer>();
+        emphasisList = new ArrayList<Integer>();
+        timeSuffixSum = new ArrayList<Integer>();
+    }
+
+    public static DataBundle getRowData(Cursor cursor, String path) {
         Log.d(LOGTAG, "getRowData() called; cursor size: " + cursor.getCount() + "; path: " + path);
-        Integer rowId = -1;
-        Integer position = -1;
+        DataBundle rowData = null;
         if (!TextUtils.isEmpty(path)) {
-            while (cursor.moveToNext() && rowId == -1) {
+            while (cursor.moveToNext() && rowData == null) {
                 if (path.equals(cursor.getString(LastReadDBHelper.COLUMN_PATH))) {
-                    rowId = cursor.getInt(LastReadDBHelper.COLUMN_ROWID);
-                    position = cursor.getInt(LastReadDBHelper.COLUMN_POSITION);
+                    rowData = new DataBundle(
+                            cursor.getInt(LastReadDBHelper.COLUMN_ROWID),
+                            cursor.getString(LastReadDBHelper.COLUMN_HEADER),
+                            path,
+                            cursor.getInt(LastReadDBHelper.COLUMN_POSITION),
+                            cursor.getString(LastReadDBHelper.COLUMN_PERCENT)
+                    );
                 }
             }
         }
         cursor.close();
-        Log.d(LOGTAG, "getRowData(); rowId = " + rowId + "; position = " + position);
-        if (rowId == -1)
-            return null;
-        return new Pair<Integer, Integer>(rowId, position);
+        Log.d(LOGTAG, "getRowData() : " + ((rowData == null) ? "null" : rowData.toString()));
+        return rowData;
     }
 
     public static Readable newInstance(Context context, Bundle bundle) {
         Readable readable;
         if (bundle == null) {
             readable = newInstance(context,
-                    Utils.TYPE_TEST,
+                    Readable.TYPE_TEST,
                     "",
                     "");
             readable.setPosition(0);
         } else {
             readable = newInstance(context,
-                    bundle.getInt(Constants.EXTRA_TYPE, -1),
+                    bundle.getInt(Constants.EXTRA_TYPE, Readable.TYPE_TEST),
                     bundle.getString(Intent.EXTRA_TEXT, context.getResources().getString(R.string.sample_text)),
                     bundle.getString(Constants.EXTRA_PATH, ""));
             readable.setPosition(Math.max(bundle.getInt(Constants.EXTRA_POSITION), 0));
@@ -84,19 +107,17 @@ abstract public class Readable {
             if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_CACHE, true))
                 intentPath = null;
             switch (intentType) {
-                case Utils.TYPE_CLIPBOARD:
-                    readable = new CopiedFromClipboard();
-                    readable.setText(intentText);
+                case TYPE_CLIPBOARD:
+                    readable = new ClipboardReadable();
                     break;
-                case Utils.TYPE_TXT:
+                case TYPE_FILE:
                     readable = new FileReadable();
-                    readable.setText(intentText);
-                    readable.setTextType("text/plain");
                     break;
-                case Utils.TYPE_EPUB:
+                case TYPE_TXT:
                     readable = new FileReadable();
-                    readable.setText(intentText);
-                    readable.setTextType("text/html");
+                    break;
+                case TYPE_EPUB:
+                    readable = new FileReadable();
                     break;
                 default:
                     String link;
@@ -117,15 +138,62 @@ abstract public class Readable {
         values.put(LastReadDBHelper.KEY_PATH, dataBundle.getPath());
         values.put(LastReadDBHelper.KEY_POSITION, dataBundle.getPosition());
         values.put(LastReadDBHelper.KEY_PERCENT, dataBundle.getPercent());
+        Integer rowId = dataBundle.getRowId();
+        if (rowId != null)
+            values.put(LastReadDBHelper.KEY_ROWID, rowId);
         return values;
     }
 
+/*
+    public Pair<Integer, Integer> getExistingData() {
+        return existingData;
+    }
+
+    public void setExistingData(Pair<Integer, Integer> existingData) {
+        this.existingData = existingData;
+    }
+*/
+
+    abstract public String getLink();
+
+    abstract public void setLink(String link);
+
+    abstract public ChunkData getChunkData();
+
+    abstract public void setChunkData(ChunkData data);
+
+    abstract public void process(Context context);
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Long getSeconds() {
+        return seconds;
+    }
+
+    public void setSeconds(Long seconds) {
+        this.seconds = seconds;
+    }
+
+    public Boolean getProcessFailed() {
+        return processFailed;
+    }
+
+    public void setProcessFailed(Boolean processFailed) {
+        this.processFailed = processFailed;
+    }
+
     public String getText() {
-        return text;
+        return text.toString();
     }
 
     public void setText(String text) {
-        this.text = text;
+        this.text = new StringBuilder(text);
     }
 
     public String getHeader() {
@@ -200,14 +268,6 @@ abstract public class Readable {
         this.timeSuffixSum = timeSuffixSum;
     }
 
-    abstract public String getLink();
-
-    abstract public void setLink(String link);
-
-    abstract public ChunkData getChunkData();
-
-    abstract public void setChunkData(ChunkData data);
-
     private void makeHeader() {
         int charLen = 0;
         StringBuilder sb = new StringBuilder();
@@ -229,6 +289,6 @@ abstract public class Readable {
         intent.putExtra(Constants.EXTRA_HEADER, header);
         intent.putExtra(Constants.EXTRA_PATH, path);
         intent.putExtra(Constants.EXTRA_POSITION, position);
-        intent.putExtra(Constants.EXTRA_PERCENT, 100 - (int) (position * 100f / wordList.size() + .5f) + "% left");
+        intent.putExtra(Constants.EXTRA_PERCENT, 100 - (int) (position * 100f / wordList.size() + .5f) + "%");
     }
 }

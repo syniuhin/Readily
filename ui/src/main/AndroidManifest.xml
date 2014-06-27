@@ -52,7 +52,10 @@
 
         <service
             android:name=".service.LastReadService"
-            android:exported="false"></service>
+            android:exported="false"/>
+        <service
+            android:name=".service.TextParserService"
+            android:exported="false"/>
     </application>
 
 </manifest>

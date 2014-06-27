@@ -12,8 +12,17 @@ public class DataBundle {
     private String path;
     private Integer position;
     private String percent;
+    private Integer rowId;
 
     public DataBundle(String header, String path, Integer position, String percent) {
+        this.header = header;
+        this.path = path;
+        this.position = position;
+        this.percent = percent;
+    }
+
+    public DataBundle(Integer rowId, String header, String path, Integer position, String percent) {
+        this.rowId = rowId;
         this.header = header;
         this.path = path;
         this.position = position;
@@ -25,6 +34,14 @@ public class DataBundle {
                 intent.getStringExtra(Constants.EXTRA_PATH),
                 intent.getIntExtra(Constants.EXTRA_POSITION, 0),
                 intent.getStringExtra(Constants.EXTRA_PERCENT));
+    }
+
+    public Integer getRowId() {
+        return rowId;
+    }
+
+    public void setRowId(Integer rowId) {
+        this.rowId = rowId;
     }
 
     public String getHeader() {
@@ -61,6 +78,10 @@ public class DataBundle {
 
     @Override
     public String toString() {
-        return "header: " + header + "; path: " + path + "; position: " + position + "; percent: " + percent;
+        return "rowId: + " + rowId +
+                "; header: " + header +
+                "; path: " + path +
+                "; position: " + position +
+                "; percent: " + percent;
     }
 }
