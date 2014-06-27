@@ -1,15 +1,9 @@
 package com.infm.readit.essential;
 
-import android.os.AsyncTask;
-import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
 
 import com.infm.readit.readable.Readable;
 import com.infm.readit.util.SettingsBundle;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,12 +17,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import de.jetwick.snacktory.HtmlFetcher;
-import de.jetwick.snacktory.JResult;
 
 public class TextParser implements Serializable {
 
@@ -140,33 +130,6 @@ public class TextParser implements Serializable {
     }
 
     public void process() {
-        String mText = readable.getText();
-        String mTextType = readable.getTextType();
-        String link = readable.getLink();
-        if (!TextUtils.isEmpty(link))
-            try {
-                mText = new ArticleHtmlParser().execute(link).get();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-        else if ("text/html".equals(mTextType)) {
-            try {
-                Document doc = new InnerHtmlParser().execute(mText).get();
-                mText = doc.title() + doc.select("p").text();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-        } else if (!"text/plain".equals(mTextType)) {
-            Log.e(LOGTAG, "Wrong text type");
-            return;
-        }
-
-        readable.setText(mText);
-
         normalize(readable);
         cutLongWords(readable);
         buildDelayList(readable);
@@ -403,34 +366,5 @@ public class TextParser implements Serializable {
             res.add(resInd);
         }
         readable.setEmphasisList(res);
-    }
-
-    private class InnerHtmlParser extends AsyncTask<String, Void, Document> {
-        @Override
-        protected Document doInBackground(String... params) {
-            Document doc = null;
-            try {
-                doc = Jsoup.parse(params[0]);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return doc;
-        }
-    }
-
-    private class ArticleHtmlParser extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... params) {
-            String url = params[0];
-            HtmlFetcher fetcher = new HtmlFetcher();
-            JResult res = null;
-            try {
-                res = fetcher.fetchAndExtract(url, 10000, true);
-                return res.getTitle() + " . " + res.getText();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return "";
-        }
     }
 }

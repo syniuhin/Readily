@@ -36,7 +36,7 @@ public class TextParserService extends IntentService/* implements Serializable *
         Log.d(LOGTAG, "onHandleIntent() called");
         Readable readable = Readable.newInstance(this,
                 intent.getExtras());
-        readable.process(this);
+        readable.process(this); //don't sure that context is necessary, esp. considering level of abstraction..
         TextParser textParser = TextParser.newInstance(readable,
                 new SettingsBundle(PreferenceManager.getDefaultSharedPreferences(this)));
         Intent toSend = new Intent(Constants.TEXT_PARSER_READY).

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.util.Pair;
 
+import com.infm.readit.Constants;
 import com.infm.readit.database.DataBundle;
 import com.infm.readit.database.LastReadContentProvider;
 import com.infm.readit.readable.Readable;
@@ -35,16 +36,25 @@ public class LastReadService extends IntentService {
         Log.d(LOGTAG, "DataBundle received: " + dataBundle.toString());
 
         ContentResolver contentResolver = getContentResolver();
+        Boolean isCompleted = intent.getBooleanExtra(Constants.EXTRA_READER_STATUS, false);
         DataBundle rowData = Readable.getRowData(contentResolver.query(LastReadContentProvider.CONTENT_URI,
                         null, null, null, null), dataBundle.getPath());
-        ContentValues contentValues = null;
-        contentValues = Readable.getContentValues(dataBundle);
-        if (rowData == null) {
-            contentResolver.insert(LastReadContentProvider.CONTENT_URI, contentValues);
+
+        if (isCompleted){
+            if (rowData != null)
+                contentResolver.delete(ContentUris.withAppendedId(LastReadContentProvider.CONTENT_URI, rowData.getRowId()),
+                        null, null);
         } else {
-            contentResolver.update(ContentUris.withAppendedId(
-                    LastReadContentProvider.CONTENT_URI, rowData.getRowId()
-            ), contentValues, null, null);
+            ContentValues contentValues = null;
+            contentValues = Readable.getContentValues(dataBundle);
+
+            if (rowData == null) {
+                contentResolver.insert(LastReadContentProvider.CONTENT_URI, contentValues);
+            } else {
+                contentResolver.update(ContentUris.withAppendedId(
+                        LastReadContentProvider.CONTENT_URI, rowData.getRowId()
+                ), contentValues, null, null);
+            }
         }
     }
 }

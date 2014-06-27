@@ -90,10 +90,12 @@ public class FileReadable extends Readable {
         }
         if (processFailed = type == -1)
             Toast.makeText(context, R.string.wrong_ext, Toast.LENGTH_SHORT).show();
-        else
+        else {
             rowData = Readable.getRowData(context.getContentResolver().query(LastReadContentProvider.CONTENT_URI,
-                            null, null, null, null), path); //looks weird, actually. upd: it will be in separate thread, so ok.
-
+                    null, null, null, null), path); //looks weird, actually. upd: it will be in separate thread, so ok.
+            if (rowData != null)
+                position = rowData.getPosition();
+        }
     }
 
     public static String uriToStringPath(Context context, Uri uri) throws URISyntaxException {

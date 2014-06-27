@@ -2,6 +2,7 @@ package com.infm.readit;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -51,6 +52,7 @@ public class ReaderFragment extends Fragment {
     private TextView speedo;
     private ProgressBar pBar;
     private ImageButton prevButton;
+    private Handler progressBarHandler;
     //initialized in onActivityCreated()
     private Reader reader;
     private SharedPreferences sPref;
@@ -62,6 +64,8 @@ public class ReaderFragment extends Fragment {
     private SettingsBundle settingsBundle;
     private TextParserListener textParserListener;
     private LocalBroadcastManager manager;
+    //receiving status
+    private Boolean parserReceived = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -84,7 +88,7 @@ public class ReaderFragment extends Fragment {
 
             @Override
             public void onSwipeRight() {
-                if (reader.isCancelled() && sPref.getBoolean(Constants.PREF_SWIPE, false)) {
+                if (reader.isCancelled() && settingsBundle.isSwipesEnabled()) {
                     int pos = reader.getPosition();
                     if (pos > 0) {
                         updateView(pos - 1);
@@ -96,7 +100,7 @@ public class ReaderFragment extends Fragment {
 
             @Override
             public void onSwipeLeft() {
-                if (reader.isCancelled() && sPref.getBoolean(Constants.PREF_SWIPE, false)) {
+                if (reader.isCancelled() && settingsBundle.isSwipesEnabled()) {
                     int pos = reader.getPosition();
                     if (pos < getParser().getReadable().getWordList().size() - 1) {
                         updateView(pos + 1);
@@ -135,6 +139,7 @@ public class ReaderFragment extends Fragment {
         createReceiver(activity);
 
         initPrevButton();
+        wrapInProgressBar();
     }
 
     public void setTime(long localTime) {
@@ -193,6 +198,7 @@ public class ReaderFragment extends Fragment {
         pBar = (ProgressBar) v.findViewById(R.id.progressBar);
         speedo = (TextView) v.findViewById(R.id.speedo);
         prevButton = (ImageButton) v.findViewById(R.id.previousWordImageButton);
+        progressBarHandler = new Handler();
     }
 
     private void initPrevButton() {
@@ -268,29 +274,35 @@ public class ReaderFragment extends Fragment {
         handler.postDelayed(reader, 2000); //magic number indeed, I don't know what it does
     }
 
-/*
-    private void wrapInProgressBar(View v){
-        ProgressDialog progressDialog = new ProgressDialog(getActivity());
+    private void wrapInProgressBar(){
+        final ProgressDialog progressDialog = new ProgressDialog(getActivity());
         progressDialog.setIndeterminate(true);
         progressDialog.setTitle("Loading...");
+        progressDialog.setMessage("Content is being parsed");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setProgress(0);
 
         progressDialog.show();
+
         new Thread(new Runnable() {
             @Override
             public void run() {
-                mkParser();
+                while (!parserReceived) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
                 progressDialog.dismiss();
             }
         }).start();
     }
-*/
 
-    private Intent createLastReadServiceIntent() {
+    private Intent createLastReadServiceIntent(){
         Intent intent = new Intent(getActivity(), LastReadService.class);
         readable.setPosition(reader.getPosition());
         readable.putDataInIntent(intent);
+        intent.putExtra(Constants.EXTRA_READER_STATUS, reader.isCompleted());
         return intent;
     }
 
@@ -378,6 +390,7 @@ public class ReaderFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             try {
+                parserReceived = true;
                 parser = TextParser.fromString(intent.getStringExtra(Constants.EXTRA_PARSER));
                 continueParserParty();
             } catch (IOException e) {

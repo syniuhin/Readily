@@ -12,6 +12,7 @@ public class Constants {
     public static final String EXTRA_HEADER = "header";
     public static final String EXTRA_PERCENT = "percent_left";
     public static final String EXTRA_PARSER = "parser";
+    public static final String EXTRA_READER_STATUS = "reader_work_status";
 
     public static final Integer READER_SLEEP_IDLE = 500;
     public static final String DEFAULT_WPM = "250";
