@@ -22,14 +22,15 @@ List of functions already implemented:
 
 * Splitting of long words (*max length of word is not currently optional, default value is 13*).
 * Speed change before punctuation, in the beginning of a paragraph and on long words (*optional*).
-* Preview of next words in paragraph, line clears when paragaph ends (*opitonal*).
+* Preview of next words in paragraph (*opitonal*).
+* Storage of incomplete readings (*from files only for now*)
 
 ##Supported sources of text:
 
 * Clipboard
+* Internet
 * `.txt`
 * `.epub`(*alpha*).
-* `.html`
 
 ##Languages supported
 
@@ -44,9 +45,8 @@ If you know some other language and want to help me - please, [contact me], I'd 
 Well, I'm trying to design very flexible and powerful app, so demands are really ambitious sometimes: 
 
 * Parse all e-book formats
-* Improve html parsing, e.g. take all pages, instead of 1
+* Improve html parsing(e.g. take all pages, instead of 1)
 * Add some nice themes
-* Implement some storage of incomplete readings
 
 # **Have fun!**
 
