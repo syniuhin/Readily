@@ -55,7 +55,6 @@ public class ReaderFragment extends Fragment {
     private ImageButton prevButton;
     //initialized in onActivityCreated()
     private Reader reader;
-    private SharedPreferences sPref;
     private Readable readable;
     private List<String> wordList;
     private List<Integer> emphasisList;
@@ -130,8 +129,7 @@ public class ReaderFragment extends Fragment {
 
         Activity activity = getActivity();
 
-        sPref = PreferenceManager.getDefaultSharedPreferences(activity);
-        settingsBundle = new SettingsBundle(sPref);
+        settingsBundle = new SettingsBundle(PreferenceManager.getDefaultSharedPreferences(activity));
 
         createReceiver(activity);
 
