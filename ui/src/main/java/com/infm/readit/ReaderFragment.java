@@ -22,7 +22,6 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -97,19 +96,19 @@ public class ReaderFragment extends Fragment {
                         reader.setPosition(pos - 1);
                     }
                 } else if (!reader.isCancelled())
-                    Toast.makeText(getActivity(), R.string.pause, Toast.LENGTH_SHORT).show();
+                    reader.incCancelled();
             }
 
             @Override
             public void onSwipeLeft(){
                 if (reader.isCancelled() && settingsBundle.isSwipesEnabled()){
                     int pos = reader.getPosition();
-                    if (pos < getParser().getReadable().getWordList().size() - 1){
+                    if (pos < wordList.size() - 1){
                         updateView(pos + 1);
                         reader.setPosition(pos + 1);
                     }
                 } else if (!reader.isCancelled())
-                    Toast.makeText(getActivity(), R.string.pause, Toast.LENGTH_SHORT).show();
+                    reader.incCancelled();
             }
 
             @Override
@@ -118,14 +117,6 @@ public class ReaderFragment extends Fragment {
                     getActivity().getFragmentManager().beginTransaction().remove(ReaderFragment.this).commit();
                 } else {
                     reader.incCancelled();
-                    Integer toShow;
-                    if (reader.isCancelled()){
-                        toShow = R.string.pause;
-                        YoYo.with(Techniques.Pulse).
-                                duration(700).
-                                playOn(readerLayout);
-                    } else toShow = R.string.play;
-                    Toast.makeText(getActivity(), toShow, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -238,11 +229,6 @@ public class ReaderFragment extends Fragment {
                 speedoHided = true;
             }
         }
-
-        if (settingsBundle.isSwipesEnabled() && reader.isCancelled())
-            prevButton.setVisibility(View.VISIBLE);
-        else if (!reader.isCancelled())
-            prevButton.setVisibility(View.INVISIBLE); //consider GONE
     }
 
     private void showSpeedo(int wpm){
@@ -276,13 +262,13 @@ public class ReaderFragment extends Fragment {
         emphasisList = readable.getEmphasisList();
         delayList = readable.getDelayList();
 
-        YoYo.with(Techniques.ZoomOut).
+        YoYo.with(Techniques.FlipOutY).
                 duration(Constants.SECOND).
                 playOn(parsingProgressBar);
         //parsingProgressBar.setVisibility(View.GONE);
 
         readerLayout.setVisibility(View.VISIBLE);
-        YoYo.with(Techniques.ZoomInDown).
+        YoYo.with(Techniques.RollIn).
                 duration(2 * Constants.SECOND).
                 playOn(readerLayout);
 
@@ -316,22 +302,19 @@ public class ReaderFragment extends Fragment {
             @Override
             public void run(){
                 if (!parserReceived){
-                    final int durationTime = 500 + (int) (Math.random() * 500);
-                    final int sleepTime = 1000 + (int) (Math.random() * 3000);
+                    final int durationTime = 500 + (int) (Math.random() * 200);
+                    final int sleepTime = 4 * Constants.SECOND + (int) (Math.random() * 2 * Constants.SECOND);
                     Techniques choice;
-                    int r = (int) (Math.random() * 4);
+                    int r = (int) (Math.random() * 3);
                     switch (r){
                         case 0:
                             choice = Techniques.Pulse;
                             break;
                         case 1:
-                            choice = Techniques.FlipOutY;
+                            choice = Techniques.Wave;
                             break;
                         case 2:
-                            choice = Techniques.Shake;
-                            break;
-                        case 3:
-                            choice = Techniques.Tada;
+                            choice = Techniques.Flash;
                             break;
                         default:
                             choice = Techniques.Wobble;
@@ -344,22 +327,7 @@ public class ReaderFragment extends Fragment {
                 }
             }
         };
-        handler.postDelayed(anim, 0);
-/*
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                public void run(){
-                    try {
-                        Thread.sleep(sleepTime);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    YoYo.with(Techniques.Pulse).
-                            duration(durationTime).
-                            playOn(parsingProgressBar);
-                }
-            }, 2000);
-*/
+        handler.postDelayed(anim, Constants.SECOND); //TODO: make time relatively large
     }
 
     @Override
@@ -432,6 +400,23 @@ public class ReaderFragment extends Fragment {
 
         public void incCancelled(){
             cancelled++;
+            if (isCancelled())
+                performPause();
+            else
+                performPlay();
+        }
+
+        public void performPause(){
+            YoYo.with(Techniques.Pulse).
+                    duration(500).
+                    playOn(readerLayout);
+            if (!settingsBundle.isSwipesEnabled())
+                prevButton.setVisibility(View.VISIBLE);
+        }
+
+        public void performPlay(){
+            if (!settingsBundle.isSwipesEnabled())
+                prevButton.setVisibility(View.INVISIBLE);
         }
     }
 

@@ -103,12 +103,15 @@ abstract public class Readable implements Serializable {
     public static Readable newInstance(Context context, Integer intentType, String intentText, String intentPath){
         Readable readable;
         if (TextUtils.isEmpty(intentText)){
-            readable = new TestSettingsText();
+            readable = new TestReadable();
             readable.setText(context.getResources().getString(R.string.sample_text));
         } else {
             if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_CACHE, true))
                 intentPath = null;
             switch (intentType){
+                case TYPE_TEST:
+                    readable = new TestReadable();
+                    break;
                 case TYPE_CLIPBOARD:
                     readable = new ClipboardReadable();
                     break;
