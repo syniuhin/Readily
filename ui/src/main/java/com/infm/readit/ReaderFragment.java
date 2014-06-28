@@ -6,7 +6,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -242,7 +241,7 @@ public class ReaderFragment extends Fragment {
      */
     private void changeWPM(int delta){
         int wpm = settingsBundle.getWPM();
-        int wpmNew = Math.min(1200, Math.max(wpm + delta, 50));
+        int wpmNew = Math.min(Constants.MAX_WPM, Math.max(wpm + delta, Constants.MIN_WPM));
 
         if (wpm != wpmNew){
             settingsBundle.setWPM(wpmNew);
@@ -266,13 +265,13 @@ public class ReaderFragment extends Fragment {
         //parsingProgressBar.setVisibility(View.GONE);
 
         readerLayout.setVisibility(View.VISIBLE);
-        YoYo.with(Techniques.RollIn).
+        YoYo.with(Techniques.FadeIn).
                 duration(2 * Constants.SECOND).
                 playOn(readerLayout);
 
         final Handler handler = new Handler();
         reader = new Reader(handler, readable.getPosition());
-        handler.postDelayed(reader, 3 * Constants.SECOND); //magic number indeed, I don't know what it does
+        handler.postDelayed(reader, 3 * Constants.SECOND);
     }
 
     private Intent createLastReadServiceIntent(){
@@ -342,6 +341,7 @@ public class ReaderFragment extends Fragment {
             getActivity().startService(createLastReadServiceIntent());
         settingsBundle.updatePreferences();
         manager.unregisterReceiver(textParserListener);
+        getActivity().finish();
         Log.d(LOGTAG, "OnStop() called");
         super.onStop();
     }

@@ -17,6 +17,9 @@ public class Constants {
 
     public static final Integer READER_SLEEP_IDLE = 500;
     public static final String DEFAULT_WPM = "250";
+    public static final Integer MAX_WPM = 1200;
+    public static final Integer MIN_WPM = 50;
+    public static final Integer SPEEDO_SHOWING_LENGTH = 1500; //time in ms for which speedo becomes visible
 
     public static final String PREF_CACHE = "pref_cache";
     public static final String PREF_WPM = "pref_wpm";
@@ -38,8 +41,6 @@ public class Constants {
 
     public static final Integer NON_LINK_LENGTH = 500;
     //defines a length, which limits links with description(to reduce working time of regexp)
-
-    public static final Integer SPEEDO_SHOWING_LENGTH = 1500; //time in ms for which speedo becomes visible
 
     public static final String TEXT_PARSER_READY = "com.infm.readit.TEXTPARSERISREADY";
     public static final String TEXT_PARSER_NOT_READY = "com.infm.readit.TEXTPARSERISNOTREADY";

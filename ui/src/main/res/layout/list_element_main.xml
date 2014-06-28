@@ -5,50 +5,50 @@
     android:minHeight="60dp">
 
     <TextView
+        android:id="@+id/text_view_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/text_view_title"
-        android:text="Title"
-        android:textSize="22sp"
-        android:typeface="serif"
         android:layout_centerVertical="true"
         android:layout_marginLeft="22dp"
+        android:paddingBottom="10dp"
         android:singleLine="true"
-        android:paddingBottom="10dp" />
+        android:text="Title"
+        android:textSize="22sp"
+        android:typeface="serif"/>
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="path"
         android:id="@+id/text_view_path"
-        android:layout_below="@+id/text_view_title"
-        android:layout_marginTop="15dp"
-        android:layout_alignLeft="@+id/text_view_title"
-        android:layout_marginLeft="-5dp"
-        android:textSize="12sp"
-        android:typeface="serif"
-        android:textColor="@android:color/secondary_text_dark"
-        android:singleLine="true"
-        android:layout_toLeftOf="@+id/text_view_percent"
-        android:layout_marginRight="15dp"
-        android:layout_alignParentRight="false"
-        android:layout_alignParentLeft="false"
-        android:textAlignment="viewEnd" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="percent"
-        android:id="@+id/text_view_percent"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:textColor="@android:color/secondary_text_light"
-        android:layout_marginRight="20dp"
-        android:layout_alignBaseline="@+id/text_view_path"
-        android:textStyle="bold"
-        android:typeface="monospace"
-        android:textSize="12sp"
-        android:textIsSelectable="false"
+        android:layout_alignLeft="@+id/text_view_title"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentRight="false"
+        android:layout_below="@+id/text_view_title"
+        android:layout_marginLeft="-5dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_toLeftOf="@+id/text_view_percent"
         android:singleLine="true"
-        android:layout_marginTop="15dp" />
+        android:text="path"
+        android:textAlignment="viewEnd"
+        android:textColor="@android:color/secondary_text_dark"
+        android:textSize="12sp"
+        android:typeface="serif"/>
+
+    <TextView
+        android:id="@+id/text_view_percent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/text_view_path"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="15dp"
+        android:singleLine="true"
+        android:text="percent"
+        android:textColor="@android:color/secondary_text_light"
+        android:textIsSelectable="false"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:typeface="serif"/>
 </RelativeLayout>

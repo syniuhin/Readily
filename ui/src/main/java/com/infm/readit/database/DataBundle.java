@@ -18,6 +18,7 @@ public class DataBundle implements Serializable {
     private Integer rowId;
 
     public DataBundle(){}
+
     public DataBundle(String header, String path, Integer position, String percent){
         this.header = header;
         this.path = path;

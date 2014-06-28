@@ -49,20 +49,6 @@ public class ReceiverActivity extends Activity {
         super.onPause();
     }
 
-    /**
-     * probably should be moved to ReaderFragment. When db section is implemented, lol
-     */
-    @Override
-    public void onStop(){
-        Log.d(LOGTAG, "onStop() called");
-        super.onStop();
-    }
-
-    /**
-     * it seems crappy, really
-     *
-     * @return Bundle instance, which will be passed to ReaderFragment as bundle of args
-     */
     private Bundle bundleReceivedData(){
         Bundle bundle = getIntent().getExtras();
         Log.d(LOGTAG, "bundle: " + ((bundle == null) ? "null" : bundle.toString()));
