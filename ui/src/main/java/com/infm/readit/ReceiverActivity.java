@@ -17,7 +17,7 @@ public class ReceiverActivity extends Activity {
 
     public static final String LOGTAG = "ReceiverActivity";
 
-    public static void startReceiverActivity(Context context, Integer intentType, String intentPath) {
+    public static void startReceiverActivity(Context context, Integer intentType, String intentPath){
         Intent intent = new Intent(context, ReceiverActivity.class);
 
         intent.setType(((intentType == Readable.TYPE_EPUB ||
@@ -35,7 +35,7 @@ public class ReceiverActivity extends Activity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receiver);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -44,7 +44,7 @@ public class ReceiverActivity extends Activity {
     }
 
     @Override
-    public void onPause() {
+    public void onPause(){
         Log.d(LOGTAG, "onPause() called");
         super.onPause();
     }
@@ -53,7 +53,7 @@ public class ReceiverActivity extends Activity {
      * probably should be moved to ReaderFragment. When db section is implemented, lol
      */
     @Override
-    public void onStop() {
+    public void onStop(){
         Log.d(LOGTAG, "onStop() called");
         super.onStop();
     }
@@ -63,13 +63,13 @@ public class ReceiverActivity extends Activity {
      *
      * @return Bundle instance, which will be passed to ReaderFragment as bundle of args
      */
-    private Bundle bundleReceivedData() {
+    private Bundle bundleReceivedData(){
         Bundle bundle = getIntent().getExtras();
         Log.d(LOGTAG, "bundle: " + ((bundle == null) ? "null" : bundle.toString()));
         return bundle;
     }
 
-    private void startReaderFragment() {
+    private void startReaderFragment(){
         Fragment readerFragment = new ReaderFragment();
         readerFragment.setArguments(bundleReceivedData());
         FragmentTransaction transaction = getFragmentManager().beginTransaction();

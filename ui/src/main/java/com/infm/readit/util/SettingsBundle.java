@@ -23,48 +23,48 @@ public class SettingsBundle {
     //preferences themselves
     private SharedPreferences sharedPreferences;
 
-    public SettingsBundle(SharedPreferences sharedPreferences) {
+    public SettingsBundle(SharedPreferences sharedPreferences){
         this.sharedPreferences = sharedPreferences;
         assignFields();
     }
 
-    public List<Integer> getDelayCoefficients() {
+    public List<Integer> getDelayCoefficients(){
         return delayCoefficients;
     }
 
-    public Integer getWPM() {
+    public Integer getWPM(){
         return WPM;
     }
 
-    public void setWPM(Integer WPM) {
+    public void setWPM(Integer WPM){
         this.WPM = WPM;
     }
 
-    public boolean isCachingEnabled() {
+    public boolean isCachingEnabled(){
         return cachingEnabled;
     }
 
-    public boolean isPunctuationSpeedDiffers() {
+    public boolean isPunctuationSpeedDiffers(){
         return punctuationSpeedDiffers;
     }
 
-    public boolean isShowingContextEnabled() {
+    public boolean isShowingContextEnabled(){
         return showingContextEnabled;
     }
 
-    public boolean isSwipesEnabled() {
+    public boolean isSwipesEnabled(){
         return swipesEnabled;
     }
 
-    public Integer getTypeface() {
+    public Integer getTypeface(){
         return typeface;
     }
 
-    public SharedPreferences getSharedPreferences() {
+    public SharedPreferences getSharedPreferences(){
         return sharedPreferences;
     }
 
-    public void assignFields() {
+    public void assignFields(){
         WPM = Integer.parseInt(sharedPreferences.getString(Constants.PREF_WPM, Constants.DEFAULT_WPM));
         typeface = Integer.parseInt(sharedPreferences.getString(Constants.PREF_TYPEFACE, "0"));
         swipesEnabled = sharedPreferences.getBoolean(Constants.PREF_SWIPE, false);
@@ -74,7 +74,7 @@ public class SettingsBundle {
         delayCoefficients = buildDelayListCoefficients();
     }
 
-    public void updatePreferences() {
+    public void updatePreferences(){
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putString(Constants.PREF_WPM, Integer.toString(WPM));
@@ -93,17 +93,19 @@ public class SettingsBundle {
      * delayList: {default; coma/long word; end of sentence; '-' or ':' or ';'; beginning of a paragraph}
      * default value is 10
      */
-    private ArrayList<Integer> buildDelayListCoefficients() {
+    private ArrayList<Integer> buildDelayListCoefficients(){
         ArrayList<Integer> delayCoeffs = new ArrayList<Integer>();
         if (!punctuationSpeedDiffers)
             for (int i = 0; i < 5; ++i)
                 delayCoeffs.add(
-                        Integer.parseInt(sharedPreferences.getString(Constants.STR_PUNCTUATION_PREFS[0], Constants.STR_PUNCTUATION_DEFAULTS[0]))
+                        Integer.parseInt(sharedPreferences.getString(Constants.STR_PUNCTUATION_PREFS[0],
+                                Constants.STR_PUNCTUATION_DEFAULTS[0]))
                 );
         else
             for (int i = 0; i < 5; ++i)
                 delayCoeffs.add(
-                        Integer.parseInt(sharedPreferences.getString(Constants.STR_PUNCTUATION_PREFS[i], Constants.STR_PUNCTUATION_DEFAULTS[i]))
+                        Integer.parseInt(sharedPreferences.getString(Constants.STR_PUNCTUATION_PREFS[i],
+                                Constants.STR_PUNCTUATION_DEFAULTS[i]))
                 ); //might be tricky, look at Constants class
         return delayCoeffs;
     }

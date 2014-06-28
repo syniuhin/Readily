@@ -25,7 +25,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.infm.readit.database.DataBundle;
 import com.infm.readit.essential.TextParser;
 import com.infm.readit.readable.Readable;
 import com.infm.readit.service.LastReadService;
@@ -39,6 +38,7 @@ import java.util.List;
  * infm : 16/05/14. Enjoy it ;)
  */
 public class ReaderFragment extends Fragment {
+
     private static final String LOGTAG = "ReaderFragment";
 
     private long localTime = 0;
@@ -68,7 +68,7 @@ public class ReaderFragment extends Fragment {
     private Boolean parserReceived = false;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         Log.d(LOGTAG, "onCreateView() called");
 
         fragmentLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_reader, container, false);
@@ -77,20 +77,20 @@ public class ReaderFragment extends Fragment {
         RelativeLayout rl = (RelativeLayout) fragmentLayout.findViewById(R.id.reader_layout);
         rl.setOnTouchListener(new OnSwipeTouchListener(getActivity()) {
             @Override
-            public void onSwipeTop() {
+            public void onSwipeTop(){
                 changeWPM(50);
             }
 
             @Override
-            public void onSwipeBottom() {
+            public void onSwipeBottom(){
                 changeWPM(-50);
             }
 
             @Override
-            public void onSwipeRight() {
-                if (reader.isCancelled() && settingsBundle.isSwipesEnabled()) {
+            public void onSwipeRight(){
+                if (reader.isCancelled() && settingsBundle.isSwipesEnabled()){
                     int pos = reader.getPosition();
-                    if (pos > 0) {
+                    if (pos > 0){
                         updateView(pos - 1);
                         reader.setPosition(pos - 1);
                     }
@@ -99,10 +99,10 @@ public class ReaderFragment extends Fragment {
             }
 
             @Override
-            public void onSwipeLeft() {
-                if (reader.isCancelled() && settingsBundle.isSwipesEnabled()) {
+            public void onSwipeLeft(){
+                if (reader.isCancelled() && settingsBundle.isSwipesEnabled()){
                     int pos = reader.getPosition();
-                    if (pos < getParser().getReadable().getWordList().size() - 1) {
+                    if (pos < getParser().getReadable().getWordList().size() - 1){
                         updateView(pos + 1);
                         reader.setPosition(pos + 1);
                     }
@@ -111,8 +111,8 @@ public class ReaderFragment extends Fragment {
             }
 
             @Override
-            public void onClick() {
-                if (reader.isCompleted()) {
+            public void onClick(){
+                if (reader.isCompleted()){
                     getActivity().getFragmentManager().beginTransaction().remove(ReaderFragment.this).commit();
                 } else {
                     reader.incCancelled();
@@ -127,7 +127,7 @@ public class ReaderFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
         Log.d(LOGTAG, "onActivityCreated() called");
 
@@ -142,16 +142,16 @@ public class ReaderFragment extends Fragment {
         wrapInProgressBar();
     }
 
-    public void setTime(long localTime) {
+    public void setTime(long localTime){
         this.localTime = localTime;
         speedoHided = false;
     }
 
-    public TextParser getParser() {
+    public TextParser getParser(){
         return parser;
     }
 
-    private Spanned getLeftFormattedText(int pos) {
+    private Spanned getLeftFormattedText(int pos){
         String word = wordList.get(pos);
         int emphasisPosition = emphasisList.get(pos);
         String wordLeft = word.substring(0, emphasisPosition);
@@ -159,7 +159,7 @@ public class ReaderFragment extends Fragment {
         return Html.fromHtml(format);
     }
 
-    private Spanned getCurrentFormattedText(int pos) {
+    private Spanned getCurrentFormattedText(int pos){
         String word = wordList.get(pos);
         int emphasisPosition = emphasisList.get(pos);
         String wordEmphasis = word.substring(emphasisPosition, emphasisPosition + 1);
@@ -167,7 +167,7 @@ public class ReaderFragment extends Fragment {
         return Html.fromHtml(format);
     }
 
-    private Spanned getRightFormattedText(int pos) {
+    private Spanned getRightFormattedText(int pos){
         String word = wordList.get(pos);
         int emphasisPosition = emphasisList.get(pos);
         String wordRight = word.substring(emphasisPosition + 1, word.length());
@@ -178,11 +178,11 @@ public class ReaderFragment extends Fragment {
         return Html.fromHtml(format);
     }
 
-    public String getNextFormat(int pos) {
+    public String getNextFormat(int pos){
         int charLen = 0;
         int i = pos;
         StringBuilder format = new StringBuilder("&nbsp;<font color='#AAAAAA'>");
-        while (charLen < 40 && i < wordList.size() - 1 && wordList.get(i).charAt(wordList.get(i).length() - 1) != '\n') {
+        while (charLen < 40 && i < wordList.size() - 1 && wordList.get(i).charAt(wordList.get(i).length() - 1) != '\n'){
             String word = wordList.get(++i);
             charLen += word.length() + 1;
             format.append(word).append(" ");
@@ -191,7 +191,7 @@ public class ReaderFragment extends Fragment {
         return format.toString();
     }
 
-    private void findViews(View v) {
+    private void findViews(View v){
         currentTextView = (TextView) v.findViewById(R.id.currentWordTextView);
         leftTextView = (TextView) v.findViewById(R.id.leftWordTextView);
         rightTextView = (TextView) v.findViewById(R.id.rightWordTextView);
@@ -201,14 +201,14 @@ public class ReaderFragment extends Fragment {
         progressBarHandler = new Handler();
     }
 
-    private void initPrevButton() {
-        if (!settingsBundle.isSwipesEnabled()) {
+    private void initPrevButton(){
+        if (!settingsBundle.isSwipesEnabled()){
             prevButton.setImageResource(R.drawable.abc_ic_ab_back_holo_light);
             prevButton.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(View v){
                     int pos = reader.getPosition();
-                    if (pos > 0) {
+                    if (pos > 0){
                         updateView(pos - 1);
                         reader.setPosition(pos - 1);
                     }
@@ -219,15 +219,15 @@ public class ReaderFragment extends Fragment {
             prevButton.setVisibility(View.GONE); //consider INVISIBLE
     }
 
-    private void updateView(int pos) {
+    private void updateView(int pos){
         currentTextView.setText(getCurrentFormattedText(pos));
         leftTextView.setText(getLeftFormattedText(pos));
         rightTextView.setText(getRightFormattedText(pos));
 
         pBar.setProgress((int) (100f / wordList.size() * (pos + 1) + .5f));
 
-        if (!speedoHided) {
-            if (System.currentTimeMillis() - localTime > Constants.SPEEDO_SHOWING_LENGTH) {
+        if (!speedoHided){
+            if (System.currentTimeMillis() - localTime > Constants.SPEEDO_SHOWING_LENGTH){
                 speedo.setVisibility(View.INVISIBLE);
                 speedoHided = true;
             }
@@ -239,7 +239,7 @@ public class ReaderFragment extends Fragment {
             prevButton.setVisibility(View.INVISIBLE); //consider GONE
     }
 
-    private void showSpeedo(int wpm) {
+    private void showSpeedo(int wpm){
         speedo.setText(wpm + " wpm");
         speedo.setVisibility(View.VISIBLE);
         setTime(System.currentTimeMillis());
@@ -250,11 +250,11 @@ public class ReaderFragment extends Fragment {
      *
      * @param delta: delta itself. Default value: 50
      */
-    private void changeWPM(int delta) {
+    private void changeWPM(int delta){
         int wpm = settingsBundle.getWPM();
         int wpmNew = Math.min(1200, Math.max(wpm + delta, 50));
 
-        if (wpm != wpmNew) {
+        if (wpm != wpmNew){
             settingsBundle.setWPM(wpmNew);
             Log.d(LOGTAG, "WPM changed from " + wpm + " to " + wpmNew);
             showSpeedo(wpmNew);
@@ -263,7 +263,7 @@ public class ReaderFragment extends Fragment {
         }
     }
 
-    private void continueParserParty() {
+    private void continueParserParty(){
         readable = parser.getReadable();
 
         wordList = readable.getWordList();
@@ -285,8 +285,8 @@ public class ReaderFragment extends Fragment {
 
         new Thread(new Runnable() {
             @Override
-            public void run() {
-                while (!parserReceived) {
+            public void run(){
+                while (!parserReceived){
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
@@ -315,7 +315,7 @@ public class ReaderFragment extends Fragment {
     }
 
     @Override
-    public void onPause() {
+    public void onPause(){
         if (reader != null && !reader.isCancelled())
             reader.incCancelled();
         Log.d(LOGTAG, "onPause() called");
@@ -323,7 +323,7 @@ public class ReaderFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
+    public void onStop(){
         if (!TextUtils.isEmpty(readable.getPath()))
             getActivity().startService(createLastReadServiceIntent());
         settingsBundle.updatePreferences();
@@ -336,23 +336,24 @@ public class ReaderFragment extends Fragment {
      * don't sure that it must be inner class
      */
     private class Reader implements Runnable {
+
         private Handler handler;
         private int cancelled;
         private int pos = 0;
         private boolean completed = false;
 
-        public Reader(Handler handler, int pos) {
+        public Reader(Handler handler, int pos){
             this.handler = handler;
             this.pos = pos;
         }
 
         @Override
-        public void run() {
+        public void run(){
             int wlen = wordList.size();
             int i = pos;
-            if (i < wlen) {
+            if (i < wlen){
                 completed = false;
-                if (!isCancelled()) {
+                if (!isCancelled()){
                     updateView(i % wlen);
                     handler.postDelayed(this,
                             delayList.get(pos++ % wlen) * Math.round(100 * 60 * 1f / settingsBundle.getWPM()));
@@ -365,30 +366,31 @@ public class ReaderFragment extends Fragment {
             }
         }
 
-        public int getPosition() {
+        public int getPosition(){
             return pos;
         }
 
-        public void setPosition(int pos) {
+        public void setPosition(int pos){
             this.pos = pos;
         }
 
-        public boolean isCompleted() {
+        public boolean isCompleted(){
             return completed;
         }
 
-        public boolean isCancelled() {
+        public boolean isCancelled(){
             return cancelled % 2 == 1;
         }
 
-        public void incCancelled() {
+        public void incCancelled(){
             cancelled++;
         }
     }
 
     private class TextParserListener extends BroadcastReceiver {
+
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent){
             try {
                 parserReceived = true;
                 parser = TextParser.fromString(intent.getStringExtra(Constants.EXTRA_PARSER));

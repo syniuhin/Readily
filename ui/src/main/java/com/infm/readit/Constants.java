@@ -4,6 +4,7 @@ package com.infm.readit;
  * Created by infm on 6/25/14. Enjoy ;)
  */
 public class Constants {
+
     public static final String EXTRA_PATH = "path";
     public static final String EXTRA_ROWID = "_id";
     public static final String EXTRA_POSITION = "position";
@@ -30,11 +31,13 @@ public class Constants {
     public static final String PREF_DASH_OR_COLON = "pref_dashOrColon";
     public static final String PREF_BEGINNING_OF_PARAGRAPH = "pref_begOfPar";
     public static final String[] STR_PUNCTUATION_PREFS =
-            {PREF_PUNCTUATION_DEFAULT, PREF_COMA_OR_LONG, PREF_END_OF_SENTENCE, PREF_DASH_OR_COLON, PREF_BEGINNING_OF_PARAGRAPH};
+            {PREF_PUNCTUATION_DEFAULT, PREF_COMA_OR_LONG, PREF_END_OF_SENTENCE, PREF_DASH_OR_COLON,
+                    PREF_BEGINNING_OF_PARAGRAPH};
     public static final String[] STR_PUNCTUATION_DEFAULTS =
             {"10", "15", "20", "18", "20"};
 
-    public static final Integer NON_LINK_LENGTH = 500; //defines a length, which limits links with description(to reduce working time of regexp)
+    public static final Integer NON_LINK_LENGTH = 500;
+    //defines a length, which limits links with description(to reduce working time of regexp)
 
     public static final Integer SPEEDO_SHOWING_LENGTH = 1500; //time in ms for which speedo becomes visible
 

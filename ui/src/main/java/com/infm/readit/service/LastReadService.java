@@ -6,7 +6,6 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.util.Log;
-import android.util.Pair;
 
 import com.infm.readit.Constants;
 import com.infm.readit.database.DataBundle;
@@ -22,33 +21,34 @@ public class LastReadService extends IntentService {
      *
      * @param name Used to name the worker thread, important only for debugging.
      */
-    public LastReadService(String name) {
+    public LastReadService(String name){
         super(name);
     }
 
-    public LastReadService() {
+    public LastReadService(){
         super("LastReadService");
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    protected void onHandleIntent(Intent intent){
         DataBundle dataBundle = DataBundle.createFromIntent(intent);
         Log.d(LOGTAG, "DataBundle received: " + dataBundle.toString());
 
         ContentResolver contentResolver = getContentResolver();
         Boolean isCompleted = intent.getBooleanExtra(Constants.EXTRA_READER_STATUS, false);
         DataBundle rowData = Readable.getRowData(contentResolver.query(LastReadContentProvider.CONTENT_URI,
-                        null, null, null, null), dataBundle.getPath());
+                null, null, null, null), dataBundle.getPath());
 
         if (isCompleted){
             if (rowData != null)
-                contentResolver.delete(ContentUris.withAppendedId(LastReadContentProvider.CONTENT_URI, rowData.getRowId()),
+                contentResolver.delete(
+                        ContentUris.withAppendedId(LastReadContentProvider.CONTENT_URI, rowData.getRowId()),
                         null, null);
         } else {
             ContentValues contentValues = null;
             contentValues = Readable.getContentValues(dataBundle);
 
-            if (rowData == null) {
+            if (rowData == null){
                 contentResolver.insert(LastReadContentProvider.CONTENT_URI, contentValues);
             } else {
                 contentResolver.update(ContentUris.withAppendedId(

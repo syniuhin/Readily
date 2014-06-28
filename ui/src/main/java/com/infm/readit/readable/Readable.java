@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.Pair;
 
 import com.infm.readit.Constants;
 import com.infm.readit.R;
@@ -59,12 +58,12 @@ abstract public class Readable implements Serializable {
         timeSuffixSum = new ArrayList<Integer>();
     }
 
-    public static DataBundle getRowData(Cursor cursor, String path) {
+    public static DataBundle getRowData(Cursor cursor, String path){
         Log.d(LOGTAG, "getRowData() called; cursor size: " + cursor.getCount() + "; path: " + path);
         DataBundle rowData = null;
-        if (!TextUtils.isEmpty(path)) {
-            while (cursor.moveToNext() && rowData == null) {
-                if (path.equals(cursor.getString(LastReadDBHelper.COLUMN_PATH))) {
+        if (!TextUtils.isEmpty(path)){
+            while (cursor.moveToNext() && rowData == null){
+                if (path.equals(cursor.getString(LastReadDBHelper.COLUMN_PATH))){
                     rowData = new DataBundle(
                             cursor.getInt(LastReadDBHelper.COLUMN_ROWID),
                             cursor.getString(LastReadDBHelper.COLUMN_HEADER),
@@ -80,9 +79,9 @@ abstract public class Readable implements Serializable {
         return rowData;
     }
 
-    public static Readable newInstance(Context context, Bundle bundle) {
+    public static Readable newInstance(Context context, Bundle bundle){
         Readable readable;
-        if (bundle == null) {
+        if (bundle == null){
             readable = newInstance(context,
                     Readable.TYPE_TEST,
                     "",
@@ -98,15 +97,15 @@ abstract public class Readable implements Serializable {
         return readable;
     }
 
-    public static Readable newInstance(Context context, Integer intentType, String intentText, String intentPath) {
+    public static Readable newInstance(Context context, Integer intentType, String intentText, String intentPath){
         Readable readable;
-        if (TextUtils.isEmpty(intentText)) {
+        if (TextUtils.isEmpty(intentText)){
             readable = new TestSettingsText();
             readable.setText(context.getResources().getString(R.string.sample_text));
         } else {
             if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_CACHE, true))
                 intentPath = null;
-            switch (intentType) {
+            switch (intentType){
                 case TYPE_CLIPBOARD:
                     readable = new ClipboardReadable();
                     break;
@@ -125,14 +124,15 @@ abstract public class Readable implements Serializable {
                             !TextUtils.isEmpty(link = TextParser.findLink(TextParser.compilePattern(), intentText)))
                         readable = new HtmlReadable(link);
                     else
-                        throw new IllegalArgumentException("wtf, desired Readable doesn't fit any subclass"); // actually I don't know what to do here
+                        throw new IllegalArgumentException(
+                                "wtf, desired Readable doesn't fit any subclass"); // actually I don't know what to do here
             }
             readable.setPath(intentPath);
         }
         return readable;
     }
 
-    public static ContentValues getContentValues(DataBundle dataBundle) {
+    public static ContentValues getContentValues(DataBundle dataBundle){
         ContentValues values = new ContentValues();
         values.put(LastReadDBHelper.KEY_HEADER, dataBundle.getHeader());
         values.put(LastReadDBHelper.KEY_PATH, dataBundle.getPath());
@@ -164,114 +164,114 @@ abstract public class Readable implements Serializable {
 
     abstract public void process(Context context);
 
-    public Integer getType() {
+    public Integer getType(){
         return type;
     }
 
-    public void setType(Integer type) {
+    public void setType(Integer type){
         this.type = type;
     }
 
-    public Long getSeconds() {
+    public Long getSeconds(){
         return seconds;
     }
 
-    public void setSeconds(Long seconds) {
+    public void setSeconds(Long seconds){
         this.seconds = seconds;
     }
 
-    public Boolean getProcessFailed() {
+    public Boolean getProcessFailed(){
         return processFailed;
     }
 
-    public void setProcessFailed(Boolean processFailed) {
+    public void setProcessFailed(Boolean processFailed){
         this.processFailed = processFailed;
     }
 
-    public String getText() {
+    public String getText(){
         return text.toString();
     }
 
-    public void setText(String text) {
+    public void setText(String text){
         this.text = new StringBuilder(text);
     }
 
-    public String getHeader() {
+    public String getHeader(){
         return header;
     }
 
-    public void setHeader(String header) {
+    public void setHeader(String header){
         this.header = header;
     }
 
-    public String getTextType() {
+    public String getTextType(){
         return textType;
     }
 
-    public void setTextType(String textType) {
+    public void setTextType(String textType){
         this.textType = textType;
     }
 
-    public Long getDateChanged() {
+    public Long getDateChanged(){
         return seconds;
     }
 
-    public void setDateChanged(Long seconds) {
+    public void setDateChanged(Long seconds){
         this.seconds = seconds;
     }
 
-    public String getPath() {
+    public String getPath(){
         return path;
     }
 
-    public void setPath(String path) {
+    public void setPath(String path){
         this.path = path;
     }
 
-    public Integer getPosition() {
+    public Integer getPosition(){
         return position;
     }
 
-    public void setPosition(Integer position) {
+    public void setPosition(Integer position){
         this.position = position;
     }
 
-    public List<String> getWordList() {
+    public List<String> getWordList(){
         return wordList;
     }
 
-    public void setWordList(List<String> wordList) {
+    public void setWordList(List<String> wordList){
         this.wordList = wordList;
     }
 
-    public List<Integer> getDelayList() {
+    public List<Integer> getDelayList(){
         return delayList;
     }
 
-    public void setDelayList(List<Integer> delayList) {
+    public void setDelayList(List<Integer> delayList){
         this.delayList = delayList;
     }
 
-    public List<Integer> getEmphasisList() {
+    public List<Integer> getEmphasisList(){
         return emphasisList;
     }
 
-    public void setEmphasisList(List<Integer> emphasisList) {
+    public void setEmphasisList(List<Integer> emphasisList){
         this.emphasisList = emphasisList;
     }
 
-    public List<Integer> getTimeSuffixSum() {
+    public List<Integer> getTimeSuffixSum(){
         return timeSuffixSum;
     }
 
-    public void setTimeSuffixSum(List<Integer> timeSuffixSum) {
+    public void setTimeSuffixSum(List<Integer> timeSuffixSum){
         this.timeSuffixSum = timeSuffixSum;
     }
 
-    private void makeHeader() {
+    private void makeHeader(){
         int charLen = 0;
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < wordList.size() && charLen < 20; ++i) {
+        for (int i = 0; i < wordList.size() && charLen < 20; ++i){
             String word = wordList.get(i);
             sb.append(word).append(" ");
             charLen += word.length() + 1;
@@ -284,7 +284,7 @@ abstract public class Readable implements Serializable {
      *
      * @param intent: intent to put
      */
-    public void putDataInIntent(Intent intent) {
+    public void putDataInIntent(Intent intent){
         makeHeader();
         intent.putExtra(Constants.EXTRA_HEADER, header);
         intent.putExtra(Constants.EXTRA_PATH, path);

@@ -33,7 +33,7 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
     private ListView listView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initLastReadingView();
@@ -44,16 +44,15 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         loaderManager.initLoader(0, null, this);
     }
 
-
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.main, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
             case R.id.action_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
@@ -71,11 +70,11 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
     /**
      * This section is handled using abstract class Utils. Hope it's ok.
      */
-    private void getFromClipboard() {
+    private void getFromClipboard(){
         ReceiverActivity.startReceiverActivity(this, Readable.TYPE_CLIPBOARD, "");
     }
 
-    private void getFromFile() {
+    private void getFromFile(){
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("text/plain");
@@ -88,8 +87,8 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+        switch (requestCode){
             case FILE_SELECT_CODE:
                 if (resultCode == RESULT_OK)
                     ReceiverActivity.startReceiverActivity(this, Readable.TYPE_FILE, data.getData().toString());
@@ -99,23 +98,23 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+    public Loader<Cursor> onCreateLoader(int id, Bundle args){
         return new CursorLoader(this, LastReadContentProvider.CONTENT_URI, null, null, null, null);
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data){
         adapter.swapCursor(data);
         if (data.getCount() > 0)
             tvEmpty.setVisibility(View.GONE);
     }
 
     @Override
-    public void onLoaderReset(Loader loader) {
+    public void onLoaderReset(Loader loader){
         adapter.swapCursor(null);
     }
 
-    private void initLastReadingView() {
+    private void initLastReadingView(){
         listView = (ListView) findViewById(R.id.listView);
         tvEmpty = (TextView) findViewById(R.id.text_view_empty);
         tvEmpty.setVisibility(View.VISIBLE);
@@ -123,10 +122,10 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         listView.setEmptyView(tvEmpty);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
                 ReceiverActivity.startReceiverActivity(MainActivity.this,
-                                        Readable.TYPE_FILE,
-                                        ((TextView) view.findViewById(R.id.text_view_path)).getText().toString());
+                        Readable.TYPE_FILE,
+                        ((TextView) view.findViewById(R.id.text_view_path)).getText().toString());
                 Log.d(LOGTAG, "listView's onItemClick called()");
             }
         });

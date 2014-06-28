@@ -14,6 +14,7 @@ import android.util.Log;
  * Created by infm on 6/10/14. Enjoy ;)
  */
 public class LastReadContentProvider extends ContentProvider {
+
     public static final String AUTHORITY = "com.infm.readit.provider";
     public static final String PATH = LastReadDBHelper.TABLE;
     public static final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/" + PATH);
@@ -25,7 +26,7 @@ public class LastReadContentProvider extends ContentProvider {
     public static final int URI_LAST_READ_ID = 2;
     private static final UriMatcher uriMatcher;
 
-    static {
+    static{
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(AUTHORITY, PATH, URI_LAST_READ);
         uriMatcher.addURI(AUTHORITY, PATH + "/#", URI_LAST_READ_ID);
@@ -36,17 +37,17 @@ public class LastReadContentProvider extends ContentProvider {
     private String LOGTAG = "LastReadContentProvider";
 
     @Override
-    public boolean onCreate() {
+    public boolean onCreate(){
         Log.d(LOGTAG, "onCreate() call");
         dbHelper = new LastReadDBHelper(getContext());
         return true;
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder){
         Log.d(LOGTAG, "query() call, uri: " + uri.toString());
 
-        switch (uriMatcher.match(uri)) {
+        switch (uriMatcher.match(uri)){
             case URI_LAST_READ:
                 Log.d(LOGTAG, "querying list");
                 //do sth
@@ -65,9 +66,9 @@ public class LastReadContentProvider extends ContentProvider {
     }
 
     @Override
-    public String getType(Uri uri) {
+    public String getType(Uri uri){
         Log.d(LOGTAG, "getType() call, uri: " + uri);
-        switch (uriMatcher.match(uri)) {
+        switch (uriMatcher.match(uri)){
             case URI_LAST_READ:
                 return CONTENT_TYPE;
             case URI_LAST_READ_ID:
@@ -77,7 +78,7 @@ public class LastReadContentProvider extends ContentProvider {
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(Uri uri, ContentValues values){
         Log.d(LOGTAG, "insert() call, uri: " + uri.toString() + "; values: " + values.toString());
         if (uriMatcher.match(uri) != URI_LAST_READ)
             throw new IllegalArgumentException("Wrong URI: " + uri);
@@ -90,9 +91,9 @@ public class LastReadContentProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(Uri uri, String selection, String[] selectionArgs){
         Log.d(LOGTAG, "delete() call, uri: " + uri.toString());
-        switch (uriMatcher.match(uri)) {
+        switch (uriMatcher.match(uri)){
             case URI_LAST_READ:
                 Log.d(LOGTAG, "wtf, list to delete..");
                 break;
@@ -111,9 +112,9 @@ public class LastReadContentProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs){
         Log.d(LOGTAG, "update() call, uri: " + uri.toString() + "; values: " + values.toString());
-        switch (uriMatcher.match(uri)) {
+        switch (uriMatcher.match(uri)){
             case URI_LAST_READ:
                 Log.d(LOGTAG, "update of a list");
                 //do sth
@@ -133,7 +134,7 @@ public class LastReadContentProvider extends ContentProvider {
         return count;
     }
 
-    private String updateSingleSelection(String selection, String rowId) {
+    private String updateSingleSelection(String selection, String rowId){
         if (TextUtils.isEmpty(selection))
             selection = LastReadDBHelper.KEY_ROWID + " = " + rowId;
         else

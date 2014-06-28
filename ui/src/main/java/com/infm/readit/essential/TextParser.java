@@ -25,7 +25,7 @@ public class TextParser implements Serializable {
     public static final String LOGTAG = "TextParser";
     public static final Map<String, Integer> PRIORITIES;
 
-    static {
+    static{
         /**
          * a 	b 	c 	d 	e 	f 	g 	h 	i 	j 	k 	l 	m 	n 	o 	p 	q 	r 	s 	t 	u 	v 	w 	x 	y 	z
          * 9    4   4   4   10  12  10  12  8   10  8   6   6   5   8   6   12  5   15  12  14  12  14  13  14  12
@@ -46,7 +46,8 @@ public class TextParser implements Serializable {
          */
         final String russianAlpha = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
         final int[] russianPriorities =
-                {10, 4, 4, 7, 4, 7, 14, 9, 9, 6, 7, 5, 4, 4, 4, 10, 8, 10, 12, 5, 9, 15, 14, 14, 13, 10, 10, 0, 10, 0, 10, 12, 11};
+                {10, 4, 4, 7, 4, 7, 14, 9, 9, 6, 7, 5, 4, 4, 4, 10, 8, 10, 12, 5, 9, 15, 14, 14, 13, 10, 10, 0, 10, 0,
+                        10, 12, 11};
 
         i = 0;
         for (char c : russianAlpha.toCharArray())
@@ -74,26 +75,26 @@ public class TextParser implements Serializable {
     /**
      * stackOverFlow guys told about it
      */
-    public TextParser() {
+    public TextParser(){
     }
 
     /**
      * TODO: design it in more elegant way
      */
-    public TextParser(Readable readable) {
+    public TextParser(Readable readable){
         this.readable = readable;
         lengthPreference = 13; //TODO:implement it optional
     }
 
-    public static TextParser newInstance(Readable readable, SettingsBundle settingsBundle) {
+    public static TextParser newInstance(Readable readable, SettingsBundle settingsBundle){
         TextParser textParser = new TextParser(readable);
         textParser.setDelayCoefficients(settingsBundle.getDelayCoefficients());
         textParser.process();
         return textParser;
     }
 
-    public static String findLink(Pattern pattern, String text) {
-        if (!text.isEmpty()) {
+    public static String findLink(Pattern pattern, String text){
+        if (!text.isEmpty()){
             Matcher matcher = pattern.matcher(text);
             if (matcher.find())
                 return matcher.group();
@@ -101,7 +102,7 @@ public class TextParser implements Serializable {
         return "";
     }
 
-    public static Pattern compilePattern() {
+    public static Pattern compilePattern(){
         return Pattern.compile(
                 "\\b(((ht|f)tp(s?)\\:\\/\\/|~\\/|\\/)|www.)" +
                         "(\\w+:\\w+@)?(([-\\w]+\\.)+(com|org|net|gov" +
@@ -120,7 +121,7 @@ public class TextParser implements Serializable {
      * Read the object from Base64 string.
      */
     public static TextParser fromString(String s) throws IOException,
-            ClassNotFoundException {
+            ClassNotFoundException{
         byte[] data = Base64Coder.decode(s);
         ObjectInputStream ois = new ObjectInputStream(
                 new ByteArrayInputStream(data));
@@ -129,7 +130,7 @@ public class TextParser implements Serializable {
         return o;
     }
 
-    public void process() {
+    public void process(){
         normalize(readable);
         cutLongWords(readable);
         buildDelayList(readable);
@@ -142,7 +143,7 @@ public class TextParser implements Serializable {
      * Write the object to a Base64 string.
      */
     @Override
-    public String toString() {
+    public String toString(){
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = null;
         try {
@@ -156,28 +157,28 @@ public class TextParser implements Serializable {
         return null;
     }
 
-    public int getLengthPreference() {
+    public int getLengthPreference(){
         return lengthPreference;
     }
 
-    public List<Integer> getDelayCoefficients() {
+    public List<Integer> getDelayCoefficients(){
         return delayCoefficients;
     }
 
-    public void setDelayCoefficients(List<Integer> delayCoefficients) {
+    public void setDelayCoefficients(List<Integer> delayCoefficients){
         this.delayCoefficients = delayCoefficients;
     }
 
-    public Readable getReadable() {
+    public Readable getReadable(){
         return readable;
     }
 
-    public void setReadable(Readable readable) {
+    public void setReadable(Readable readable){
         this.readable = readable;
     }
 
-    private int checkForRepetitions(char ch) {
-        for (int i = 0; i < makeMeSpecial.length(); ++i) {
+    private int checkForRepetitions(char ch){
+        for (int i = 0; i < makeMeSpecial.length(); ++i){
             if (Character.isWhitespace(ch))
                 return 0;
             if (ch == makeMeSpecial.charAt(i))
@@ -186,18 +187,18 @@ public class TextParser implements Serializable {
         return -1;
     }
 
-    protected void normalize(Readable readable) {
+    protected void normalize(Readable readable){
         String text = readable.getText();
 
         StringBuilder res = new StringBuilder();
 
 		/* repetitions */
         int prev = -1;
-        for (int i = 0; i < text.length(); ++i) {
+        for (int i = 0; i < text.length(); ++i){
             char ch = text.charAt(i);
             int pos = checkForRepetitions(ch);
-            if (pos > 0) {
-                if (prev != pos) {
+            if (pos > 0){
+                if (prev != pos){
                     prev = pos;
                     res.append(ch);
                 }
@@ -210,7 +211,7 @@ public class TextParser implements Serializable {
 		/* spaces before punctuation */
         text = res.toString();
         res = new StringBuilder();
-        for (int i = 0; i < text.length(); ++i) {
+        for (int i = 0; i < text.length(); ++i){
             String ch = text.substring(i, i + 1);
             if (res.length() > 0 && makeMeSpecial.contains(ch) && !Character.isWhitespace(ch.charAt(0)) &&
                     res.charAt(res.length() - 1) == ' ')
@@ -221,18 +222,19 @@ public class TextParser implements Serializable {
 		/* spaces after punct. */
         text = res.toString();
         res = new StringBuilder();
-        for (int i = 0; i < text.length(); ++i) {
+        for (int i = 0; i < text.length(); ++i){
             String ch = text.substring(i, i + 1);
             res.append(ch);
-            if (makeMeSpecial.contains(ch) && !Character.isWhitespace(ch.charAt(0)) && i < text.length() - 1 && Character.isLetter(text.charAt(i + 1)))
+            if (makeMeSpecial.contains(ch) && !Character.isWhitespace(
+                    ch.charAt(0)) && i < text.length() - 1 && Character.isLetter(text.charAt(i + 1)))
                 res.append(" ");
         }
 
         /* abbreviations */
         text = res.toString();
         res = new StringBuilder();
-        for (int i = 0; i < text.length(); ++i) {
-            if (i > 0 && text.charAt(i - 1) == '.') {
+        for (int i = 0; i < text.length(); ++i){
+            if (i > 0 && text.charAt(i - 1) == '.'){
                 if (!(i + 2 < text.length() && text.charAt(i + 2) == '.'))
                     res.append(text.charAt(i));
             } else res.append(text.charAt(i));
@@ -240,12 +242,12 @@ public class TextParser implements Serializable {
         readable.setText(res.toString());
     }
 
-    protected void cutLongWords(Readable readable) {
+    protected void cutLongWords(Readable readable){
         String text = readable.getText();
         List<String> res = new ArrayList<String>();
-        for (String word : text.split(" ")) {
+        for (String word : text.split(" ")){
             boolean isComplex = false;
-            while (word.length() - 1 > lengthPreference) {
+            while (word.length() - 1 > lengthPreference){
                 isComplex = true;
                 String toAppend;
                 int pos = word.length() - 3;
@@ -265,7 +267,7 @@ public class TextParser implements Serializable {
         readable.setText(sb.toString());
     }
 
-    protected void cleanFromLines(Readable readable) {
+    protected void cleanFromLines(Readable readable){
         List<String> words = new ArrayList<String>(Arrays.asList(readable.getText().split(" ")));
         List<String> res = new ArrayList<String>();
         for (String word : words)
@@ -275,17 +277,17 @@ public class TextParser implements Serializable {
         readable.setWordList(res);
     }
 
-    protected int measureWord(String word) {
+    protected int measureWord(String word){
         if (word.length() == 0)
             return delayCoefficients.get(0);
         int res = 0;
-        for (char ch : word.toCharArray()) {
+        for (char ch : word.toCharArray()){
             int tempRes = delayCoefficients.get(0);
             if (ch == '-')
                 tempRes = delayCoefficients.get(1);
             if (ch == '\t')
                 tempRes = delayCoefficients.get(4);
-            switch (ch) {
+            switch (ch){
                 case ',':
                     tempRes = delayCoefficients.get(1);
                     break;
@@ -318,7 +320,7 @@ public class TextParser implements Serializable {
         return res;
     }
 
-    protected void buildDelayList(Readable readable) {
+    protected void buildDelayList(Readable readable){
         String text = readable.getText();
         List<Integer> res = new ArrayList<Integer>();
         String[] words = text.split(" ");
@@ -326,7 +328,7 @@ public class TextParser implements Serializable {
         readable.setDelayList(res);
     }
 
-    protected void buildTimeSuffixSum(Readable readable) {
+    protected void buildTimeSuffixSum(Readable readable){
         List<Integer> delayList = readable.getDelayList();
         List<Integer> res = new ArrayList<Integer>();
         res.add(delayList.get(0));
@@ -336,29 +338,33 @@ public class TextParser implements Serializable {
         readable.setTimeSuffixSum(res);
     }
 
-    protected void buildEmphasis(Readable readable) {
+    protected void buildEmphasis(Readable readable){
         List<String> words = readable.getWordList();
         List<Integer> res = new ArrayList<Integer>();
-        for (String word : words) {
+        for (String word : words){
             /* some kind of experiment, huh? */
             Map<String, Pair<Integer, Integer>> priorities = new HashMap<String, Pair<Integer, Integer>>();
             int len = word.length();
-            for (int i = 0; i < len; ++i) {
+            for (int i = 0; i < len; ++i){
                 if (!Character.isLetter(word.charAt(i))) continue;
 
                 String ch = word.substring(i, i + 1).toLowerCase();
                 if (PRIORITIES.get(ch) != null &&
                         (priorities.get(ch) == null ||
-                                priorities.get(ch).first < PRIORITIES.get(ch) * 100 / Math.max(1, Math.abs(len / 2 - i)))) {
-                    priorities.put(ch, new Pair<Integer, Integer>(PRIORITIES.get(ch) * 100 / Math.max(1, Math.abs(len / 2 - i)), i));
+                                priorities.get(ch).first < PRIORITIES.get(ch) * 100 / Math.max(1,
+                                        Math.abs(len / 2 - i)))){
+                    priorities.put(ch,
+                            new Pair<Integer, Integer>(PRIORITIES.get(ch) * 100 / Math.max(1, Math.abs(len / 2 - i)),
+                                    i)
+                    );
                 } else priorities.put(ch, new Pair<Integer, Integer>(0, i));
-                if (i + 1 < word.length() && word.charAt(i) == word.charAt(i + 1)) {
+                if (i + 1 < word.length() && word.charAt(i) == word.charAt(i + 1)){
                     priorities.put(ch, new Pair<Integer, Integer>(priorities.get(ch).first * 4, i));
                 }
             }
             int resInd = word.length() / 2, mmax = 0;
-            for (Map.Entry<String, Pair<Integer, Integer>> entry : priorities.entrySet()) {
-                if (mmax < entry.getValue().first) {
+            for (Map.Entry<String, Pair<Integer, Integer>> entry : priorities.entrySet()){
+                if (mmax < entry.getValue().first){
                     mmax = entry.getValue().first;
                     resInd = entry.getValue().second;
                 }

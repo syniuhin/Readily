@@ -9,6 +9,7 @@ import android.util.Log;
  * Created by infm on 5/22/14. Enjoy ;)
  */
 public class LastReadDBHelper extends SQLiteOpenHelper {
+
     public static final String NAME = "last_read";
     public static final String TABLE = "last_read_table";
     public static final int VERSION = 1;
@@ -33,17 +34,17 @@ public class LastReadDBHelper extends SQLiteOpenHelper {
     public static final Integer COLUMN_PERCENT = 4;
     public static final Integer COLUMN_TIME_MODIFIED = 3;
 
-    public LastReadDBHelper(Context context) {
+    public LastReadDBHelper(Context context){
         super(context, NAME, null, VERSION);
     }
 
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void onCreate(SQLiteDatabase db){
         db.execSQL(CREATE);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion){
         Log.d("DBHelper", "helper updates db??");
     }
 }

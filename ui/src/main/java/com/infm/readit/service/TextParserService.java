@@ -14,7 +14,8 @@ import com.infm.readit.util.SettingsBundle;
 /**
  * Created by infm on 6/26/14. Enjoy ;)
  */
-public class TextParserService extends IntentService/* implements Serializable */{ //I don't know why, but TextParser.toString() throws an error otherwise
+public class TextParserService extends
+        IntentService/* implements Serializable */ { //I don't know why, but TextParser.toString() throws an error otherwise
 
     private static final String LOGTAG = "TextParserService";
 
@@ -23,7 +24,7 @@ public class TextParserService extends IntentService/* implements Serializable *
      *
      * @param name Used to name the worker thread, important only for debugging.
      */
-    public TextParserService(String name) {
+    public TextParserService(String name){
         super(name);
     }
 
@@ -32,7 +33,7 @@ public class TextParserService extends IntentService/* implements Serializable *
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    protected void onHandleIntent(Intent intent){
         Log.d(LOGTAG, "onHandleIntent() called");
         Readable readable = Readable.newInstance(this,
                 intent.getExtras());

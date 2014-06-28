@@ -5,13 +5,14 @@ package com.infm.readit.readable;
  * should implement to solve consumer/producer problem
  */
 public class ChunkData {
+
     Integer byteSize;
 
-    public Integer getByteSize() {
+    public Integer getByteSize(){
         return byteSize;
     }
 
-    public void setByteSize(Integer byteSize) {
+    public void setByteSize(Integer byteSize){
         this.byteSize = byteSize;
     }
 }
