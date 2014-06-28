@@ -4,10 +4,12 @@ import android.content.Intent;
 
 import com.infm.readit.Constants;
 
+import java.io.Serializable;
+
 /**
  * Created by infm on 6/24/14. Enjoy ;)
  */
-public class DataBundle {
+public class DataBundle implements Serializable {
 
     private String header;
     private String path;
@@ -15,6 +17,7 @@ public class DataBundle {
     private String percent;
     private Integer rowId;
 
+    public DataBundle(){}
     public DataBundle(String header, String path, Integer position, String percent){
         this.header = header;
         this.path = path;

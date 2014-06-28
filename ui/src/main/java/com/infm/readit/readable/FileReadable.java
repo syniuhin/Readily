@@ -8,7 +8,9 @@ import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import com.infm.readit.R;
-import com.infm.readit.database.LastReadContentProvider;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -28,7 +30,7 @@ public class FileReadable extends Readable {
 
     private String extension;
 
-    public static String uriToStringPath(Context context, Uri uri) throws URISyntaxException{
+    public static String takePath(Context context, Uri uri) throws URISyntaxException{
         if ("content".equalsIgnoreCase(uri.getScheme())){
             String[] projection = {"_data"};
             Cursor cursor = null;
@@ -48,44 +50,45 @@ public class FileReadable extends Readable {
             Log.d(LOGTAG, "path: " + path);
             return path;
         }
-        return null;
+        return "";
     }
 
-    public String getExtension(){
-        return extension;
+    //implement it properly
+    public static String takePath(Context context, String s) throws URISyntaxException{
+        if ("content".equals(s.substring(0, 7))){
+            return FileReadable.takePath(context, Uri.parse(s));
+        } else
+            return s;
     }
+
+    public String getExtension(){ return extension; }
 
     @Override
-    public String getLink(){
-        return null;
-    }
+    public String getLink(){ return null; }
 
     @Override
-    public void setLink(String link){
-
-    }
+    public void setLink(String link){}
 
     @Override
-    public ChunkData getChunkData(){
-        return null;
-    }
+    public ChunkData getChunkData(){ return null; }
 
     @Override
-    public void setChunkData(ChunkData data){
-
-    }
+    public void setChunkData(ChunkData data){}
 
     public void process(Context context){
         Log.d(LOGTAG, "process() is called");
         try {
-            path = FileReadable.uriToStringPath(context, Uri.parse(path));
+            path = FileReadable.takePath(context, path);
             if (path == null){
                 Log.d(LOGTAG, "path is null");
                 return;
             }
 
             extension = MimeTypeMap.getFileExtensionFromUrl(path);
-            if ("txt".equals(extension)){
+            StringBuilder text = new StringBuilder();
+            type = -1;
+
+            if ("txt".equals(extension)){ //TODO: read all plain text files, not only txt ones
                 FileReader fileReader = new FileReader(path);
                 BufferedReader br = new BufferedReader(fileReader);
                 String sCurrentLine;
@@ -93,18 +96,20 @@ public class FileReadable extends Readable {
                     text.append(sCurrentLine).append('\n');
                 br.close();
                 type = TYPE_TXT;
-                textType = "text/plain";
                 Log.d(LOGTAG, "type: txt");
             }
+
             if ("epub".equals(extension)){
                 Book book = (new EpubReader()).readEpub(new FileInputStream(path));
                 for (Resource res : book.getContents())
                     text.append(new String(res.getData()));
+                text = new StringBuilder(parseEpub(text.toString())); //NullPointerEx can be thrown
                 type = TYPE_EPUB;
-                textType = "text/html";
                 Log.d(LOGTAG, "type: epub");
             }
 
+            this.text = text;
+            textType = "text/plain";
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -115,10 +120,20 @@ public class FileReadable extends Readable {
         if (processFailed = type == -1)
             Toast.makeText(context, R.string.wrong_ext, Toast.LENGTH_SHORT).show();
         else {
-            rowData = Readable.getRowData(context.getContentResolver().query(LastReadContentProvider.CONTENT_URI,
-                    null, null, null, null), path); //looks weird, actually. upd: it will be in separate thread, so ok.
+            rowData = takeRowData(context);
             if (rowData != null)
                 position = rowData.getPosition();
         }
+    }
+
+    private String parseEpub(String text){
+        Document doc = null;
+        try {
+            doc = Jsoup.parse(text);
+            return doc.title() + doc.select("p").text();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 }

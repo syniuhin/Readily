@@ -12,6 +12,7 @@ import android.util.Log;
 import com.infm.readit.Constants;
 import com.infm.readit.R;
 import com.infm.readit.database.DataBundle;
+import com.infm.readit.database.LastReadContentProvider;
 import com.infm.readit.database.LastReadDBHelper;
 import com.infm.readit.essential.TextParser;
 
@@ -56,6 +57,8 @@ abstract public class Readable implements Serializable {
         delayList = new ArrayList<Integer>();
         emphasisList = new ArrayList<Integer>();
         timeSuffixSum = new ArrayList<Integer>();
+        rowData = new DataBundle();
+        processFailed = false;
     }
 
     public static DataBundle getRowData(Cursor cursor, String path){
@@ -122,7 +125,7 @@ abstract public class Readable implements Serializable {
                     String link;
                     if (intentText.length() < Constants.NON_LINK_LENGTH &&
                             !TextUtils.isEmpty(link = TextParser.findLink(TextParser.compilePattern(), intentText)))
-                        readable = new HtmlReadable(link);
+                        readable = new NetReadable(link);
                     else
                         throw new IllegalArgumentException(
                                 "wtf, desired Readable doesn't fit any subclass"); // actually I don't know what to do here
@@ -290,5 +293,10 @@ abstract public class Readable implements Serializable {
         intent.putExtra(Constants.EXTRA_PATH, path);
         intent.putExtra(Constants.EXTRA_POSITION, position);
         intent.putExtra(Constants.EXTRA_PERCENT, 100 - (int) (position * 100f / wordList.size() + .5f) + "%");
+    }
+
+    protected DataBundle takeRowData(Context context){
+        return Readable.getRowData(context.getContentResolver().query(LastReadContentProvider.CONTENT_URI,
+                null, null, null, null), path); //looks weird, actually. upd: it will be in separate thread, so ok.
     }
 }
