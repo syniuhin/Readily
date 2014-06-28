@@ -43,4 +43,6 @@ public class Constants {
 
     public static final String TEXT_PARSER_READY = "com.infm.readit.TEXTPARSERISREADY";
     public static final String TEXT_PARSER_NOT_READY = "com.infm.readit.TEXTPARSERISNOTREADY";
+
+    public static final Integer SECOND = 1000;
 }

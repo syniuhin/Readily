@@ -2,7 +2,6 @@ package com.infm.readit;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -45,14 +44,14 @@ public class ReaderFragment extends Fragment {
     private boolean speedoHided = true;
 
     //initialized in onCreateView()
-    private RelativeLayout fragmentLayout;
+    private RelativeLayout readerLayout;
     private TextView currentTextView;
     private TextView leftTextView;
     private TextView rightTextView;
     private TextView speedo;
-    private ProgressBar pBar;
+    private ProgressBar progressBar;
+    private ProgressBar parsingProgressBar;
     private ImageButton prevButton;
-    private Handler progressBarHandler;
     //initialized in onActivityCreated()
     private Reader reader;
     private SharedPreferences sPref;
@@ -71,7 +70,7 @@ public class ReaderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         Log.d(LOGTAG, "onCreateView() called");
 
-        fragmentLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_reader, container, false);
+        RelativeLayout fragmentLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_reader, container, false);
         findViews(fragmentLayout);
 
         RelativeLayout rl = (RelativeLayout) fragmentLayout.findViewById(R.id.reader_layout);
@@ -139,7 +138,6 @@ public class ReaderFragment extends Fragment {
         createReceiver(activity);
 
         initPrevButton();
-        wrapInProgressBar();
     }
 
     public void setTime(long localTime){
@@ -192,13 +190,14 @@ public class ReaderFragment extends Fragment {
     }
 
     private void findViews(View v){
+        readerLayout = (RelativeLayout) v.findViewById(R.id.reader_layout);
+        parsingProgressBar = (ProgressBar) v.findViewById(R.id.parsingProgressBar);
         currentTextView = (TextView) v.findViewById(R.id.currentWordTextView);
         leftTextView = (TextView) v.findViewById(R.id.leftWordTextView);
         rightTextView = (TextView) v.findViewById(R.id.rightWordTextView);
-        pBar = (ProgressBar) v.findViewById(R.id.progressBar);
+        progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
         speedo = (TextView) v.findViewById(R.id.speedo);
         prevButton = (ImageButton) v.findViewById(R.id.previousWordImageButton);
-        progressBarHandler = new Handler();
     }
 
     private void initPrevButton(){
@@ -224,7 +223,7 @@ public class ReaderFragment extends Fragment {
         leftTextView.setText(getLeftFormattedText(pos));
         rightTextView.setText(getRightFormattedText(pos));
 
-        pBar.setProgress((int) (100f / wordList.size() * (pos + 1) + .5f));
+        progressBar.setProgress((int) (100f / wordList.size() * (pos + 1) + .5f));
 
         if (!speedoHided){
             if (System.currentTimeMillis() - localTime > Constants.SPEEDO_SHOWING_LENGTH){
@@ -269,33 +268,12 @@ public class ReaderFragment extends Fragment {
         wordList = readable.getWordList();
         emphasisList = readable.getEmphasisList();
         delayList = readable.getDelayList();
+
+        readerLayout.setVisibility(View.VISIBLE);
+        parsingProgressBar.setVisibility(View.GONE);
         final Handler handler = new Handler();
         reader = new Reader(handler, readable.getPosition());
         handler.postDelayed(reader, 2000); //magic number indeed, I don't know what it does
-    }
-
-    private void wrapInProgressBar(){
-        final ProgressDialog progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setIndeterminate(true);
-        progressDialog.setTitle("Loading...");
-        progressDialog.setMessage("Content is being parsed");
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-
-        progressDialog.show();
-
-        new Thread(new Runnable() {
-            @Override
-            public void run(){
-                while (!parserReceived){
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                progressDialog.dismiss();
-            }
-        }).start();
     }
 
     private Intent createLastReadServiceIntent(){
@@ -324,7 +302,7 @@ public class ReaderFragment extends Fragment {
 
     @Override
     public void onStop(){
-        if (!TextUtils.isEmpty(readable.getPath()))
+        if (parserReceived && !TextUtils.isEmpty(readable.getPath()))
             getActivity().startService(createLastReadServiceIntent());
         settingsBundle.updatePreferences();
         manager.unregisterReceiver(textParserListener);
