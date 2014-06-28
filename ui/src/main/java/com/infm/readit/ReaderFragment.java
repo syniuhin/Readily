@@ -24,6 +24,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.infm.readit.essential.TextParser;
 import com.infm.readit.readable.Readable;
 import com.infm.readit.service.LastReadService;
@@ -72,6 +74,7 @@ public class ReaderFragment extends Fragment {
 
         RelativeLayout fragmentLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_reader, container, false);
         findViews(fragmentLayout);
+        periodicallyAnimate();
 
         RelativeLayout rl = (RelativeLayout) fragmentLayout.findViewById(R.id.reader_layout);
         rl.setOnTouchListener(new OnSwipeTouchListener(getActivity()) {
@@ -115,9 +118,13 @@ public class ReaderFragment extends Fragment {
                     getActivity().getFragmentManager().beginTransaction().remove(ReaderFragment.this).commit();
                 } else {
                     reader.incCancelled();
-                    Integer toShow = (reader.isCancelled())
-                            ? R.string.pause
-                            : R.string.play;
+                    Integer toShow;
+                    if (reader.isCancelled()){
+                        toShow = R.string.pause;
+                        YoYo.with(Techniques.Pulse).
+                                duration(700).
+                                playOn(readerLayout);
+                    } else toShow = R.string.play;
                     Toast.makeText(getActivity(), toShow, Toast.LENGTH_SHORT).show();
                 }
             }
@@ -269,11 +276,19 @@ public class ReaderFragment extends Fragment {
         emphasisList = readable.getEmphasisList();
         delayList = readable.getDelayList();
 
+        YoYo.with(Techniques.ZoomOut).
+                duration(Constants.SECOND).
+                playOn(parsingProgressBar);
+        //parsingProgressBar.setVisibility(View.GONE);
+
         readerLayout.setVisibility(View.VISIBLE);
-        parsingProgressBar.setVisibility(View.GONE);
+        YoYo.with(Techniques.ZoomInDown).
+                duration(2 * Constants.SECOND).
+                playOn(readerLayout);
+
         final Handler handler = new Handler();
         reader = new Reader(handler, readable.getPosition());
-        handler.postDelayed(reader, 2000); //magic number indeed, I don't know what it does
+        handler.postDelayed(reader, 3 * Constants.SECOND); //magic number indeed, I don't know what it does
     }
 
     private Intent createLastReadServiceIntent(){
@@ -290,6 +305,61 @@ public class ReaderFragment extends Fragment {
         IntentFilter intentFilter = new IntentFilter(Constants.TEXT_PARSER_READY);
         intentFilter.addAction(Constants.TEXT_PARSER_NOT_READY);
         manager.registerReceiver(textParserListener, intentFilter);
+    }
+
+    /**
+     * periodically animates progressBar
+     */
+    private void periodicallyAnimate(){
+        final Handler handler = new Handler();
+        Runnable anim = new Runnable() {
+            @Override
+            public void run(){
+                if (!parserReceived){
+                    final int durationTime = 500 + (int) (Math.random() * 500);
+                    final int sleepTime = 1000 + (int) (Math.random() * 3000);
+                    Techniques choice;
+                    int r = (int) (Math.random() * 4);
+                    switch (r){
+                        case 0:
+                            choice = Techniques.Pulse;
+                            break;
+                        case 1:
+                            choice = Techniques.FlipOutY;
+                            break;
+                        case 2:
+                            choice = Techniques.Shake;
+                            break;
+                        case 3:
+                            choice = Techniques.Tada;
+                            break;
+                        default:
+                            choice = Techniques.Wobble;
+                            break;
+                    }
+                    YoYo.with(choice).
+                            duration(durationTime).
+                            playOn(parsingProgressBar);
+                    handler.postDelayed(this, durationTime + sleepTime);
+                }
+            }
+        };
+        handler.postDelayed(anim, 0);
+/*
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run(){
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    YoYo.with(Techniques.Pulse).
+                            duration(durationTime).
+                            playOn(parsingProgressBar);
+                }
+            }, 2000);
+*/
     }
 
     @Override
