@@ -5,6 +5,7 @@
     <string name="app_name">RSVP-Reader</string>
     <string name="title_activity_main">ReadIt!</string>
     <string name="title_activity_receiver">ReadIt!</string>
+    <string name="title_activity_settings">Settings</string>
 
     <!-- UI -->
     <string name="current_word">Sample</string>
@@ -16,12 +17,16 @@
     <string name="choose_chapter">Choose a chapter</string>
     <string name="last_reading_title">Last reading title</string>
     <string name="last_reading_percent">%</string>
-    <string name="last_reading_time_left">sec</string>
+    <string name="last_reading_time">sec</string>
     <string name="monospace">Monospace</string>
     <string name="sans">Sans</string>
     <string name="serif">Serif</string>
     <string name="continue_reading">Continue</string>
     <string name="list_empty_view">Hey, take some reading!</string>
+    <string name="pause">Pause</string>
+    <string name="play">Play</string>
+    <string name="file_manager_required">Please install a File Manager</string>
+    <string name="wrong_ext">Wrong extension</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Read a text from the clipboard</string>
@@ -48,10 +53,10 @@
     <string name="preferences_send_feedback">Send a feedback</string>
     <string name="preferences_send_feedback_summary">Tell me your ideas :)</string>
     <string name="preferences_typeface_title">Choose text typeface</string>
+    <string name="preference_cache">Save readings</string>
+    <string name="preference_cache_summary">Caches uncompleted readings</string>
     <string name="mail_to_me">mailto:i.s.sinyugin@gmail.com</string>
     <string name="about">About</string>
-    <string name="file_manager_required">Please install a File Manager</string>
-    <string name="wrong_ext">Wrong extension</string>
 
     <string name="sample_text"> Inside the flat a fruity voice was reading out a list of figures which had something to do with the production of pig iron.
         The voice came from an oblong metal plaque like a dulled mirror which formed part of the surface of the right-hand wall.

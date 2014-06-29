@@ -3,76 +3,20 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="100dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/last_reading">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView_last_reading_title"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:textSize="30sp"
-            android:text="@string/last_reading_title"
-            android:typeface="serif"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
-            android:maxWidth="280dp"
-            android:textStyle="bold"
-            android:singleLine="true" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/last_reading_percent"
-            android:id="@+id/textView_last_reading_percent"
-            android:layout_below="@+id/textView_last_reading_title"
-            android:layout_alignLeft="@+id/textView_last_reading_title"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
-            android:textSize="18sp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/last_reading_time_left"
-            android:id="@+id/textView_last_reading_time_modified"
-            android:layout_below="@+id/textView_last_reading_title"
-            android:layout_toRightOf="@+id/textView_last_reading_percent"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="10dp"
-            android:textSize="18sp" />
-
-        <Button
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:text="@string/continue_reading"
-            android:id="@+id/button_continue_reading"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:background="#29142eff"
-            android:singleLine="true"
-            android:textSize="22sp"
-            android:typeface="serif"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_below="@+id/textView_last_reading_title" />
-
-    </RelativeLayout>
-
     <ListView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
         android:id="@+id/listView"
-        android:layout_centerVertical="true"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+    <TextView
+        android:id="@+id/text_view_empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_below="@+id/last_reading"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp" />
+        android:layout_centerVertical="true"
+        android:text="@string/list_empty_view"
+        android:textIsSelectable="false"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:typeface="serif" />
 </RelativeLayout>

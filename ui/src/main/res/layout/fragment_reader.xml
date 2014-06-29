@@ -1,114 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="90dp"
     android:background="@drawable/reader_border">
 
     <ProgressBar
+        android:id="@+id/progressBar"
         style="@style/Widget.AppCompat.Base.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="5dp"
-        android:id="@+id/progressBar"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:indeterminateOnly="false"
         android:layout_marginLeft="3dp"
-        android:layout_marginRight="3dp" />
+        android:layout_marginRight="3dp"
+        android:indeterminateOnly="false"/>
 
     <ImageButton
+        android:id="@+id/previousWordImageButton"
         android:layout_width="20dp"
         android:layout_height="wrap_content"
-        android:id="@+id/previousWordImageButton"
-        android:contentDescription="@string/top_pointer_description"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:src="@drawable/abc_ic_ab_back_holo_light"
-        android:background="#53ededed"
         android:layout_above="@+id/progressBar"
-        android:visibility="invisible"
-        android:layout_margin="3dp" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="3dp"
+        android:background="#53ededed"
+        android:contentDescription="@string/top_pointer_description"
+        android:src="@drawable/abc_ic_ab_back_holo_light"
+        android:visibility="invisible"/>
 
     <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="80dp"
+        android:id="@+id/reader_layout"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
         android:layout_centerInParent="true"
-        android:background="@android:color/transparent"
         android:layout_toRightOf="@id/previousWordImageButton"
-        android:id="@+id/reader_layout">
+        android:background="@android:color/transparent"
+        android:visibility="gone">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+        <TextView
                 android:id="@+id/currentWordTextView"
-                android:typeface="monospace"
-                android:textSize="22sp"
-                android:singleLine="true"
-                android:layout_gravity="center"
-                android:text="C"
-                android:layout_centerVertical="true"
-                android:layout_alignRight="@+id/pointerTopImageView"
-                android:layout_alignLeft="@+id/pointerTopImageView" />
-
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/pointerTopImageView"
+                android:layout_centerVertical="true"
+                android:singleLine="true"
+                android:textSize="20sp"
+                android:typeface="monospace"/>
+
+        <TextView
                 android:id="@+id/leftWordTextView"
-                android:typeface="monospace"
-                android:text="Left"
-                android:textSize="22sp"
-                android:singleLine="true"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignBaseline="@+id/currentWordTextView"
-                android:layout_toLeftOf="@+id/currentWordTextView" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/rightWordTextView"
-                android:typeface="monospace"
-                android:text="Right"
-                android:textSize="22sp"
-                android:singleLine="true"
                 android:layout_centerVertical="true"
-                android:layout_gravity="center"
-                android:layout_toRightOf="@+id/currentWordTextView"
-                android:layout_alignBaseline="@+id/currentWordTextView" />
+                android:layout_toLeftOf="@+id/currentWordTextView"
+                android:singleLine="true"
+                android:textSize="20sp"
+                android:typeface="monospace"/>
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="10dp"
-                android:id="@+id/pointerTopImageView"
-                android:src="@drawable/pointer"
-                android:contentDescription="@string/top_pointer_description"
-                android:layout_alignParentLeft="false"
-                android:layout_alignParentTop="true"
-                android:minWidth="14sp"
-                android:layout_marginLeft="220dp" />
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="10dp"
-                android:id="@+id/pointerBottomImageView"
-                android:src="@drawable/pointer"
-                android:contentDescription="@string/bottom_pointer_description"
-                android:layout_alignParentBottom="true"
-                android:minWidth="14sp"
-                android:layout_marginLeft="220dp" />
-
-            <TextView
+        <TextView
+                android:id="@+id/rightWordTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/currentWordTextView"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/currentWordTextView"
+                android:singleLine="true"
+                android:textSize="20sp"
+                android:typeface="monospace"/>
+
+        <ImageView
+                android:id="@+id/pointerTopImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="12sp"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:contentDescription="@string/top_pointer_description"
+                android:paddingLeft="4sp"
+                android:paddingRight="80dp"
+                android:src="@drawable/pointer"/>
+
+        <ImageView
+                android:id="@+id/pointerBottomImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="12sp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:contentDescription="@string/bottom_pointer_description"
+                android:paddingLeft="4sp"
+                android:paddingRight="80dp"
+                android:src="@drawable/pointer"/>
+
+        <TextView
                 android:id="@+id/speedo"
-                android:visibility="invisible"
-                android:textSize="14sp"
-                android:layout_toRightOf="@+id/pointerTopImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignBaseline="@+id/pointerTopImageView"
+                android:layout_toRightOf="@+id/pointerTopImageView"
+                android:textSize="14sp"
                 android:typeface="monospace"
-                android:text="wpm" />
+                android:visibility="invisible"/>
 
     </RelativeLayout>
+
+    <ProgressBar
+        android:id="@+id/parsingProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="10dp"
+        android:visibility="visible"/>
 
 </RelativeLayout>
