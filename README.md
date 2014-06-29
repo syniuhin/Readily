@@ -6,11 +6,11 @@
 
 ![Screenshot](http://cs608727.vk.me/v608727090/a06e/bzoLRnPrCfY.jpg)
 
-With this technology you can read up to 1000 words per minute instead of 220 when reading normally. 
+With this technology you can read up to 1200 words per minute instead of 220 when reading normally. 
 
 ##Instructions
 
-To start reading copy some the text to clipboard or choose `.txt` file from your filesystem (*this action actually requires file manager*). 
+To start reading copy some the text to clipboard or choose plain text / `.epub` file from your filesystem (*this action actually requires file manager*). 
 
 To pause or play, slightly swipe on the reader window. You can scroll through a text using either button or left and right swipe.
 
