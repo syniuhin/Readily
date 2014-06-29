@@ -73,8 +73,7 @@ public class ReaderFragment extends Fragment {
         findViews(fragmentLayout);
         periodicallyAnimate();
 
-        RelativeLayout rl = (RelativeLayout) fragmentLayout.findViewById(R.id.reader_layout);
-        rl.setOnTouchListener(new OnSwipeTouchListener(getActivity()) {
+        (fragmentLayout.findViewById(R.id.reader_layout)).setOnTouchListener(new OnSwipeTouchListener(getActivity()) {
             @Override
             public void onSwipeTop(){
                 changeWPM(50);
@@ -87,35 +86,34 @@ public class ReaderFragment extends Fragment {
 
             @Override
             public void onSwipeRight(){
-                if (reader.isCancelled() && settingsBundle.isSwipesEnabled()){
+                if (settingsBundle.isSwipesEnabled()){
+                    reader.performPause();
                     int pos = reader.getPosition();
                     if (pos > 0){
                         updateView(pos - 1);
                         reader.setPosition(pos - 1);
                     }
-                } else if (!reader.isCancelled())
-                    reader.incCancelled();
+                }
             }
 
             @Override
             public void onSwipeLeft(){
-                if (reader.isCancelled() && settingsBundle.isSwipesEnabled()){
+                if (settingsBundle.isSwipesEnabled()){
+                    reader.performPause();
                     int pos = reader.getPosition();
                     if (pos < wordList.size() - 1){
                         updateView(pos + 1);
                         reader.setPosition(pos + 1);
                     }
-                } else if (!reader.isCancelled())
-                    reader.incCancelled();
+                }
             }
 
             @Override
             public void onClick(){
-                if (reader.isCompleted()){
-                    getActivity().getFragmentManager().beginTransaction().remove(ReaderFragment.this).commit();
-                } else {
+                if (reader.isCompleted())
+                    onStop();
+                else
                     reader.incCancelled();
-                }
             }
         });
         return fragmentLayout;
@@ -397,24 +395,29 @@ public class ReaderFragment extends Fragment {
         }
 
         public void incCancelled(){
-            cancelled++;
-            if (isCancelled())
+            if (!isCancelled())
                 performPause();
             else
                 performPlay();
         }
 
         public void performPause(){
-            YoYo.with(Techniques.Pulse).
-                    duration(500).
-                    playOn(readerLayout);
-            if (!settingsBundle.isSwipesEnabled())
-                prevButton.setVisibility(View.VISIBLE);
+            if (!isCancelled()){
+                cancelled++;
+                YoYo.with(Techniques.Pulse).
+                        duration(500).
+                        playOn(readerLayout);
+                if (!settingsBundle.isSwipesEnabled())
+                    prevButton.setVisibility(View.VISIBLE);
+            }
         }
 
         public void performPlay(){
-            if (!settingsBundle.isSwipesEnabled())
-                prevButton.setVisibility(View.INVISIBLE);
+            if (isCancelled()){
+                cancelled++;
+                if (!settingsBundle.isSwipesEnabled())
+                    prevButton.setVisibility(View.INVISIBLE);
+            }
         }
     }
 
