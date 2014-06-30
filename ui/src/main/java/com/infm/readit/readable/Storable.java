@@ -18,11 +18,10 @@ import com.infm.readit.database.LastReadDBHelper;
  */
 abstract public class Storable extends Readable {
 
-    protected String extension;
-    protected String title;
-
     protected static final int HASHCODE_TXT = "txt".hashCode();
     protected static final int HASHCODE_EPUB = "epub".hashCode();
+    protected String extension;
+    protected String title;
 
     public static DataBundle getRowData(Cursor cursor, String path){
         Log.d(LOGTAG, "getRowData() called; cursor size: " + cursor.getCount() + "; path: " + path);

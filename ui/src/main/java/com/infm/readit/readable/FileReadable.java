@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
-import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import com.infm.readit.R;
@@ -106,9 +105,9 @@ public class FileReadable extends Storable { //TODO: implement separate class fo
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
-        if (processFailed = type == -1)
+        if (processFailed = type == -1){
             Toast.makeText(context, R.string.wrong_ext, Toast.LENGTH_SHORT).show();
-        else {
+        } else {
             rowData = takeRowData(context);
             if (rowData != null)
                 position = rowData.getPosition();

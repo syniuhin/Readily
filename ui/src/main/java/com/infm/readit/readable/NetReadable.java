@@ -29,6 +29,23 @@ public class NetReadable extends Storable {
         setTextType("text/plain");
     }
 
+    public static void createCacheFile(Context context, String path, String text){
+        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_CACHE, true)){
+            File cacheFile = new File(path);
+            try {
+                cacheFile.createNewFile();
+                FileOutputStream fos = new FileOutputStream(cacheFile);
+                fos.write(text.getBytes());
+                fos.close();
+                Log.d(LOGTAG, "caching performed successfully");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public String getLink(){ return link; }
 
     public void setLink(String link){ this.link = link; }
@@ -40,26 +57,11 @@ public class NetReadable extends Storable {
         } else {
             throw new IllegalArgumentException("Wrong Readable object created");
         }
-        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_CACHE, true)){
-            path = context.getCacheDir() + "/" + cleanFileName(title) + ".txt";
-            rowData = takeRowData(context);
-            if (rowData == null){
-                File cacheFile = new File(path);
-                try {
-                    cacheFile.createNewFile();
-                    FileOutputStream fos = new FileOutputStream(cacheFile);
-                    fos.write(text.toString().getBytes());
-                    fos.close();
-                     Log.d(LOGTAG, "caching performed successfully");
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                position = rowData.getPosition();
-            }
-        }
+        textType = "text/plain";
+        path = context.getCacheDir() + "/" + cleanFileName(title) + ".txt";
+        rowData = takeRowData(context);
+        if (rowData != null)
+            position = rowData.getPosition();
     }
 
     private String parseArticle(String url){

@@ -268,6 +268,9 @@ public class ReaderFragment extends Fragment {
                 duration(2 * Constants.SECOND).
                 playOn(readerLayout);
 
+        if (isSavable())
+            getActivity().startService(createLastReadServiceIntent((Storable) readable, Constants.DB_OPERATION_INSERT));
+
         final Handler handler = new Handler();
         reader = new Reader(handler, Math.max(readable.getPosition() - Constants.READER_START_OFFSET, 0));
         handler.postDelayed(reader, 3 * Constants.SECOND);
@@ -275,7 +278,7 @@ public class ReaderFragment extends Fragment {
 
     private Intent createLastReadServiceIntent(Storable storable, int operation){
         Intent intent = new Intent(getActivity(), LastReadService.class);
-        storable.setPosition(reader.getPosition());
+        storable.setPosition((reader == null) ? 0 : reader.getPosition());
         storable.putDataInIntent(intent);
         intent.putExtra(Constants.EXTRA_DB_OPERATION, operation);
         return intent;
@@ -337,17 +340,24 @@ public class ReaderFragment extends Fragment {
     @Override
     public void onStop(){
         Log.d(LOGTAG, "OnStop() called");
-        if (parserReceived && !TextUtils.isEmpty(readable.getPath()) && settingsBundle.isCachingEnabled())
-            if (reader.isCompleted())
-                getActivity().startService(createLastReadServiceIntent((Storable) readable, Constants.DB_OPERATION_DELETE));
-            else
-                getActivity().startService(createLastReadServiceIntent((Storable) readable, Constants.DB_OPERATION_INSERT));
+        if (isSavable()){
+            Storable storable = (Storable) readable;
+            if (reader.isCompleted()){
+                getActivity().startService(createLastReadServiceIntent(storable, Constants.DB_OPERATION_DELETE));
+            } else {
+                getActivity().startService(createLastReadServiceIntent(storable, Constants.DB_OPERATION_INSERT));
+            }
+        }
 
         settingsBundle.updatePreferences();
         manager.unregisterReceiver(textParserListener);
 
         getActivity().finish();
         super.onStop();
+    }
+
+    private Boolean isSavable(){
+        return parserReceived && !TextUtils.isEmpty(readable.getPath()) && settingsBundle.isCachingEnabled();
     }
 
     /**
