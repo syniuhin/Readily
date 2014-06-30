@@ -16,26 +16,6 @@ public class ClipboardReadable extends Readable {
         textType = "text/plain";
     }
 
-    @Override
-    public String getLink(){
-        return null;
-    }
-
-    @Override
-    public void setLink(String link){
-
-    }
-
-    @Override
-    public ChunkData getChunkData(){
-        return null;
-    }
-
-    @Override
-    public void setChunkData(ChunkData data){
-
-    }
-
     public void process(Context context){
         ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         if (processFailed = !clipboard.hasText()){

@@ -161,14 +161,6 @@ abstract public class Readable implements Serializable {
     }
 */
 
-    abstract public String getLink();
-
-    abstract public void setLink(String link);
-
-    abstract public ChunkData getChunkData();
-
-    abstract public void setChunkData(ChunkData data);
-
     abstract public void process(Context context);
 
     public Integer getType(){

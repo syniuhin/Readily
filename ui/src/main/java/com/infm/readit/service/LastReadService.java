@@ -35,26 +35,38 @@ public class LastReadService extends IntentService {
         Log.d(LOGTAG, "DataBundle received: " + dataBundle.toString());
 
         ContentResolver contentResolver = getContentResolver();
-        Boolean isCompleted = intent.getBooleanExtra(Constants.EXTRA_READER_STATUS, false);
+        Integer operation = intent.getIntExtra(Constants.EXTRA_DB_OPERATION, -1);
         DataBundle rowData = Readable.getRowData(contentResolver.query(LastReadContentProvider.CONTENT_URI,
                 null, null, null, null), dataBundle.getPath());
-
-        if (isCompleted){
-            if (rowData != null)
-                contentResolver.delete(
-                        ContentUris.withAppendedId(LastReadContentProvider.CONTENT_URI, rowData.getRowId()),
-                        null, null);
-        } else {
-            ContentValues contentValues = null;
-            contentValues = Readable.getContentValues(dataBundle);
-
-            if (rowData == null){
-                contentResolver.insert(LastReadContentProvider.CONTENT_URI, contentValues);
-            } else {
-                contentResolver.update(ContentUris.withAppendedId(
-                        LastReadContentProvider.CONTENT_URI, rowData.getRowId()
-                ), contentValues, null, null);
-            }
+        switch (operation){
+            case Constants.DB_OPERATION_INSERT:
+                insertDataWithoutConflict(contentResolver, dataBundle, rowData);
+                break;
+            case Constants.DB_OPERATION_DELETE:
+                deleteData(contentResolver, rowData);
+                break;
+            default:
+                throw new IllegalArgumentException("DB operation hasn't been recognized");
         }
+    }
+
+    private void insertDataWithoutConflict(ContentResolver contentResolver, DataBundle dataBundle, DataBundle rowData){
+        ContentValues contentValues = null;
+        contentValues = Readable.getContentValues(dataBundle);
+
+        if (rowData == null){
+            contentResolver.insert(LastReadContentProvider.CONTENT_URI, contentValues);
+        } else {
+            contentResolver.update(ContentUris.withAppendedId(
+                    LastReadContentProvider.CONTENT_URI, rowData.getRowId()
+            ), contentValues, null, null);
+        }
+    }
+
+    private void deleteData(ContentResolver contentResolver, DataBundle rowData){
+        if (rowData != null)
+            contentResolver.delete(
+                    ContentUris.withAppendedId(LastReadContentProvider.CONTENT_URI, rowData.getRowId()),
+                    null, null);
     }
 }

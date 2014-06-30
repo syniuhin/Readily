@@ -63,18 +63,6 @@ public class FileReadable extends Readable {
 
     public String getExtension(){ return extension; }
 
-    @Override
-    public String getLink(){ return null; }
-
-    @Override
-    public void setLink(String link){}
-
-    @Override
-    public ChunkData getChunkData(){ return null; }
-
-    @Override
-    public void setChunkData(ChunkData data){}
-
     public void process(Context context){
         Log.d(LOGTAG, "process() is called");
         try {

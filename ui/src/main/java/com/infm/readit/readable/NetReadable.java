@@ -29,25 +29,9 @@ public class NetReadable extends Readable {
         setTextType("text/plain");
     }
 
-    @Override
-    public String getLink(){
-        return link;
-    }
+    public String getLink(){ return link; }
 
-    @Override
-    public void setLink(String link){
-        this.link = link;
-    }
-
-    @Override
-    public ChunkData getChunkData(){
-        return null;
-    }
-
-    @Override
-    public void setChunkData(ChunkData data){
-
-    }
+    public void setLink(String link){ this.link = link; }
 
     @Override
     public void process(Context context){
@@ -80,12 +64,13 @@ public class NetReadable extends Readable {
             e.printStackTrace();
         }
     }
+
     private String parseArticle(String url){
         HtmlFetcher fetcher = new HtmlFetcher();
         JResult res = null;
         try {
-            res = fetcher.fetchAndExtract(url, 10000, true); //I don't know what it means, need to read docs/code
-            return res.getTitle() + " . " + res.getText();
+            res = fetcher.fetchAndExtract(url, 10000, true); //I don't know what it means, need to read docs/source
+            return res.getTitle() + " # " + res.getText();
         } catch (Exception e) {
             e.printStackTrace();
         }
