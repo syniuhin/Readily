@@ -47,8 +47,7 @@ public class ReceiverActivity extends Activity {
 
     private Bundle bundleReceivedData(){
         Bundle bundle = getIntent().getExtras();
-        if (bundle != null && TextUtils.isEmpty(bundle.getString(Intent.EXTRA_TEXT)) &&
-                TextUtils.isEmpty(bundle.getString(Constants.EXTRA_TYPE)))
+        if (bundle != null && !bundle.containsKey(Intent.EXTRA_TEXT) && !bundle.containsKey(Constants.EXTRA_TYPE))
             bundle.putInt(Constants.EXTRA_TYPE, Readable.TYPE_TEST);
         Log.d(LOGTAG, "bundle: " + ((bundle == null) ? "null" : bundle.toString()));
         return bundle;

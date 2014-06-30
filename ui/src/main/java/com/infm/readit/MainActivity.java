@@ -77,7 +77,7 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
     private void getFromFile(){
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("text/plain");
+        intent.setType("file/*");
         try {
             startActivityForResult(intent, FILE_SELECT_CODE);
         } catch (ActivityNotFoundException e) {

@@ -268,12 +268,13 @@ public class ReaderFragment extends Fragment {
                 duration(2 * Constants.SECOND).
                 playOn(readerLayout);
 
-        if (isSavable())
-            getActivity().startService(createLastReadServiceIntent((Storable) readable, Constants.DB_OPERATION_INSERT));
-
         final Handler handler = new Handler();
         reader = new Reader(handler, Math.max(readable.getPosition() - Constants.READER_START_OFFSET, 0));
         handler.postDelayed(reader, 3 * Constants.SECOND);
+
+        if (isSavable())
+            getActivity().
+                    startService(createLastReadServiceIntent((Storable) readable, Constants.DB_OPERATION_INSERT));
     }
 
     private Intent createLastReadServiceIntent(Storable storable, int operation){

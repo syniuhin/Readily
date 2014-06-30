@@ -11,7 +11,7 @@ public class TestReadable extends Readable {
 
     public TestReadable(){
         super();
-        setPath(null);
+        path = null;
     }
 
     @Override

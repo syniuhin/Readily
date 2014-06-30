@@ -76,27 +76,12 @@ public class FileReadable extends Storable { //TODO: implement separate class fo
             StringBuilder text = new StringBuilder();
             type = -1;
 
-            if ("txt".equals(extension)){ //TODO: read all plain text files, not only txt ones
-                FileReader fileReader = new FileReader(path);
-                BufferedReader br = new BufferedReader(fileReader);
-                String sCurrentLine;
-                while ((sCurrentLine = br.readLine()) != null)
-                    text.append(sCurrentLine).append('\n');
-                br.close();
-                type = TYPE_TXT;
-                Log.d(LOGTAG, "type: txt");
-            }
+            if ("txt".equals(extension))//TODO: read all plain text files, not only txt ones
+                processTxt();
 
-            if ("epub".equals(extension)){
-                Book book = (new EpubReader()).readEpub(new FileInputStream(path));
-                for (Resource res : book.getContents())
-                    text.append(new String(res.getData()));
-                text = new StringBuilder(parseEpub(text.toString())); //NullPointerEx can be thrown
-                type = TYPE_EPUB;
-                Log.d(LOGTAG, "type: epub");
-            }
+            if ("epub".equals(extension))
+                processEpub();
 
-            this.text = text;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -104,6 +89,7 @@ public class FileReadable extends Storable { //TODO: implement separate class fo
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+
         if (processFailed = type == -1){
             Toast.makeText(context, R.string.wrong_ext, Toast.LENGTH_SHORT).show();
         } else {
@@ -111,6 +97,26 @@ public class FileReadable extends Storable { //TODO: implement separate class fo
             if (rowData != null)
                 position = rowData.getPosition();
         }
+    }
+
+    private void processTxt() throws IOException{
+        Log.d(LOGTAG, "type: txt");
+        FileReader fileReader = new FileReader(path);
+        BufferedReader br = new BufferedReader(fileReader);
+        String sCurrentLine;
+        while ((sCurrentLine = br.readLine()) != null)
+            text.append(sCurrentLine).append('\n');
+        br.close();
+        type = TYPE_TXT;
+    }
+
+    private void processEpub() throws IOException{
+        Log.d(LOGTAG, "type: epub");
+        Book book = (new EpubReader()).readEpub(new FileInputStream(path));
+        for (Resource res : book.getContents())
+            text.append(new String(res.getData()));
+        text = new StringBuilder(parseEpub(text.toString())); //NullPointerEx can be thrown
+        type = TYPE_EPUB;
     }
 
     private String parseEpub(String text){

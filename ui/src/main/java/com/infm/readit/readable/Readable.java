@@ -74,7 +74,6 @@ abstract public class Readable implements Serializable {
         Readable readable;
         if (TextUtils.isEmpty(intentText)){
             readable = new TestReadable();
-            readable.setText(context.getResources().getString(R.string.sample_text));
         } else {
             switch (intentType){
                 case TYPE_TEST:
