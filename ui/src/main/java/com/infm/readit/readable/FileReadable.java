@@ -30,8 +30,6 @@ import nl.siegmann.epublib.epub.EpubReader;
 public class FileReadable extends Storable { //TODO: implement separate class for each extension
 
     private static final String LOGTAG = "FileReadable";
-    private String extension;
-    private String title;
 
     public static String takePath(Context context, Uri uri) throws URISyntaxException{
         if ("content".equalsIgnoreCase(uri.getScheme())){
@@ -75,7 +73,7 @@ public class FileReadable extends Storable { //TODO: implement separate class fo
                 return;
             }
 
-            extension = MimeTypeMap.getFileExtensionFromUrl(path);
+            makeExtension();
             StringBuilder text = new StringBuilder();
             type = -1;
 

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 
 import com.infm.readit.Constants;
 import com.infm.readit.database.DataBundle;
@@ -16,6 +17,12 @@ import com.infm.readit.database.LastReadDBHelper;
  * Created by infm on 6/30/14. Enjoy ;)
  */
 abstract public class Storable extends Readable {
+
+    protected String extension;
+    protected String title;
+
+    protected static final int HASHCODE_TXT = "txt".hashCode();
+    protected static final int HASHCODE_EPUB = "epub".hashCode();
 
     public static DataBundle getRowData(Cursor cursor, String path){
         Log.d(LOGTAG, "getRowData() called; cursor size: " + cursor.getCount() + "; path: " + path);
@@ -75,5 +82,20 @@ abstract public class Storable extends Readable {
             charLen += word.length() + 1;
         }
         header = sb.toString();
+    }
+
+    protected String cleanFileName(String s){
+        String q = s.replace(' ', '_');
+        q = q.replace('/', '|');
+        return q;
+    }
+
+    protected void makeExtension(){
+        extension = MimeTypeMap.getFileExtensionFromUrl(path);
+        if (TextUtils.isEmpty(extension)){
+            int i = path.lastIndexOf('.');
+            if (i > 0)
+                extension = path.substring(i + 1);
+        }
     }
 }

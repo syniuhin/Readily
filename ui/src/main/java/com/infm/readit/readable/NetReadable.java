@@ -22,7 +22,6 @@ public class NetReadable extends Storable {
 
     private static final String LOGTAG = "NetReadable";
     private String link;
-    private String title;
 
     public NetReadable(String link){
         super();
@@ -41,28 +40,25 @@ public class NetReadable extends Storable {
         } else {
             throw new IllegalArgumentException("Wrong Readable object created");
         }
-        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_CACHE, true))
-            cacheText(context);
-    }
-
-    private void cacheText(Context context){
-        File cacheFile;
-        String cacheDir = context.getCacheDir().toString();
-        do {
-            int uniqueId = (int) (Math.random() * Constants.MAX_CACHED_FILES_COUNT);
-            cacheFile = new File(cacheDir, uniqueId + ".txt");
-        }
-        while (cacheFile.exists());
-        try {
-            FileOutputStream fos = new FileOutputStream(cacheFile);
-            fos.write(text.toString().getBytes());
-            fos.close();
-            path = cacheFile.getPath();
-            Log.d(LOGTAG, "caching performed successfully, path: " + path);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_CACHE, true)){
+            path = context.getCacheDir() + "/" + cleanFileName(title) + ".txt";
+            rowData = takeRowData(context);
+            if (rowData == null){
+                File cacheFile = new File(path);
+                try {
+                    cacheFile.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(cacheFile);
+                    fos.write(text.toString().getBytes());
+                    fos.close();
+                     Log.d(LOGTAG, "caching performed successfully");
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                position = rowData.getPosition();
+            }
         }
     }
 
