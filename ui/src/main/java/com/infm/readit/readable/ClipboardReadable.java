@@ -13,7 +13,6 @@ public class ClipboardReadable extends Readable {
 
     public ClipboardReadable(){
         super();
-        textType = "text/plain";
     }
 
     public void process(Context context){

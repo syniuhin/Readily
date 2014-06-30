@@ -24,12 +24,9 @@ abstract public class Readable implements Serializable {
     public static final int TYPE_FILE = 2;
     public static final int TYPE_TXT = 3;
     public static final int TYPE_EPUB = 4;
-    public static final int TYPE_SHARED_LINK = 5;
-    public static final int TYPE_SHARED_TEXT = 6;
     public static String LOGTAG = "Readable";
     protected StringBuilder text;
     protected String header;
-    protected String textType;
     protected Long seconds;
     protected String path;
     protected Integer position;
@@ -150,14 +147,6 @@ abstract public class Readable implements Serializable {
 
     public void setHeader(String header){
         this.header = header;
-    }
-
-    public String getTextType(){
-        return textType;
-    }
-
-    public void setTextType(String textType){
-        this.textType = textType;
     }
 
     public Long getDateChanged(){

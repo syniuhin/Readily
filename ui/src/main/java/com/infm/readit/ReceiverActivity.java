@@ -6,9 +6,9 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.WindowManager;
-import android.webkit.MimeTypeMap;
 
 import com.infm.readit.readable.Readable;
 import com.infm.readit.service.TextParserService;
@@ -19,12 +19,6 @@ public class ReceiverActivity extends Activity {
 
     public static void startReceiverActivity(Context context, Integer intentType, String intentPath){
         Intent intent = new Intent(context, ReceiverActivity.class);
-
-        intent.setType(((intentType == Readable.TYPE_EPUB ||
-                (intentType == Readable.TYPE_FILE &&
-                        MimeTypeMap.getFileExtensionFromUrl(intentPath).equals("epub")))
-                ? "text/html"
-                : "text/plain"));
 
         Bundle bundle = new Bundle();
         bundle.putInt(Constants.EXTRA_TYPE, intentType);
@@ -39,8 +33,10 @@ public class ReceiverActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_receiver);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        startReaderFragment();
-        startService(createTextParserServiceIntent());
+
+        Bundle bundle = bundleReceivedData();
+        startReaderFragment(bundle);
+        startService(createServiceIntent(bundle));
     }
 
     @Override
@@ -51,24 +47,25 @@ public class ReceiverActivity extends Activity {
 
     private Bundle bundleReceivedData(){
         Bundle bundle = getIntent().getExtras();
+        if (bundle != null && TextUtils.isEmpty(bundle.getString(Intent.EXTRA_TEXT)) &&
+                TextUtils.isEmpty(bundle.getString(Constants.EXTRA_TYPE)))
+            bundle.putInt(Constants.EXTRA_TYPE, Readable.TYPE_TEST);
         Log.d(LOGTAG, "bundle: " + ((bundle == null) ? "null" : bundle.toString()));
         return bundle;
     }
 
-    private void startReaderFragment(){
+    private void startReaderFragment(Bundle bundle){
         Fragment readerFragment = new ReaderFragment();
-        readerFragment.setArguments(bundleReceivedData());
+        readerFragment.setArguments(bundle);
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.fragment_container, readerFragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }
 
-    private Intent createTextParserServiceIntent(){
+    private Intent createServiceIntent(Bundle bundle){
         Intent intent = new Intent(this, TextParserService.class);
-        intent.putExtra(Constants.EXTRA_PATH, getIntent().getStringExtra(Constants.EXTRA_PATH));
-        intent.putExtra(Intent.EXTRA_TEXT, getIntent().getStringExtra(Intent.EXTRA_TEXT));
-        intent.putExtra(Constants.EXTRA_TYPE, getIntent().getIntExtra(Constants.EXTRA_TYPE, -1));
+        intent.putExtras(bundle);
         return intent;
     }
 }

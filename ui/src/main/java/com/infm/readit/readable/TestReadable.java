@@ -11,7 +11,6 @@ public class TestReadable extends Readable {
 
     public TestReadable(){
         super();
-        setTextType("text/plain");
         setPath(null);
     }
 

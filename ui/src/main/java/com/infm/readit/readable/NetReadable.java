@@ -26,7 +26,6 @@ public class NetReadable extends Storable {
     public NetReadable(String link){
         super();
         this.link = link;
-        setTextType("text/plain");
     }
 
     public static void createCacheFile(Context context, String path, String text){
@@ -57,7 +56,6 @@ public class NetReadable extends Storable {
         } else {
             throw new IllegalArgumentException("Wrong Readable object created");
         }
-        textType = "text/plain";
         path = context.getCacheDir() + "/" + cleanFileName(title) + ".txt";
         rowData = takeRowData(context);
         if (rowData != null)

@@ -97,7 +97,6 @@ public class FileReadable extends Storable { //TODO: implement separate class fo
             }
 
             this.text = text;
-            textType = "text/plain";
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
