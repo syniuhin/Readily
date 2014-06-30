@@ -11,9 +11,9 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="22dp"
         android:paddingBottom="10dp"
-        android:singleLine="true"
+        android:singleLine="false"
         android:text="Title"
-        android:textSize="22sp"
+        android:textSize="20sp"
         android:typeface="serif"/>
 
     <TextView

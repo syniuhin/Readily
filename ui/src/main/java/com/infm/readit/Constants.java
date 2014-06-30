@@ -13,13 +13,13 @@ public class Constants {
     public static final String EXTRA_HEADER = "header";
     public static final String EXTRA_PERCENT = "percent_left";
     public static final String EXTRA_PARSER = "parser";
-    public static final String EXTRA_READER_STATUS = "reader_work_status";
+    public static final String EXTRA_DB_OPERATION = "db_operation";
 
-    public static final Integer READER_SLEEP_IDLE = 500;
+    public static final int READER_SLEEP_IDLE = 500;
     public static final String DEFAULT_WPM = "250";
-    public static final Integer MAX_WPM = 1200;
-    public static final Integer MIN_WPM = 50;
-    public static final Integer SPEEDO_SHOWING_LENGTH = 1500; //time in ms for which speedo becomes visible
+    public static final int MAX_WPM = 1200;
+    public static final int MIN_WPM = 50;
+    public static final int SPEEDO_SHOWING_LENGTH = 1500; //time in ms for which speedo becomes visible
 
     public static final String PREF_CACHE = "pref_cache";
     public static final String PREF_WPM = "pref_wpm";
@@ -39,11 +39,18 @@ public class Constants {
     public static final String[] STR_PUNCTUATION_DEFAULTS =
             {"10", "15", "20", "18", "20"};
 
-    public static final Integer NON_LINK_LENGTH = 500;
+    public static final int NON_LINK_LENGTH = 500;
     //defines a length, which limits links with description(to reduce working time of regexp)
 
     public static final String TEXT_PARSER_READY = "com.infm.readit.TEXTPARSERISREADY";
     public static final String TEXT_PARSER_NOT_READY = "com.infm.readit.TEXTPARSERISNOTREADY";
 
-    public static final Integer SECOND = 1000;
+    public static final int SECOND = 1000;
+
+    public static final int MAX_CACHED_FILES_COUNT = 100;
+
+    public static final int READER_START_OFFSET = 10;
+
+    public static final int DB_OPERATION_INSERT = 0;
+    public static final int DB_OPERATION_DELETE = 1;
 }

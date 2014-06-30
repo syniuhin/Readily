@@ -1,19 +1,13 @@
 package com.infm.readit.readable;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.infm.readit.Constants;
 import com.infm.readit.R;
 import com.infm.readit.database.DataBundle;
-import com.infm.readit.database.LastReadContentProvider;
-import com.infm.readit.database.LastReadDBHelper;
 import com.infm.readit.essential.TextParser;
 
 import java.io.Serializable;
@@ -61,27 +55,6 @@ abstract public class Readable implements Serializable {
         processFailed = false;
     }
 
-    public static DataBundle getRowData(Cursor cursor, String path){
-        Log.d(LOGTAG, "getRowData() called; cursor size: " + cursor.getCount() + "; path: " + path);
-        DataBundle rowData = null;
-        if (!TextUtils.isEmpty(path)){
-            while (cursor.moveToNext() && rowData == null){
-                if (path.equals(cursor.getString(LastReadDBHelper.COLUMN_PATH))){
-                    rowData = new DataBundle(
-                            cursor.getInt(LastReadDBHelper.COLUMN_ROWID),
-                            cursor.getString(LastReadDBHelper.COLUMN_HEADER),
-                            path,
-                            cursor.getInt(LastReadDBHelper.COLUMN_POSITION),
-                            cursor.getString(LastReadDBHelper.COLUMN_PERCENT)
-                    );
-                }
-            }
-        }
-        cursor.close();
-        Log.d(LOGTAG, "getRowData() : " + ((rowData == null) ? "null" : rowData.toString()));
-        return rowData;
-    }
-
     public static Readable newInstance(Context context, Bundle bundle){
         Readable readable;
         if (bundle == null){
@@ -92,7 +65,7 @@ abstract public class Readable implements Serializable {
             readable.setPosition(0);
         } else {
             readable = newInstance(context,
-                    bundle.getInt(Constants.EXTRA_TYPE, Readable.TYPE_TEST),
+                    bundle.getInt(Constants.EXTRA_TYPE, -1),
                     bundle.getString(Intent.EXTRA_TEXT, context.getResources().getString(R.string.sample_text)),
                     bundle.getString(Constants.EXTRA_PATH, ""));
             readable.setPosition(Math.max(bundle.getInt(Constants.EXTRA_POSITION), 0));
@@ -106,8 +79,6 @@ abstract public class Readable implements Serializable {
             readable = new TestReadable();
             readable.setText(context.getResources().getString(R.string.sample_text));
         } else {
-            if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_CACHE, true))
-                intentPath = null;
             switch (intentType){
                 case TYPE_TEST:
                     readable = new TestReadable();
@@ -127,46 +98,17 @@ abstract public class Readable implements Serializable {
                 default:
                     String link;
                     if (intentText.length() < Constants.NON_LINK_LENGTH &&
-                            !TextUtils.isEmpty(link = TextParser.findLink(TextParser.compilePattern(), intentText)))
+                            !TextUtils.isEmpty(link = TextParser.findLink(TextParser.compilePattern(), intentText))){
                         readable = new NetReadable(link);
-                    else
-                        throw new IllegalArgumentException(
-                                "wtf, desired Readable doesn't fit any subclass"); // actually I don't know what to do here
+                    } else {
+                        readable = new ClipboardReadable(); // actually I don't know what to do here
+                        readable.setText(intentText);
+                    }
             }
             readable.setPath(intentPath);
         }
         return readable;
     }
-
-    public static ContentValues getContentValues(DataBundle dataBundle){
-        ContentValues values = new ContentValues();
-        values.put(LastReadDBHelper.KEY_HEADER, dataBundle.getHeader());
-        values.put(LastReadDBHelper.KEY_PATH, dataBundle.getPath());
-        values.put(LastReadDBHelper.KEY_POSITION, dataBundle.getPosition());
-        values.put(LastReadDBHelper.KEY_PERCENT, dataBundle.getPercent());
-        Integer rowId = dataBundle.getRowId();
-        if (rowId != null)
-            values.put(LastReadDBHelper.KEY_ROWID, rowId);
-        return values;
-    }
-
-/*
-    public Pair<Integer, Integer> getExistingData() {
-        return existingData;
-    }
-
-    public void setExistingData(Pair<Integer, Integer> existingData) {
-        this.existingData = existingData;
-    }
-*/
-
-    abstract public String getLink();
-
-    abstract public void setLink(String link);
-
-    abstract public ChunkData getChunkData();
-
-    abstract public void setChunkData(ChunkData data);
 
     abstract public void process(Context context);
 
@@ -272,34 +214,5 @@ abstract public class Readable implements Serializable {
 
     public void setTimeSuffixSum(List<Integer> timeSuffixSum){
         this.timeSuffixSum = timeSuffixSum;
-    }
-
-    private void makeHeader(){
-        int charLen = 0;
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < wordList.size() && charLen < 20; ++i){
-            String word = wordList.get(i);
-            sb.append(word).append(" ");
-            charLen += word.length() + 1;
-        }
-        header = sb.toString();
-    }
-
-    /**
-     * TODO: design class that contain all this data (completed)
-     *
-     * @param intent: intent to put
-     */
-    public void putDataInIntent(Intent intent){
-        makeHeader();
-        intent.putExtra(Constants.EXTRA_HEADER, header);
-        intent.putExtra(Constants.EXTRA_PATH, path);
-        intent.putExtra(Constants.EXTRA_POSITION, position);
-        intent.putExtra(Constants.EXTRA_PERCENT, 100 - (int) (position * 100f / wordList.size() + .5f) + "%");
-    }
-
-    protected DataBundle takeRowData(Context context){
-        return Readable.getRowData(context.getContentResolver().query(LastReadContentProvider.CONTENT_URI,
-                null, null, null, null), path); //looks weird, actually. upd: it will be in separate thread, so ok.
     }
 }

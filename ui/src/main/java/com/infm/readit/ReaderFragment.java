@@ -26,6 +26,7 @@ import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.infm.readit.essential.TextParser;
 import com.infm.readit.readable.Readable;
+import com.infm.readit.readable.Storable;
 import com.infm.readit.service.LastReadService;
 import com.infm.readit.util.OnSwipeTouchListener;
 import com.infm.readit.util.SettingsBundle;
@@ -267,16 +268,19 @@ public class ReaderFragment extends Fragment {
                 duration(2 * Constants.SECOND).
                 playOn(readerLayout);
 
+        if (isSavable())
+            getActivity().startService(createLastReadServiceIntent((Storable) readable, Constants.DB_OPERATION_INSERT));
+
         final Handler handler = new Handler();
-        reader = new Reader(handler, readable.getPosition());
+        reader = new Reader(handler, Math.max(readable.getPosition() - Constants.READER_START_OFFSET, 0));
         handler.postDelayed(reader, 3 * Constants.SECOND);
     }
 
-    private Intent createLastReadServiceIntent(){
+    private Intent createLastReadServiceIntent(Storable storable, int operation){
         Intent intent = new Intent(getActivity(), LastReadService.class);
-        readable.setPosition(reader.getPosition());
-        readable.putDataInIntent(intent);
-        intent.putExtra(Constants.EXTRA_READER_STATUS, reader.isCompleted());
+        storable.setPosition((reader == null) ? 0 : reader.getPosition());
+        storable.putDataInIntent(intent);
+        intent.putExtra(Constants.EXTRA_DB_OPERATION, operation);
         return intent;
     }
 
@@ -335,13 +339,25 @@ public class ReaderFragment extends Fragment {
 
     @Override
     public void onStop(){
-        if (parserReceived && !TextUtils.isEmpty(readable.getPath()))
-            getActivity().startService(createLastReadServiceIntent());
+        Log.d(LOGTAG, "OnStop() called");
+        if (isSavable()){
+            Storable storable = (Storable) readable;
+            if (reader.isCompleted()){
+                getActivity().startService(createLastReadServiceIntent(storable, Constants.DB_OPERATION_DELETE));
+            } else {
+                getActivity().startService(createLastReadServiceIntent(storable, Constants.DB_OPERATION_INSERT));
+            }
+        }
+
         settingsBundle.updatePreferences();
         manager.unregisterReceiver(textParserListener);
+
         getActivity().finish();
-        Log.d(LOGTAG, "OnStop() called");
         super.onStop();
+    }
+
+    private Boolean isSavable(){
+        return parserReceived && !TextUtils.isEmpty(readable.getPath()) && settingsBundle.isCachingEnabled();
     }
 
     /**
@@ -351,24 +367,23 @@ public class ReaderFragment extends Fragment {
 
         private Handler handler;
         private int cancelled;
-        private int pos = 0;
+        private int position = 0;
         private boolean completed = false;
 
-        public Reader(Handler handler, int pos){
+        public Reader(Handler handler, int position){
             this.handler = handler;
-            this.pos = pos;
+            this.position = position;
         }
 
         @Override
         public void run(){
-            int wlen = wordList.size();
-            int i = pos;
-            if (i < wlen){
+            int wordLength = wordList.size();
+            int i = position;
+            if (i < wordLength){
                 completed = false;
                 if (!isCancelled()){
-                    updateView(i % wlen);
-                    handler.postDelayed(this,
-                            delayList.get(pos++ % wlen) * Math.round(100 * 60 * 1f / settingsBundle.getWPM()));
+                    updateView(i % wordLength);
+                    handler.postDelayed(this, calcDelay(wordLength));
                 } else {
                     handler.postDelayed(this, Constants.READER_SLEEP_IDLE);
                 }
@@ -378,17 +393,11 @@ public class ReaderFragment extends Fragment {
             }
         }
 
-        public int getPosition(){
-            return pos;
-        }
+        public int getPosition(){ return position; }
 
-        public void setPosition(int pos){
-            this.pos = pos;
-        }
+        public void setPosition(int position){ this.position = position; }
 
-        public boolean isCompleted(){
-            return completed;
-        }
+        public boolean isCompleted(){ return completed; }
 
         public boolean isCancelled(){
             return cancelled % 2 == 1;
@@ -418,6 +427,10 @@ public class ReaderFragment extends Fragment {
                 if (!settingsBundle.isSwipesEnabled())
                     prevButton.setVisibility(View.INVISIBLE);
             }
+        }
+
+        private int calcDelay(int wordLength){
+            return delayList.get(position++ % wordLength) * Math.round(100 * 60 * 1f / settingsBundle.getWPM());
         }
     }
 
