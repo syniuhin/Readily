@@ -3,6 +3,7 @@ package com.infm.readit.readable;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
@@ -26,9 +27,11 @@ import nl.siegmann.epublib.epub.EpubReader;
 /**
  * Created by infm on 6/13/14. Enjoy ;)
  */
-public class FileReadable extends Readable {
+public class FileReadable extends Storable { //TODO: implement separate class for each extension
 
+    private static final String LOGTAG = "FileReadable";
     private String extension;
+    private String title;
 
     public static String takePath(Context context, Uri uri) throws URISyntaxException{
         if ("content".equalsIgnoreCase(uri.getScheme())){
@@ -118,10 +121,19 @@ public class FileReadable extends Readable {
         Document doc = null;
         try {
             doc = Jsoup.parse(text);
-            return doc.title() + doc.select("p").text();
+            title = doc.title();
+            return doc.select("p").text();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return "";
+    }
+
+    @Override
+    protected void makeHeader(){
+        if (TextUtils.isEmpty(title))
+            super.makeHeader();
+        else
+            header = title;
     }
 }

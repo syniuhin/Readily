@@ -11,6 +11,7 @@ import com.infm.readit.Constants;
 import com.infm.readit.database.DataBundle;
 import com.infm.readit.database.LastReadContentProvider;
 import com.infm.readit.readable.Readable;
+import com.infm.readit.readable.Storable;
 
 public class LastReadService extends IntentService {
 
@@ -36,7 +37,7 @@ public class LastReadService extends IntentService {
 
         ContentResolver contentResolver = getContentResolver();
         Integer operation = intent.getIntExtra(Constants.EXTRA_DB_OPERATION, -1);
-        DataBundle rowData = Readable.getRowData(contentResolver.query(LastReadContentProvider.CONTENT_URI,
+        DataBundle rowData = Storable.getRowData(contentResolver.query(LastReadContentProvider.CONTENT_URI,
                 null, null, null, null), dataBundle.getPath());
         switch (operation){
             case Constants.DB_OPERATION_INSERT:
@@ -52,7 +53,7 @@ public class LastReadService extends IntentService {
 
     private void insertDataWithoutConflict(ContentResolver contentResolver, DataBundle dataBundle, DataBundle rowData){
         ContentValues contentValues = null;
-        contentValues = Readable.getContentValues(dataBundle);
+        contentValues = Storable.getContentValues(dataBundle);
 
         if (rowData == null){
             contentResolver.insert(LastReadContentProvider.CONTENT_URI, contentValues);

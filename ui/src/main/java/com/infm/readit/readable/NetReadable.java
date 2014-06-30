@@ -18,10 +18,11 @@ import de.jetwick.snacktory.JResult;
 /**
  * Created by infm on 6/13/14. Enjoy ;)
  */
-public class NetReadable extends Readable {
+public class NetReadable extends Storable {
 
     private static final String LOGTAG = "NetReadable";
     private String link;
+    private String title;
 
     public NetReadable(String link){
         super();
@@ -70,10 +71,14 @@ public class NetReadable extends Readable {
         JResult res = null;
         try {
             res = fetcher.fetchAndExtract(url, 10000, true); //I don't know what it means, need to read docs/source
-            return res.getTitle() + " # " + res.getText();
+            title = res.getTitle();
+            return res.getText();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return "";
     }
+
+    @Override
+    protected void makeHeader(){ header = title; }
 }

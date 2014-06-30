@@ -26,6 +26,7 @@ import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.infm.readit.essential.TextParser;
 import com.infm.readit.readable.Readable;
+import com.infm.readit.readable.Storable;
 import com.infm.readit.service.LastReadService;
 import com.infm.readit.util.OnSwipeTouchListener;
 import com.infm.readit.util.SettingsBundle;
@@ -272,10 +273,10 @@ public class ReaderFragment extends Fragment {
         handler.postDelayed(reader, 3 * Constants.SECOND);
     }
 
-    private Intent createLastReadServiceIntent(int operation){
+    private Intent createLastReadServiceIntent(Storable storable, int operation){
         Intent intent = new Intent(getActivity(), LastReadService.class);
-        readable.setPosition(reader.getPosition());
-        readable.putDataInIntent(intent);
+        storable.setPosition(reader.getPosition());
+        storable.putDataInIntent(intent);
         intent.putExtra(Constants.EXTRA_DB_OPERATION, operation);
         return intent;
     }
@@ -338,9 +339,9 @@ public class ReaderFragment extends Fragment {
         Log.d(LOGTAG, "OnStop() called");
         if (parserReceived && !TextUtils.isEmpty(readable.getPath()))
             if (reader.isCompleted())
-                getActivity().startService(createLastReadServiceIntent(Constants.DB_OPERATION_DELETE));
+                getActivity().startService(createLastReadServiceIntent((Storable) readable, Constants.DB_OPERATION_DELETE));
             else
-                getActivity().startService(createLastReadServiceIntent(Constants.DB_OPERATION_INSERT));
+                getActivity().startService(createLastReadServiceIntent((Storable) readable, Constants.DB_OPERATION_INSERT));
 
         settingsBundle.updatePreferences();
         manager.unregisterReceiver(textParserListener);
