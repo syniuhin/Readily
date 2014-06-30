@@ -68,7 +68,7 @@ public class ReceiverActivity extends Activity {
         Intent intent = new Intent(this, TextParserService.class);
         intent.putExtra(Constants.EXTRA_PATH, getIntent().getStringExtra(Constants.EXTRA_PATH));
         intent.putExtra(Intent.EXTRA_TEXT, getIntent().getStringExtra(Intent.EXTRA_TEXT));
-        intent.putExtra(Constants.EXTRA_TYPE, getIntent().getIntExtra(Constants.EXTRA_TYPE, Readable.TYPE_TEST));
+        intent.putExtra(Constants.EXTRA_TYPE, getIntent().getIntExtra(Constants.EXTRA_TYPE, -1));
         return intent;
     }
 }

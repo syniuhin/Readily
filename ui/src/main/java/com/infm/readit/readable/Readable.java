@@ -92,7 +92,7 @@ abstract public class Readable implements Serializable {
             readable.setPosition(0);
         } else {
             readable = newInstance(context,
-                    bundle.getInt(Constants.EXTRA_TYPE, Readable.TYPE_TEST),
+                    bundle.getInt(Constants.EXTRA_TYPE, -1),
                     bundle.getString(Intent.EXTRA_TEXT, context.getResources().getString(R.string.sample_text)),
                     bundle.getString(Constants.EXTRA_PATH, ""));
             readable.setPosition(Math.max(bundle.getInt(Constants.EXTRA_POSITION), 0));
@@ -127,11 +127,12 @@ abstract public class Readable implements Serializable {
                 default:
                     String link;
                     if (intentText.length() < Constants.NON_LINK_LENGTH &&
-                            !TextUtils.isEmpty(link = TextParser.findLink(TextParser.compilePattern(), intentText)))
+                            !TextUtils.isEmpty(link = TextParser.findLink(TextParser.compilePattern(), intentText))){
                         readable = new NetReadable(link);
-                    else
-                        throw new IllegalArgumentException(
-                                "wtf, desired Readable doesn't fit any subclass"); // actually I don't know what to do here
+                    } else {
+                        readable = new ClipboardReadable(); // actually I don't know what to do here
+                        readable.setText(intentText);
+                    }
             }
             readable.setPath(intentPath);
         }
