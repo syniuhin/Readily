@@ -337,7 +337,7 @@ public class ReaderFragment extends Fragment {
     @Override
     public void onStop(){
         Log.d(LOGTAG, "OnStop() called");
-        if (parserReceived && !TextUtils.isEmpty(readable.getPath()))
+        if (parserReceived && !TextUtils.isEmpty(readable.getPath()) && settingsBundle.isCachingEnabled())
             if (reader.isCompleted())
                 getActivity().startService(createLastReadServiceIntent((Storable) readable, Constants.DB_OPERATION_DELETE));
             else

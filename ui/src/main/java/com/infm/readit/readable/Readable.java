@@ -3,7 +3,6 @@ package com.infm.readit.readable;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import com.infm.readit.Constants;
@@ -80,8 +79,6 @@ abstract public class Readable implements Serializable {
             readable = new TestReadable();
             readable.setText(context.getResources().getString(R.string.sample_text));
         } else {
-            if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_CACHE, true))
-                intentPath = null;
             switch (intentType){
                 case TYPE_TEST:
                     readable = new TestReadable();
