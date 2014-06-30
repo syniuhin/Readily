@@ -24,25 +24,23 @@ abstract public class Readable implements Serializable {
     public static final int TYPE_FILE = 2;
     public static final int TYPE_TXT = 3;
     public static final int TYPE_EPUB = 4;
-    public static String LOGTAG = "Readable";
+    public static final int TYPE_NET = 5;
+
     protected StringBuilder text;
     protected String header;
     protected Long seconds;
     protected String path;
     protected Integer position;
     protected Integer type;
+    protected DataBundle rowData;
+    protected Boolean processFailed;
+
     protected List<String> wordList;
     protected List<Integer> delayList;
     protected List<Integer> emphasisList;
     protected List<Integer> timeSuffixSum;
-    protected Boolean processFailed;
-    protected DataBundle rowData;
-/*
-    protected Pair<Integer, Integer> existingData;
-*/
 
     public Readable(){
-        //init all
         text = new StringBuilder();
         wordList = new ArrayList<String>();
         delayList = new ArrayList<Integer>();
@@ -55,22 +53,20 @@ abstract public class Readable implements Serializable {
     public static Readable newInstance(Context context, Bundle bundle){
         Readable readable;
         if (bundle == null){
-            readable = newInstance(context,
-                    Readable.TYPE_TEST,
-                    "",
-                    "");
+            readable = newInstance(Readable.TYPE_TEST,
+                    null,
+                    null);
             readable.setPosition(0);
         } else {
-            readable = newInstance(context,
-                    bundle.getInt(Constants.EXTRA_TYPE, -1),
+            readable = newInstance(bundle.getInt(Constants.EXTRA_TYPE, -1),
                     bundle.getString(Intent.EXTRA_TEXT, context.getResources().getString(R.string.sample_text)),
-                    bundle.getString(Constants.EXTRA_PATH, ""));
+                    bundle.getString(Constants.EXTRA_PATH, null));
             readable.setPosition(Math.max(bundle.getInt(Constants.EXTRA_POSITION), 0));
         }
         return readable;
     }
 
-    public static Readable newInstance(Context context, Integer intentType, String intentText, String intentPath){
+    public static Readable newInstance(Integer intentType, String intentText, String intentPath){
         Readable readable;
         if (TextUtils.isEmpty(intentText)){
             readable = new TestReadable();

@@ -26,6 +26,7 @@ public class NetReadable extends Storable {
     public NetReadable(String link){
         super();
         this.link = link;
+        type = TYPE_NET;
     }
 
     public static void createCacheFile(Context context, String path, String text){

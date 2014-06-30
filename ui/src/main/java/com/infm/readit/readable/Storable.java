@@ -18,8 +18,8 @@ import com.infm.readit.database.LastReadDBHelper;
  */
 abstract public class Storable extends Readable {
 
-    protected static final int HASHCODE_TXT = "txt".hashCode();
-    protected static final int HASHCODE_EPUB = "epub".hashCode();
+    private static final String LOGTAG = "Storable";
+
     protected String extension;
     protected String title;
 

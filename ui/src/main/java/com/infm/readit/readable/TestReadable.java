@@ -12,6 +12,7 @@ public class TestReadable extends Readable {
     public TestReadable(){
         super();
         path = null;
+        type = TYPE_TEST;
     }
 
     @Override

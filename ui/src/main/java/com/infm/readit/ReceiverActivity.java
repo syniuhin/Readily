@@ -6,7 +6,6 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.WindowManager;
 
@@ -39,15 +38,9 @@ public class ReceiverActivity extends Activity {
         startService(createServiceIntent(bundle));
     }
 
-    @Override
-    public void onPause(){
-        Log.d(LOGTAG, "onPause() called");
-        super.onPause();
-    }
-
     private Bundle bundleReceivedData(){
         Bundle bundle = getIntent().getExtras();
-        if (bundle != null && !bundle.containsKey(Intent.EXTRA_TEXT) && !bundle.containsKey(Constants.EXTRA_TYPE))
+        if (bundle != null && !bundle.containsKey(Intent.EXTRA_TEXT) && !bundle.containsKey(Constants.EXTRA_TYPE)) //obscure
             bundle.putInt(Constants.EXTRA_TYPE, Readable.TYPE_TEST);
         Log.d(LOGTAG, "bundle: " + ((bundle == null) ? "null" : bundle.toString()));
         return bundle;
