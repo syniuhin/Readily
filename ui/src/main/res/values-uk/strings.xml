@@ -17,6 +17,7 @@
     <string name="choose_chapter">Виберіть главу</string>
     <string name="last_reading_title">Last reading title</string>
     <string name="continue_reading">Продовжити</string>
+    <string name="list_empty_view">Спробуйте рідер!</string>
     <string name="file_manager_required">Будь ласка, встановіть файловий менеджер</string>
     <string name="wrong_ext">Неправильне розширення</string>
 
@@ -46,7 +47,7 @@
     <string name="preferences_send_feedback_summary">Розкажіть мені свої ідеї :)</string>
     <string name="preference_cache">Зберігати читання</string>
     <string name="preference_cache_summary">Кешує незакінчені читання</string>
-    <string name="about">Загальна інформація</string>
+    <string name="mail_to_me">mailto:i.s.sinyugin@gmail.com</string>
 
     <string name="sample_text">А коли приходив той прекрасний брат смерті і брав мене до себе - люди і там чигали на мене. Вони сплітали своє існування з моїм в химерну сітку, намагались налити мої вуха та моє серце тим, чим самі були повні. Слухай-но, слухай! Ти й тут несеш до мене свої страждання? Своє мерзенство? Моє серце не може більше вмістити. Воно повне ущерть. Дай мені спокій.
      Так було по ночах.

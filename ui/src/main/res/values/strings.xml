@@ -15,16 +15,8 @@
     <string name="clipboard_button">Read text from clipboard</string>
     <string name="clipboard_empty">There is nothing in the clipboard</string>
     <string name="choose_chapter">Choose a chapter</string>
-    <string name="last_reading_title">Last reading title</string>
-    <string name="last_reading_percent">%</string>
-    <string name="last_reading_time">sec</string>
-    <string name="monospace">Monospace</string>
-    <string name="sans">Sans</string>
-    <string name="serif">Serif</string>
     <string name="continue_reading">Continue</string>
     <string name="list_empty_view">Hey, take some reading!</string>
-    <string name="pause">Pause</string>
-    <string name="play">Play</string>
     <string name="file_manager_required">Please install a File Manager</string>
     <string name="wrong_ext">Wrong extension</string>
 
@@ -45,18 +37,15 @@
     <string name="preferences_advanced">Advanced settings</string>
     <string name="preferences_showContext">Show context</string>
     <string name="preferences_showContext_summary">Next words in a sentence</string>
-    <string name="preferences_readLastOne">Read last parsed text</string>
     <string name="preferences_getStarted">Instructions</string>
     <string name="preferences_swipe">Swipe to scroll</string>
     <string name="preferences_swipe_summary">Left to next word, right to previous one</string>
     <string name="preferences_share_feedback">Feedback</string>
     <string name="preferences_send_feedback">Send a feedback</string>
     <string name="preferences_send_feedback_summary">Tell me your ideas :)</string>
-    <string name="preferences_typeface_title">Choose text typeface</string>
     <string name="preference_cache">Save readings</string>
     <string name="preference_cache_summary">Caches uncompleted readings</string>
     <string name="mail_to_me">mailto:i.s.sinyugin@gmail.com</string>
-    <string name="about">About</string>
 
     <string name="sample_text"> Inside the flat a fruity voice was reading out a list of figures which had something to do with the production of pig iron.
         The voice came from an oblong metal plaque like a dulled mirror which formed part of the surface of the right-hand wall.
@@ -66,6 +55,5 @@
         the meagerness of his body merely emphasized by the blue overalls which were the uniform of the Party.
         His hair was very fair, his face naturally sanguine,
         his skin roughened by coarse soap and blunt razor blades and the cold of the winter that had just ended.</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
