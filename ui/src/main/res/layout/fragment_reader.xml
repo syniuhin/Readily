@@ -3,9 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="90dp"
-    android:background="@drawable/reader_border"
+    android:layout_marginLeft="10dp"
     android:layout_marginRight="10dp"
-    android:layout_marginLeft="10dp">
+    android:background="@drawable/reader_border">
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -14,6 +14,7 @@
         android:layout_height="5dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="3dp"
         android:layout_marginLeft="3dp"
         android:layout_marginRight="3dp"
         android:indeterminateOnly="false"/>
@@ -21,28 +22,29 @@
     <ImageButton
         android:id="@+id/previousWordImageButton"
         android:layout_width="20dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_above="@+id/progressBar"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentBottom="false"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_margin="3dp"
         android:background="#53ededed"
         android:contentDescription="@string/top_pointer_description"
         android:src="@drawable/abc_ic_ab_back_holo_light"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        />
 
     <RelativeLayout
         android:id="@+id/reader_layout"
         android:layout_width="match_parent"
         android:layout_height="65dp"
+        android:layout_alignParentEnd="true"
         android:layout_centerInParent="true"
         android:layout_toRightOf="@id/previousWordImageButton"
         android:background="@android:color/transparent"
-        android:visibility="gone"
-        android:layout_alignParentEnd="true">
+        android:visibility="gone">
 
-        <TextView
+    <TextView
                 android:id="@+id/currentWordTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -115,7 +117,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_margin="10dp"
+        android:indeterminate="false"
         android:visibility="visible"/>
 
 </RelativeLayout>
