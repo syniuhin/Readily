@@ -26,39 +26,31 @@ public class TextParser implements Serializable {
     public static final Map<String, Integer> PRIORITIES;
 
     static{
+        Map<String, Integer> priorityMap = new HashMap<String, Integer>();
         /**
-         * a 	b 	c 	d 	e 	f 	g 	h 	i 	j 	k 	l 	m 	n 	o 	p 	q 	r 	s 	t 	u 	v 	w 	x 	y 	z
-         * 9    4   4   4   10  12  10  12  8   10  8   6   6   5   8   6   12  5   15  12  14  12  14  13  14  12
+         a 	b 	c 	d 	e 	f 	g 	h 	i 	j 	k 	l 	m 	n 	o 	p 	q 	r 	s 	t 	u 	v 	w 	x 	y 	z
          */
+        final String englishAlpha = "abcdefghijklmnoprstuvwxyz";
         final int[] englishPriorities =
                 {10, 4, 4, 4, 9, 12, 10, 12, 8, 10, 8, 6, 6, 5, 8, 6, 12, 5, 15, 12, 14, 12, 14, 13, 14, 12};
-        Map<String, Integer> priorityMap = new HashMap<String, Integer>();
         int i = 0;
-        for (char c = 'a'; c <= 'z'; ++i, ++c)
-            priorityMap.put(Character.toString(c), englishPriorities[i]);
-
+        for (char c : englishAlpha.toCharArray())
+            priorityMap.put(Character.toString(c), englishPriorities[i++]);
         /**
-         А а 	Б б 	В в 	Г г 	Д д 	Е е 	Ё ё
-         Ж ж 	З з 	И и 	Й й 	К к 	Л л 	М м
-         Н н 	О о 	П п 	Р р 	С с 	Т т 	У у
-         Ф ф 	Х х 	Ц ц 	Ч ч 	Ш ш 	Щ щ 	Ъ ъ
-         Ы ы 	Ь ь 	Э э 	Ю ю 	Я я
+         а  б   в 	г 	д 	е 	ё   ж 	з 	и 	й 	к 	л 	м   н 	о 	п 	р 	с 	т 	у   ф   х 	ц 	ч 	ш 	щ 	ъ   ы 	ь 	э 	ю   я
          */
         final String russianAlpha = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
         final int[] russianPriorities =
                 {10, 4, 4, 7, 4, 7, 14, 9, 9, 6, 7, 5, 4, 4, 4, 10, 8, 10, 12, 5, 9, 15, 14, 14, 13, 10, 10, 0, 10, 0,
                         10, 12, 11};
-
         i = 0;
         for (char c : russianAlpha.toCharArray())
             priorityMap.put(Character.toString(c), russianPriorities[i++]);
-
         /**
-         * ґ і ї є
+         ґ  і   ї   є
          */
         final String uniqueUkrainianChars = "ґіїє";
         final int[] ukrainianPriorities = {15, 14, 18, 12};
-
         i = 0;
         for (char c : uniqueUkrainianChars.toCharArray())
             priorityMap.put(Character.toString(c), ukrainianPriorities[i++]);
@@ -67,7 +59,7 @@ public class TextParser implements Serializable {
     }
 
     public static final String makeMeSpecial =
-            " " + "." + "!" + "?" + "-" + "—" + ":" + ";" + "," + "\n" + '\"' + "(" + ")" + "\t";
+            " " + "." + "!" + "?" + "-" + "—" + ":" + ";" + "," + '\"' + "(" + ")";
     private Readable readable;
     private int lengthPreference;
     private List<Integer> delayCoefficients;
@@ -75,17 +67,20 @@ public class TextParser implements Serializable {
     /**
      * stackOverFlow guys told about it
      */
-    public TextParser(){
-    }
+    public TextParser(){}
 
-    /**
-     * TODO: design it in more elegant way
-     */
     public TextParser(Readable readable){
         this.readable = readable;
         lengthPreference = 13; //TODO:implement it optional
     }
 
+    /**
+     * Need it to get rid of Context, which isn't Serializable
+     *
+     * @param readable       : Readable instance to process
+     * @param settingsBundle : settingsBundle to get some settings.
+     * @return TextParser instance
+     */
     public static TextParser newInstance(Readable readable, SettingsBundle settingsBundle){
         TextParser textParser = new TextParser(readable);
         textParser.setDelayCoefficients(settingsBundle.getDelayCoefficients());
@@ -99,7 +94,7 @@ public class TextParser implements Serializable {
             if (matcher.find())
                 return matcher.group();
         }
-        return "";
+        return null;
     }
 
     public static Pattern compilePattern(){
@@ -107,7 +102,7 @@ public class TextParser implements Serializable {
                 "\\b(((ht|f)tp(s?)\\:\\/\\/|~\\/|\\/)|www.)" +
                         "(\\w+:\\w+@)?(([-\\w]+\\.)+(com|org|net|gov" +
                         "|mil|biz|info|mobi|name|aero|jobs|museum" +
-                        "|travel|[a-z]{2}))(:[\\d]{1,5})?" +
+                        "|travel|edu|[a-z]{2}))(:[\\d]{1,5})?" +
                         "(((\\/([-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|\\/)+|\\?|#)?" +
                         "((\\?([-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
                         "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)" +
@@ -119,6 +114,10 @@ public class TextParser implements Serializable {
 
     /**
      * Read the object from Base64 string.
+     * @param s : serialized TextParser instance
+     * @return : decoded TextParser instance
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     public static TextParser fromString(String s) throws IOException,
             ClassNotFoundException{
@@ -128,15 +127,6 @@ public class TextParser implements Serializable {
         TextParser o = (TextParser) ois.readObject();
         ois.close();
         return o;
-    }
-
-    public void process(){
-        normalize(readable);
-        cutLongWords(readable);
-        buildDelayList(readable);
-        buildTimeSuffixSum(readable);
-        cleanFromLines(readable);
-        buildEmphasis(readable);
     }
 
     /**
@@ -157,12 +147,13 @@ public class TextParser implements Serializable {
         return null;
     }
 
-    public int getLengthPreference(){
-        return lengthPreference;
-    }
-
-    public List<Integer> getDelayCoefficients(){
-        return delayCoefficients;
+    public void process(){
+        normalize(readable);
+        cutLongWords(readable);
+        buildDelayList(readable);
+        buildTimeSuffixSum(readable);
+        cleanFromLines(readable);
+        buildEmphasis(readable);
     }
 
     public void setDelayCoefficients(List<Integer> delayCoefficients){
@@ -177,69 +168,73 @@ public class TextParser implements Serializable {
         this.readable = readable;
     }
 
-    private int checkForRepetitions(char ch){
-        for (int i = 0; i < makeMeSpecial.length(); ++i){
-            if (Character.isWhitespace(ch))
-                return 0;
-            if (ch == makeMeSpecial.charAt(i))
-                return i;
-        }
-        return -1;
+    protected void normalize(Readable readable){
+        readable.setText(
+                handleSpecialCases(
+                        insertSpacesAfterPunctuation(
+                                removeSpacesBeforePunctuation(
+                                        clearFromRepetitions(
+                                                readable.getText().replaceAll("\\s+", " ")
+                                        )
+                                )
+                        )
+                )
+        );
     }
 
-    protected void normalize(Readable readable){
-        String text = readable.getText();
-
-        StringBuilder res = new StringBuilder();
-
-		/* repetitions */
-        int prev = -1;
-        for (int i = 0; i < text.length(); ++i){
-            char ch = text.charAt(i);
-            int pos = checkForRepetitions(ch);
-            if (pos > 0){
-                if (prev != pos){
-                    prev = pos;
-                    res.append(ch);
-                }
-            } else {
-                prev = -1;
-                res.append(ch);
+    protected String clearFromRepetitions(String text){
+        StringBuilder result = new StringBuilder();
+        int previousPosition = -1;
+        for (Character ch : text.toCharArray()){
+            int position = makeMeSpecial.indexOf(ch);
+            if (position > -1 && position != previousPosition){
+                previousPosition = position;
+                result.append(ch);
+            } else if (position < 0){
+                previousPosition = -1;
+                result.append(ch);
             }
         }
+        return result.toString();
+    }
 
-		/* spaces before punctuation */
-        text = res.toString();
-        res = new StringBuilder();
-        for (int i = 0; i < text.length(); ++i){
-            String ch = text.substring(i, i + 1);
-            if (res.length() > 0 && makeMeSpecial.contains(ch) && !Character.isWhitespace(ch.charAt(0)) &&
-                    res.charAt(res.length() - 1) == ' ')
+    protected String removeSpacesBeforePunctuation(String text){
+        StringBuilder res = new StringBuilder();
+        String madeMeSpecial = makeMeSpecial.substring(1, 9) + ")";
+        for (Character ch : text.toCharArray()){
+            if (madeMeSpecial.indexOf(ch) > -1 &&
+                    res.length() > 0 &&
+                    " ".equals(res.substring(res.length() - 1)))
                 res.deleteCharAt(res.length() - 1);
             res.append(ch);
         }
+        return res.toString();
+    }
 
-		/* spaces after punct. */
-        text = res.toString();
-        res = new StringBuilder();
-        for (int i = 0; i < text.length(); ++i){
-            String ch = text.substring(i, i + 1);
+    protected String insertSpacesAfterPunctuation(String text){
+        StringBuilder res = new StringBuilder();
+        String madeMeSpecial = makeMeSpecial.substring(1, 9) + ")";
+        for (Character ch : text.toCharArray()){
             res.append(ch);
-            if (makeMeSpecial.contains(ch) && !Character.isWhitespace(
-                    ch.charAt(0)) && i < text.length() - 1 && Character.isLetter(text.charAt(i + 1)))
+            if (madeMeSpecial.indexOf(ch) > -1)
                 res.append(" ");
         }
+        return res.toString();
+    }
 
-        /* abbreviations */
-        text = res.toString();
-        res = new StringBuilder();
+    protected String handleSpecialCases(String text){
+        return handleAbbreviations(text); //TODO: implement more cases
+    }
+
+    protected String handleAbbreviations(String text){
+        StringBuilder res = new StringBuilder();
         for (int i = 0; i < text.length(); ++i){
             if (i > 0 && text.charAt(i - 1) == '.'){
                 if (!(i + 2 < text.length() && text.charAt(i + 2) == '.'))
                     res.append(text.charAt(i));
             } else res.append(text.charAt(i));
         }
-        readable.setText(res.toString());
+        return res.toString();
     }
 
     protected void cutLongWords(Readable readable){

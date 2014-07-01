@@ -57,7 +57,8 @@ public class ReceiverActivity extends Activity {
 
     private Intent createServiceIntent(Bundle bundle){
         Intent intent = new Intent(this, TextParserService.class);
-        intent.putExtras(bundle);
+        if (bundle != null)
+            intent.putExtras(bundle);
         return intent;
     }
 }
