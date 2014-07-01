@@ -61,6 +61,8 @@ public class NetReadable extends Storable {
         rowData = takeRowData(context);
         if (rowData != null)
             position = rowData.getPosition();
+        else
+            createCacheFile(context, path, text.toString());
     }
 
     private String parseArticle(String url){

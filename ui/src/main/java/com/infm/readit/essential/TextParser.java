@@ -270,7 +270,7 @@ public class TextParser implements Serializable {
         List<String> words = new ArrayList<String>(Arrays.asList(readable.getText().split(" ")));
         List<String> res = new ArrayList<String>();
         for (String word : words)
-            if (word.length() == 0) continue;
+            if (word.length() < 3) continue;
             else if (word.charAt(0) == '-') res.add(word.substring(1, word.length()));
             else res.add(word);
         readable.setWordList(res);

@@ -102,6 +102,8 @@ public class ReaderFragment extends Fragment {
 
     private Spanned getLeftFormattedText(int pos){
         String word = wordList.get(pos);
+        if (TextUtils.isEmpty(word))
+            return Html.fromHtml("");
         int emphasisPosition = emphasisList.get(pos);
         String wordLeft = word.substring(0, emphasisPosition);
         String format = "<font color='#0A0A0A'>" + wordLeft + "</font>";
@@ -110,6 +112,8 @@ public class ReaderFragment extends Fragment {
 
     private Spanned getCurrentFormattedText(int pos){
         String word = wordList.get(pos);
+        if (TextUtils.isEmpty(word))
+            return Html.fromHtml("");
         int emphasisPosition = emphasisList.get(pos);
         String wordEmphasis = word.substring(emphasisPosition, emphasisPosition + 1);
         String format = "<font color='#FA2828'>" + wordEmphasis + "</font>";
@@ -118,6 +122,8 @@ public class ReaderFragment extends Fragment {
 
     private Spanned getRightFormattedText(int pos){
         String word = wordList.get(pos);
+        if (TextUtils.isEmpty(word))
+            return Html.fromHtml("");
         int emphasisPosition = emphasisList.get(pos);
         String wordRight = word.substring(emphasisPosition + 1, word.length());
         String format = "<font><font color='#0A0A0A'>" + wordRight + "</font>";
@@ -131,10 +137,12 @@ public class ReaderFragment extends Fragment {
         int charLen = 0;
         int i = pos;
         StringBuilder format = new StringBuilder("&nbsp;<font color='#AAAAAA'>");
-        while (charLen < 40 && i < wordList.size() - 1 && wordList.get(i).charAt(wordList.get(i).length() - 1) != '\n'){
+        while (charLen < 40 && i < wordList.size() - 1/* && wordList.get(i).charAt(wordList.get(i).length() - 1) != '\n'*/){
             String word = wordList.get(++i);
-            charLen += word.length() + 1;
-            format.append(word).append(" ");
+            if (TextUtils.isEmpty(word)){
+                charLen += word.length() + 1;
+                format.append(word).append(" ");
+            }
         }
         format.append("</font>");
         return format.toString();
