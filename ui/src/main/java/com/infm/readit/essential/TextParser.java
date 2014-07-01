@@ -117,6 +117,7 @@ public class TextParser implements Serializable {
 
     /**
      * Read the object from Base64 string.
+     *
      * @param s : serialized TextParser instance
      * @return : decoded TextParser instance
      * @throws IOException

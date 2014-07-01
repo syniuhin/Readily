@@ -251,30 +251,37 @@ public class ReaderFragment extends Fragment {
         }
     }
 
-    private void continueParserParty(){
-        readable = parser.getReadable();
+    private void receiveParser(Intent intent){
+        try {
+            parser = TextParser.fromString(intent.getStringExtra(Constants.EXTRA_PARSER));
+            parserReceived = true;
+            readable = parser.getReadable();
 
-        wordList = readable.getWordList();
-        emphasisList = readable.getEmphasisList();
-        delayList = readable.getDelayList();
+            wordList = readable.getWordList();
+            emphasisList = readable.getEmphasisList();
+            delayList = readable.getDelayList();
 
-        YoYo.with(Techniques.FlipOutY).
-                duration(Constants.SECOND).
-                playOn(parsingProgressBar);
-        //parsingProgressBar.setVisibility(View.GONE);
+            YoYo.with(Techniques.FadeOut).
+                    duration(Constants.SECOND / 2).
+                    playOn(parsingProgressBar);
+            //parsingProgressBar.setVisibility(View.GONE);
 
-        readerLayout.setVisibility(View.VISIBLE);
-        YoYo.with(Techniques.FadeIn).
-                duration(2 * Constants.SECOND).
-                playOn(readerLayout);
+            readerLayout.setVisibility(View.VISIBLE);
+            YoYo.with(Techniques.BounceIn).
+                    duration(2 * Constants.SECOND).
+                    playOn(readerLayout);
+            final Handler handler = new Handler();
+            reader = new Reader(handler, Math.max(readable.getPosition() - Constants.READER_START_OFFSET, 0));
+            handler.postDelayed(reader, 3 * Constants.SECOND);
 
-        final Handler handler = new Handler();
-        reader = new Reader(handler, Math.max(readable.getPosition() - Constants.READER_START_OFFSET, 0));
-        handler.postDelayed(reader, 3 * Constants.SECOND);
-
-        if (isSavable())
-            getActivity().
-                    startService(createLastReadServiceIntent((Storable) readable, Constants.DB_OPERATION_INSERT));
+            if (isSavable())
+                getActivity().
+                        startService(createLastReadServiceIntent((Storable) readable, Constants.DB_OPERATION_INSERT));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private Intent createLastReadServiceIntent(Storable storable, int operation){
@@ -330,6 +337,10 @@ public class ReaderFragment extends Fragment {
         handler.postDelayed(anim, Constants.SECOND); //TODO: make time relatively large
     }
 
+    private Boolean isSavable(){
+        return parserReceived && !TextUtils.isEmpty(readable.getPath()) && settingsBundle.isCachingEnabled();
+    }
+
     @Override
     public void onPause(){
         if (reader != null && !reader.isCancelled())
@@ -355,10 +366,6 @@ public class ReaderFragment extends Fragment {
 
         getActivity().finish();
         super.onStop();
-    }
-
-    private Boolean isSavable(){
-        return parserReceived && !TextUtils.isEmpty(readable.getPath()) && settingsBundle.isCachingEnabled();
     }
 
     /**
@@ -439,15 +446,7 @@ public class ReaderFragment extends Fragment {
 
         @Override
         public void onReceive(Context context, Intent intent){
-            try {
-                parserReceived = true;
-                parser = TextParser.fromString(intent.getStringExtra(Constants.EXTRA_PARSER));
-                continueParserParty();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
+            receiveParser(intent);
         }
     }
 }

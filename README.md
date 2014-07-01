@@ -23,7 +23,9 @@ List of functions already implemented:
 * Splitting of long words (*max length of word is not currently optional, default value is 13*).
 * Speed change before punctuation, in the beginning of a paragraph and on long words (*optional*).
 * Preview of next words in paragraph (*opitonal*).
-* Storage of incomplete readings (*from files only for now*)
+* Storage of incomplete readings: 
+  * **From files**: saves your progress, so you can resume reading in one click.
+  * **From net**: caches text to a file and further works as a reading from file.
 
 ##Supported sources of text:
 
@@ -44,6 +46,7 @@ If you know some other language and want to help me - please, [contact me], I'd 
 
 Well, I'm trying to design very flexible and powerful app, so demands are really ambitious sometimes: 
 
+* Work on emphasis building deeper
 * Parse all e-book formats
 * Improve html parsing(e.g. take all pages, instead of 1)
 * Add some nice themes

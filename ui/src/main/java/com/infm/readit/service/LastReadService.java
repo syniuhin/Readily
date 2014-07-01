@@ -10,7 +10,6 @@ import android.util.Log;
 import com.infm.readit.Constants;
 import com.infm.readit.database.DataBundle;
 import com.infm.readit.database.LastReadContentProvider;
-import com.infm.readit.readable.Readable;
 import com.infm.readit.readable.Storable;
 
 public class LastReadService extends IntentService {
