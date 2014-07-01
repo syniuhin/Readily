@@ -97,6 +97,9 @@ public class TextParser implements Serializable {
         return null;
     }
 
+    /**
+     * @return pattern to detect links in text
+     */
     public static Pattern compilePattern(){
         return Pattern.compile(
                 "\\b(((ht|f)tp(s?)\\:\\/\\/|~\\/|\\/)|www.)" +
@@ -130,7 +133,7 @@ public class TextParser implements Serializable {
     }
 
     /**
-     * Write the object to a Base64 string.
+     * @return serialized instance
      */
     @Override
     public String toString(){
