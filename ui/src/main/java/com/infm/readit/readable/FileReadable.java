@@ -124,7 +124,7 @@ public class FileReadable extends Storable { //TODO: implement separate class fo
         try {
             doc = Jsoup.parse(text);
             title = doc.title();
-            return doc.select("p").text();
+            return title + " | " + doc.select("p").text();
         } catch (Exception e) {
             e.printStackTrace();
         }

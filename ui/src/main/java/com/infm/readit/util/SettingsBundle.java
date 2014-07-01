@@ -70,7 +70,7 @@ public class SettingsBundle {
         swipesEnabled = sharedPreferences.getBoolean(Constants.PREF_SWIPE, false);
         showingContextEnabled = sharedPreferences.getBoolean(Constants.PREF_SHOW_CONTEXT, true);
         punctuationSpeedDiffers = sharedPreferences.getBoolean(Constants.PREF_PUNCTUATION_DIFFERS, true);
-        cachingEnabled = sharedPreferences.getBoolean(Constants.PREF_CACHE, true);
+        cachingEnabled = sharedPreferences.getBoolean(Constants.PREF_STORAGE, true);
         delayCoefficients = buildDelayListCoefficients();
     }
 
@@ -82,7 +82,7 @@ public class SettingsBundle {
         editor.putBoolean(Constants.PREF_SWIPE, swipesEnabled);
         editor.putBoolean(Constants.PREF_SHOW_CONTEXT, showingContextEnabled);
         editor.putBoolean(Constants.PREF_PUNCTUATION_DIFFERS, punctuationSpeedDiffers);
-        editor.putBoolean(Constants.PREF_CACHE, cachingEnabled);
+        editor.putBoolean(Constants.PREF_STORAGE, cachingEnabled);
         for (int i = 0; i < delayCoefficients.size(); ++i)
             editor.putString(Constants.STR_PUNCTUATION_PREFS[i], delayCoefficients.get(i).toString());
 

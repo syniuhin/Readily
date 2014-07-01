@@ -35,7 +35,7 @@ public class ReceiverActivity extends Activity {
 
         Bundle bundle = bundleReceivedData();
         startReaderFragment(bundle);
-        startService(createServiceIntent(bundle));
+        startService(createParserServiceIntent(bundle));
     }
 
     private Bundle bundleReceivedData(){
@@ -55,7 +55,7 @@ public class ReceiverActivity extends Activity {
         transaction.commit();
     }
 
-    private Intent createServiceIntent(Bundle bundle){
+    private Intent createParserServiceIntent(Bundle bundle){
         Intent intent = new Intent(this, TextParserService.class);
         if (bundle != null)
             intent.putExtras(bundle);

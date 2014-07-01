@@ -29,12 +29,12 @@ public class NetReadable extends Storable {
         type = TYPE_NET;
     }
 
-    public static void createCacheFile(Context context, String path, String text){
-        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_CACHE, true)){
-            File cacheFile = new File(path);
+    public static void createStorageFile(Context context, String path, String text){
+        if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_STORAGE, true)){
+            File storageFile = new File(path);
             try {
-                cacheFile.createNewFile();
-                FileOutputStream fos = new FileOutputStream(cacheFile);
+                storageFile.createNewFile();
+                FileOutputStream fos = new FileOutputStream(storageFile);
                 fos.write(text.getBytes());
                 fos.close();
                 Log.d(LOGTAG, "caching performed successfully");
@@ -57,12 +57,12 @@ public class NetReadable extends Storable {
         } else {
             throw new IllegalArgumentException("Wrong Readable object created");
         }
-        path = context.getCacheDir() + "/" + cleanFileName(title) + ".txt";
+        path = context.getFilesDir() + "/" + cleanFileName(title) + ".txt";
         rowData = takeRowData(context);
         if (rowData != null)
             position = rowData.getPosition();
         else
-            createCacheFile(context, path, text.toString());
+            createStorageFile(context, path, text.toString());
     }
 
     private String parseArticle(String url){
@@ -71,7 +71,7 @@ public class NetReadable extends Storable {
         try {
             res = fetcher.fetchAndExtract(url, 10000, true); //I don't know what it means, need to read docs/source
             title = res.getTitle();
-            return res.getText();
+            return title + " | " + res.getText();
         } catch (Exception e) {
             e.printStackTrace();
         }
