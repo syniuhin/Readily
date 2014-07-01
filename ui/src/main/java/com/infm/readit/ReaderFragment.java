@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -73,50 +74,6 @@ public class ReaderFragment extends Fragment {
         RelativeLayout fragmentLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_reader, container, false);
         findViews(fragmentLayout);
         periodicallyAnimate();
-
-        (fragmentLayout.findViewById(R.id.reader_layout)).setOnTouchListener(new OnSwipeTouchListener(getActivity()) {
-            @Override
-            public void onSwipeTop(){
-                changeWPM(50);
-            }
-
-            @Override
-            public void onSwipeBottom(){
-                changeWPM(-50);
-            }
-
-            @Override
-            public void onSwipeRight(){
-                if (settingsBundle.isSwipesEnabled()){
-                    reader.performPause();
-                    int pos = reader.getPosition();
-                    if (pos > 0){
-                        updateView(pos - 1);
-                        reader.setPosition(pos - 1);
-                    }
-                }
-            }
-
-            @Override
-            public void onSwipeLeft(){
-                if (settingsBundle.isSwipesEnabled()){
-                    reader.performPause();
-                    int pos = reader.getPosition();
-                    if (pos < wordList.size() - 1){
-                        updateView(pos + 1);
-                        reader.setPosition(pos + 1);
-                    }
-                }
-            }
-
-            @Override
-            public void onClick(){
-                if (reader.isCompleted())
-                    onStop();
-                else
-                    reader.incCancelled();
-            }
-        });
         return fragmentLayout;
     }
 
@@ -126,7 +83,7 @@ public class ReaderFragment extends Fragment {
         Log.d(LOGTAG, "onActivityCreated() called");
 
         Activity activity = getActivity();
-
+        setReaderLayoutListener(activity);
         settingsBundle = new SettingsBundle(PreferenceManager.getDefaultSharedPreferences(activity));
 
         createReceiver(activity);
@@ -194,6 +151,52 @@ public class ReaderFragment extends Fragment {
         prevButton = (ImageButton) v.findViewById(R.id.previousWordImageButton);
     }
 
+    private void setReaderLayoutListener(Context context){
+        readerLayout.setOnTouchListener(new OnSwipeTouchListener(context) {
+            @Override
+            public void onSwipeTop(){
+                changeWPM(50);
+            }
+
+            @Override
+            public void onSwipeBottom(){
+                changeWPM(-50);
+            }
+
+            @Override
+            public void onSwipeRight(){
+                if (settingsBundle.isSwipesEnabled()){
+                    reader.performPause();
+                    int pos = reader.getPosition();
+                    if (pos > 0){
+                        updateView(pos - 1);
+                        reader.setPosition(pos - 1);
+                    }
+                }
+            }
+
+            @Override
+            public void onSwipeLeft(){
+                if (settingsBundle.isSwipesEnabled()){
+                    reader.performPause();
+                    int pos = reader.getPosition();
+                    if (pos < wordList.size() - 1){
+                        updateView(pos + 1);
+                        reader.setPosition(pos + 1);
+                    }
+                }
+            }
+
+            @Override
+            public void onClick(){
+                if (reader.isCompleted())
+                    onStop();
+                else
+                    reader.incCancelled();
+            }
+        });
+    }
+
     private void initPrevButton(){
         if (!settingsBundle.isSwipesEnabled()){
             prevButton.setImageResource(R.drawable.abc_ic_ab_back_holo_light);
@@ -251,7 +254,7 @@ public class ReaderFragment extends Fragment {
         }
     }
 
-    private void receiveParser(Intent intent){
+    private void receiveParser(Context context, Intent intent){
         try {
             parser = TextParser.fromString(intent.getStringExtra(Constants.EXTRA_PARSER));
             parserReceived = true;
@@ -275,8 +278,7 @@ public class ReaderFragment extends Fragment {
             handler.postDelayed(reader, 3 * Constants.SECOND);
 
             if (isSavable())
-                getActivity().
-                        startService(createLastReadServiceIntent((Storable) readable, Constants.DB_OPERATION_INSERT));
+                context.startService(createLastReadServiceIntent(context, (Storable) readable, Constants.DB_OPERATION_INSERT));
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -284,8 +286,8 @@ public class ReaderFragment extends Fragment {
         }
     }
 
-    private Intent createLastReadServiceIntent(Storable storable, int operation){
-        Intent intent = new Intent(getActivity(), LastReadService.class);
+    private Intent createLastReadServiceIntent(Context context, Storable storable, int operation){
+        Intent intent = new Intent(context, LastReadService.class);
         storable.setPosition((reader == null) ? 0 : reader.getPosition());
         storable.putDataInIntent(intent);
         intent.putExtra(Constants.EXTRA_DB_OPERATION, operation);
@@ -338,7 +340,8 @@ public class ReaderFragment extends Fragment {
     }
 
     private Boolean isSavable(){
-        return parserReceived && !TextUtils.isEmpty(readable.getPath()) && settingsBundle.isCachingEnabled();
+        return parserReceived && readable != null && settingsBundle != null && !TextUtils.isEmpty(readable.getPath()) &&
+                settingsBundle.isCachingEnabled();
     }
 
     @Override
@@ -352,20 +355,42 @@ public class ReaderFragment extends Fragment {
     @Override
     public void onStop(){
         Log.d(LOGTAG, "OnStop() called");
+        Activity activity = getActivity();
         if (isSavable()){
             Storable storable = (Storable) readable;
             if (reader.isCompleted()){
-                getActivity().startService(createLastReadServiceIntent(storable, Constants.DB_OPERATION_DELETE));
+                activity.startService(createLastReadServiceIntent(activity, storable, Constants.DB_OPERATION_DELETE));
             } else {
-                getActivity().startService(createLastReadServiceIntent(storable, Constants.DB_OPERATION_INSERT));
+                activity.startService(createLastReadServiceIntent(activity, storable, Constants.DB_OPERATION_INSERT));
             }
         }
 
         settingsBundle.updatePreferences();
         manager.unregisterReceiver(textParserListener);
 
-        getActivity().finish();
+        activity.finish();
         super.onStop();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig){
+        super.onConfigurationChanged(newConfig);
+        reader.performPause();
+        
+        Activity activity = getActivity();
+        
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View newView = inflater.inflate(R.layout.fragment_reader, null);
+        ViewGroup rootView = (ViewGroup) getView();
+        if (rootView != null){
+            rootView.removeAllViews();
+            rootView.addView(newView);
+        }
+        findViews(newView);
+        parsingProgressBar.setVisibility(View.GONE);
+        readerLayout.setVisibility(View.VISIBLE);
+        updateView(reader.getPosition());
+        setReaderLayoutListener(activity);
     }
 
     /**
@@ -443,10 +468,9 @@ public class ReaderFragment extends Fragment {
     }
 
     private class TextParserListener extends BroadcastReceiver {
-
         @Override
         public void onReceive(Context context, Intent intent){
-            receiveParser(intent);
+            receiveParser(context, intent);
         }
     }
 }

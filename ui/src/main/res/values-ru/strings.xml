@@ -4,7 +4,7 @@
     <!-- Basic -->
     <string name="app_name">RSVP-Reader</string>
     <string name="title_activity_main">ReadIt!</string>
-    <string name="title_activity_receiver">ReadIt!</string>
+    <string name="title_activity_receiver">Добавить в ReadIt!</string>
     <string name="title_activity_settings">Настройки</string>
 
     <!-- UI -->
