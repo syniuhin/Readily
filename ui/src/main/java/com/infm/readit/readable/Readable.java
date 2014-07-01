@@ -38,14 +38,12 @@ abstract public class Readable implements Serializable {
     protected List<String> wordList;
     protected List<Integer> delayList;
     protected List<Integer> emphasisList;
-    protected List<Integer> timeSuffixSum;
 
     public Readable(){
         text = new StringBuilder();
         wordList = new ArrayList<String>();
         delayList = new ArrayList<Integer>();
         emphasisList = new ArrayList<Integer>();
-        timeSuffixSum = new ArrayList<Integer>();
         rowData = new DataBundle();
         processFailed = false;
     }
@@ -190,13 +188,5 @@ abstract public class Readable implements Serializable {
 
     public void setEmphasisList(List<Integer> emphasisList){
         this.emphasisList = emphasisList;
-    }
-
-    public List<Integer> getTimeSuffixSum(){
-        return timeSuffixSum;
-    }
-
-    public void setTimeSuffixSum(List<Integer> timeSuffixSum){
-        this.timeSuffixSum = timeSuffixSum;
     }
 }

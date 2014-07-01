@@ -151,8 +151,7 @@ public class TextParser implements Serializable {
         normalize(readable);
         cutLongWords(readable);
         buildDelayList(readable);
-        buildTimeSuffixSum(readable);
-        cleanFromLines(readable);
+        cleanFromHyphens(readable);
         buildEmphasis(readable);
     }
 
@@ -182,6 +181,7 @@ public class TextParser implements Serializable {
         );
     }
 
+    /* normalize() auxiliary methods */
     protected String clearFromRepetitions(String text){
         StringBuilder result = new StringBuilder();
         int previousPosition = -1;
@@ -262,7 +262,7 @@ public class TextParser implements Serializable {
         readable.setText(sb.toString());
     }
 
-    protected void cleanFromLines(Readable readable){
+    protected void cleanFromHyphens(Readable readable){
         List<String> words = new ArrayList<String>(Arrays.asList(readable.getText().split(" ")));
         List<String> res = new ArrayList<String>();
         for (String word : words)
@@ -321,16 +321,6 @@ public class TextParser implements Serializable {
         String[] words = text.split(" ");
         for (String word : words) res.add(measureWord(word));
         readable.setDelayList(res);
-    }
-
-    protected void buildTimeSuffixSum(Readable readable){
-        List<Integer> delayList = readable.getDelayList();
-        List<Integer> res = new ArrayList<Integer>();
-        res.add(delayList.get(0));
-        for (int i = delayList.size() - 2; i >= 0; --i)
-            res.add(res.get(res.size() - 1) + delayList.get(i));
-        Collections.reverse(res);
-        readable.setTimeSuffixSum(res);
     }
 
     protected void buildEmphasis(Readable readable){
