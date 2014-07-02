@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.infm.readit.database.LastReadContentProvider;
 import com.infm.readit.database.LastReadDBHelper;
+import com.infm.readit.readable.FileStorable;
 import com.infm.readit.readable.Readable;
 import com.infm.readit.service.StorageCheckerService;
 import com.newrelic.agent.android.NewRelic;
@@ -84,7 +85,7 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
 	private void getFromFile(){
 		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 		intent.addCategory(Intent.CATEGORY_OPENABLE);
-		intent.setType("file/*");
+		intent.setType("*/*");
 		try {
 			startActivityForResult(intent, FILE_SELECT_CODE);
 		} catch (ActivityNotFoundException e) {
@@ -97,8 +98,13 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
 		switch (requestCode){
 			case FILE_SELECT_CODE:
-				if (resultCode == RESULT_OK)
-					ReceiverActivity.startReceiverActivity(this, Readable.TYPE_FILE, data.getData().toString());
+				String relativePath = data.getData().toString();
+				if (resultCode == RESULT_OK){
+					if (FileStorable.isExtensionValid(FileStorable.getExtension(relativePath)))
+						ReceiverActivity.startReceiverActivity(this, Readable.TYPE_FILE, relativePath);
+					else
+						Toast.makeText(this, R.string.wrong_ext, Toast.LENGTH_SHORT).show();
+				}
 				break;
 		}
 		super.onActivityResult(requestCode, resultCode, data);

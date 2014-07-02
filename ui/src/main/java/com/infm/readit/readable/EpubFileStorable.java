@@ -8,7 +8,6 @@ import org.jsoup.nodes.Document;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
 
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
@@ -41,8 +40,6 @@ public class EpubFileStorable extends FileStorable {
 
 			createRowData(context);
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
 	}

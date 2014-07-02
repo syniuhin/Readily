@@ -7,8 +7,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
-import java.net.URISyntaxException;
-
 /**
  * Created by infm on 6/13/14. Enjoy ;)
  */
@@ -31,7 +29,7 @@ abstract public class FileStorable extends Storable { //TODO: implement separate
 		return fileStorable;
 	}
 
-	public static String takePath(Context context, Uri uri) throws URISyntaxException{
+	public static String takePath(Context context, Uri uri){
 		if ("content".equalsIgnoreCase(uri.getScheme())){
 			String[] projection = {"_data"};
 			Cursor cursor = null;
@@ -54,12 +52,11 @@ abstract public class FileStorable extends Storable { //TODO: implement separate
 		return "";
 	}
 
-	//implement it properly
-	public static String takePath(Context context, String s) throws URISyntaxException{
-		if ("content".equals(s.substring(0, 7))){
-			return FileStorable.takePath(context, Uri.parse(s));
-		} else
+	public static String takePath(Context context, String s){
+		String candidate = FileStorable.takePath(context, Uri.parse(s));
+		if (TextUtils.isEmpty(candidate))
 			return s;
+		return candidate;
 	}
 
 	public static String getExtension(String path){
@@ -79,6 +76,10 @@ abstract public class FileStorable extends Storable { //TODO: implement separate
 		if ("epub".equals(ext))
 			return Readable.TYPE_EPUB;
 		return -1;
+	}
+
+	public static boolean isExtensionValid(String extension){
+		return "epub".equals(extension) || "txt".equals(extension); //to be continued...
 	}
 
 	public String getExtension(){ return extension; }
