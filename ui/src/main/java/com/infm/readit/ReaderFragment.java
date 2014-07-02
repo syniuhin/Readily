@@ -139,8 +139,8 @@ public class ReaderFragment extends Fragment {
         StringBuilder format = new StringBuilder("&nbsp;<font color='#AAAAAA'>");
         while (charLen < 40 && i < wordList.size() - 1/* && wordList.get(i).charAt(wordList.get(i).length() - 1) != '\n'*/){
             String word = wordList.get(++i);
-            if (TextUtils.isEmpty(word)){
-                charLen += word.length() + 1;
+	        if (!TextUtils.isEmpty(word)){
+		        charLen += word.length() + 1;
                 format.append(word).append(" ");
             }
         }
@@ -282,11 +282,12 @@ public class ReaderFragment extends Fragment {
                     duration(2 * Constants.SECOND).
                     playOn(readerLayout);
             final Handler handler = new Handler();
-            reader = new Reader(handler, Math.max(readable.getPosition() - Constants.READER_START_OFFSET, 0));
-            handler.postDelayed(reader, 3 * Constants.SECOND);
+	        readable.setPosition(Math.max(readable.getPosition() - Constants.READER_START_OFFSET, 0));
+	        reader = new Reader(handler, readable.getPosition());
+	        handler.postDelayed(reader, 3 * Constants.SECOND);
 
-            if (isSavable())
-                context.startService(createLastReadServiceIntent(context, (Storable) readable, Constants.DB_OPERATION_INSERT));
+	        if (isStorable())
+		        context.startService(createLastReadServiceIntent(context, (Storable) readable, Constants.DB_OPERATION_INSERT));
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -347,8 +348,8 @@ public class ReaderFragment extends Fragment {
         handler.postDelayed(anim, Constants.SECOND); //TODO: make time relatively large
     }
 
-    private Boolean isSavable(){
-        return parserReceived && readable != null && settingsBundle != null && !TextUtils.isEmpty(readable.getPath()) &&
+	private Boolean isStorable(){
+		return parserReceived && readable != null && settingsBundle != null && !TextUtils.isEmpty(readable.getPath()) &&
                 settingsBundle.isCachingEnabled();
     }
 
@@ -364,8 +365,8 @@ public class ReaderFragment extends Fragment {
     public void onStop(){
         Log.d(LOGTAG, "OnStop() called");
         Activity activity = getActivity();
-        if (isSavable()){
-            Storable storable = (Storable) readable;
+	    if (isStorable()){
+		    Storable storable = (Storable) readable;
             if (reader.isCompleted()){
                 activity.startService(createLastReadServiceIntent(activity, storable, Constants.DB_OPERATION_DELETE));
             } else {
@@ -408,23 +409,23 @@ public class ReaderFragment extends Fragment {
 
         private Handler handler;
         private int cancelled;
-        private int position = 0;
-        private boolean completed = false;
+	    private int position;
+	    private boolean completed;
 
         public Reader(Handler handler, int position){
             this.handler = handler;
             this.position = position;
+	        completed = false;
         }
 
         @Override
         public void run(){
-            int wordLength = wordList.size();
-            int i = position;
-            if (i < wordLength){
-                completed = false;
+	        if (position < wordList.size()){
+		        completed = false;
                 if (!isCancelled()){
-                    updateView(i % wordLength);
-                    handler.postDelayed(this, calcDelay(wordLength));
+	                updateView(position);
+	                handler.postDelayed(this, calcDelay());
+	                position++;
                 } else {
                     handler.postDelayed(this, Constants.READER_SLEEP_IDLE);
                 }
@@ -470,9 +471,9 @@ public class ReaderFragment extends Fragment {
             }
         }
 
-        private int calcDelay(int wordLength){
-            return delayList.get(position++ % wordLength) * Math.round(100 * 60 * 1f / settingsBundle.getWPM());
-        }
+	    private int calcDelay(){
+		    return delayList.get(position) * Math.round(100 * 60 * 1f / settingsBundle.getWPM());
+	    }
     }
 
     private class TextParserListener extends BroadcastReceiver {

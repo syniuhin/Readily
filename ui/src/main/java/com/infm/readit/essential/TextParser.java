@@ -1,5 +1,6 @@
 package com.infm.readit.essential;
 
+import android.text.TextUtils;
 import android.util.Pair;
 
 import com.infm.readit.readable.Readable;
@@ -154,8 +155,9 @@ public class TextParser implements Serializable {
     public void process(){
         normalize(readable);
         cutLongWords(readable);
-        buildDelayList(readable);
-        cleanFromHyphens(readable);
+	    readable.setWordList(Arrays.asList(readable.getText().split(" ")));
+	    cleanWordList(readable);
+	    buildDelayList(readable);
         buildEmphasis(readable);
     }
 
@@ -218,6 +220,15 @@ public class TextParser implements Serializable {
     protected String insertSpacesAfterPunctuation(String text){
         StringBuilder res = new StringBuilder();
         String madeMeSpecial = makeMeSpecial.substring(1, 9) + ")";
+	    for (int i = 0; i < text.length(); ++i){
+		    Character ch = text.charAt(i);
+		    res.append(ch);
+		    if (i < text.length() - 1){
+			    Character nextCh = text.charAt(i + 1);
+			    if (madeMeSpecial.indexOf(ch) > -1 && Character.isLetter(nextCh))
+				    res.append(" ");
+		    }
+	    }
         for (Character ch : text.toCharArray()){
             res.append(ch);
             if (madeMeSpecial.indexOf(ch) > -1)
@@ -254,10 +265,10 @@ public class TextParser implements Serializable {
                     --pos;
                 toAppend = word.substring(0, pos);
                 word = word.substring(pos);
-                res.add("-" + toAppend + "-");
+	            res.add(toAppend + "-");
             }
             if (isComplex)
-                res.add("-" + word);
+	            res.add(word);
             else
                 res.add(word);
         }
@@ -266,24 +277,12 @@ public class TextParser implements Serializable {
         readable.setText(sb.toString());
     }
 
-    protected void cleanFromHyphens(Readable readable){
-        List<String> words = new ArrayList<String>(Arrays.asList(readable.getText().split(" ")));
-        List<String> res = new ArrayList<String>();
-        for (String word : words)
-            if (word.length() < 3) continue;
-            else if (word.charAt(0) == '-') res.add(word.substring(1, word.length()));
-            else res.add(word);
-        readable.setWordList(res);
-    }
-
     protected int measureWord(String word){
         if (word.length() == 0)
             return delayCoefficients.get(0);
         int res = 0;
         for (char ch : word.toCharArray()){
             int tempRes = delayCoefficients.get(0);
-            if (ch == '-')
-                tempRes = delayCoefficients.get(1);
             if (ch == '\t')
                 tempRes = delayCoefficients.get(4);
             switch (ch){
@@ -319,19 +318,25 @@ public class TextParser implements Serializable {
         return res;
     }
 
+	protected void cleanWordList(Readable readable){
+		List<String> wordList = readable.getWordList();
+		List<String> res = new ArrayList<String>();
+		for (String word : wordList)
+			if (!TextUtils.isEmpty(word))
+				res.add(word);
+		readable.setWordList(res);
+	}
+
     protected void buildDelayList(Readable readable){
-        String text = readable.getText();
         List<Integer> res = new ArrayList<Integer>();
-        String[] words = text.split(" ");
-        for (String word : words) res.add(measureWord(word));
-        readable.setDelayList(res);
+	    for (String word : readable.getWordList()) res.add(measureWord(word));
+	    readable.setDelayList(res);
     }
 
     protected void buildEmphasis(Readable readable){
-        List<String> words = readable.getWordList();
         List<Integer> res = new ArrayList<Integer>();
-        for (String word : words){
-            /* some kind of experiment, huh? */
+	    for (String word : readable.getWordList()){
+	        /* some kind of experiment, huh? */
             Map<String, Pair<Integer, Integer>> priorities = new HashMap<String, Pair<Integer, Integer>>();
             int len = word.length();
             for (int i = 0; i < len; ++i){
