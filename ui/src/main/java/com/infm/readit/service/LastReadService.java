@@ -3,7 +3,6 @@ package com.infm.readit.service;
 import android.app.IntentService;
 import android.content.ContentResolver;
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.util.Log;
 
@@ -51,15 +50,12 @@ public class LastReadService extends IntentService {
     }
 
     private void insertDataWithoutConflict(ContentResolver contentResolver, DataBundle dataBundle, DataBundle rowData){
-        ContentValues contentValues = null;
-        contentValues = Storable.getContentValues(dataBundle);
-
         if (rowData == null){
-            contentResolver.insert(LastReadContentProvider.CONTENT_URI, contentValues);
+	        contentResolver.insert(LastReadContentProvider.CONTENT_URI, Storable.getInsertContentValues(dataBundle));
         } else {
-            contentResolver.update(ContentUris.withAppendedId(
-                    LastReadContentProvider.CONTENT_URI, rowData.getRowId()
-            ), contentValues, null, null);
+	        contentResolver.update(ContentUris.withAppendedId(
+			        LastReadContentProvider.CONTENT_URI, rowData.getRowId()
+	        ), Storable.getUpdateContentValues(dataBundle), null, null);
         }
     }
 
