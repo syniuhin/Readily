@@ -15,34 +15,34 @@ import com.infm.readit.util.SettingsBundle;
  * Created by infm on 6/26/14. Enjoy ;)
  */
 public class TextParserService extends
-        IntentService/* implements Serializable */ { //I don't know why, but TextParser.toString() throws an error otherwise
+		IntentService/* implements Serializable */ { //I don't know why, but TextParser.toString() throws an error otherwise
 
-    private static final String LOGTAG = "TextParserService";
+	private static final String LOGTAG = "TextParserService";
 
-    /**
-     * Creates an IntentService.  Invoked by your subclass's constructor.
-     *
-     * @param name Used to name the worker thread, important only for debugging.
-     */
-    public TextParserService(String name){
-        super(name);
-    }
+	/**
+	 * Creates an IntentService.  Invoked by your subclass's constructor.
+	 *
+	 * @param name Used to name the worker thread, important only for debugging.
+	 */
+	public TextParserService(String name){
+		super(name);
+	}
 
-    public TextParserService(){
-        super("TextParserService");
-    }
+	public TextParserService(){
+		super("TextParserService");
+	}
 
-    @Override
-    protected void onHandleIntent(Intent intent){
-        Log.d(LOGTAG, "onHandleIntent() called");
-        Readable readable = Readable.newInstance(this,
-                intent.getExtras());
-        readable.process(this); //don't sure that context is necessary, esp. considering level of abstraction..
-        TextParser textParser = TextParser.newInstance(readable,
-                new SettingsBundle(PreferenceManager.getDefaultSharedPreferences(this)));
-        Intent toSend = new Intent(Constants.TEXT_PARSER_READY).
-                putExtra(Constants.EXTRA_PARSER, textParser.toString());
-        LocalBroadcastManager.getInstance(this).sendBroadcast(toSend);
-        Log.d(LOGTAG, "broadcast sent");
-    }
+	@Override
+	protected void onHandleIntent(Intent intent){
+		Log.d(LOGTAG, "onHandleIntent() called");
+		Readable readable = Readable.newInstance(this,
+				intent.getExtras());
+		readable.process(this); //don't sure that context is necessary, esp. considering level of abstraction..
+		TextParser textParser = TextParser.newInstance(readable,
+				new SettingsBundle(PreferenceManager.getDefaultSharedPreferences(this)));
+		Intent toSend = new Intent(Constants.TEXT_PARSER_READY).
+				putExtra(Constants.EXTRA_PARSER, textParser.toString());
+		LocalBroadcastManager.getInstance(this).sendBroadcast(toSend);
+		Log.d(LOGTAG, "broadcast sent");
+	}
 }

@@ -14,51 +14,51 @@ import com.infm.readit.service.TextParserService;
 
 public class ReceiverActivity extends Activity {
 
-    public static final String LOGTAG = "ReceiverActivity";
+	public static final String LOGTAG = "ReceiverActivity";
 
-    public static void startReceiverActivity(Context context, Integer intentType, String intentPath){
-        Intent intent = new Intent(context, ReceiverActivity.class);
+	public static void startReceiverActivity(Context context, Integer intentType, String intentPath){
+		Intent intent = new Intent(context, ReceiverActivity.class);
 
-        Bundle bundle = new Bundle();
-        bundle.putInt(Constants.EXTRA_TYPE, intentType);
-        bundle.putString(Constants.EXTRA_PATH, intentPath);
-        intent.putExtras(bundle);
+		Bundle bundle = new Bundle();
+		bundle.putInt(Constants.EXTRA_TYPE, intentType);
+		bundle.putString(Constants.EXTRA_PATH, intentPath);
+		intent.putExtras(bundle);
 
-        context.startActivity(intent);
-    }
+		context.startActivity(intent);
+	}
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_receiver);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+	@Override
+	protected void onCreate(Bundle savedInstanceState){
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_receiver);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        Bundle bundle = bundleReceivedData();
-        startReaderFragment(bundle);
-        startService(createParserServiceIntent(bundle));
-    }
+		Bundle bundle = bundleReceivedData();
+		startReaderFragment(bundle);
+		startService(createParserServiceIntent(bundle));
+	}
 
-    private Bundle bundleReceivedData(){
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null && !bundle.containsKey(Intent.EXTRA_TEXT) && !bundle.containsKey(Constants.EXTRA_TYPE)) //obscure
-            bundle.putInt(Constants.EXTRA_TYPE, Readable.TYPE_TEST);
-        Log.d(LOGTAG, "bundle: " + ((bundle == null) ? "null" : bundle.toString()));
-        return bundle;
-    }
+	private Bundle bundleReceivedData(){
+		Bundle bundle = getIntent().getExtras();
+		if (bundle != null && !bundle.containsKey(Intent.EXTRA_TEXT) && !bundle.containsKey(Constants.EXTRA_TYPE)) //obscure
+			bundle.putInt(Constants.EXTRA_TYPE, Readable.TYPE_TEST);
+		Log.d(LOGTAG, "bundle: " + ((bundle == null) ? "null" : bundle.toString()));
+		return bundle;
+	}
 
-    private void startReaderFragment(Bundle bundle){
-        Fragment readerFragment = new ReaderFragment();
-        readerFragment.setArguments(bundle);
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, readerFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
+	private void startReaderFragment(Bundle bundle){
+		Fragment readerFragment = new ReaderFragment();
+		readerFragment.setArguments(bundle);
+		FragmentTransaction transaction = getFragmentManager().beginTransaction();
+		transaction.replace(R.id.fragment_container, readerFragment);
+		transaction.addToBackStack(null);
+		transaction.commit();
+	}
 
-    private Intent createParserServiceIntent(Bundle bundle){
-        Intent intent = new Intent(this, TextParserService.class);
-        if (bundle != null)
-            intent.putExtras(bundle);
-        return intent;
-    }
+	private Intent createParserServiceIntent(Bundle bundle){
+		Intent intent = new Intent(this, TextParserService.class);
+		if (bundle != null)
+			intent.putExtras(bundle);
+		return intent;
+	}
 }

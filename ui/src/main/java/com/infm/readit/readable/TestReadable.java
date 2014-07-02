@@ -9,14 +9,14 @@ import com.infm.readit.R;
  */
 public class TestReadable extends Readable {
 
-    public TestReadable(){
-        super();
-        path = null;
-        type = TYPE_TEST;
-    }
+	public TestReadable(){
+		super();
+		path = null;
+		type = TYPE_TEST;
+	}
 
-    @Override
-    public void process(Context context){
-        text = new StringBuilder(context.getResources().getString(R.string.sample_text));
-    }
+	@Override
+	public void process(Context context){
+		text = new StringBuilder(context.getResources().getString(R.string.sample_text));
+	}
 }
