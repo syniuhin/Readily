@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -73,8 +74,93 @@ public class ReaderFragment extends Fragment {
         RelativeLayout fragmentLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_reader, container, false);
         findViews(fragmentLayout);
         periodicallyAnimate();
+        return fragmentLayout;
+    }
 
-        (fragmentLayout.findViewById(R.id.reader_layout)).setOnTouchListener(new OnSwipeTouchListener(getActivity()) {
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+        Log.d(LOGTAG, "onActivityCreated() called");
+
+        Activity activity = getActivity();
+        setReaderLayoutListener(activity);
+        settingsBundle = new SettingsBundle(PreferenceManager.getDefaultSharedPreferences(activity));
+
+        createReceiver(activity);
+
+        initPrevButton();
+    }
+
+    public void setTime(long localTime){
+        this.localTime = localTime;
+        speedoHided = false;
+    }
+
+    public TextParser getParser(){
+        return parser;
+    }
+
+    private Spanned getLeftFormattedText(int pos){
+        String word = wordList.get(pos);
+        if (TextUtils.isEmpty(word))
+            return Html.fromHtml("");
+        int emphasisPosition = emphasisList.get(pos);
+        String wordLeft = word.substring(0, emphasisPosition);
+        String format = "<font color='#0A0A0A'>" + wordLeft + "</font>";
+        return Html.fromHtml(format);
+    }
+
+    private Spanned getCurrentFormattedText(int pos){
+        String word = wordList.get(pos);
+        if (TextUtils.isEmpty(word))
+            return Html.fromHtml("");
+        int emphasisPosition = emphasisList.get(pos);
+        String wordEmphasis = word.substring(emphasisPosition, emphasisPosition + 1);
+        String format = "<font color='#FA2828'>" + wordEmphasis + "</font>";
+        return Html.fromHtml(format);
+    }
+
+    private Spanned getRightFormattedText(int pos){
+        String word = wordList.get(pos);
+        if (TextUtils.isEmpty(word))
+            return Html.fromHtml("");
+        int emphasisPosition = emphasisList.get(pos);
+        String wordRight = word.substring(emphasisPosition + 1, word.length());
+        String format = "<font><font color='#0A0A0A'>" + wordRight + "</font>";
+        if (settingsBundle.isShowingContextEnabled())
+            format += getNextFormat(pos);
+        format += "</font>";
+        return Html.fromHtml(format);
+    }
+
+    public String getNextFormat(int pos){
+        int charLen = 0;
+        int i = pos;
+        StringBuilder format = new StringBuilder("&nbsp;<font color='#AAAAAA'>");
+        while (charLen < 40 && i < wordList.size() - 1/* && wordList.get(i).charAt(wordList.get(i).length() - 1) != '\n'*/){
+            String word = wordList.get(++i);
+	        if (!TextUtils.isEmpty(word)){
+		        charLen += word.length() + 1;
+                format.append(word).append(" ");
+            }
+        }
+        format.append("</font>");
+        return format.toString();
+    }
+
+    private void findViews(View v){
+        readerLayout = (RelativeLayout) v.findViewById(R.id.reader_layout);
+        parsingProgressBar = (ProgressBar) v.findViewById(R.id.parsingProgressBar);
+        currentTextView = (TextView) v.findViewById(R.id.currentWordTextView);
+        leftTextView = (TextView) v.findViewById(R.id.leftWordTextView);
+        rightTextView = (TextView) v.findViewById(R.id.rightWordTextView);
+        progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
+        speedo = (TextView) v.findViewById(R.id.speedo);
+        prevButton = (ImageButton) v.findViewById(R.id.previousWordImageButton);
+    }
+
+    private void setReaderLayoutListener(Context context){
+        readerLayout.setOnTouchListener(new OnSwipeTouchListener(context) {
             @Override
             public void onSwipeTop(){
                 changeWPM(50);
@@ -117,81 +203,6 @@ public class ReaderFragment extends Fragment {
                     reader.incCancelled();
             }
         });
-        return fragmentLayout;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState){
-        super.onActivityCreated(savedInstanceState);
-        Log.d(LOGTAG, "onActivityCreated() called");
-
-        Activity activity = getActivity();
-
-        settingsBundle = new SettingsBundle(PreferenceManager.getDefaultSharedPreferences(activity));
-
-        createReceiver(activity);
-
-        initPrevButton();
-    }
-
-    public void setTime(long localTime){
-        this.localTime = localTime;
-        speedoHided = false;
-    }
-
-    public TextParser getParser(){
-        return parser;
-    }
-
-    private Spanned getLeftFormattedText(int pos){
-        String word = wordList.get(pos);
-        int emphasisPosition = emphasisList.get(pos);
-        String wordLeft = word.substring(0, emphasisPosition);
-        String format = "<font color='#0A0A0A'>" + wordLeft + "</font>";
-        return Html.fromHtml(format);
-    }
-
-    private Spanned getCurrentFormattedText(int pos){
-        String word = wordList.get(pos);
-        int emphasisPosition = emphasisList.get(pos);
-        String wordEmphasis = word.substring(emphasisPosition, emphasisPosition + 1);
-        String format = "<font color='#FA2828'>" + wordEmphasis + "</font>";
-        return Html.fromHtml(format);
-    }
-
-    private Spanned getRightFormattedText(int pos){
-        String word = wordList.get(pos);
-        int emphasisPosition = emphasisList.get(pos);
-        String wordRight = word.substring(emphasisPosition + 1, word.length());
-        String format = "<font><font color='#0A0A0A'>" + wordRight + "</font>";
-        if (settingsBundle.isShowingContextEnabled())
-            format += getNextFormat(pos);
-        format += "</font>";
-        return Html.fromHtml(format);
-    }
-
-    public String getNextFormat(int pos){
-        int charLen = 0;
-        int i = pos;
-        StringBuilder format = new StringBuilder("&nbsp;<font color='#AAAAAA'>");
-        while (charLen < 40 && i < wordList.size() - 1 && wordList.get(i).charAt(wordList.get(i).length() - 1) != '\n'){
-            String word = wordList.get(++i);
-            charLen += word.length() + 1;
-            format.append(word).append(" ");
-        }
-        format.append("</font>");
-        return format.toString();
-    }
-
-    private void findViews(View v){
-        readerLayout = (RelativeLayout) v.findViewById(R.id.reader_layout);
-        parsingProgressBar = (ProgressBar) v.findViewById(R.id.parsingProgressBar);
-        currentTextView = (TextView) v.findViewById(R.id.currentWordTextView);
-        leftTextView = (TextView) v.findViewById(R.id.leftWordTextView);
-        rightTextView = (TextView) v.findViewById(R.id.rightWordTextView);
-        progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
-        speedo = (TextView) v.findViewById(R.id.speedo);
-        prevButton = (ImageButton) v.findViewById(R.id.previousWordImageButton);
     }
 
     private void initPrevButton(){
@@ -251,7 +262,7 @@ public class ReaderFragment extends Fragment {
         }
     }
 
-    private void receiveParser(Intent intent){
+    private void receiveParser(Context context, Intent intent){
         try {
             parser = TextParser.fromString(intent.getStringExtra(Constants.EXTRA_PARSER));
             parserReceived = true;
@@ -271,12 +282,12 @@ public class ReaderFragment extends Fragment {
                     duration(2 * Constants.SECOND).
                     playOn(readerLayout);
             final Handler handler = new Handler();
-            reader = new Reader(handler, Math.max(readable.getPosition() - Constants.READER_START_OFFSET, 0));
-            handler.postDelayed(reader, 3 * Constants.SECOND);
+	        readable.setPosition(Math.max(readable.getPosition() - Constants.READER_START_OFFSET, 0));
+	        reader = new Reader(handler, readable.getPosition());
+	        handler.postDelayed(reader, 3 * Constants.SECOND);
 
-            if (isSavable())
-                getActivity().
-                        startService(createLastReadServiceIntent((Storable) readable, Constants.DB_OPERATION_INSERT));
+	        if (isStorable())
+		        context.startService(createLastReadServiceIntent(context, (Storable) readable, Constants.DB_OPERATION_INSERT));
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
@@ -284,8 +295,8 @@ public class ReaderFragment extends Fragment {
         }
     }
 
-    private Intent createLastReadServiceIntent(Storable storable, int operation){
-        Intent intent = new Intent(getActivity(), LastReadService.class);
+    private Intent createLastReadServiceIntent(Context context, Storable storable, int operation){
+        Intent intent = new Intent(context, LastReadService.class);
         storable.setPosition((reader == null) ? 0 : reader.getPosition());
         storable.putDataInIntent(intent);
         intent.putExtra(Constants.EXTRA_DB_OPERATION, operation);
@@ -337,8 +348,9 @@ public class ReaderFragment extends Fragment {
         handler.postDelayed(anim, Constants.SECOND); //TODO: make time relatively large
     }
 
-    private Boolean isSavable(){
-        return parserReceived && !TextUtils.isEmpty(readable.getPath()) && settingsBundle.isCachingEnabled();
+	private Boolean isStorable(){
+		return parserReceived && readable != null && settingsBundle != null && !TextUtils.isEmpty(readable.getPath()) &&
+                settingsBundle.isCachingEnabled();
     }
 
     @Override
@@ -352,20 +364,42 @@ public class ReaderFragment extends Fragment {
     @Override
     public void onStop(){
         Log.d(LOGTAG, "OnStop() called");
-        if (isSavable()){
-            Storable storable = (Storable) readable;
+        Activity activity = getActivity();
+	    if (isStorable()){
+		    Storable storable = (Storable) readable;
             if (reader.isCompleted()){
-                getActivity().startService(createLastReadServiceIntent(storable, Constants.DB_OPERATION_DELETE));
+                activity.startService(createLastReadServiceIntent(activity, storable, Constants.DB_OPERATION_DELETE));
             } else {
-                getActivity().startService(createLastReadServiceIntent(storable, Constants.DB_OPERATION_INSERT));
+                activity.startService(createLastReadServiceIntent(activity, storable, Constants.DB_OPERATION_INSERT));
             }
         }
 
         settingsBundle.updatePreferences();
         manager.unregisterReceiver(textParserListener);
 
-        getActivity().finish();
+        activity.finish();
         super.onStop();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig){
+        super.onConfigurationChanged(newConfig);
+        reader.performPause();
+        
+        Activity activity = getActivity();
+        
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View newView = inflater.inflate(R.layout.fragment_reader, null);
+        ViewGroup rootView = (ViewGroup) getView();
+        if (rootView != null){
+            rootView.removeAllViews();
+            rootView.addView(newView);
+        }
+        findViews(newView);
+        parsingProgressBar.setVisibility(View.GONE);
+        readerLayout.setVisibility(View.VISIBLE);
+        updateView(reader.getPosition());
+        setReaderLayoutListener(activity);
     }
 
     /**
@@ -375,23 +409,23 @@ public class ReaderFragment extends Fragment {
 
         private Handler handler;
         private int cancelled;
-        private int position = 0;
-        private boolean completed = false;
+	    private int position;
+	    private boolean completed;
 
         public Reader(Handler handler, int position){
             this.handler = handler;
             this.position = position;
+	        completed = false;
         }
 
         @Override
         public void run(){
-            int wordLength = wordList.size();
-            int i = position;
-            if (i < wordLength){
-                completed = false;
+	        if (position < wordList.size()){
+		        completed = false;
                 if (!isCancelled()){
-                    updateView(i % wordLength);
-                    handler.postDelayed(this, calcDelay(wordLength));
+	                updateView(position);
+	                handler.postDelayed(this, calcDelay());
+	                position++;
                 } else {
                     handler.postDelayed(this, Constants.READER_SLEEP_IDLE);
                 }
@@ -437,16 +471,15 @@ public class ReaderFragment extends Fragment {
             }
         }
 
-        private int calcDelay(int wordLength){
-            return delayList.get(position++ % wordLength) * Math.round(100 * 60 * 1f / settingsBundle.getWPM());
-        }
+	    private int calcDelay(){
+		    return delayList.get(position) * Math.round(100 * 60 * 1f / settingsBundle.getWPM());
+	    }
     }
 
     private class TextParserListener extends BroadcastReceiver {
-
         @Override
         public void onReceive(Context context, Intent intent){
-            receiveParser(intent);
+            receiveParser(context, intent);
         }
     }
 }

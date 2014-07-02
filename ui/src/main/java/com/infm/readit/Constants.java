@@ -21,7 +21,7 @@ public class Constants {
     public static final int MIN_WPM = 50;
     public static final int SPEEDO_SHOWING_LENGTH = 1500; //time in ms for which speedo becomes visible
 
-    public static final String PREF_CACHE = "pref_cache";
+    public static final String PREF_STORAGE = "pref_cache";
     public static final String PREF_WPM = "pref_wpm";
     public static final String PREF_SHOW_CONTEXT = "pref_showContext";
     public static final String PREF_SWIPE = "pref_swipe";

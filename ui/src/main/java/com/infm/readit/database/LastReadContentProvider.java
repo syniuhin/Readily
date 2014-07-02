@@ -62,7 +62,9 @@ public class LastReadContentProvider extends ContentProvider {
         }
 
         db = dbHelper.getWritableDatabase();
-        return db.query(LastReadDBHelper.TABLE, projection, selection, selectionArgs, null, null, sortOrder);
+	    Cursor cursor = db.query(LastReadDBHelper.TABLE, projection, selection, selectionArgs, null, null, sortOrder);
+	    cursor.setNotificationUri(getContext().getContentResolver(), uri);
+	    return cursor;
     }
 
     @Override

@@ -2,9 +2,9 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="90dp"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp"
+    android:layout_height="110dp"
+    android:layout_marginLeft="15dp"
+    android:layout_marginRight="15dp"
     android:background="@drawable/reader_border">
 
     <ProgressBar
@@ -31,8 +31,7 @@
         android:background="#53ededed"
         android:contentDescription="@string/top_pointer_description"
         android:src="@drawable/abc_ic_ab_back_holo_light"
-        android:visibility="invisible"
-        />
+        android:visibility="invisible"/>
 
     <RelativeLayout
         android:id="@+id/reader_layout"
@@ -112,12 +111,12 @@
 
     <ProgressBar
         android:id="@+id/parsingProgressBar"
-        style="?android:attr/progressBarStyleLarge"
+        style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:indeterminate="false"
+        android:layout_margin="10dp"
         android:visibility="visible"/>
 
 </RelativeLayout>

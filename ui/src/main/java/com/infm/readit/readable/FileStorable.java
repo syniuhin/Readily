@@ -26,9 +26,9 @@ import nl.siegmann.epublib.epub.EpubReader;
 /**
  * Created by infm on 6/13/14. Enjoy ;)
  */
-public class FileReadable extends Storable { //TODO: implement separate class for each extension
+public class FileStorable extends Storable { //TODO: implement separate class for each extension
 
-    private static final String LOGTAG = "FileReadable";
+	private static final String LOGTAG = "FileStorable";
 
     public static String takePath(Context context, Uri uri) throws URISyntaxException{
         if ("content".equalsIgnoreCase(uri.getScheme())){
@@ -56,7 +56,7 @@ public class FileReadable extends Storable { //TODO: implement separate class fo
     //implement it properly
     public static String takePath(Context context, String s) throws URISyntaxException{
         if ("content".equals(s.substring(0, 7))){
-            return FileReadable.takePath(context, Uri.parse(s));
+	        return FileStorable.takePath(context, Uri.parse(s));
         } else
             return s;
     }
@@ -66,9 +66,9 @@ public class FileReadable extends Storable { //TODO: implement separate class fo
     public void process(Context context){
         Log.d(LOGTAG, "process() is called");
         try {
-            path = FileReadable.takePath(context, path);
-            if (path == null){
-                Log.d(LOGTAG, "path is null");
+	        path = FileStorable.takePath(context, path);
+	        if (path == null){
+		        Log.d(LOGTAG, "path is null");
                 return;
             }
 
@@ -124,7 +124,7 @@ public class FileReadable extends Storable { //TODO: implement separate class fo
         try {
             doc = Jsoup.parse(text);
             title = doc.title();
-            return doc.select("p").text();
+            return title + " | " + doc.select("p").text();
         } catch (Exception e) {
             e.printStackTrace();
         }

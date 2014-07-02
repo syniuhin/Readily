@@ -1,8 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:context="${packageName}.${activityClass}">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="${packageName}.${activityClass}">
 
     <FrameLayout
         android:id="@+id/fragment_container"
@@ -15,8 +15,8 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_above="@+id/fragment_container"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
         android:background="#ff484848"
         android:layout_alignParentRight="true">
 

@@ -44,17 +44,21 @@ abstract public class Storable extends Readable {
         return rowData;
     }
 
-    public static ContentValues getContentValues(DataBundle dataBundle){
-        ContentValues values = new ContentValues();
-        values.put(LastReadDBHelper.KEY_HEADER, dataBundle.getHeader());
-        values.put(LastReadDBHelper.KEY_PATH, dataBundle.getPath());
+	public static ContentValues getInsertContentValues(DataBundle dataBundle){
+		ContentValues values = new ContentValues();
+		values.put(LastReadDBHelper.KEY_HEADER, dataBundle.getHeader());
+		values.put(LastReadDBHelper.KEY_PATH, dataBundle.getPath());
         values.put(LastReadDBHelper.KEY_POSITION, dataBundle.getPosition());
         values.put(LastReadDBHelper.KEY_PERCENT, dataBundle.getPercent());
-        Integer rowId = dataBundle.getRowId();
-        if (rowId != null)
-            values.put(LastReadDBHelper.KEY_ROWID, rowId);
         return values;
     }
+
+	public static ContentValues getUpdateContentValues(DataBundle dataBundle){
+		ContentValues values = new ContentValues();
+		values.put(LastReadDBHelper.KEY_POSITION, dataBundle.getPosition());
+		values.put(LastReadDBHelper.KEY_PERCENT, dataBundle.getPercent());
+		return values;
+	}
 
     protected DataBundle takeRowData(Context context){
         return Storable.getRowData(context.getContentResolver().query(LastReadContentProvider.CONTENT_URI,
@@ -75,10 +79,10 @@ abstract public class Storable extends Readable {
     protected void makeHeader(){
         int charLen = 0;
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < wordList.size() && charLen < 20; ++i){
-            String word = wordList.get(i);
-            sb.append(word).append(" ");
-            charLen += word.length() + 1;
+	    for (int i = 0; i < wordList.size() && charLen < 40; ++i){
+		    String word = wordList.get(i);
+		    sb.append(word).append(" ");
+		    charLen += word.length() + 1;
         }
         header = sb.toString();
     }

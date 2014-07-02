@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.infm.readit.database.LastReadContentProvider;
 import com.infm.readit.database.LastReadDBHelper;
 import com.infm.readit.readable.Readable;
+import com.infm.readit.service.StorageCheckerService;
 
 public class MainActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -36,6 +37,7 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        startService(createCheckerServiceIntent());
         initLastReadingView();
         // disable it for now
         // Crashlytics.start(this);
@@ -134,5 +136,9 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
                 new String[]{LastReadDBHelper.KEY_HEADER, LastReadDBHelper.KEY_PATH, LastReadDBHelper.KEY_PERCENT},
                 new int[]{R.id.text_view_title, R.id.text_view_path, R.id.text_view_percent}, 0);
         listView.setAdapter(adapter);
+    }
+
+    private Intent createCheckerServiceIntent(){
+        return new Intent(this, StorageCheckerService.class);
     }
 }

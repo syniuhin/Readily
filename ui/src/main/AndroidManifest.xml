@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.infm.readit">
+<manifest
+    package="com.infm.readit"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -27,7 +28,7 @@
             android:exported="true"
             android:label="@string/title_activity_receiver"
             android:launchMode="singleInstance"
-            android:theme="@style/Theme.Transparent">
+            android:theme="@style/Theme.TransparentActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
 
@@ -55,6 +56,10 @@
             android:exported="false"/>
         <service
             android:name=".service.TextParserService"
+            android:exported="false"/>
+
+        <service
+            android:name=".service.StorageCheckerService"
             android:exported="false"/>
     </application>
 
