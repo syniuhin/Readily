@@ -77,19 +77,19 @@ abstract public class Readable implements Serializable {
                     readable = new ClipboardReadable();
                     break;
                 case TYPE_FILE:
-                    readable = new FileReadable();
-                    break;
-                case TYPE_TXT:
-                    readable = new FileReadable();
-                    break;
-                case TYPE_EPUB:
-                    readable = new FileReadable();
-                    break;
-                default:
+	                readable = new FileStorable();
+	                break;
+	            case TYPE_TXT:
+	                readable = new FileStorable();
+	                break;
+	            case TYPE_EPUB:
+	                readable = new FileStorable();
+	                break;
+	            default:
                     String link;
                     if (intentText.length() < Constants.NON_LINK_LENGTH &&
                             !TextUtils.isEmpty(link = TextParser.findLink(TextParser.compilePattern(), intentText))){
-                        readable = new NetReadable(link);
+	                    readable = new NetStorable(link);
                     } else {
                         readable = new ClipboardReadable(); // actually I don't know what to do here
                         readable.setText(intentText);

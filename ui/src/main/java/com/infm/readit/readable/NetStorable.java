@@ -18,14 +18,14 @@ import de.jetwick.snacktory.JResult;
 /**
  * Created by infm on 6/13/14. Enjoy ;)
  */
-public class NetReadable extends Storable {
+public class NetStorable extends Storable {
 
-    private static final String LOGTAG = "NetReadable";
-    private String link;
+	private static final String LOGTAG = "NetStorable";
+	private String link;
 
-    public NetReadable(String link){
-        super();
-        this.link = link;
+	public NetStorable(String link){
+		super();
+		this.link = link;
         type = TYPE_NET;
     }
 
