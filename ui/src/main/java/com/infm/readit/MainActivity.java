@@ -98,8 +98,8 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
 		switch (requestCode){
 			case FILE_SELECT_CODE:
-				String relativePath = data.getData().toString();
 				if (resultCode == RESULT_OK){
+					String relativePath = data.getData().toString();
 					if (FileStorable.isExtensionValid(FileStorable.getExtension(relativePath)))
 						ReceiverActivity.startReceiverActivity(this, Readable.TYPE_FILE, relativePath);
 					else

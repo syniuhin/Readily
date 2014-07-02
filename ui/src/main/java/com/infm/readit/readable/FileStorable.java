@@ -84,14 +84,6 @@ abstract public class FileStorable extends Storable { //TODO: implement separate
 
 	public String getExtension(){ return extension; }
 
-	@Override
-	protected void makeHeader(){
-		if (TextUtils.isEmpty(title))
-			super.makeHeader();
-		else
-			header = title;
-	}
-
 	protected void createRowData(Context context){
 		rowData = takeRowData(context);
 		if (rowData != null)

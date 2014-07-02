@@ -49,10 +49,18 @@ public class EpubFileStorable extends FileStorable {
 		try {
 			doc = Jsoup.parse(text);
 			title = doc.title();
-			return title + " | " + doc.select("p").text();
+			return doc.select("p").text();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return "";
+	}
+
+	@Override
+	protected void makeHeader(){
+		if (title.isEmpty() || title.equals("Cover"))
+			super.makeHeader();
+		else
+			header = title;
 	}
 }
