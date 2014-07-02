@@ -23,6 +23,7 @@ import com.infm.readit.database.LastReadContentProvider;
 import com.infm.readit.database.LastReadDBHelper;
 import com.infm.readit.readable.Readable;
 import com.infm.readit.service.StorageCheckerService;
+import com.newrelic.agent.android.NewRelic;
 
 public class MainActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -40,7 +41,11 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
 		setContentView(R.layout.activity_main);
 		startService(createCheckerServiceIntent());
 		initLastReadingView();
+
 		Crashlytics.start(this);
+		NewRelic.withApplicationToken(
+				"AAb54a33233473ebe708b5daec8505d0928bd07238"
+		).start(this.getApplication());
 
 		LoaderManager loaderManager = getLoaderManager();
 		loaderManager.initLoader(0, null, this);

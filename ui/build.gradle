@@ -1,14 +1,17 @@
 buildscript {
     repositories {
         maven { url 'http://download.crashlytics.com/maven' }
+        mavenCentral()
     }
 
     dependencies {
         classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
+        classpath 'com.newrelic.agent.android:agent-gradle-plugin:3.+'
     }
 }
-apply plugin: 'com.android.application'
+apply plugin: 'android'
 apply plugin: 'crashlytics'
+apply plugin: 'newrelic'
 
 repositories {
     maven { url 'http://download.crashlytics.com/maven' }
@@ -37,6 +40,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:19.1.0'
     compile 'com.android.support:support-v4:19.1.0'
     compile 'com.crashlytics.android:crashlytics:1.+'
+    compile 'com.newrelic.agent.android:android-agent:3.+'
     compile 'org.jsoup:jsoup:1.7.3'
     compile 'org.slf4j:slf4j-android:1.7.7'
     compile 'com.nineoldandroids:library:2.4.0'
