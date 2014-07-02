@@ -5,30 +5,31 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
+import android.webkit.MimeTypeMap;
 
-import com.infm.readit.R;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.net.URISyntaxException;
-
-import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.epub.EpubReader;
 
 /**
  * Created by infm on 6/13/14. Enjoy ;)
  */
-public class FileStorable extends Storable { //TODO: implement separate class for each extension
+abstract public class FileStorable extends Storable { //TODO: implement separate class for each extension
 
 	private static final String LOGTAG = "FileStorable";
+
+	public static FileStorable createFileStorable(String intentPath){
+		FileStorable fileStorable;
+		switch (getIntentType(intentPath)){
+			case Readable.TYPE_TXT:
+				fileStorable = new TxtFileStorable();
+				break;
+			case Readable.TYPE_EPUB:
+				fileStorable = new EpubFileStorable();
+				break;
+			default:
+				fileStorable = null;
+		}
+		return fileStorable;
+	}
 
 	public static String takePath(Context context, Uri uri) throws URISyntaxException{
 		if ("content".equalsIgnoreCase(uri.getScheme())){
@@ -61,75 +62,26 @@ public class FileStorable extends Storable { //TODO: implement separate class fo
 			return s;
 	}
 
+	public static String getExtension(String path){
+		String extension = MimeTypeMap.getFileExtensionFromUrl(path);
+		if (TextUtils.isEmpty(extension)){
+			int i = path.lastIndexOf('.');
+			if (i > 0)
+				extension = path.substring(i + 1);
+		}
+		return extension;
+	}
+
+	public static int getIntentType(String intentPath){
+		String ext = getExtension(intentPath);
+		if ("txt".equals(ext))
+			return Readable.TYPE_TXT;
+		if ("epub".equals(ext))
+			return Readable.TYPE_EPUB;
+		return -1;
+	}
+
 	public String getExtension(){ return extension; }
-
-	public void process(Context context){
-		Log.d(LOGTAG, "process() is called");
-		try {
-			path = FileStorable.takePath(context, path);
-			if (path == null){
-				Log.d(LOGTAG, "path is null");
-				return;
-			}
-
-			makeExtension();
-			StringBuilder text = new StringBuilder();
-			type = -1;
-
-			if ("txt".equals(extension))//TODO: read all plain text files, not only txt ones
-				processTxt();
-
-			if ("epub".equals(extension))
-				processEpub();
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-
-		if (processFailed = type == -1){
-			Toast.makeText(context, R.string.wrong_ext, Toast.LENGTH_SHORT).show();
-		} else {
-			rowData = takeRowData(context);
-			if (rowData != null)
-				position = rowData.getPosition();
-		}
-	}
-
-	private void processTxt() throws IOException{
-		Log.d(LOGTAG, "type: txt");
-		FileReader fileReader = new FileReader(path);
-		BufferedReader br = new BufferedReader(fileReader);
-		String sCurrentLine;
-		while ((sCurrentLine = br.readLine()) != null)
-			text.append(sCurrentLine).append('\n');
-		br.close();
-		type = TYPE_TXT;
-	}
-
-	private void processEpub() throws IOException{
-		Log.d(LOGTAG, "type: epub");
-		Book book = (new EpubReader()).readEpub(new FileInputStream(path));
-		for (Resource res : book.getContents())
-			text.append(new String(res.getData()));
-		text = new StringBuilder(parseEpub(text.toString())); //NullPointerEx can be thrown
-		type = TYPE_EPUB;
-	}
-
-	private String parseEpub(String text){
-		Document doc = null;
-		try {
-			doc = Jsoup.parse(text);
-			title = doc.title();
-			return title + " | " + doc.select("p").text();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return "";
-	}
 
 	@Override
 	protected void makeHeader(){
@@ -137,5 +89,11 @@ public class FileStorable extends Storable { //TODO: implement separate class fo
 			super.makeHeader();
 		else
 			header = title;
+	}
+
+	protected void createRowData(Context context){
+		rowData = takeRowData(context);
+		if (rowData != null)
+			position = rowData.getPosition();
 	}
 }

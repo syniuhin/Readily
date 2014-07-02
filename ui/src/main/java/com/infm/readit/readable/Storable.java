@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.text.TextUtils;
 import android.util.Log;
-import android.webkit.MimeTypeMap;
 
 import com.infm.readit.Constants;
 import com.infm.readit.database.DataBundle;
@@ -91,14 +90,5 @@ abstract public class Storable extends Readable {
 		String q = s.replace(' ', '_');
 		q = q.replace('/', '|');
 		return q;
-	}
-
-	protected void makeExtension(){
-		extension = MimeTypeMap.getFileExtensionFromUrl(path);
-		if (TextUtils.isEmpty(extension)){
-			int i = path.lastIndexOf('.');
-			if (i > 0)
-				extension = path.substring(i + 1);
-		}
 	}
 }

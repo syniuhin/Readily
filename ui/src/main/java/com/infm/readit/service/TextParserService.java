@@ -35,7 +35,7 @@ public class TextParserService extends
 	@Override
 	protected void onHandleIntent(Intent intent){
 		Log.d(LOGTAG, "onHandleIntent() called");
-		Readable readable = Readable.newInstance(this,
+		Readable readable = Readable.createReadable(this,
 				intent.getExtras());
 		readable.process(this); //don't sure that context is necessary, esp. considering level of abstraction..
 		TextParser textParser = TextParser.newInstance(readable,

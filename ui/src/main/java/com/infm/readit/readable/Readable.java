@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.infm.readit.Constants;
 import com.infm.readit.R;
@@ -48,15 +49,17 @@ abstract public class Readable implements Serializable {
 		processFailed = false;
 	}
 
-	public static Readable newInstance(Context context, Bundle bundle){
+	public static Readable createReadable(Context context, Bundle bundle){
 		Readable readable;
 		if (bundle == null){
-			readable = newInstance(Readable.TYPE_TEST,
+			readable = createReadable(context,
+					Readable.TYPE_TEST,
 					null,
 					null);
 			readable.setPosition(0);
 		} else {
-			readable = newInstance(bundle.getInt(Constants.EXTRA_TYPE, -1),
+			readable = createReadable(context,
+					bundle.getInt(Constants.EXTRA_TYPE, -1),
 					bundle.getString(Intent.EXTRA_TEXT, context.getResources().getString(R.string.sample_text)),
 					bundle.getString(Constants.EXTRA_PATH, null));
 			readable.setPosition(Math.max(bundle.getInt(Constants.EXTRA_POSITION), 0));
@@ -64,7 +67,7 @@ abstract public class Readable implements Serializable {
 		return readable;
 	}
 
-	public static Readable newInstance(Integer intentType, String intentText, String intentPath){
+	public static Readable createReadable(Context context, Integer intentType, String intentText, String intentPath){
 		Readable readable;
 		if (TextUtils.isEmpty(intentText)){
 			readable = new TestReadable();
@@ -77,13 +80,17 @@ abstract public class Readable implements Serializable {
 					readable = new ClipboardReadable();
 					break;
 				case TYPE_FILE:
-					readable = new FileStorable();
+					readable = FileStorable.createFileStorable(intentPath);
+					if (readable == null){
+						Toast.makeText(context, R.string.wrong_ext, Toast.LENGTH_SHORT).show();
+						return null;
+					}
 					break;
 				case TYPE_TXT:
-					readable = new FileStorable();
+					readable = new TxtFileStorable();
 					break;
 				case TYPE_EPUB:
-					readable = new FileStorable();
+					readable = new EpubFileStorable();
 					break;
 				default:
 					String link;
