@@ -19,6 +19,8 @@
     <string name="list_empty_view">Hey, take some reading!</string>
     <string name="file_manager_required">Please install a File Manager</string>
     <string name="wrong_ext">Wrong extension</string>
+    <string name="text_null">Text is missing</string>
+    <string name="cant_fetch">Text fetching problems</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Read a text from the clipboard</string>

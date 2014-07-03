@@ -5,11 +5,8 @@
         android:key="pref_instructions"
         android:title="@string/preferences_getStarted"/>
     <Preference
-        android:title="@string/preferences_test">
-        <intent
-            android:targetClass="com.infm.readit.ReceiverActivity"
-            android:targetPackage="com.infm.readit"/>
-    </Preference>
+        android:key="pref_test"
+        android:title="@string/preferences_test"/>
     <PreferenceCategory
         android:title="@string/preferences_basic_settings">
         <Preference

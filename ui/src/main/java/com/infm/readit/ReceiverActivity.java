@@ -35,30 +35,42 @@ public class ReceiverActivity extends Activity {
 
 		Bundle bundle = bundleReceivedData();
 		startReaderFragment(bundle);
-		startService(createParserServiceIntent(bundle));
+		startTextParserService(bundle);
 	}
 
 	private Bundle bundleReceivedData(){
 		Bundle bundle = getIntent().getExtras();
-		if (bundle != null && !bundle.containsKey(Intent.EXTRA_TEXT) && !bundle.containsKey(Constants.EXTRA_TYPE)) //obscure
-			bundle.putInt(Constants.EXTRA_TYPE, Readable.TYPE_TEST);
 		Log.d(LOGTAG, "bundle: " + ((bundle == null) ? "null" : bundle.toString()));
 		return bundle;
 	}
 
 	private void startReaderFragment(Bundle bundle){
-		Fragment readerFragment = new ReaderFragment();
-		readerFragment.setArguments(bundle);
-		FragmentTransaction transaction = getFragmentManager().beginTransaction();
-		transaction.replace(R.id.fragment_container, readerFragment);
-		transaction.addToBackStack(null);
-		transaction.commit();
+		if (bundle != null){
+			Fragment readerFragment = new ReaderFragment();
+			readerFragment.setArguments(bundle);
+			FragmentTransaction transaction = getFragmentManager().beginTransaction();
+			transaction.replace(R.id.fragment_container, readerFragment);
+			transaction.addToBackStack(null);
+			transaction.commit();
+		} else {
+			Log.d(LOGTAG, "startReaderFragment(): bundle is null");
+		}
+	}
+
+	private void startTextParserService(Bundle bundle){
+		Intent serviceIntent = createParserServiceIntent(bundle);
+		if (serviceIntent != null)
+			startService(serviceIntent);
 	}
 
 	private Intent createParserServiceIntent(Bundle bundle){
-		Intent intent = new Intent(this, TextParserService.class);
-		if (bundle != null)
+		if (bundle != null){
+			Intent intent = new Intent(this, TextParserService.class);
 			intent.putExtras(bundle);
-		return intent;
+			return intent;
+		} else {
+			Log.d(LOGTAG, "createParserServiceIntent(): bundle is null");
+			return null;
+		}
 	}
 }

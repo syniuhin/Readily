@@ -3,8 +3,8 @@ package com.infm.readit.readable;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import com.infm.readit.Constants;
 import com.infm.readit.R;
@@ -14,13 +14,14 @@ import com.infm.readit.essential.TextParser;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.PreferenceChangeEvent;
 
 /**
  * Created by infm on 6/12/14. Enjoy ;)
  */
 abstract public class Readable implements Serializable {
 
-	public static final int TYPE_TEST = 0;
+	public static final int TYPE_RAW = 0;
 	public static final int TYPE_CLIPBOARD = 1;
 	public static final int TYPE_FILE = 2;
 	public static final int TYPE_TXT = 3;
@@ -50,59 +51,44 @@ abstract public class Readable implements Serializable {
 	}
 
 	public static Readable createReadable(Context context, Bundle bundle){
-		Readable readable;
-		if (bundle == null){
-			readable = createReadable(context,
-					Readable.TYPE_TEST,
-					null,
-					null);
-			readable.setPosition(0);
-		} else {
-			readable = createReadable(context,
+		Readable readable = null;
+		if (bundle != null){
+			readable = createReadable(
 					bundle.getInt(Constants.EXTRA_TYPE, -1),
 					bundle.getString(Intent.EXTRA_TEXT, context.getResources().getString(R.string.sample_text)),
-					bundle.getString(Constants.EXTRA_PATH, null));
+					bundle.getString(Constants.EXTRA_PATH, null),
+					PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_STORAGE, true));
 			readable.setPosition(Math.max(bundle.getInt(Constants.EXTRA_POSITION), 0));
 		}
 		return readable;
 	}
 
-	public static Readable createReadable(Context context, Integer intentType, String intentText, String intentPath){
+	public static Readable createReadable(Integer intentType, String intentText, String intentPath, Boolean cacheEnabled){
 		Readable readable;
-		if (TextUtils.isEmpty(intentText)){
-			readable = new TestReadable();
-		} else {
-			switch (intentType){
-				case TYPE_TEST:
-					readable = new TestReadable();
-					break;
-				case TYPE_CLIPBOARD:
-					readable = new ClipboardReadable();
-					break;
-				case TYPE_FILE:
-					readable = FileStorable.createFileStorable(intentPath);
-					if (readable == null){
-						Toast.makeText(context, R.string.wrong_ext, Toast.LENGTH_SHORT).show();
-						return null;
-					}
-					break;
-				case TYPE_TXT:
-					readable = new TxtFileStorable();
-					break;
-				case TYPE_EPUB:
-					readable = new EpubFileStorable();
-					break;
-				default:
-					String link;
-					if (intentText.length() < Constants.NON_LINK_LENGTH &&
-							!TextUtils.isEmpty(link = TextParser.findLink(TextParser.compilePattern(), intentText))){
-						readable = new NetStorable(link);
-					} else {
-						readable = new ClipboardReadable(); // actually I don't know what to do here
-						readable.setText(intentText);
-					}
-			}
-			readable.setPath(intentPath);
+		switch (intentType){
+			case TYPE_RAW:
+				readable = new RawReadable(intentText, false); //currently it's only for test
+				break;
+			case TYPE_CLIPBOARD:
+				readable = new ClipboardReadable();
+				break;
+			case TYPE_FILE:
+				readable = FileStorable.createFileStorable(intentPath);
+				break;
+			case TYPE_TXT:
+				readable = new TxtFileStorable(intentPath);
+				break;
+			case TYPE_EPUB:
+				readable = new EpubFileStorable(intentPath);
+				break;
+			default:
+				String link;
+				if (!TextUtils.isEmpty(intentText) &&
+						intentText.length() < Constants.NON_LINK_LENGTH &&
+						!TextUtils.isEmpty(link = TextParser.findLink(TextParser.compilePattern(), intentText)))
+					readable = new NetStorable(link);
+				else
+					readable = new RawReadable(intentText, cacheEnabled); //neutral value, actually
 		}
 		return readable;
 	}

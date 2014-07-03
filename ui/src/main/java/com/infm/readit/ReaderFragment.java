@@ -22,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -29,8 +30,9 @@ import com.infm.readit.essential.TextParser;
 import com.infm.readit.readable.Readable;
 import com.infm.readit.readable.Storable;
 import com.infm.readit.service.LastReadService;
-import com.infm.readit.util.OnSwipeTouchListener;
+import com.infm.readit.service.TextParserService;
 import com.infm.readit.settings.SettingsBundle;
+import com.infm.readit.util.OnSwipeTouchListener;
 
 import java.io.IOException;
 import java.util.List;
@@ -264,30 +266,53 @@ public class ReaderFragment extends Fragment {
 
 	private void receiveParser(Context context, Intent intent){
 		try {
-			parser = TextParser.fromString(intent.getStringExtra(Constants.EXTRA_PARSER));
-			parserReceived = true;
-			readable = parser.getReadable();
+			int resultCode = intent.getIntExtra(Constants.EXTRA_PARSER_RESULT_CODE, TextParserService.RESULT_CODE_OK);
+			if (resultCode == TextParserService.RESULT_CODE_OK){
+				parser = TextParser.fromString(intent.getStringExtra(Constants.EXTRA_PARSER));
+				parserReceived = true;
+				readable = parser.getReadable();
 
-			wordList = readable.getWordList();
-			emphasisList = readable.getEmphasisList();
-			delayList = readable.getDelayList();
+				wordList = readable.getWordList();
+				emphasisList = readable.getEmphasisList();
+				delayList = readable.getDelayList();
 
-			YoYo.with(Techniques.FadeOut).
-					duration(Constants.SECOND / 2).
-					playOn(parsingProgressBar);
-			//parsingProgressBar.setVisibility(View.GONE);
+				YoYo.with(Techniques.FadeOut).
+						duration(Constants.SECOND / 2).
+						playOn(parsingProgressBar);
+				//parsingProgressBar.setVisibility(View.GONE);
 
-			readerLayout.setVisibility(View.VISIBLE);
-			YoYo.with(Techniques.BounceIn).
-					duration(2 * Constants.SECOND).
-					playOn(readerLayout);
-			final Handler handler = new Handler();
-			readable.setPosition(Math.max(readable.getPosition() - Constants.READER_START_OFFSET, 0));
-			reader = new Reader(handler, readable.getPosition());
-			handler.postDelayed(reader, 3 * Constants.SECOND);
+				readerLayout.setVisibility(View.VISIBLE);
+				YoYo.with(Techniques.BounceIn).
+						duration(2 * Constants.SECOND).
+						playOn(readerLayout);
+				final Handler handler = new Handler();
+				readable.setPosition(Math.max(readable.getPosition() - Constants.READER_START_OFFSET, 0));
+				reader = new Reader(handler, readable.getPosition());
+				handler.postDelayed(reader, 3 * Constants.SECOND);
 
-			if (isStorable())
-				context.startService(createLastReadServiceIntent(context, (Storable) readable, Constants.DB_OPERATION_INSERT));
+				if (isStorable()){
+					context.startService(
+							createLastReadServiceIntent(context, (Storable) readable, Constants.DB_OPERATION_INSERT));
+				}
+			} else {
+				int stringId;
+				switch (resultCode){
+					case TextParserService.RESULT_CODE_WRONG_EXT:
+						stringId = R.string.wrong_ext;
+						break;
+					case TextParserService.RESULT_CODE_EMPTY_CLIPBOARD:
+						stringId = R.string.clipboard_empty;
+						break;
+					case TextParserService.RESULT_CODE_CANT_FETCH:
+						stringId = R.string.cant_fetch;
+						break;
+					default:
+						stringId = R.string.text_null;
+						break;
+				}
+				Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
+				onStop();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
@@ -349,8 +374,11 @@ public class ReaderFragment extends Fragment {
 	}
 
 	private Boolean isStorable(){
-		return parserReceived && readable != null && settingsBundle != null && !TextUtils.isEmpty(readable.getPath()) &&
-				settingsBundle.isCachingEnabled();
+		return parserReceived &&
+				readable != null &&
+				settingsBundle != null &&
+				settingsBundle.isCachingEnabled() &&
+				!TextUtils.isEmpty(readable.getPath());
 	}
 
 	@Override
@@ -365,13 +393,12 @@ public class ReaderFragment extends Fragment {
 	public void onStop(){
 		Log.d(LOGTAG, "OnStop() called");
 		Activity activity = getActivity();
-		if (isStorable()){
+		if (isStorable() && reader != null){
 			Storable storable = (Storable) readable;
-			if (reader.isCompleted()){
-				activity.startService(createLastReadServiceIntent(activity, storable, Constants.DB_OPERATION_DELETE));
-			} else {
-				activity.startService(createLastReadServiceIntent(activity, storable, Constants.DB_OPERATION_INSERT));
-			}
+			int operation = (reader.isCompleted())
+					? Constants.DB_OPERATION_DELETE
+					: Constants.DB_OPERATION_INSERT;
+			activity.startService(createLastReadServiceIntent(activity, storable, operation));
 		}
 
 		settingsBundle.updatePreferences();

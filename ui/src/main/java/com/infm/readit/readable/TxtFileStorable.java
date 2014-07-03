@@ -14,9 +14,10 @@ public class TxtFileStorable extends FileStorable {
 
 	private static final String LOGTAG = "TxtFileStorable";
 
-	public TxtFileStorable(){
+	public TxtFileStorable(String path){
 		extension = "txt";
 		type = TYPE_TXT;
+		this.path = path;
 	}
 
 	public void process(Context context){

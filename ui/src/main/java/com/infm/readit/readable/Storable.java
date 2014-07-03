@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -11,6 +12,11 @@ import com.infm.readit.Constants;
 import com.infm.readit.database.DataBundle;
 import com.infm.readit.database.LastReadContentProvider;
 import com.infm.readit.database.LastReadDBHelper;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * Created by infm on 6/30/14. Enjoy ;)
@@ -59,6 +65,23 @@ abstract public class Storable extends Readable {
 		return values;
 	}
 
+	public static void createStorageFile(Context context, String path, String text){
+		if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_STORAGE, true)){
+			File storageFile = new File(path);
+			try {
+				storageFile.createNewFile();
+				FileOutputStream fos = new FileOutputStream(storageFile);
+				fos.write(text.getBytes());
+				fos.close();
+				Log.d(LOGTAG, "caching performed successfully");
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	protected DataBundle takeRowData(Context context){
 		return Storable.getRowData(context.getContentResolver().query(LastReadContentProvider.CONTENT_URI,
 				null, null, null, null), path); //looks weird, actually. upd: it will be in separate thread, so ok.
@@ -76,14 +99,7 @@ abstract public class Storable extends Readable {
 	}
 
 	protected void makeHeader(){
-		int charLen = 0;
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < wordList.size() && charLen < 40; ++i){
-			String word = wordList.get(i);
-			sb.append(word).append(" ");
-			charLen += word.length() + 1;
-		}
-		header = sb.toString();
+		header = text.toString().substring(0, Math.min(text.length(), 40));
 	}
 
 	protected String cleanFileName(String s){

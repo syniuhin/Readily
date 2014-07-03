@@ -10,16 +10,13 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 
 import com.infm.readit.Constants;
 import com.infm.readit.R;
+import com.infm.readit.ReceiverActivity;
+import com.infm.readit.readable.Readable;
 
-import org.w3c.dom.Text;
-
-import java.io.LineNumberReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +51,11 @@ public class SettingsFragment extends PreferenceFragment {
 			}
 			if (key.equals(Constants.PREF_INSTRUCTIONS)){
 				Constants.showInstructionsDialog(getActivity());
+				return true;
+			}
+			if (key.equals(Constants.PREF_TEST)){
+				ReceiverActivity.startReceiverActivity(getActivity(), Readable.TYPE_RAW,
+						getResources().getString(R.string.sample_text));
 				return true;
 			}
 		}

@@ -20,9 +20,10 @@ public class EpubFileStorable extends FileStorable {
 
 	private static final String LOGTAG = "EpubFileStorable";
 
-	public EpubFileStorable(){
+	public EpubFileStorable(String path){
 		extension = "epub";
 		type = TYPE_EPUB;
+		this.path = path;
 	}
 
 	public void process(Context context){

@@ -18,10 +18,10 @@ abstract public class FileStorable extends Storable { //TODO: implement separate
 		FileStorable fileStorable;
 		switch (getIntentType(intentPath)){
 			case Readable.TYPE_TXT:
-				fileStorable = new TxtFileStorable();
+				fileStorable = new TxtFileStorable(intentPath);
 				break;
 			case Readable.TYPE_EPUB:
-				fileStorable = new EpubFileStorable();
+				fileStorable = new EpubFileStorable(intentPath);
 				break;
 			default:
 				fileStorable = null;

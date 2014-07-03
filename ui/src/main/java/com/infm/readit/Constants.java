@@ -19,6 +19,7 @@ public class Constants {
 	public static final String EXTRA_HEADER = "header";
 	public static final String EXTRA_PERCENT = "percent_left";
 	public static final String EXTRA_PARSER = "parser";
+	public static final String EXTRA_PARSER_RESULT_CODE = "TextParser_esult_code";
 	public static final String EXTRA_DB_OPERATION = "db_operation";
 
 	public static final int READER_SLEEP_IDLE = 500;
@@ -32,6 +33,7 @@ public class Constants {
 	public static final String PREF_NEWCOMER = "is_anybody_out_there?";
 
 	public static final String PREF_INSTRUCTIONS = "pref_instructions";
+	public static final String PREF_TEST = "pref_test";
 	public static final String PREF_STORAGE = "pref_cache";
 	public static final String PREF_WPM = "pref_wpm";
 	public static final String PREF_SHOW_CONTEXT = "pref_showContext";

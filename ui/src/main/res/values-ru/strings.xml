@@ -19,6 +19,8 @@
     <string name="list_empty_view">Попробуйте прочитать!</string>
     <string name="file_manager_required">Пожалуйста, установите файловый менеджер</string>
     <string name="wrong_ext">Неправильное расширение</string>
+    <string name="text_null">Текст отсутствует</string>
+    <string name="cant_fetch">Проблемы с загрузкой текста</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитать текст из буфера обмена</string>

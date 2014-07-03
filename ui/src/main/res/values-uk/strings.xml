@@ -20,6 +20,8 @@
     <string name="list_empty_view">Спробуйте рідер!</string>
     <string name="file_manager_required">Будь ласка, встановіть файловий менеджер</string>
     <string name="wrong_ext">Неправильне розширення</string>
+    <string name="text_null">Текст відсутній</string>
+    <string name="cant_fetch">Проблеми із завантаженням тексту</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитати текст з буферу обміну</string>

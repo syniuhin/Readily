@@ -1,16 +1,9 @@
 package com.infm.readit.readable;
 
 import android.content.Context;
-import android.preference.PreferenceManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.text.TextUtils;
-import android.util.Log;
-
-import com.infm.readit.Constants;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 import de.jetwick.snacktory.HtmlFetcher;
 import de.jetwick.snacktory.JResult;
@@ -29,23 +22,6 @@ public class NetStorable extends Storable {
 		type = TYPE_NET;
 	}
 
-	public static void createStorageFile(Context context, String path, String text){
-		if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_STORAGE, true)){
-			File storageFile = new File(path);
-			try {
-				storageFile.createNewFile();
-				FileOutputStream fos = new FileOutputStream(storageFile);
-				fos.write(text.getBytes());
-				fos.close();
-				Log.d(LOGTAG, "caching performed successfully");
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
 	public String getLink(){ return link; }
 
 	public void setLink(String link){ this.link = link; }
@@ -53,9 +29,15 @@ public class NetStorable extends Storable {
 	@Override
 	public void process(Context context){
 		if (!TextUtils.isEmpty(link)){
-			text = new StringBuilder(parseArticle(link));
+			if (isNetworkAvailable(context)){
+				text = new StringBuilder(parseArticle(link));
+			} else {
+				processFailed = true;
+				return;
+			}
 		} else {
-			throw new IllegalArgumentException("Wrong Readable object created");
+			processFailed = true;
+			return;
 		}
 		path = context.getFilesDir() + "/" + cleanFileName(title) + ".txt";
 		rowData = takeRowData(context);
@@ -80,4 +62,11 @@ public class NetStorable extends Storable {
 
 	@Override
 	protected void makeHeader(){ header = title; }
+
+	private boolean isNetworkAvailable(Context context) {
+		ConnectivityManager connectivityManager
+				= (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+		return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+	}
 }
