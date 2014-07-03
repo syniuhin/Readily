@@ -26,6 +26,7 @@
             android:clearTaskOnLaunch="true"
             android:configChanges="orientation|screenSize"
             android:exported="true"
+            android:noHistory="true"
             android:label="@string/title_activity_receiver"
             android:launchMode="singleInstance"
             android:theme="@style/Theme.TransparentActivity">

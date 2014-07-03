@@ -22,7 +22,7 @@ import com.infm.readit.database.LastReadContentProvider;
 import com.infm.readit.database.LastReadDBHelper;
 import com.infm.readit.readable.Readable;
 
-public class FileListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+public class FileListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
 	private static final String LOGTAG = "FileListFragment";
 
@@ -31,12 +31,12 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 	private TextView tvEmpty;
 	private ListView listView;
 
-	public FileListFragment() {}
+	public FileListFragment(){}
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
+	@Override
+	public void onCreate(Bundle savedInstanceState){
+		super.onCreate(savedInstanceState);
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){

@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 public class Constants {
 
 	public static final String EXTRA_PATH = "path";
+	public static final String EXTRA_PATH_ARRAY = "path_array";
 	public static final String EXTRA_ROWID = "_id";
 	public static final String EXTRA_POSITION = "position";
 	public static final String EXTRA_TYPE = "source_type";

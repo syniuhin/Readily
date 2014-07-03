@@ -34,7 +34,7 @@ public class DataBundle implements Serializable {
 		this.percent = percent;
 	}
 
-	public static DataBundle createFromIntent(Intent intent){
+	public static DataBundle createElementFromIntent(Intent intent){
 		return new DataBundle(intent.getStringExtra(Constants.EXTRA_HEADER),
 				intent.getStringExtra(Constants.EXTRA_PATH),
 				intent.getIntExtra(Constants.EXTRA_POSITION, 0),

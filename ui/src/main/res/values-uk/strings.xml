@@ -22,6 +22,7 @@
     <string name="wrong_ext">Неправильне розширення</string>
     <string name="text_null">Текст відсутній</string>
     <string name="cant_fetch">Проблеми із завантаженням тексту</string>
+    <string name="delete_selected">Видалити вибрані елементи</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитати текст з буферу обміну</string>

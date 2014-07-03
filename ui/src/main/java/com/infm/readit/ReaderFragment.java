@@ -276,10 +276,7 @@ public class ReaderFragment extends Fragment {
 				emphasisList = readable.getEmphasisList();
 				delayList = readable.getDelayList();
 
-				YoYo.with(Techniques.FadeOut).
-						duration(Constants.SECOND / 2).
-						playOn(parsingProgressBar);
-				//parsingProgressBar.setVisibility(View.GONE);
+				parsingProgressBar.setVisibility(View.GONE);
 
 				readerLayout.setVisibility(View.VISIBLE);
 				YoYo.with(Techniques.BounceIn).
@@ -379,14 +376,6 @@ public class ReaderFragment extends Fragment {
 				settingsBundle != null &&
 				settingsBundle.isCachingEnabled() &&
 				!TextUtils.isEmpty(readable.getPath());
-	}
-
-	@Override
-	public void onPause(){
-		if (reader != null && !reader.isCancelled())
-			reader.incCancelled();
-		Log.d(LOGTAG, "onPause() called");
-		super.onPause();
 	}
 
 	@Override

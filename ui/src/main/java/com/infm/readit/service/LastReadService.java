@@ -9,6 +9,7 @@ import android.util.Log;
 import com.infm.readit.Constants;
 import com.infm.readit.database.DataBundle;
 import com.infm.readit.database.LastReadContentProvider;
+import com.infm.readit.database.LastReadDBHelper;
 import com.infm.readit.readable.Storable;
 
 public class LastReadService extends IntentService {
@@ -30,19 +31,18 @@ public class LastReadService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent){
-		DataBundle dataBundle = DataBundle.createFromIntent(intent);
-		Log.d(LOGTAG, "DataBundle received: " + dataBundle.toString());
-
 		ContentResolver contentResolver = getContentResolver();
-		Integer operation = intent.getIntExtra(Constants.EXTRA_DB_OPERATION, -1);
-		DataBundle rowData = Storable.getRowData(contentResolver.query(LastReadContentProvider.CONTENT_URI,
-				null, null, null, null), dataBundle.getPath());
-		switch (operation){
+		switch (intent.getIntExtra(Constants.EXTRA_DB_OPERATION, -1)){
 			case Constants.DB_OPERATION_INSERT:
+				DataBundle dataBundle = DataBundle.createElementFromIntent(intent);
+				Log.d(LOGTAG, "DataBundle received: " + dataBundle.toString());
+				DataBundle rowData = Storable.getRowData(contentResolver.query(LastReadContentProvider.CONTENT_URI,
+						null, null, null, null), dataBundle.getPath());
+
 				insertDataWithoutConflict(contentResolver, dataBundle, rowData);
 				break;
 			case Constants.DB_OPERATION_DELETE:
-				deleteData(contentResolver, rowData);
+				deleteData(contentResolver, getPaths(intent));
 				break;
 			default:
 				throw new IllegalArgumentException("DB operation hasn't been recognized");
@@ -59,10 +59,15 @@ public class LastReadService extends IntentService {
 		}
 	}
 
-	private void deleteData(ContentResolver contentResolver, DataBundle rowData){
-		if (rowData != null)
-			contentResolver.delete(
-					ContentUris.withAppendedId(LastReadContentProvider.CONTENT_URI, rowData.getRowId()),
-					null, null);
+	private String[] getPaths(Intent intent){
+		String[] paths = intent.getStringArrayExtra(Constants.EXTRA_PATH_ARRAY);
+		if (paths == null)
+			paths = new String[]{intent.getStringExtra(Constants.EXTRA_PATH)};
+		return paths;
+	}
+
+	private void deleteData(ContentResolver contentResolver, String[] paths){
+		contentResolver.delete(LastReadContentProvider.CONTENT_URI,
+				LastReadDBHelper.KEY_PATH + "=?", paths);
 	}
 }
