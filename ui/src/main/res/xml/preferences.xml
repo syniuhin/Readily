@@ -2,8 +2,8 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <Preference
-        android:title="@string/preferences_getStarted">
-    </Preference>
+        android:key="pref_instructions"
+        android:title="@string/preferences_getStarted"/>
     <Preference
         android:title="@string/preferences_test">
         <intent
@@ -12,42 +12,15 @@
     </Preference>
     <PreferenceCategory
         android:title="@string/preferences_basic_settings">
-        <EditTextPreference
-            android:defaultValue="250"
-            android:hint="i.e. 250"
-            android:inputType="number"
+        <Preference
             android:key="pref_wpm"
-            android:title="@string/preferences_set_wpm"/>
+            android:title="@string/preferences_set_wpm"
+            android:summary="@string/preferences_set_wpm_summary"/>
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="pref_punct"
             android:summary="@string/preferences_different_speed_punctuation_summary"
             android:title="@string/preferences_different_speed_punctuation"/>
-        <PreferenceScreen
-            android:dependency="pref_punct"
-            android:key="pref_punct_screen"
-            android:title="@string/preferences_punctuation_settings">
-            <EditTextPreference
-                android:defaultValue="15"
-                android:inputType="number"
-                android:key="pref_comaOrLong"
-                android:title="@string/preferences_comaOrLong_coeff"/>
-            <EditTextPreference
-                android:defaultValue="20"
-                android:inputType="number"
-                android:key="pref_endOfSentence"
-                android:title="@string/preferences_endOfSentence_coeff"/>
-            <EditTextPreference
-                android:defaultValue="18"
-                android:inputType="number"
-                android:key="pref_dashOrColon"
-                android:title="@string/preferences_endOfSentence_coeff"/>
-            <EditTextPreference
-                android:defaultValue="20"
-                android:inputType="number"
-                android:key="pref_begOfPar"
-                android:title="@string/preferences_begOfPar_coeff"/>
-        </PreferenceScreen>
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="pref_cache"

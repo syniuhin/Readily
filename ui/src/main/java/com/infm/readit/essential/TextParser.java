@@ -4,7 +4,7 @@ import android.text.TextUtils;
 import android.util.Pair;
 
 import com.infm.readit.readable.Readable;
-import com.infm.readit.util.SettingsBundle;
+import com.infm.readit.settings.SettingsBundle;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

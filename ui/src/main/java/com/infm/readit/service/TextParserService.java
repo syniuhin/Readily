@@ -9,7 +9,7 @@ import android.util.Log;
 import com.infm.readit.Constants;
 import com.infm.readit.essential.TextParser;
 import com.infm.readit.readable.Readable;
-import com.infm.readit.util.SettingsBundle;
+import com.infm.readit.settings.SettingsBundle;
 
 /**
  * Created by infm on 6/26/14. Enjoy ;)

@@ -30,7 +30,7 @@ import com.infm.readit.readable.Readable;
 import com.infm.readit.readable.Storable;
 import com.infm.readit.service.LastReadService;
 import com.infm.readit.util.OnSwipeTouchListener;
-import com.infm.readit.util.SettingsBundle;
+import com.infm.readit.settings.SettingsBundle;
 
 import java.io.IOException;
 import java.util.List;
@@ -163,12 +163,12 @@ public class ReaderFragment extends Fragment {
 		readerLayout.setOnTouchListener(new OnSwipeTouchListener(context) {
 			@Override
 			public void onSwipeTop(){
-				changeWPM(50);
+				changeWPM(Constants.WPM_STEP_READER);
 			}
 
 			@Override
 			public void onSwipeBottom(){
-				changeWPM(-50);
+				changeWPM(-1 * Constants.WPM_STEP_READER);
 			}
 
 			@Override

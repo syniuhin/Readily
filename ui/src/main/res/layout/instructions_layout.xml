@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="3dp"
+        android:layout_marginLeft="3dp">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/instructions_welcome"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                android:layout_gravity="center_horizontal"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/instructions_first_paragraph"
+                android:textSize="18sp"
+                android:textIsSelectable="false"
+                android:layout_marginTop="5dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/instructions_source_text"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:textIsSelectable="false"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="15dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/instructions_second_paragraph"
+                android:textSize="18sp"
+                android:textIsSelectable="false"
+                android:layout_marginTop="15dp"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_action_paste"
+                android:layout_marginTop="3dp"
+                android:layout_gravity="center_horizontal"
+                android:background="#ff484848"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/instructions_third_paragraph"
+                android:textSize="18sp"
+                android:textIsSelectable="false"
+                android:layout_marginTop="10dp"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_action_storage"
+                android:layout_marginTop="3dp"
+                android:layout_gravity="center_horizontal"
+                android:background="#ff484848"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/instructions_fourth_paragraph"
+                android:textSize="18sp"
+                android:textIsSelectable="false"
+                android:layout_marginTop="10dp"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/share_screenshot"
+                android:layout_marginTop="3dp"
+                android:layout_gravity="center_horizontal"
+                android:background="#ff484848"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/instructions_controls_header"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                android:textIsSelectable="false"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="15dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/instructions_fifth_paragraph"
+                android:textSize="18sp"
+                android:textIsSelectable="false"
+                android:layout_marginTop="15dp"/>
+            </LinearLayout>
+    </ScrollView>
+</LinearLayout>

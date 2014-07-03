@@ -29,6 +29,7 @@
     <string name="preferences_test">Перевірити налаштування</string>
     <string name="preferences_basic_settings">Базові налаштування</string>
     <string name="preferences_set_wpm">Встановити швидкість(слів у хвилину)</string>
+    <string name="preferences_set_wpm_summary">Кількість слів у хвилину</string>
     <string name="preferences_punctuation_settings">Швидкість при пунктуації</string>
     <string name="preferences_different_speed_punctuation">Змінити швидкість при пунктуації</string>
     <string name="preferences_different_speed_punctuation_summary">наприклад кома або двокрапка</string>
@@ -47,7 +48,7 @@
     <string name="preferences_send_feedback_summary">Розкажіть мені свої ідеї :)</string>
     <string name="preference_cache">Зберігати читання</string>
     <string name="preference_cache_summary">Кешує незакінчені читання</string>
-    <string name="mail_to_me">mailto:i.s.sinyugin@gmail.com</string>
+    <string name="mail_to_me">mailto:syniuhin@gmail.com</string>
 
     <string name="sample_text">А коли приходив той прекрасний брат смерті і брав мене до себе - люди і там чигали на мене. Вони сплітали своє існування з моїм в химерну сітку, намагались налити мої вуха та моє серце тим, чим самі були повні. Слухай-но, слухай! Ти й тут несеш до мене свої страждання? Своє мерзенство? Моє серце не може більше вмістити. Воно повне ущерть. Дай мені спокій.
      Так було по ночах.

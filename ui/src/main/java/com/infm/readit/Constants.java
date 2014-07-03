@@ -1,5 +1,11 @@
 package com.infm.readit;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.view.LayoutInflater;
+import android.widget.LinearLayout;
+
 /**
  * Created by infm on 6/25/14. Enjoy ;)
  */
@@ -19,8 +25,13 @@ public class Constants {
 	public static final String DEFAULT_WPM = "250";
 	public static final int MAX_WPM = 1200;
 	public static final int MIN_WPM = 50;
+	public static final int WPM_STEP_PREFERENCES = 10;
+	public static final int WPM_STEP_READER = 50;
 	public static final int SPEEDO_SHOWING_LENGTH = 1500; //time in ms for which speedo becomes visible
 
+	public static final String PREF_NEWCOMER = "is_anybody_out_there?";
+
+	public static final String PREF_INSTRUCTIONS = "pref_instructions";
 	public static final String PREF_STORAGE = "pref_cache";
 	public static final String PREF_WPM = "pref_wpm";
 	public static final String PREF_SHOW_CONTEXT = "pref_showContext";
@@ -53,4 +64,19 @@ public class Constants {
 
 	public static final int DB_OPERATION_INSERT = 0;
 	public static final int DB_OPERATION_DELETE = 1;
+
+	public static void showInstructionsDialog(Context context){
+		LayoutInflater inflater = (LayoutInflater)
+				context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		final LinearLayout instructionsLayout = (LinearLayout) inflater.inflate(R.layout.instructions_layout, null);
+		new AlertDialog.Builder(context).
+				setTitle(R.string.preferences_getStarted).
+				setView(instructionsLayout).
+				setPositiveButton(android.R.string.ok,
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which){}
+						}
+				).show();
+	}
 }

@@ -1,4 +1,4 @@
-package com.infm.readit.util;
+package com.infm.readit.settings;
 
 import android.content.SharedPreferences;
 
@@ -85,16 +85,17 @@ public class SettingsBundle {
 		editor.putBoolean(Constants.PREF_STORAGE, cachingEnabled);
 		for (int i = 0; i < delayCoefficients.size(); ++i)
 			editor.putString(Constants.STR_PUNCTUATION_PREFS[i], delayCoefficients.get(i).toString());
-
-		editor.commit();
+		editor.apply(); //advised by IDE, lol
 	}
 
 	/**
 	 * delayList: {default; coma/long word; end of sentence; '-' or ':' or ';'; beginning of a paragraph}
 	 * default value is 10
+	 * upd 07/03/14 : currently not optional
 	 */
 	private ArrayList<Integer> buildDelayListCoefficients(){
 		ArrayList<Integer> delayCoeffs = new ArrayList<Integer>();
+/*
 		if (!punctuationSpeedDiffers)
 			for (int i = 0; i < 5; ++i)
 				delayCoeffs.add(
@@ -102,6 +103,7 @@ public class SettingsBundle {
 								Constants.STR_PUNCTUATION_DEFAULTS[0]))
 				);
 		else
+*/
 			for (int i = 0; i < 5; ++i)
 				delayCoeffs.add(
 						Integer.parseInt(sharedPreferences.getString(Constants.STR_PUNCTUATION_PREFS[i],
