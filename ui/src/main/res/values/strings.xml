@@ -55,14 +55,13 @@
         the meagerness of his body merely emphasized by the blue overalls which were the uniform of the Party.
         His hair was very fair, his face naturally sanguine,
         his skin roughened by coarse soap and blunt razor blades and the cold of the winter that had just ended.</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!-- Instructions -->
     <string name="instructions_welcome">Welcome!</string>
     <string name="instructions_first_paragraph">ReadIt! is a speed-reading android application powered by RSVP technology and
         inspired by Spritzer app. With this technology you can read up to 1200 words per minute instead of 220 when
         reading normally.</string>
-    
+
     <string name="instructions_source_text">Sources of text</string>
     <string name="instructions_second_paragraph">To start reading you can copy some your text to clipboard and choose
         "Read a text from the clipboard" action.</string>
@@ -70,7 +69,7 @@
         .epub) from file system.</string>
     <string name="instructions_fourth_paragraph">Finally, you can share data to ReadIt! from your favorite reader (e.g.
         Flipboard, Instapaper)</string>
-    
+
     <string name="instructions_controls_header">Controls</string>
     <string name="instructions_fifth_paragraph">To pause / play reader, just tap on the screen. Depending on your
         preferences, you will be able to swipe over content or use simple button to access previous word in context.
