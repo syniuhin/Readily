@@ -20,13 +20,14 @@ import com.infm.readit.readable.FileStorable;
 import com.infm.readit.readable.Readable;
 import com.infm.readit.service.StorageCheckerService;
 import com.infm.readit.settings.SettingsFragment;
+import com.ipaulpro.afilechooser.utils.FileUtils;
 import com.newrelic.agent.android.NewRelic;
 
 public class MainActivity extends Activity {
 
 	public static final String LOGTAG = "MainActivity";
 
-	private static final int FILE_SELECT_CODE = 0;
+	private static final int FILE_SELECT_CODE = 7331;
 	private static final String SETTINGS_FRAGMENT_TAG = "FileListFragment0182";
 
 	@Override
@@ -83,15 +84,8 @@ public class MainActivity extends Activity {
 	}
 
 	private void getFromFile(){
-		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-		intent.addCategory(Intent.CATEGORY_OPENABLE);
-		intent.setType("*/*");
-		try {
-			startActivityForResult(intent, FILE_SELECT_CODE);
-		} catch (ActivityNotFoundException e) {
-			Toast.makeText(this, getResources().getString(R.string.file_manager_required),
-					Toast.LENGTH_SHORT).show();
-		}
+		Intent intent = Intent.createChooser(FileUtils.createGetContentIntent(), getResources().getString(R.string.choose_file));
+		startActivityForResult(intent, FILE_SELECT_CODE);
 	}
 
 	@Override
@@ -99,11 +93,13 @@ public class MainActivity extends Activity {
 		switch (requestCode){
 			case FILE_SELECT_CODE:
 				if (resultCode == RESULT_OK){
-					String relativePath = data.getData().toString();
-					if (FileStorable.isExtensionValid(FileStorable.getExtension(relativePath)))
-						ReceiverActivity.startReceiverActivity(this, Readable.TYPE_FILE, relativePath);
-					else
-						Toast.makeText(this, R.string.wrong_ext, Toast.LENGTH_SHORT).show();
+					if (data != null){
+						String relativePath = FileUtils.getPath(this, data.getData());
+						if (FileStorable.isExtensionValid(FileUtils.getExtension(relativePath)))
+							ReceiverActivity.startReceiverActivity(this, Readable.TYPE_FILE, relativePath);
+						else
+							Toast.makeText(this, R.string.wrong_ext, Toast.LENGTH_SHORT).show();
+					}
 				}
 				break;
 		}
