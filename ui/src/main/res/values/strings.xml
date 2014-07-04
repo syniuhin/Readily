@@ -22,6 +22,7 @@
     <string name="text_null">Text is missing</string>
     <string name="cant_fetch">Text fetching problems</string>
     <string name="delete_selected">Delete selected items</string>
+    <string name="choose_file">Choose a file</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Read a text from the clipboard</string>

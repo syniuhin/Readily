@@ -68,6 +68,9 @@ public class Constants {
 	public static final int DB_OPERATION_INSERT = 0;
 	public static final int DB_OPERATION_DELETE = 1;
 
+	public static final String EXTENSION_TXT = ".txt";
+	public static final String EXTENSION_EPUB = ".epub";
+
 	public static void showInstructionsDialog(Context context){
 		LayoutInflater inflater = (LayoutInflater)
 				context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
