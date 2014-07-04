@@ -56,16 +56,16 @@ public class LocalStorageProvider extends DocumentsProvider {
         File homeDir = Environment.getExternalStorageDirectory();
         final MatrixCursor.RowBuilder row = result.newRow();
         // These columns are required
-        row.add(Root.COLUMN_ROOT_ID, homeDir.getAbsolutePath());
-        row.add(Root.COLUMN_DOCUMENT_ID, homeDir.getAbsolutePath());
-        row.add(Root.COLUMN_TITLE, getContext().getString(R.string.internal_storage));
+        row.add(Root.COLUMN_ROOT_ID, homeDir.getParent());
+        row.add(Root.COLUMN_DOCUMENT_ID, homeDir.getParent());
+        row.add(Root.COLUMN_TITLE, getContext().getString(R.string.all_storage));
         row.add(Root.COLUMN_FLAGS, Root.FLAG_LOCAL_ONLY | Root.FLAG_SUPPORTS_CREATE);
         row.add(Root.COLUMN_ICON, R.drawable.ic_provider);
         // These columns are optional
         row.add(Root.COLUMN_AVAILABLE_BYTES, homeDir.getFreeSpace());
         // Root.COLUMN_MIME_TYPE is another optional column and useful if you
         // have multiple roots with different
-        // types of mime types (roots that don't match the requested mime type
+        // types of mime types (ro`ots that don't match the requested mime type
         // are automatically hidden)
         return result;
     }

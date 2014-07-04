@@ -51,7 +51,7 @@ abstract public class FileStorable extends Storable { //TODO: implement separate
 	}
 
 	public static boolean isExtensionValid(String extension){
-		return Constants.EXTENSION_EPUB.equals(extension) ||
+		return Constants.EXTENSION_TXT.equals(extension) ||
 				Constants.EXTENSION_EPUB.equals(extension); //to be continued...
 	}
 
