@@ -14,7 +14,6 @@ import com.infm.readit.essential.TextParser;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.PreferenceChangeEvent;
 
 /**
  * Created by infm on 6/12/14. Enjoy ;)
@@ -53,7 +52,7 @@ abstract public class Readable implements Serializable {
 	public static Readable createReadable(Context context, Bundle bundle){
 		Readable readable = null;
 		if (bundle != null){
-			readable = createReadable(
+			readable = createReadable(context,
 					bundle.getInt(Constants.EXTRA_TYPE, -1),
 					bundle.getString(Intent.EXTRA_TEXT, context.getResources().getString(R.string.sample_text)),
 					bundle.getString(Constants.EXTRA_PATH, null),
@@ -63,7 +62,8 @@ abstract public class Readable implements Serializable {
 		return readable;
 	}
 
-	public static Readable createReadable(Integer intentType, String intentText, String intentPath, Boolean cacheEnabled){
+	public static Readable createReadable(Context context, Integer intentType, String intentText, String intentPath,
+	                                      Boolean cacheEnabled){
 		Readable readable;
 		switch (intentType){
 			case TYPE_RAW:

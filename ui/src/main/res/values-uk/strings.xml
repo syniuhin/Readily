@@ -24,6 +24,7 @@
     <string name="cant_fetch">Проблеми із завантаженням тексту</string>
     <string name="delete_selected">Видалити вибрані елементи</string>
     <string name="choose_file">Виберіть файл</string>
+    <string name="tap_to_start">Торкніться, щоб почати читання</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитати текст з буферу обміну</string>

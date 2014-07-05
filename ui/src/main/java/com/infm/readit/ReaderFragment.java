@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spanned;
@@ -294,6 +295,7 @@ public class ReaderFragment extends Fragment {
 			reader = new Reader(handler, readable.getPosition());
 			handler.postDelayed(reader, 3 * Constants.SECOND);
 
+			Toast.makeText(context, R.string.tap_to_start, Toast.LENGTH_SHORT).show();
 			if (isStorable()){
 				context.startService(
 						createLastReadServiceIntent(context, (Storable) readable, Constants.DB_OPERATION_INSERT));
@@ -430,6 +432,7 @@ public class ReaderFragment extends Fragment {
 			this.handler = handler;
 			this.position = position;
 			completed = false;
+			cancelled = 1;
 		}
 
 		@Override
@@ -503,6 +506,8 @@ public class ReaderFragment extends Fragment {
 			Context context = getActivity();
 			Log.d(LOGTAG, "doInBackround() called, incoming path: " +
 					bundle.getString(Constants.EXTRA_PATH));
+
+			Looper.prepare(); //well, I really do not know what's going on. TODO: refactor this carefully
 			Readable readable = Readable.createReadable(context, bundle);
 			readable.process(context); //don't sure that context is necessary, esp. considering level of abstraction..
 			TextParser textParser = TextParser.newInstance(readable,
