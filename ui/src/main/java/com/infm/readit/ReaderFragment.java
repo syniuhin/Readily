@@ -179,6 +179,7 @@ public class ReaderFragment extends Fragment {
 
 			@Override
 			public void onSwipeRight(){
+				Log.v(LOGTAG, "onSwipeRight called, isSwipesEnabled: " + settingsBundle.isSwipesEnabled());
 				if (settingsBundle.isSwipesEnabled()){
 					if (!reader.isCancelled()){
 						reader.performPause();
@@ -194,6 +195,7 @@ public class ReaderFragment extends Fragment {
 
 			@Override
 			public void onSwipeLeft(){
+				Log.i(LOGTAG, "onSwipeLeft called, isSwipesEnabled: " + settingsBundle.isSwipesEnabled());
 				if (settingsBundle.isSwipesEnabled()){
 					if (!reader.isCancelled()){
 						reader.performPause();
@@ -388,6 +390,7 @@ public class ReaderFragment extends Fragment {
 		}
 
 		settingsBundle.updatePreferences();
+
 		if (textParserTask != null)
 			textParserTask.cancel(true);
 
@@ -494,7 +497,7 @@ public class ReaderFragment extends Fragment {
 		}
 	}
 
-	private class TextParserTask extends AsyncTask<Bundle, Void, TextParser> { //design good concurrent solution
+	private class TextParserTask extends AsyncTask<Bundle, Void, TextParser> { //TODO: design <b>GOOD</b> concurrent solution
 		private static final int RESULT_CODE_OK = 0;
 		private static final int RESULT_CODE_EMPTY_CLIPBOARD = 1;
 		private static final int RESULT_CODE_WRONG_EXT = 2;

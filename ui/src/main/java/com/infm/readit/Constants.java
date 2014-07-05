@@ -13,16 +13,11 @@ public class Constants {
 
 	public static final String EXTRA_PATH = "path";
 	public static final String EXTRA_PATH_ARRAY = "path_array";
-	public static final String EXTRA_ROWID = "_id";
 	public static final String EXTRA_POSITION = "position";
 	public static final String EXTRA_TYPE = "source_type";
-	public static final String EXTRA_TEXT = "text";
 	public static final String EXTRA_HEADER = "header";
 	public static final String EXTRA_PERCENT = "percent_left";
-	public static final String EXTRA_PARSER = "parser";
-	public static final String EXTRA_PARSER_RESULT_CODE = "TextParser_esult_code";
 	public static final String EXTRA_DB_OPERATION = "db_operation";
-	public static final String EXTRA_UNIQUE_ID = "unique_id";
 
 	public static final int READER_SLEEP_IDLE = 500;
 	public static final String DEFAULT_WPM = "250";

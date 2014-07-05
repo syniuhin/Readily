@@ -25,7 +25,7 @@ import java.util.List;
  */
 public class SettingsFragment extends PreferenceFragment {
 
-	private SettingsBundle settingsBundle;
+	private Integer WPM;
 
 	public SettingsFragment(){}
 
@@ -38,7 +38,8 @@ public class SettingsFragment extends PreferenceFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState){
 		super.onActivityCreated(savedInstanceState);
-		settingsBundle = new SettingsBundle(PreferenceManager.getDefaultSharedPreferences(getActivity()));
+		WPM = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getActivity()).
+				getString(Constants.PREF_WPM, Constants.DEFAULT_WPM));
 	}
 
 	@Override
@@ -65,7 +66,7 @@ public class SettingsFragment extends PreferenceFragment {
 	@Override
 	public void onStop(){
 		super.onStop();
-		settingsBundle.updatePreferences();
+		PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putString(Constants.PREF_WPM, WPM.toString()).apply();
 	}
 
 	private void showSpeedPickerDialog(Context context, final int min, final int max){
@@ -78,7 +79,7 @@ public class SettingsFragment extends PreferenceFragment {
 			values.add(i.toString());
 		}
 		numberPicker.setDisplayedValues(values.toArray(new String[values.size()]));
-		numberPicker.setValue(min + (settingsBundle.getWPM() - min) / Constants.WPM_STEP_PREFERENCES);
+		numberPicker.setValue(min + (WPM - min) / Constants.WPM_STEP_PREFERENCES);
 		new AlertDialog.Builder(context).
 				setTitle(R.string.preferences_set_wpm).
 				setView(numberPicker).
@@ -86,7 +87,7 @@ public class SettingsFragment extends PreferenceFragment {
 						new DialogInterface.OnClickListener() {
 							@Override
 							public void onClick(DialogInterface dialog, int which){
-								settingsBundle.setWPM(min + Constants.WPM_STEP_PREFERENCES * (numberPicker.getValue() - min));
+								WPM = min + Constants.WPM_STEP_PREFERENCES * (numberPicker.getValue() - min);
 							}
 						}
 				).

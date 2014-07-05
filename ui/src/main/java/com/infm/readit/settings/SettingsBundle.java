@@ -67,7 +67,7 @@ public class SettingsBundle {
 	public void assignFields(){
 		WPM = Integer.parseInt(sharedPreferences.getString(Constants.PREF_WPM, Constants.DEFAULT_WPM));
 		typeface = Integer.parseInt(sharedPreferences.getString(Constants.PREF_TYPEFACE, "0"));
-		swipesEnabled = sharedPreferences.getBoolean(Constants.PREF_SWIPE, false);
+		swipesEnabled = sharedPreferences.getBoolean(Constants.PREF_SWIPE, true);
 		showingContextEnabled = sharedPreferences.getBoolean(Constants.PREF_SHOW_CONTEXT, true);
 		punctuationSpeedDiffers = sharedPreferences.getBoolean(Constants.PREF_PUNCTUATION_DIFFERS, true);
 		cachingEnabled = sharedPreferences.getBoolean(Constants.PREF_STORAGE, true);
@@ -87,7 +87,7 @@ public class SettingsBundle {
 			editor.putString(Constants.STR_PUNCTUATION_PREFS[i], delayCoefficients.get(i).toString());
 		editor.apply(); //advised by IDE, lol
 	}
-
+	
 	/**
 	 * delayList: {default; coma/long word; end of sentence; '-' or ':' or ';'; beginning of a paragraph}
 	 * default value is 10
@@ -95,15 +95,6 @@ public class SettingsBundle {
 	 */
 	private ArrayList<Integer> buildDelayListCoefficients(){
 		ArrayList<Integer> delayCoeffs = new ArrayList<Integer>();
-/*
-		if (!punctuationSpeedDiffers)
-			for (int i = 0; i < 5; ++i)
-				delayCoeffs.add(
-						Integer.parseInt(sharedPreferences.getString(Constants.STR_PUNCTUATION_PREFS[0],
-								Constants.STR_PUNCTUATION_DEFAULTS[0]))
-				);
-		else
-*/
 		for (int i = 0; i < 5; ++i)
 			delayCoeffs.add(
 					Integer.parseInt(sharedPreferences.getString(Constants.STR_PUNCTUATION_PREFS[i],
