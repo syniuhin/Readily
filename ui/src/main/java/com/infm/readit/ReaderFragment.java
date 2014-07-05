@@ -433,6 +433,7 @@ public class ReaderFragment extends Fragment {
 			this.position = position;
 			completed = false;
 			cancelled = 1;
+			updateView(position);
 		}
 
 		@Override

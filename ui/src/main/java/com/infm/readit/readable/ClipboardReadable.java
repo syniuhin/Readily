@@ -4,9 +4,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
-
-import com.infm.readit.R;
 
 /**
  * Created by infm on 6/12/14. Enjoy ;)

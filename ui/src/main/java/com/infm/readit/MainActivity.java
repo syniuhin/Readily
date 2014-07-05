@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +15,7 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.flurry.android.FlurryAgent;
 import com.infm.readit.readable.FileStorable;
 import com.infm.readit.readable.Readable;
 import com.infm.readit.service.StorageCheckerService;
@@ -44,6 +44,18 @@ public class MainActivity extends Activity {
 		).start(this.getApplication());
 
 		startFileListFragment();
+	}
+
+	@Override
+	protected void onStart(){
+		super.onStart();
+		FlurryAgent.onStartSession(this, "6CNDCMYSWHYDFYDVKDMD");
+	}
+
+	@Override
+	protected void onStop(){
+		super.onStop();
+		FlurryAgent.onEndSession(this);
 	}
 
 	private void isAnybodyOutThere(Context context){

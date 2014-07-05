@@ -104,11 +104,11 @@ public class SettingsBundle {
 				);
 		else
 */
-			for (int i = 0; i < 5; ++i)
-				delayCoeffs.add(
-						Integer.parseInt(sharedPreferences.getString(Constants.STR_PUNCTUATION_PREFS[i],
-								Constants.STR_PUNCTUATION_DEFAULTS[i]))
-				); //might be tricky, look at Constants class
+		for (int i = 0; i < 5; ++i)
+			delayCoeffs.add(
+					Integer.parseInt(sharedPreferences.getString(Constants.STR_PUNCTUATION_PREFS[i],
+							Constants.STR_PUNCTUATION_DEFAULTS[i]))
+			); //might be tricky, look at Constants class
 		return delayCoeffs;
 	}
 }

@@ -1,16 +1,11 @@
 package com.infm.readit.readable;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
-import android.webkit.MimeTypeMap;
 
 import com.infm.readit.Constants;
 import com.ipaulpro.afilechooser.utils.FileUtils;
-
-import java.io.File;
 
 /**
  * Created by infm on 6/13/14. Enjoy ;)

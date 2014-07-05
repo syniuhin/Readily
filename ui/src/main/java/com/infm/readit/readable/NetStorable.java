@@ -63,7 +63,7 @@ public class NetStorable extends Storable {
 	@Override
 	protected void makeHeader(){ header = title; }
 
-	private boolean isNetworkAvailable(Context context) {
+	private boolean isNetworkAvailable(Context context){
 		ConnectivityManager connectivityManager
 				= (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();

@@ -17,7 +17,7 @@ public class RawReadable extends Storable {
 
 	@Override
 	public void process(Context context){
-		if (isReallyStorable) {
+		if (isReallyStorable){
 			makeHeader();
 			path = context.getFilesDir() + "/" + cleanFileName(header) + ".txt";
 			rowData = takeRowData(context);

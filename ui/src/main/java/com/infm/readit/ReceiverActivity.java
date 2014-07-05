@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
 
+import com.flurry.android.FlurryAgent;
+
 public class ReceiverActivity extends Activity {
 
 	private static final String LOGTAG = "ReceiverActivity";
@@ -32,6 +34,18 @@ public class ReceiverActivity extends Activity {
 
 		Bundle bundle = bundleReceivedData();
 		startReaderFragment(bundle);
+	}
+
+	@Override
+	protected void onStart(){
+		super.onStart();
+		FlurryAgent.onStartSession(this, "6CNDCMYSWHYDFYDVKDMD");
+	}
+
+	@Override
+	protected void onStop(){
+		super.onStop();
+		FlurryAgent.onEndSession(this);
 	}
 
 	private Bundle bundleReceivedData(){
