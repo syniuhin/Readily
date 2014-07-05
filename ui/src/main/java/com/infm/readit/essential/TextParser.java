@@ -64,6 +64,7 @@ public class TextParser implements Serializable {
 	private Readable readable;
 	private int lengthPreference;
 	private List<Integer> delayCoefficients;
+	private int resultCode;
 
 	/**
 	 * stackOverFlow guys told about it
@@ -132,6 +133,14 @@ public class TextParser implements Serializable {
 		TextParser o = (TextParser) ois.readObject();
 		ois.close();
 		return o;
+	}
+
+	public int getResultCode(){
+		return resultCode;
+	}
+
+	public void setResultCode(int resultCode){
+		this.resultCode = resultCode;
 	}
 
 	/**

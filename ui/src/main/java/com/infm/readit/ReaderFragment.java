@@ -2,15 +2,13 @@ package com.infm.readit;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -30,11 +28,9 @@ import com.infm.readit.essential.TextParser;
 import com.infm.readit.readable.Readable;
 import com.infm.readit.readable.Storable;
 import com.infm.readit.service.LastReadService;
-import com.infm.readit.service.TextParserService;
 import com.infm.readit.settings.SettingsBundle;
 import com.infm.readit.util.OnSwipeTouchListener;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -64,8 +60,7 @@ public class ReaderFragment extends Fragment {
 	private List<Integer> delayList;
 	private TextParser parser;
 	private SettingsBundle settingsBundle;
-	private TextParserListener textParserListener;
-	private LocalBroadcastManager manager;
+	private TextParserTask textParserTask;
 	private Bundle args;
 	//receiving status
 	private Boolean parserReceived = false;
@@ -95,9 +90,10 @@ public class ReaderFragment extends Fragment {
 		setReaderLayoutListener(activity);
 		settingsBundle = new SettingsBundle(PreferenceManager.getDefaultSharedPreferences(activity));
 
-		createReceiver(activity);
-
 		initPrevButton();
+
+		textParserTask = new TextParserTask();
+		textParserTask.execute(args);
 	}
 
 	public void setTime(long localTime){
@@ -277,56 +273,49 @@ public class ReaderFragment extends Fragment {
 		}
 	}
 
-	private void receiveParser(Context context, Intent intent){
-		try {
-			int resultCode = intent.getIntExtra(Constants.EXTRA_PARSER_RESULT_CODE, TextParserService.RESULT_CODE_OK);
-			if (resultCode == TextParserService.RESULT_CODE_OK){
-				parser = TextParser.fromString(intent.getStringExtra(Constants.EXTRA_PARSER));
-				parserReceived = true;
-				readable = parser.getReadable();
+	private void createParser(Context context){
+		int resultCode = parser.getResultCode();
+		if (resultCode == TextParserTask.RESULT_CODE_OK){
+			parserReceived = true;
+			readable = parser.getReadable();
 
-				wordList = readable.getWordList();
-				emphasisList = readable.getEmphasisList();
-				delayList = readable.getDelayList();
+			wordList = readable.getWordList();
+			emphasisList = readable.getEmphasisList();
+			delayList = readable.getDelayList();
 
-				parsingProgressBar.setVisibility(View.GONE);
+			parsingProgressBar.setVisibility(View.GONE);
 
-				readerLayout.setVisibility(View.VISIBLE);
-				YoYo.with(Techniques.BounceIn).
-						duration(2 * Constants.SECOND).
-						playOn(readerLayout);
-				final Handler handler = new Handler();
-				readable.setPosition(Math.max(readable.getPosition() - Constants.READER_START_OFFSET, 0));
-				reader = new Reader(handler, readable.getPosition());
-				handler.postDelayed(reader, 3 * Constants.SECOND);
+			readerLayout.setVisibility(View.VISIBLE);
+			YoYo.with(Techniques.BounceIn).
+					duration(2 * Constants.SECOND).
+					playOn(readerLayout);
+			final Handler handler = new Handler();
+			readable.setPosition(Math.max(readable.getPosition() - Constants.READER_START_OFFSET, 0));
+			reader = new Reader(handler, readable.getPosition());
+			handler.postDelayed(reader, 3 * Constants.SECOND);
 
-				if (isStorable()){
-					context.startService(
-							createLastReadServiceIntent(context, (Storable) readable, Constants.DB_OPERATION_INSERT));
-				}
-			} else {
-				int stringId;
-				switch (resultCode){
-					case TextParserService.RESULT_CODE_WRONG_EXT:
-						stringId = R.string.wrong_ext;
-						break;
-					case TextParserService.RESULT_CODE_EMPTY_CLIPBOARD:
-						stringId = R.string.clipboard_empty;
-						break;
-					case TextParserService.RESULT_CODE_CANT_FETCH:
-						stringId = R.string.cant_fetch;
-						break;
-					default:
-						stringId = R.string.text_null;
-						break;
-				}
-				Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
-				onStop();
+			if (isStorable()){
+				context.startService(
+						createLastReadServiceIntent(context, (Storable) readable, Constants.DB_OPERATION_INSERT));
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+		} else {
+			int stringId;
+			switch (resultCode){
+				case TextParserTask.RESULT_CODE_WRONG_EXT:
+					stringId = R.string.wrong_ext;
+					break;
+				case TextParserTask.RESULT_CODE_EMPTY_CLIPBOARD:
+					stringId = R.string.clipboard_empty;
+					break;
+				case TextParserTask.RESULT_CODE_CANT_FETCH:
+					stringId = R.string.cant_fetch;
+					break;
+				default:
+					stringId = R.string.text_null;
+					break;
+			}
+			Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
+			onStop();
 		}
 	}
 
@@ -336,14 +325,6 @@ public class ReaderFragment extends Fragment {
 		storable.putDataInIntent(intent);
 		intent.putExtra(Constants.EXTRA_DB_OPERATION, operation);
 		return intent;
-	}
-
-	private void createReceiver(Context context){
-		textParserListener = new TextParserListener();
-		manager = LocalBroadcastManager.getInstance(context);
-		IntentFilter intentFilter = new IntentFilter(Constants.TEXT_PARSER_READY);
-		intentFilter.addAction(Constants.TEXT_PARSER_NOT_READY);
-		manager.registerReceiver(textParserListener, intentFilter);
 	}
 
 	/**
@@ -405,7 +386,8 @@ public class ReaderFragment extends Fragment {
 		}
 
 		settingsBundle.updatePreferences();
-		manager.unregisterReceiver(textParserListener);
+		if (textParserTask != null)
+			textParserTask.cancel(true);
 
 		activity.finish();
 		super.onStop();
@@ -414,8 +396,9 @@ public class ReaderFragment extends Fragment {
 	@Override
 	public void onConfigurationChanged(Configuration newConfig){
 		super.onConfigurationChanged(newConfig);
-		reader.performPause();
-
+		if (parserReceived && reader != null)
+			reader.performPause();
+/*
 		Activity activity = getActivity();
 
 		LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -430,6 +413,7 @@ public class ReaderFragment extends Fragment {
 		readerLayout.setVisibility(View.VISIBLE);
 		updateView(reader.getPosition());
 		setReaderLayoutListener(activity);
+*/
 	}
 
 	/**
@@ -506,12 +490,76 @@ public class ReaderFragment extends Fragment {
 		}
 	}
 
-	private class TextParserListener extends BroadcastReceiver {
+	private class TextParserTask extends AsyncTask<Bundle, Void, TextParser> { //design good concurrent solution
+		private static final int RESULT_CODE_OK = 0;
+		private static final int RESULT_CODE_EMPTY_CLIPBOARD = 1;
+		private static final int RESULT_CODE_WRONG_EXT = 2;
+		private static final int RESULT_CODE_WTF = 3;
+		private static final int RESULT_CODE_CANT_FETCH = 4;
 
 		@Override
-		public void onReceive(Context context, Intent intent){
-			if (intent.getLongExtra(Constants.EXTRA_UNIQUE_ID, 0) == args.getLong(Constants.EXTRA_UNIQUE_ID, 1))
-				receiveParser(context, intent);
+		protected TextParser doInBackground(Bundle... params){
+			Bundle bundle = params[0];
+			Context context = getActivity();
+			Log.d(LOGTAG, "doInBackround() called, incoming path: " +
+					bundle.getString(Constants.EXTRA_PATH));
+			Readable readable = Readable.createReadable(context, bundle);
+			readable.process(context); //don't sure that context is necessary, esp. considering level of abstraction..
+			TextParser textParser = TextParser.newInstance(readable,
+					new SettingsBundle(PreferenceManager.getDefaultSharedPreferences(context)));
+			textParser.setResultCode(checkResult(textParser));
+			return textParser;
+		}
+
+		@Override
+		protected void onPostExecute(TextParser textParser){
+			Log.d(LOGTAG, "onPostExecute() called");
+			parser = textParser;
+			createParser(getActivity());
+		}
+
+		private int checkResult(TextParser textParser){
+			int toReturn;
+			if (textParser != null && textParser.getReadable() != null){
+				if (TextUtils.isEmpty(textParser.getReadable().getText()) ||
+						textParser.getReadable().getWordList().isEmpty() ||
+						textParser.getReadable().getWordList().size() < 2 ||
+						textParser.getReadable().getProcessFailed()){
+					switch (textParser.getReadable().getType()){
+						case Readable.TYPE_CLIPBOARD:
+							Log.v(LOGTAG, "checkResult(), clipboard");
+							toReturn = RESULT_CODE_EMPTY_CLIPBOARD;
+							break;
+						case Readable.TYPE_FILE:
+							Log.v(LOGTAG, "checkResult(), file");
+							toReturn = RESULT_CODE_WRONG_EXT;
+							break;
+						case Readable.TYPE_TXT:
+							Log.v(LOGTAG, "checkResult(), txt");
+							toReturn = RESULT_CODE_WRONG_EXT;
+							break;
+						case Readable.TYPE_EPUB:
+							Log.v(LOGTAG, "checkResult(), epub");
+							toReturn = RESULT_CODE_WRONG_EXT;
+							break;
+						case Readable.TYPE_NET:
+							Log.v(LOGTAG, "checkResult(), net");
+							toReturn = RESULT_CODE_CANT_FETCH;
+							break;
+						default:
+							Log.v(LOGTAG, "checkResult(), default");
+							toReturn = RESULT_CODE_WTF;
+							break;
+					}
+				} else {
+					Log.v(LOGTAG, "checkResult(), not null");
+					toReturn = RESULT_CODE_OK;
+				}
+			} else {
+				Log.w(LOGTAG, "checkResult(), null");
+				toReturn = RESULT_CODE_WTF;
+			}
+			return toReturn;
 		}
 	}
 }
