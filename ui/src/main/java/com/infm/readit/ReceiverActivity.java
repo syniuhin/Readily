@@ -40,7 +40,12 @@ public class ReceiverActivity extends Activity {
 
 	private Bundle bundleReceivedData(){
 		Bundle bundle = getIntent().getExtras();
-		Log.d(LOGTAG, "bundle: " + ((bundle == null) ? "null" : bundle.toString()));
+		if (bundle != null){
+			bundle.putLong(Constants.EXTRA_UNIQUE_ID, System.currentTimeMillis());
+			Log.i(LOGTAG, "bundle: " + bundle.toString());
+		} else {
+			Log.i(LOGTAG, "bundle: " + null);
+		}
 		return bundle;
 	}
 
@@ -53,7 +58,7 @@ public class ReceiverActivity extends Activity {
 			transaction.addToBackStack(null);
 			transaction.commit();
 		} else {
-			Log.d(LOGTAG, "startReaderFragment(): bundle is null");
+			Log.e(LOGTAG, "startReaderFragment(): bundle is null");
 		}
 	}
 
@@ -69,7 +74,7 @@ public class ReceiverActivity extends Activity {
 			intent.putExtras(bundle);
 			return intent;
 		} else {
-			Log.d(LOGTAG, "createParserServiceIntent(): bundle is null");
+			Log.e(LOGTAG, "createParserServiceIntent(): bundle is null");
 			return null;
 		}
 	}

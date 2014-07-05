@@ -66,8 +66,15 @@ public class ReaderFragment extends Fragment {
 	private SettingsBundle settingsBundle;
 	private TextParserListener textParserListener;
 	private LocalBroadcastManager manager;
+	private Bundle args;
 	//receiving status
 	private Boolean parserReceived = false;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState){
+		super.onCreate(savedInstanceState);
+		args = getArguments();
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
@@ -176,11 +183,14 @@ public class ReaderFragment extends Fragment {
 			@Override
 			public void onSwipeRight(){
 				if (settingsBundle.isSwipesEnabled()){
-					reader.performPause();
-					int pos = reader.getPosition();
-					if (pos > 0){
-						updateView(pos - 1);
-						reader.setPosition(pos - 1);
+					if (!reader.isCancelled()){
+						reader.performPause();
+					} else {
+						int pos = reader.getPosition();
+						if (pos > 0){
+							reader.setPosition(pos - 1);
+							updateView(pos - 1);
+						}
 					}
 				}
 			}
@@ -188,11 +198,14 @@ public class ReaderFragment extends Fragment {
 			@Override
 			public void onSwipeLeft(){
 				if (settingsBundle.isSwipesEnabled()){
-					reader.performPause();
-					int pos = reader.getPosition();
-					if (pos < wordList.size() - 1){
-						updateView(pos + 1);
-						reader.setPosition(pos + 1);
+					if (!reader.isCancelled()){
+						reader.performPause();
+					} else {
+						int pos = reader.getPosition();
+						if (pos < wordList.size() - 1){
+							reader.setPosition(pos + 1);
+							updateView(pos + 1);
+						}
 					}
 				}
 			}
@@ -383,6 +396,7 @@ public class ReaderFragment extends Fragment {
 		Log.d(LOGTAG, "OnStop() called");
 		Activity activity = getActivity();
 		if (isStorable() && reader != null){
+			reader.performPause();
 			Storable storable = (Storable) readable;
 			int operation = (reader.isCompleted())
 					? Constants.DB_OPERATION_DELETE
@@ -496,7 +510,8 @@ public class ReaderFragment extends Fragment {
 
 		@Override
 		public void onReceive(Context context, Intent intent){
-			receiveParser(context, intent);
+			if (intent.getLongExtra(Constants.EXTRA_UNIQUE_ID, 0) == args.getLong(Constants.EXTRA_UNIQUE_ID, 1))
+				receiveParser(context, intent);
 		}
 	}
 }

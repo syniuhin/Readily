@@ -15,7 +15,7 @@ import java.io.File;
 /**
  * Created by infm on 6/13/14. Enjoy ;)
  */
-abstract public class FileStorable extends Storable { //TODO: implement separate class for each extension
+abstract public class FileStorable extends Storable {
 
 	private static final String LOGTAG = "FileStorable";
 
