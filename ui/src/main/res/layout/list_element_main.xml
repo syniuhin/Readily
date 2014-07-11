@@ -4,52 +4,81 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:minHeight="60dp">
 
-    <TextView
-        android:id="@+id/text_view_title"
+    <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="22dp"
-        android:layout_marginRight="17dp"
-        android:paddingBottom="10dp"
-        android:singleLine="false"
-        android:text="Title"
-        android:textSize="20sp"
-        android:typeface="serif"/>
+        android:layout_height="match_parent"
+        android:layout_toLeftOf="@+id/separator">
 
-    <TextView
-        android:id="@+id/text_view_path"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/text_view_title"
-        android:layout_alignParentLeft="false"
+        <TextView
+            android:id="@+id/text_view_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="22dp"
+            android:layout_marginRight="17dp"
+            android:paddingBottom="10dp"
+            android:singleLine="false"
+            android:text="Title"
+            android:textSize="20sp"
+            android:typeface="serif"/>
+
+        <TextView
+            android:id="@+id/text_view_path"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/text_view_title"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentRight="false"
+            android:layout_below="@+id/text_view_title"
+            android:layout_marginLeft="-5dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_toLeftOf="@+id/text_view_percent"
+            android:singleLine="true"
+            android:text="path"
+            android:textAlignment="viewEnd"
+            android:textColor="@android:color/secondary_text_dark"
+            android:textSize="12sp"
+            android:typeface="serif"/>
+
+        <TextView
+            android:id="@+id/text_view_percent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/text_view_title"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="15dp"
+            android:singleLine="true"
+            android:text="percent"
+            android:textColor="@android:color/secondary_text_light"
+            android:textIsSelectable="false"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:typeface="serif"/>
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/separator"
+        android:layout_width="5dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="false"
         android:layout_alignParentRight="false"
-        android:layout_below="@+id/text_view_title"
-        android:layout_marginLeft="-5dp"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="15dp"
-        android:layout_toLeftOf="@+id/text_view_percent"
-        android:singleLine="true"
-        android:text="path"
-        android:textAlignment="viewEnd"
-        android:textColor="@android:color/secondary_text_dark"
-        android:textSize="12sp"
-        android:typeface="serif"/>
+        android:layout_alignParentTop="true"
+        android:layout_centerVertical="true"
+        android:layout_margin="5dp"
+        android:layout_toLeftOf="@+id/editButton"
+        android:src="@drawable/list_item_main_separator"/>
 
-    <TextView
-        android:id="@+id/text_view_percent"
+    <ImageButton
+        android:id="@+id/editButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/text_view_path"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="15dp"
-        android:singleLine="true"
-        android:text="percent"
-        android:textColor="@android:color/secondary_text_light"
-        android:textIsSelectable="false"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        android:typeface="serif"/>
+        android:layout_centerVertical="true"
+        android:layout_margin="5dp"
+        android:background="#ff9aa0ff"
+        android:src="@android:drawable/btn_star_big_off"/>
 </RelativeLayout>

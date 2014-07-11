@@ -12,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.flurry.android.FlurryAgent;
@@ -21,7 +20,6 @@ import com.infm.readit.readable.Readable;
 import com.infm.readit.service.StorageCheckerService;
 import com.infm.readit.settings.SettingsFragment;
 import com.ipaulpro.afilechooser.utils.FileUtils;
-import com.newrelic.agent.android.NewRelic;
 
 public class MainActivity extends Activity {
 
@@ -38,10 +36,12 @@ public class MainActivity extends Activity {
 
 		startService(createCheckerServiceIntent());
 
+/*
 		Crashlytics.start(this);
 		NewRelic.withApplicationToken(
 				"AAb54a33233473ebe708b5daec8505d0928bd07238"
 		).start(this.getApplication());
+*/
 
 		startFileListFragment();
 	}

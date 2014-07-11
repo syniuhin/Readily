@@ -15,18 +15,20 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.infm.readit.database.LastReadContentProvider;
-import com.infm.readit.database.LastReadDBHelper;
+import com.infm.readit.readable.MiniReadable;
 import com.infm.readit.readable.Readable;
+import com.infm.readit.util.CachedFilesAdapter;
+
+import java.util.ArrayList;
 
 public class FileListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
 	private static final String LOGTAG = "FileListFragment";
 
-	private SimpleCursorAdapter adapter;
+	private CachedFilesAdapter adapter;
 
 	private TextView tvEmpty;
 	private ListView listView;
@@ -69,9 +71,7 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 			}
 		});
 
-		adapter = new SimpleCursorAdapter(context, R.layout.list_element_main, null,
-				new String[]{LastReadDBHelper.KEY_HEADER, LastReadDBHelper.KEY_PATH, LastReadDBHelper.KEY_PERCENT},
-				new int[]{R.id.text_view_title, R.id.text_view_path, R.id.text_view_percent}, 0);
+		adapter = new CachedFilesAdapter(context, new ArrayList<MiniReadable>());
 		listView.setAdapter(adapter);
 	}
 
@@ -82,14 +82,14 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data){
-		adapter.swapCursor(data);
+		adapter.updateAll(data);
 		if (data.getCount() > 0)
 			tvEmpty.setVisibility(View.GONE);
 	}
 
 	@Override
 	public void onLoaderReset(Loader loader){
-		adapter.swapCursor(null);
+		adapter.updateAll(null);
 	}
 
 	@Override
