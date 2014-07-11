@@ -1,6 +1,7 @@
 package com.infm.readit.essential;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
 
 import com.infm.readit.readable.Readable;
@@ -18,13 +19,20 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class TextParser implements Serializable {
+public class TextParser implements Serializable, Callable<TextParser> {
 
-	public static final String LOGTAG = "TextParser";
-	public static final Map<String, Integer> PRIORITIES;
+	private static final String LOGTAG = "TextParser";
+	private static final Map<String, Integer> PRIORITIES;
+
+	public static final int RESULT_CODE_OK = 0;
+	public static final int RESULT_CODE_EMPTY_CLIPBOARD = 1;
+	public static final int RESULT_CODE_WRONG_EXT = 2;
+	public static final int RESULT_CODE_WTF = 3;
+	public static final int RESULT_CODE_CANT_FETCH = 4;
 
 	static{
 		Map<String, Integer> priorityMap = new HashMap<String, Integer>();
@@ -86,7 +94,6 @@ public class TextParser implements Serializable {
 	public static TextParser newInstance(Readable readable, SettingsBundle settingsBundle){
 		TextParser textParser = new TextParser(readable);
 		textParser.setDelayCoefficients(settingsBundle.getDelayCoefficients());
-		textParser.process();
 		return textParser;
 	}
 
@@ -375,5 +382,56 @@ public class TextParser implements Serializable {
 			res.add(resInd);
 		}
 		readable.setEmphasisList(res);
+	}
+
+	public void checkResult(){
+		int resultCode;
+		if (readable != null){
+			if (TextUtils.isEmpty(readable.getText()) ||
+					readable.getWordList().isEmpty() ||
+					readable.getWordList().size() < 2 ||
+					readable.getProcessFailed()){
+				switch (this.getReadable().getType()){
+					case Readable.TYPE_CLIPBOARD:
+						Log.v(LOGTAG, "checkResult(), clipboard");
+						resultCode = RESULT_CODE_EMPTY_CLIPBOARD;
+						break;
+					case Readable.TYPE_FILE:
+						Log.v(LOGTAG, "checkResult(), file");
+						resultCode = RESULT_CODE_WRONG_EXT;
+						break;
+					case Readable.TYPE_TXT:
+						Log.v(LOGTAG, "checkResult(), txt");
+						resultCode = RESULT_CODE_WRONG_EXT;
+						break;
+					case Readable.TYPE_EPUB:
+						Log.v(LOGTAG, "checkResult(), epub");
+						resultCode = RESULT_CODE_WRONG_EXT;
+						break;
+					case Readable.TYPE_NET:
+						Log.v(LOGTAG, "checkResult(), net");
+						resultCode = RESULT_CODE_CANT_FETCH;
+						break;
+					default:
+						Log.v(LOGTAG, "checkResult(), default");
+						resultCode = RESULT_CODE_WTF;
+						break;
+				}
+			} else {
+				Log.v(LOGTAG, "checkResult(), not null");
+				resultCode = RESULT_CODE_OK;
+			}
+		} else {
+			Log.w(LOGTAG, "checkResult(), null");
+			resultCode = RESULT_CODE_WTF;
+		}
+		setResultCode(resultCode);
+	}
+
+
+	@Override
+	public TextParser call() throws Exception{
+		process();
+		return this;
 	}
 }

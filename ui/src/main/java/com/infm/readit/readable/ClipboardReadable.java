@@ -3,6 +3,8 @@ package com.infm.readit.readable;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 /**
@@ -17,13 +19,20 @@ public class ClipboardReadable extends Readable {
 		type = TYPE_CLIPBOARD;
 	}
 
-	public void process(Context context){
-		ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-		if (processFailed = !clipboard.hasText()){
-			Log.d(LOGTAG, "There's nothing in clipboard");
-		} else {
-			text.append(paste(clipboard));
-		}
+	public void process(final Context context){
+		new Handler(Looper.getMainLooper()).
+				post(new Runnable() {
+					@Override
+					public void run(){
+						ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+						if (processFailed = !clipboard.hasText()){
+							Log.d(LOGTAG, "There's nothing in clipboard");
+						} else {
+							text.append(paste(clipboard));
+						}
+
+					}
+				});
 	}
 
 	private String paste(ClipboardManager clipboard){

@@ -14,6 +14,7 @@ import com.infm.readit.essential.TextParser;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * Created by infm on 6/12/14. Enjoy ;)
@@ -181,5 +182,22 @@ abstract public class Readable implements Serializable {
 
 	public void setEmphasisList(List<Integer> emphasisList){
 		this.emphasisList = emphasisList;
+	}
+
+	public static class Builder implements Callable<Readable> {
+
+		Context context;
+		Readable readable;
+
+		public Builder(Context context, Bundle bundle){
+			this.context = context;
+			this.readable = createReadable(context, bundle);
+		}
+
+		@Override
+		public Readable call() throws Exception{
+			readable.process(context);
+			return readable;
+		}
 	}
 }

@@ -5,10 +5,8 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spanned;
@@ -33,6 +31,10 @@ import com.infm.readit.settings.SettingsBundle;
 import com.infm.readit.util.OnSwipeTouchListener;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * infm : 16/05/14. Enjoy it ;)
@@ -40,10 +42,11 @@ import java.util.List;
 public class ReaderFragment extends Fragment {
 
 	private static final String LOGTAG = "ReaderFragment";
-
+	//initialized in onCreate()
+	Handler readerHandler;
 	private long localTime = 0;
 	private boolean speedoHided = true;
-
+	private Bundle args;
 	//initialized in onCreateView()
 	private RelativeLayout readerLayout;
 	private TextView currentTextView;
@@ -61,8 +64,7 @@ public class ReaderFragment extends Fragment {
 	private List<Integer> delayList;
 	private TextParser parser;
 	private SettingsBundle settingsBundle;
-	private TextParserTask textParserTask;
-	private Bundle args;
+	private ExecutorService executorService;
 	//receiving status
 	private Boolean parserReceived = false;
 
@@ -70,6 +72,7 @@ public class ReaderFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		args = getArguments();
+		readerHandler = new Handler();
 	}
 
 	@Override
@@ -93,8 +96,11 @@ public class ReaderFragment extends Fragment {
 
 		initPrevButton();
 
+/*
 		textParserTask = new TextParserTask();
-		textParserTask.execute(args);
+		textParserTask.exeexecutorService.submit(new Readable.Builder(context, bundle))cute(args);
+*/
+		parseText(getActivity(), args);
 	}
 
 	public void setTime(long localTime){
@@ -276,9 +282,9 @@ public class ReaderFragment extends Fragment {
 		}
 	}
 
-	private void createParser(Context context){
-		int resultCode = parser.getResultCode();
-		if (resultCode == TextParserTask.RESULT_CODE_OK){
+	private void processParser(final Context context){
+		final int resultCode = parser.getResultCode();
+		if (resultCode == TextParser.RESULT_CODE_OK){
 			parserReceived = true;
 			readable = parser.getReadable();
 
@@ -286,40 +292,50 @@ public class ReaderFragment extends Fragment {
 			emphasisList = readable.getEmphasisList();
 			delayList = readable.getDelayList();
 
-			parsingProgressBar.setVisibility(View.GONE);
+			readerLayout.post(new Runnable() {
+				@Override
+				public void run(){
+					parsingProgressBar.setVisibility(View.GONE);
 
-			readerLayout.setVisibility(View.VISIBLE);
-			YoYo.with(Techniques.BounceIn).
-					duration(2 * Constants.SECOND).
-					playOn(readerLayout);
-			final Handler handler = new Handler();
+					readerLayout.setVisibility(View.VISIBLE);
+					YoYo.with(Techniques.BounceIn).
+							duration(2 * Constants.SECOND).
+							playOn(readerLayout);
+
+					Toast.makeText(context, R.string.tap_to_start, Toast.LENGTH_SHORT).show();
+				}
+			});
 			readable.setPosition(Math.max(readable.getPosition() - Constants.READER_START_OFFSET, 0));
-			reader = new Reader(handler, readable.getPosition());
-			handler.postDelayed(reader, 3 * Constants.SECOND);
+			reader = new Reader(readerHandler, readable.getPosition());
+			readerHandler.postDelayed(reader, 3 * Constants.SECOND);
 
-			Toast.makeText(context, R.string.tap_to_start, Toast.LENGTH_SHORT).show();
 			if (isStorable()){
 				context.startService(
 						createLastReadServiceIntent(context, (Storable) readable, Constants.DB_OPERATION_INSERT));
 			}
 		} else {
-			int stringId;
-			switch (resultCode){
-				case TextParserTask.RESULT_CODE_WRONG_EXT:
-					stringId = R.string.wrong_ext;
-					break;
-				case TextParserTask.RESULT_CODE_EMPTY_CLIPBOARD:
-					stringId = R.string.clipboard_empty;
-					break;
-				case TextParserTask.RESULT_CODE_CANT_FETCH:
-					stringId = R.string.cant_fetch;
-					break;
-				default:
-					stringId = R.string.text_null;
-					break;
-			}
-			Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
-			onStop();
+			Activity a = getActivity();
+			a.runOnUiThread(new Runnable() {
+				@Override
+				public void run(){int stringId;
+					switch (resultCode){
+						case TextParser.RESULT_CODE_WRONG_EXT:
+							stringId = R.string.wrong_ext;
+							break;
+						case TextParser.RESULT_CODE_EMPTY_CLIPBOARD:
+							stringId = R.string.clipboard_empty;
+							break;
+						case TextParser.RESULT_CODE_CANT_FETCH:
+							stringId = R.string.cant_fetch;
+							break;
+						default:
+							stringId = R.string.text_null;
+							break;
+					}
+					Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
+					onStop();
+				}
+			});
 		}
 	}
 
@@ -391,9 +407,8 @@ public class ReaderFragment extends Fragment {
 
 		settingsBundle.updatePreferences();
 
-		if (textParserTask != null)
-			textParserTask.cancel(true);
-
+		if (executorService != null)
+			executorService.shutdownNow();
 		activity.finish();
 		super.onStop();
 	}
@@ -421,8 +436,33 @@ public class ReaderFragment extends Fragment {
 */
 	}
 
+	private void parseText(final Context context, final Bundle bundle){
+		Log.d(LOGTAG, "parseText() called");
+		new Thread(new Runnable() {
+			@Override
+			public void run(){
+				try {
+					executorService = Executors.newSingleThreadExecutor();
+					Future<Readable> readableFuture = executorService.submit(new Readable.Builder(context, bundle));
+					Readable readable = readableFuture.get();
+					Future<TextParser> textParserFuture = executorService.submit(
+							TextParser.newInstance(readable,
+									new SettingsBundle(PreferenceManager.getDefaultSharedPreferences(context)))
+					);
+					parser = textParserFuture.get();
+					parser.checkResult();
+					processParser(context);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
+	}
+
 	/**
-	 * don't sure that it must be inner class
+	 * don't sure that it must be an inner class
 	 */
 	private class Reader implements Runnable {
 
@@ -494,81 +534,6 @@ public class ReaderFragment extends Fragment {
 
 		private int calcDelay(){
 			return delayList.get(position) * Math.round(100 * 60 * 1f / settingsBundle.getWPM());
-		}
-	}
-
-	private class TextParserTask extends AsyncTask<Bundle, Void, TextParser> { //TODO: design <b>GOOD</b> concurrent solution
-		private static final int RESULT_CODE_OK = 0;
-		private static final int RESULT_CODE_EMPTY_CLIPBOARD = 1;
-		private static final int RESULT_CODE_WRONG_EXT = 2;
-		private static final int RESULT_CODE_WTF = 3;
-		private static final int RESULT_CODE_CANT_FETCH = 4;
-
-		@Override
-		protected TextParser doInBackground(Bundle... params){
-			Bundle bundle = params[0];
-			Context context = getActivity();
-			Log.d(LOGTAG, "doInBackround() called, incoming path: " +
-					bundle.getString(Constants.EXTRA_PATH));
-
-			Looper.prepare(); //well, I really do not know what's going on. TODO: refactor this carefully
-			Readable readable = Readable.createReadable(context, bundle);
-			readable.process(context); //don't sure that context is necessary, esp. considering level of abstraction..
-			TextParser textParser = TextParser.newInstance(readable,
-					new SettingsBundle(PreferenceManager.getDefaultSharedPreferences(context)));
-			textParser.setResultCode(checkResult(textParser));
-			return textParser;
-		}
-
-		@Override
-		protected void onPostExecute(TextParser textParser){
-			Log.d(LOGTAG, "onPostExecute() called");
-			parser = textParser;
-			createParser(getActivity());
-		}
-
-		private int checkResult(TextParser textParser){
-			int toReturn;
-			if (textParser != null && textParser.getReadable() != null){
-				if (TextUtils.isEmpty(textParser.getReadable().getText()) ||
-						textParser.getReadable().getWordList().isEmpty() ||
-						textParser.getReadable().getWordList().size() < 2 ||
-						textParser.getReadable().getProcessFailed()){
-					switch (textParser.getReadable().getType()){
-						case Readable.TYPE_CLIPBOARD:
-							Log.v(LOGTAG, "checkResult(), clipboard");
-							toReturn = RESULT_CODE_EMPTY_CLIPBOARD;
-							break;
-						case Readable.TYPE_FILE:
-							Log.v(LOGTAG, "checkResult(), file");
-							toReturn = RESULT_CODE_WRONG_EXT;
-							break;
-						case Readable.TYPE_TXT:
-							Log.v(LOGTAG, "checkResult(), txt");
-							toReturn = RESULT_CODE_WRONG_EXT;
-							break;
-						case Readable.TYPE_EPUB:
-							Log.v(LOGTAG, "checkResult(), epub");
-							toReturn = RESULT_CODE_WRONG_EXT;
-							break;
-						case Readable.TYPE_NET:
-							Log.v(LOGTAG, "checkResult(), net");
-							toReturn = RESULT_CODE_CANT_FETCH;
-							break;
-						default:
-							Log.v(LOGTAG, "checkResult(), default");
-							toReturn = RESULT_CODE_WTF;
-							break;
-					}
-				} else {
-					Log.v(LOGTAG, "checkResult(), not null");
-					toReturn = RESULT_CODE_OK;
-				}
-			} else {
-				Log.w(LOGTAG, "checkResult(), null");
-				toReturn = RESULT_CODE_WTF;
-			}
-			return toReturn;
 		}
 	}
 }
