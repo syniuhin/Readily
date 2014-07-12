@@ -21,7 +21,7 @@
     <string name="wrong_ext">Неправильное расширение</string>
     <string name="text_null">Текст отсутствует</string>
     <string name="cant_fetch">Проблемы с загрузкой текста</string>
-    <string name="delete_selected">Удалить выбранные элементы</string>
+    <string name="delete">Удалить выбранные элементы</string>
     <string name="choose_file">Выберите файл</string>
     <string name="tap_to_start">Коснитесь, чтобы начать чтение</string>
 

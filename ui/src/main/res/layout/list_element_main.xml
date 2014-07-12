@@ -5,9 +5,10 @@
     android:minHeight="60dp">
 
     <RelativeLayout
-        android:layout_width="wrap_content"
+            android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_toLeftOf="@+id/separator">
+        android:id="@+id/main_view"
+        android:visibility="visible">
 
         <TextView
             android:id="@+id/text_view_title"
@@ -56,29 +57,51 @@
             android:textSize="12sp"
             android:textStyle="bold"
             android:typeface="serif"/>
-
     </RelativeLayout>
 
-    <ImageView
-        android:id="@+id/separator"
-        android:layout_width="5dp"
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentRight="false"
-        android:layout_alignParentTop="true"
-        android:layout_centerVertical="true"
-        android:layout_margin="5dp"
-        android:layout_toLeftOf="@+id/editButton"
-        android:src="@drawable/list_item_main_separator"/>
+        android:background="#ff484848"
+        android:weightSum="3"
+        android:id="@+id/action_view"
+        android:gravity="center" android:layout_centerInParent="true"
+        android:layout_alignParentTop="true" android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true" android:layout_alignParentRight="true" android:visibility="gone"
+        android:layout_alignTop="@+id/main_view" android:layout_alignBottom="@+id/main_view">
 
-    <ImageButton
-        android:id="@+id/editButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_margin="5dp"
-        android:background="#ff9aa0ff"
-        android:src="@android:drawable/btn_star_big_off"/>
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" android:layout_weight="1" android:id="@+id/container_back">
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageViewBack" android:layout_weight="1" android:layout_gravity="center"
+                    android:src="@drawable/ic_action_back"/>
+        </LinearLayout>
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" android:layout_weight="1" android:id="@+id/container_delete">
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageViewDelete"
+                    android:src="@drawable/ic_action_discard"
+                    android:layout_gravity="center" android:layout_weight="1"/>
+        </LinearLayout>
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" android:layout_weight="1" android:id="@+id/container_edit">
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageViewEdit"
+                    android:src="@drawable/ic_action_edit" android:layout_gravity="center" android:layout_weight="1"/>
+        </LinearLayout>
+    </LinearLayout>
+
 </RelativeLayout>

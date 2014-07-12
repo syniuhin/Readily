@@ -5,7 +5,6 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
-
 import com.infm.readit.database.LastReadContentProvider;
 import com.infm.readit.database.LastReadDBHelper;
 
@@ -57,9 +56,8 @@ public class StorageCheckerService extends IntentService {
 				file.delete();
 		for (Map.Entry<String, Integer> entry : baseData.entrySet()){
 			String path = entry.getKey();
-			if (path.substring(0, path.lastIndexOf('/')).equals(homeDir.getAbsolutePath()) &&
-					!(new File(path)).exists())
-				contentResolver.delete(ContentUris.withAppendedId(LastReadContentProvider.CONTENT_URI, entry.getValue()),
+            if (!(new File(path)).exists())
+                contentResolver.delete(ContentUris.withAppendedId(LastReadContentProvider.CONTENT_URI, entry.getValue()),
 						null, null);
 		}
 	}

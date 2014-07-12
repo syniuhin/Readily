@@ -11,7 +11,6 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.flurry.android.FlurryAgent;
@@ -38,9 +37,6 @@ public class MainActivity extends Activity {
 
 /*
 		Crashlytics.start(this);
-		NewRelic.withApplicationToken(
-				"AAb54a33233473ebe708b5daec8505d0928bd07238"
-		).start(this.getApplication());
 */
 
 		startFileListFragment();

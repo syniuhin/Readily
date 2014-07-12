@@ -8,18 +8,14 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.infm.readit.database.LastReadContentProvider;
 import com.infm.readit.readable.MiniReadable;
-import com.infm.readit.readable.Readable;
 import com.infm.readit.util.CachedFilesAdapter;
 
 import java.util.ArrayList;
@@ -61,16 +57,6 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 	}
 
 	private void initViews(final Context context){
-		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-				ReceiverActivity.startReceiverActivity(context,
-						Readable.TYPE_FILE,
-						((TextView) view.findViewById(R.id.text_view_path)).getText().toString());
-				Log.d(LOGTAG, "listView's onItemClick called()");
-			}
-		});
-
 		adapter = new CachedFilesAdapter(context, new ArrayList<MiniReadable>());
 		listView.setAdapter(adapter);
 	}

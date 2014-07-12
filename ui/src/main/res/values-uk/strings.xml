@@ -22,7 +22,7 @@
     <string name="wrong_ext">Неправильне розширення</string>
     <string name="text_null">Текст відсутній</string>
     <string name="cant_fetch">Проблеми із завантаженням тексту</string>
-    <string name="delete_selected">Видалити вибрані елементи</string>
+    <string name="delete">Видалити вибрані елементи</string>
     <string name="choose_file">Виберіть файл</string>
     <string name="tap_to_start">Торкніться, щоб почати читання</string>
 

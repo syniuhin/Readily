@@ -2,7 +2,6 @@ package com.infm.readit.readable;
 
 import android.content.Context;
 import android.database.Cursor;
-
 import com.infm.readit.database.LastReadDBHelper;
 
 import java.util.ArrayList;
@@ -45,4 +44,9 @@ public class MiniReadable extends Readable {
 
 	@Override
 	public void process(Context context){}
+
+    @Override
+    public String toString() {
+        return header + ", " + path + ", " + percent + ".";
+    }
 }
