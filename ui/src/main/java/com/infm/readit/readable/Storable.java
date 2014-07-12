@@ -49,22 +49,6 @@ abstract public class Storable extends Readable {
 		return rowData;
 	}
 
-	public static ContentValues getInsertContentValues(DataBundle dataBundle){
-		ContentValues values = new ContentValues();
-		values.put(LastReadDBHelper.KEY_HEADER, dataBundle.getHeader());
-		values.put(LastReadDBHelper.KEY_PATH, dataBundle.getPath());
-		values.put(LastReadDBHelper.KEY_POSITION, dataBundle.getPosition());
-		values.put(LastReadDBHelper.KEY_PERCENT, dataBundle.getPercent());
-		return values;
-	}
-
-	public static ContentValues getUpdateContentValues(DataBundle dataBundle){
-		ContentValues values = new ContentValues();
-		values.put(LastReadDBHelper.KEY_POSITION, dataBundle.getPosition());
-		values.put(LastReadDBHelper.KEY_PERCENT, dataBundle.getPercent());
-		return values;
-	}
-
 	public static void createStorageFile(Context context, String path, String text){
 		if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_STORAGE, true)){
 			File storageFile = new File(path);
@@ -99,7 +83,8 @@ abstract public class Storable extends Readable {
 	}
 
 	protected void makeHeader(){
-		header = text.toString().substring(0, Math.min(text.length(), 40));
+		if (TextUtils.isEmpty(header))
+            header = text.toString().substring(0, Math.min(text.length(), 40));
 	}
 
 	protected String cleanFileName(String s){

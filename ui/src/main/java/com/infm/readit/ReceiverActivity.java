@@ -26,6 +26,12 @@ public class ReceiverActivity extends Activity {
 		context.startActivity(intent);
 	}
 
+    public static void startReceiverActivity(Context context, Bundle args){
+        Intent intent = new Intent(context, ReceiverActivity.class);
+        intent.putExtras(args);
+        context.startActivity(intent);
+    }
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);

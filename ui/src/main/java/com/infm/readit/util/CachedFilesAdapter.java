@@ -1,20 +1,27 @@
 package com.infm.readit.util;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
+import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.infm.readit.Constants;
 import com.infm.readit.R;
 import com.infm.readit.ReceiverActivity;
 import com.infm.readit.readable.MiniReadable;
 import com.infm.readit.readable.Storable;
+import com.infm.readit.service.LastReadService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -82,9 +89,12 @@ public class CachedFilesAdapter extends BaseAdapter {
                 if (usedView == null ||
                         !path.equals(((TextView) usedView.findViewById(R.id.text_view_path)).getText().toString())) {
                     hideActionView();
-                    ReceiverActivity.startReceiverActivity(CachedFilesAdapter.this.context,
-                            Storable.TYPE_FILE,
-                            path);
+
+                    Bundle args = new Bundle();
+                    args.putInt(Constants.EXTRA_TYPE, Storable.TYPE_FILE);
+                    args.putString(Constants.EXTRA_PATH, path);
+                    args.putString(Constants.EXTRA_HEADER, textViewTitle.getText().toString());
+                    ReceiverActivity.startReceiverActivity(CachedFilesAdapter.this.context, args);
                 }
             }
 
@@ -102,14 +112,14 @@ public class CachedFilesAdapter extends BaseAdapter {
                         (finalView.findViewById(R.id.imageViewDelete)).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                remove(position);
+                                getConfirmation(path, position);
                                 hideActionView();
                             }
                         });
                         (finalView.findViewById(R.id.imageViewEdit)).setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Toast.makeText(context, "lol", Toast.LENGTH_SHORT).show();
+                                buildEditorDialog(readable);
                                 hideActionView();
                             }
                         });
@@ -182,5 +192,65 @@ public class CachedFilesAdapter extends BaseAdapter {
         viewMap.clear();
         for (MiniReadable r : objects)
             viewMap.put(r.getPath(), false);
+    }
+
+    private void getConfirmation(final String path, final int position) {
+        new AlertDialog.Builder(context).
+                setTitle(R.string.confirmation_dialog_title).
+                setMessage(R.string.gonna_delete).
+                setPositiveButton(android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                LastReadService.start(context, path, Constants.DB_OPERATION_DELETE);
+                                remove(position);
+                            }
+                        }).
+                setNegativeButton(android.R.string.cancel,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        }).
+                show();
+    }
+
+    private void buildEditorDialog(final MiniReadable readable) {
+        View dialogView = inflater.inflate(R.layout.dialog_editor, null);
+        final EditText headerView = (EditText) dialogView.findViewById(R.id.editTextHeader);
+        final EditText positionView = (EditText) dialogView.findViewById(R.id.editTextPosition);
+
+        headerView.setText(readable.getHeader());
+        positionView.setText(readable.getPosition().toString());
+
+        new AlertDialog.Builder(context).
+                setTitle(R.string.editor_dialog_title).
+                setView(dialogView).
+                setPositiveButton(android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                String nHeader = headerView.getText().toString();
+                                if (!TextUtils.isEmpty(nHeader))
+                                    readable.setHeader(nHeader);
+
+                                int nPosition = Integer.parseInt(positionView.getText().toString());
+                                if (nPosition >= 0)
+                                    readable.setPosition(nPosition);
+
+                                Intent intent = MiniReadable.createDBServiceIntent(context, readable);
+                                intent.putExtra(Constants.EXTRA_DB_OPERATION, Constants.DB_OPERATION_INSERT);
+                                context.startService(intent);
+                            }
+                        }).
+                setNegativeButton(android.R.string.cancel,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).
+                show();
     }
 }

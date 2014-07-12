@@ -24,6 +24,11 @@
     <string name="delete">Удалить выбранные элементы</string>
     <string name="choose_file">Выберите файл</string>
     <string name="tap_to_start">Коснитесь, чтобы начать чтение</string>
+    <string name="confirmation_dialog_title">Вы уверены?</string>
+    <string name="gonna_delete">Вы удаляете этот элемент. Это действие необратимо!</string>
+    <string name="editor_dialog_title">Редактировать чтение</string>
+    <string name="editor_dialog_header_hint">Название чтения (например "Сияние")</string>
+    <string name="editor_dialog_position_hint">Позиция в тексте</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитать текст из буфера обмена</string>

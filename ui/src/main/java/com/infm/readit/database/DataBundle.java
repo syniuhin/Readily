@@ -1,5 +1,6 @@
 package com.infm.readit.database;
 
+import android.content.ContentValues;
 import android.content.Intent;
 
 import com.infm.readit.Constants;
@@ -40,6 +41,23 @@ public class DataBundle implements Serializable {
 				intent.getIntExtra(Constants.EXTRA_POSITION, 0),
 				intent.getStringExtra(Constants.EXTRA_PERCENT));
 	}
+
+    public static ContentValues getInsertContentValues(DataBundle dataBundle){
+        ContentValues values = new ContentValues();
+        values.put(LastReadDBHelper.KEY_HEADER, dataBundle.getHeader());
+        values.put(LastReadDBHelper.KEY_PATH, dataBundle.getPath());
+        values.put(LastReadDBHelper.KEY_POSITION, dataBundle.getPosition());
+        values.put(LastReadDBHelper.KEY_PERCENT, dataBundle.getPercent());
+        return values;
+    }
+
+    public static ContentValues getUpdateContentValues(DataBundle dataBundle){
+        ContentValues values = new ContentValues();
+        values.put(LastReadDBHelper.KEY_POSITION, dataBundle.getPosition());
+        values.put(LastReadDBHelper.KEY_PERCENT, dataBundle.getPercent());
+        values.put(LastReadDBHelper.KEY_HEADER, dataBundle.getHeader());
+        return values;
+    }
 
 	public Integer getRowId(){
 		return rowId;

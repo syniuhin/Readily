@@ -63,7 +63,8 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args){
-		return new CursorLoader(getActivity(), LastReadContentProvider.CONTENT_URI, null, null, null, null);
+		return new CursorLoader(getActivity(), LastReadContentProvider.CONTENT_URI,
+                null, null, null, null);
 	}
 
 	@Override
