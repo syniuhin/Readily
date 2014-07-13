@@ -10,6 +10,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.NumberPicker;
 
 import com.infm.readit.Constants;
@@ -25,17 +26,26 @@ import java.util.List;
  */
 public class SettingsFragment extends PreferenceFragment {
 
+    private static final String LOGTAG = "SettingsFragment";
+
 	private Integer WPM;
 
 	public SettingsFragment(){}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState){
+        Log.d(LOGTAG, "onCreate() called");
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
 	}
 
-	@Override
+    @Override
+    public void onStart(){
+        Log.d(LOGTAG, "onStart() called");
+        super.onStart();
+    }
+
+    @Override
 	public void onActivityCreated(Bundle savedInstanceState){
 		super.onActivityCreated(savedInstanceState);
 		WPM = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getActivity()).

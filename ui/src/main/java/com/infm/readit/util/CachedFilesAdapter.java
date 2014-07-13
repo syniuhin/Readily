@@ -68,20 +68,21 @@ public class CachedFilesAdapter extends BaseAdapter {
         final MiniReadable readable = getItem(position);
 
         final TextView textViewTitle = (TextView) view.findViewById(R.id.text_view_title);
-        final TextView textViewPath = (TextView) view.findViewById(R.id.text_view_path);
+        final TextView textViewFilename = (TextView) view.findViewById(R.id.text_view_filename);
         final TextView textViewPercent = (TextView) view.findViewById(R.id.text_view_percent);
 
+        final String path = readable.getPath();
+        String filename = path.substring(path.lastIndexOf('/') + 1);
         textViewTitle.setText(readable.getHeader());
-        textViewPath.setText(readable.getPath());
+        textViewFilename.setText(filename);
         textViewPercent.setText(readable.getPercent());
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
                 Log.d(LOGTAG, "listView's onClick() called");
-                String path = textViewPath.getText().toString();
                 if (usedPosition != position || usedView == null ||
-                        !path.equals(((TextView) usedView.findViewById(R.id.text_view_path)).getText().toString())){
+                        !path.equals(((TextView) usedView.findViewById(R.id.text_view_filename)).getText().toString())){
                     hideActionView();
 
                     Bundle args = new Bundle();
@@ -101,7 +102,6 @@ public class CachedFilesAdapter extends BaseAdapter {
                     Log.d(LOGTAG, "already inflated");
                 } else {
                     hideActionView();
-                    final String path = textViewPath.getText().toString();
                     inflateActionMenu(view);
                     usedView = view;
                     usedPosition = position;
@@ -178,6 +178,11 @@ public class CachedFilesAdapter extends BaseAdapter {
 
     public void updateAll(Cursor cursor){
         objects = MiniReadable.getFromCursor(cursor);
+        notifyDataSetChanged();
+    }
+
+    public void updateAll(List<MiniReadable> objects){
+        this.objects = objects;
         notifyDataSetChanged();
     }
 

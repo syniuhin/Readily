@@ -25,7 +25,8 @@ public class MainActivity extends Activity {
 	public static final String LOGTAG = "MainActivity";
 
 	private static final int FILE_SELECT_CODE = 7331;
-	private static final String SETTINGS_FRAGMENT_TAG = "FileListFragment0182";
+	private static final String SETTINGS_FRAGMENT_TAG = "SettingsFragment0182";
+    private static final String FILE_LIST_FRAGMENT_TAG = "FileLis11101asdtFraagment123";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState){

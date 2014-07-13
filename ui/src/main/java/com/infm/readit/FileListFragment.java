@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,15 +28,25 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 	private TextView tvEmpty;
 	private ListView listView;
 
+    private ArrayList<MiniReadable> objectsContainer = new ArrayList<MiniReadable>();
+
 	public FileListFragment(){}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState){
-		super.onCreate(savedInstanceState);
+		Log.d(LOGTAG, "onCreate() called");
+        super.onCreate(savedInstanceState);
 	}
 
-	@Override
+    @Override
+    public void onStart(){
+        Log.d(LOGTAG, "onStart() called");
+        super.onStart();
+    }
+
+    @Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+        Log.d(LOGTAG, "onCreateView() called");
 		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.fragment_file_list, container, false);
 		findViews(layout);
 		return layout;
@@ -43,6 +54,7 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState){
+        Log.d(LOGTAG, "onActivityCreated() called");
 		super.onActivityCreated(savedInstanceState);
 		initViews(getActivity());
 		getLoaderManager().initLoader(0, null, this);
@@ -55,8 +67,9 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 	}
 
 	private void initViews(final Context context){
-		adapter = new CachedFilesAdapter(context, new ArrayList<MiniReadable>());
+		adapter = new CachedFilesAdapter(context, objectsContainer);
 		listView.setAdapter(adapter);
+        adapter.updateAll(objectsContainer);
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState){
@@ -64,7 +77,8 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
             }
 
             @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount){}
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount){
+            }
         });
 	}
 
@@ -76,14 +90,16 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data){
-		adapter.updateAll(data);
+        objectsContainer = MiniReadable.getFromCursor(data);
+		adapter.updateAll(objectsContainer);
 		if (data.getCount() > 0)
 			tvEmpty.setVisibility(View.GONE);
 	}
 
 	@Override
 	public void onLoaderReset(Loader loader){
-		adapter.updateAll(null);
+		objectsContainer = new ArrayList<MiniReadable>();
+        adapter.updateAll(objectsContainer);
 	}
 
 	@Override
