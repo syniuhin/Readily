@@ -3,37 +3,23 @@ package com.infm.readit.essential;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
-
 import com.infm.readit.readable.Readable;
 import com.infm.readit.settings.SettingsBundle;
+import com.infm.readit.util.Base64Coder;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TextParser implements Serializable, Callable<TextParser> {
 
-	private static final String LOGTAG = "TextParser";
-	private static final Map<String, Integer> PRIORITIES;
-
 	public static final int RESULT_CODE_OK = 0;
 	public static final int RESULT_CODE_EMPTY_CLIPBOARD = 1;
 	public static final int RESULT_CODE_WRONG_EXT = 2;
 	public static final int RESULT_CODE_WTF = 3;
 	public static final int RESULT_CODE_CANT_FETCH = 4;
-
 	static{
 		Map<String, Integer> priorityMap = new HashMap<String, Integer>();
 		/**
@@ -66,10 +52,11 @@ public class TextParser implements Serializable, Callable<TextParser> {
 
 		PRIORITIES = Collections.unmodifiableMap(priorityMap);
 	}
-
 	public static final String makeMeSpecial =
 			" " + "." + "!" + "?" + "-" + "—" + ":" + ";" + "," + '\"' + "(" + ")";
-	private Readable readable;
+    private static final String LOGTAG = "TextParser";
+    private static final Map<String, Integer> PRIORITIES;
+    private Readable readable;
 	private int lengthPreference;
 	private List<Integer> delayCoefficients;
 	private int resultCode;
@@ -205,20 +192,20 @@ public class TextParser implements Serializable, Callable<TextParser> {
 
 	/* normalize() auxiliary methods */
 	protected String clearFromRepetitions(String text){
-		StringBuilder result = new StringBuilder();
-		int previousPosition = -1;
+        StringBuilder res = new StringBuilder();
+        int previousPosition = -1;
 		for (Character ch : text.toCharArray()){
 			int position = makeMeSpecial.indexOf(ch);
 			if (position > -1 && position != previousPosition){
 				previousPosition = position;
-				result.append(ch);
-			} else if (position < 0){
+                res.append(ch);
+            } else if (position < 0){
 				previousPosition = -1;
-				result.append(ch);
-			}
+                res.append(ch);
+            }
 		}
-		return result.toString();
-	}
+        return res.toString();
+    }
 
 	protected String removeSpacesBeforePunctuation(String text){
 		StringBuilder res = new StringBuilder();
@@ -244,11 +231,6 @@ public class TextParser implements Serializable, Callable<TextParser> {
 				if (madeMeSpecial.indexOf(ch) > -1 && Character.isLetter(nextCh))
 					res.append(" ");
 			}
-		}
-		for (Character ch : text.toCharArray()){
-			res.append(ch);
-			if (madeMeSpecial.indexOf(ch) > -1)
-				res.append(" ");
 		}
 		return res.toString();
 	}
