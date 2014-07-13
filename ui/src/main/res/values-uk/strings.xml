@@ -30,6 +30,11 @@
     <string name="editor_dialog_title">Редагувати це читання</string>
     <string name="editor_dialog_header_hint">Назва читання (наприклад "Сяйво")</string>
     <string name="editor_dialog_position_hint">Позиція в тексті</string>
+    <string name="about">Загальна інформація</string>
+    <string name="title">Назва</string>
+    <string name="path">Путь до файлу</string>
+    <string name="position">Позиція у тексті</string>
+    <string name="sth_left">залишилось</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитати текст з буферу обміну</string>

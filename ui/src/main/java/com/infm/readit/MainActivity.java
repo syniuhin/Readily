@@ -124,7 +124,7 @@ public class MainActivity extends Activity {
 		if (existing == null){
 			getFragmentManager().beginTransaction().
 					replace(R.id.content_layout, new SettingsFragment(), SETTINGS_FRAGMENT_TAG).
-					addToBackStack(null).
+					addToBackStack(SETTINGS_FRAGMENT_TAG).
 					setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).
 					commit();
 		} else {

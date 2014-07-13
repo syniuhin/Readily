@@ -23,7 +23,6 @@ import com.infm.readit.readable.MiniReadable;
 import com.infm.readit.readable.Storable;
 import com.infm.readit.service.LastReadService;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class CachedFilesAdapter extends BaseAdapter {
@@ -36,40 +35,36 @@ public class CachedFilesAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private Context context;
 
-    private HashMap<String, Boolean> viewMap = new HashMap<String, Boolean>();
-
     private View usedView;
+    private int usedPosition = -1;
 
-    public CachedFilesAdapter(Context context, List<MiniReadable> objects) {
+    public CachedFilesAdapter(Context context, List<MiniReadable> objects){
         this.context = context;
         this.objects = objects;
-        updateMap(objects);
 
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
-    public int getCount() {
+    public int getCount(){
         return objects.size();
     }
 
     @Override
-    public MiniReadable getItem(int position) {
+    public MiniReadable getItem(int position){
         return objects.get(position);
     }
 
     @Override
-    public long getItemId(int position) {
+    public long getItemId(int position){
         return position;
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        if (view == null) {
-            view = inflater.inflate(R.layout.list_element_main, parent, false);
-        }
-
+    public View getView(final int position, View convertView, ViewGroup parent){
+        final View view = (convertView == null)
+                ? inflater.inflate(R.layout.list_element_main, parent, false)
+                : convertView;
         final MiniReadable readable = getItem(position);
 
         final TextView textViewTitle = (TextView) view.findViewById(R.id.text_view_title);
@@ -80,14 +75,13 @@ public class CachedFilesAdapter extends BaseAdapter {
         textViewPath.setText(readable.getPath());
         textViewPercent.setText(readable.getPercent());
 
-        final View finalView = view;
-        view.setOnTouchListener(new OnSwipeTouchListener(context) {
+        view.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick() {
-                Log.d(LOGTAG, "listView's onItemClick called()");
+            public void onClick(View v){
+                Log.d(LOGTAG, "listView's onClick() called");
                 String path = textViewPath.getText().toString();
-                if (usedView == null ||
-                        !path.equals(((TextView) usedView.findViewById(R.id.text_view_path)).getText().toString())) {
+                if (usedPosition != position || usedView == null ||
+                        !path.equals(((TextView) usedView.findViewById(R.id.text_view_path)).getText().toString())){
                     hideActionView();
 
                     Bundle args = new Bundle();
@@ -97,47 +91,56 @@ public class CachedFilesAdapter extends BaseAdapter {
                     ReceiverActivity.startReceiverActivity(CachedFilesAdapter.this.context, args);
                 }
             }
-
-            @Override
-            public void onLongClick() {
-                hideActionView();
-                final String path = textViewPath.getText().toString();
-                if (path != null && viewMap.get(path) != null) {
-                    if (viewMap.get(path)) {
-                        Log.d(LOGTAG, "already inflated");
-                    } else {
-                        inflateActionMenu(finalView);
-                        viewMap.put(path, true);
-                        usedView = finalView;
-                        (finalView.findViewById(R.id.imageViewDelete)).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                getConfirmation(path, position);
-                                hideActionView();
-                            }
-                        });
-                        (finalView.findViewById(R.id.imageViewEdit)).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                buildEditorDialog(readable);
-                                hideActionView();
-                            }
-                        });
-                        (finalView.findViewById(R.id.imageViewBack)).setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                hideActionView();
-                            }
-                        });
-                    }
-                }
-            }
         });
 
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v){
+                Log.d(LOGTAG, "listView's onLongClick() called");
+                if (usedPosition == position){
+                    Log.d(LOGTAG, "already inflated");
+                } else {
+                    hideActionView();
+                    final String path = textViewPath.getText().toString();
+                    inflateActionMenu(view);
+                    usedView = view;
+                    usedPosition = position;
+                    (view.findViewById(R.id.imageViewDelete)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v){
+                            getConfirmation(path, position);
+                            hideActionView();
+                        }
+                    });
+                    (view.findViewById(R.id.imageViewEdit)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v){
+                            buildEditorDialog(readable);
+                            hideActionView();
+                        }
+                    });
+                    (view.findViewById(R.id.imageViewBack)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v){
+                            hideActionView();
+                        }
+                    });
+                    (view.findViewById(R.id.imageViewAbout)).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v){
+                            buildInfoDialog(readable);
+                            hideActionView();
+                        }
+                    });
+                    return true;
+                }
+                return false;
+            }
+        });
         return view;
     }
 
-    private void inflateActionMenu(View v) {
+    private void inflateActionMenu(View v){
         View actionView = v.findViewById(R.id.action_view);
         View mainView = v.findViewById(R.id.main_view);
 
@@ -149,59 +152,56 @@ public class CachedFilesAdapter extends BaseAdapter {
                 playOn(mainView);
 
         actionView.setVisibility(View.VISIBLE);
-        YoYo.with(Techniques.SlideInLeft).
+        YoYo.with(Techniques.FadeIn).
                 duration(DURATION).
                 playOn(actionView);
     }
 
-    private void inflateMainMenu(View v) {
-        View actionView = v.findViewById(R.id.action_view);
+    private void inflateMainMenu(View v){
+        final View actionView = v.findViewById(R.id.action_view);
         View mainView = v.findViewById(R.id.main_view);
 
-        YoYo.with(Techniques.SlideOutLeft).
+        YoYo.with(Techniques.FadeOut).
                 duration(DURATION). //put this in Constants class
                 playOn(actionView);
 
-        actionView.setVisibility(View.GONE);
         YoYo.with(Techniques.SlideInRight).
                 duration(DURATION).
                 playOn(mainView);
+        actionView.postDelayed(new Runnable() {
+            @Override
+            public void run(){
+                actionView.setVisibility(View.GONE);
+            }
+        }, DURATION);
     }
 
-    public void updateAll(Cursor cursor) {
+    public void updateAll(Cursor cursor){
         objects = MiniReadable.getFromCursor(cursor);
-        updateMap(objects);
         notifyDataSetChanged();
     }
 
-    public void remove(int position) {
+    public void remove(int position){
         objects.remove(position);
         notifyDataSetChanged();
     }
 
-    public void hideActionView() {
-        if (usedView != null) {
-            String path = ((TextView) usedView.findViewById(R.id.text_view_path)).getText().toString();
-            viewMap.put(path, false);
+    public void hideActionView(){
+        if (usedView != null){
             inflateMainMenu(usedView);
             usedView = null;
+            usedPosition = -1;
         }
     }
 
-    private void updateMap(List<MiniReadable> objects) {
-        viewMap.clear();
-        for (MiniReadable r : objects)
-            viewMap.put(r.getPath(), false);
-    }
-
-    private void getConfirmation(final String path, final int position) {
+    private void getConfirmation(final String path, final int position){
         new AlertDialog.Builder(context).
                 setTitle(R.string.confirmation_dialog_title).
                 setMessage(R.string.gonna_delete).
                 setPositiveButton(android.R.string.ok,
                         new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onClick(DialogInterface dialog, int which){
                                 LastReadService.start(context, path, Constants.DB_OPERATION_DELETE);
                                 remove(position);
                             }
@@ -209,14 +209,14 @@ public class CachedFilesAdapter extends BaseAdapter {
                 setNegativeButton(android.R.string.cancel,
                         new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onClick(DialogInterface dialog, int which){
                                 dialog.cancel();
                             }
                         }).
                 show();
     }
 
-    private void buildEditorDialog(final MiniReadable readable) {
+    private void buildEditorDialog(final MiniReadable readable){
         View dialogView = inflater.inflate(R.layout.dialog_editor, null);
         final EditText headerView = (EditText) dialogView.findViewById(R.id.editTextHeader);
         final EditText positionView = (EditText) dialogView.findViewById(R.id.editTextPosition);
@@ -230,7 +230,7 @@ public class CachedFilesAdapter extends BaseAdapter {
                 setPositiveButton(android.R.string.ok,
                         new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onClick(DialogInterface dialog, int which){
                                 String nHeader = headerView.getText().toString();
                                 if (!TextUtils.isEmpty(nHeader))
                                     readable.setHeader(nHeader);
@@ -247,10 +247,34 @@ public class CachedFilesAdapter extends BaseAdapter {
                 setNegativeButton(android.R.string.cancel,
                         new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                            public void onClick(DialogInterface dialog, int which){
                                 dialog.dismiss();
                             }
                         }).
                 show();
+    }
+
+    private void buildInfoDialog(final MiniReadable readable){
+        new AlertDialog.Builder(context).
+                setTitle(R.string.about).
+                setView(createInfoView(readable)).
+                setPositiveButton(android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which){
+                                dialog.dismiss();
+                            }
+                        }).
+                show();
+    }
+
+    private View createInfoView(final MiniReadable readable){
+        View view = inflater.inflate(R.layout.dialog_info, null);
+        ((TextView) view.findViewById(R.id.textViewHeader)).setText(readable.getHeader());
+        ((TextView) view.findViewById(R.id.textViewPath)).setText(readable.getPath());
+        ((TextView) view.findViewById(R.id.textViewPosition)).
+                setText(readable.getPosition().toString() + " (" + readable.getPercent() +
+                        context.getResources().getString(R.string.sth_left) + ")");
+        return view;
     }
 }

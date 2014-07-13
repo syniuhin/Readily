@@ -14,13 +14,14 @@
             android:typeface="serif"
             android:layout_gravity="center_horizontal"
             android:editable="true"
-            android:inputType="text"
-            android:enabled="true"/>
+            android:inputType="text|textMultiLine"
+            android:enabled="true" />
 
     <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/editTextPosition"
+            android:hint="@string/editor_dialog_position_hint"
             android:layout_gravity="center_horizontal"
             android:layout_margin="10dp"
             android:editable="true"

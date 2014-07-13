@@ -30,6 +30,11 @@
     <string name="editor_dialog_title">Edit the reading</string>
     <string name="editor_dialog_header_hint">Title of the reading (e.g. "The Shining")</string>
     <string name="editor_dialog_position_hint">Position in the text</string>
+    <string name="about">General info</string>
+    <string name="title">Title</string>
+    <string name="path">Path to a file</string>
+    <string name="position">Position in a text</string>
+    <string name="sth_left">left</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Read a text from the clipboard</string>

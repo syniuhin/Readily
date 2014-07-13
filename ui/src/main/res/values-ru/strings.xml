@@ -29,6 +29,11 @@
     <string name="editor_dialog_title">Редактировать чтение</string>
     <string name="editor_dialog_header_hint">Название чтения (например "Сияние")</string>
     <string name="editor_dialog_position_hint">Позиция в тексте</string>
+    <string name="about">Общая информация</string>
+    <string name="title">Название</string>
+    <string name="path">Путь к файлу</string>
+    <string name="position">Позиция в тексте</string>
+    <string name="sth_left">осталось</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитать текст из буфера обмена</string>

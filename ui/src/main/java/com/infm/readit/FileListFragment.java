@@ -11,9 +11,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
+import android.widget.*;
 import com.infm.readit.database.LastReadContentProvider;
 import com.infm.readit.readable.MiniReadable;
 import com.infm.readit.util.CachedFilesAdapter;
@@ -59,6 +57,15 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 	private void initViews(final Context context){
 		adapter = new CachedFilesAdapter(context, new ArrayList<MiniReadable>());
 		listView.setAdapter(adapter);
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState){
+                adapter.hideActionView();
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount){}
+        });
 	}
 
 	@Override
