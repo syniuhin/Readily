@@ -59,6 +59,7 @@ public class ReaderFragment extends Fragment {
     private TextParser parser;
     private SettingsBundle settingsBundle;
     private ExecutorService executorService;
+    private Thread parserThread;
     //receiving status
     private Boolean parserReceived = false;
 
@@ -230,7 +231,7 @@ public class ReaderFragment extends Fragment {
             });
             prevButton.setVisibility(View.INVISIBLE);
         } else
-            prevButton.setVisibility(View.GONE); //consider INVISIBLE
+            prevButton.setVisibility(View.INVISIBLE);
     }
 
     private void updateView(int pos){
@@ -388,6 +389,8 @@ public class ReaderFragment extends Fragment {
 
         if (executorService != null)
             executorService.shutdownNow();
+        if (parserThread != null && parserThread.isAlive())
+            parserThread.interrupt();
         activity.finish();
         super.onStop();
     }
@@ -417,7 +420,7 @@ public class ReaderFragment extends Fragment {
 
     private void parseText(final Context context, final Bundle bundle){
         Log.d(LOGTAG, "parseText() called");
-        new Thread(new Runnable() {
+        parserThread = new Thread(new Runnable() {
             @Override
             public void run(){
                 try {
@@ -437,7 +440,8 @@ public class ReaderFragment extends Fragment {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
+        parserThread.start();
     }
 
     /**

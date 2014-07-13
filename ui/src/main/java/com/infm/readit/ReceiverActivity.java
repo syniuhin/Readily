@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
-
 import com.flurry.android.FlurryAgent;
 
 public class ReceiverActivity extends Activity {
@@ -57,11 +56,10 @@ public class ReceiverActivity extends Activity {
 	private Bundle bundleReceivedData(){
 		Bundle bundle = getIntent().getExtras();
 		if (bundle != null){
-			//bundle.putLong(Constants.EXTRA_UNIQUE_ID, System.currentTimeMillis());
-			Log.w(LOGTAG, "bundle: " + bundle.toString());
-		} else {
-			Log.i(LOGTAG, "bundle: " + null);
-		}
+            Log.i(LOGTAG, "bundle: " + bundle.toString());
+        } else {
+            Log.w(LOGTAG, "bundle: null");
+        }
 		return bundle;
 	}
 
@@ -70,14 +68,15 @@ public class ReceiverActivity extends Activity {
 		ReaderFragment readerFragment = (ReaderFragment) fragmentManager.findFragmentByTag(READER_FRAGMENT_TAG);
 		if (readerFragment == null){
 			readerFragment = new ReaderFragment();
-			if (bundle != null)
-				readerFragment.setArguments(bundle);
-			else
-				Log.w(LOGTAG, "startReaderFragment(): bundle is null");
-			getFragmentManager().beginTransaction().
-					add(R.id.fragment_container, readerFragment, READER_FRAGMENT_TAG).
-					addToBackStack(null).
-					commit();
-		}
+            if (bundle != null){
+                readerFragment.setArguments(bundle);
+                getFragmentManager().beginTransaction().
+                        add(R.id.fragment_container, readerFragment, READER_FRAGMENT_TAG).
+                        addToBackStack(null).
+                        commit();
+            } else {
+                Log.w(LOGTAG, "startReaderFragment(): bundle is null");
+            }
+        }
 	}
 }
