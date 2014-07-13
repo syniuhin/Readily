@@ -278,7 +278,7 @@ public class CachedFilesAdapter extends BaseAdapter {
         ((TextView) view.findViewById(R.id.textViewHeader)).setText(readable.getHeader());
         ((TextView) view.findViewById(R.id.textViewPath)).setText(readable.getPath());
         ((TextView) view.findViewById(R.id.textViewPosition)).
-                setText(readable.getPosition().toString() + " (" + readable.getPercent() +
+                setText(readable.getPosition().toString() + " (" + readable.getPercent() + " " +
                         context.getResources().getString(R.string.sth_left) + ")");
         return view;
     }
