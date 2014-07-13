@@ -81,8 +81,7 @@ public class CachedFilesAdapter extends BaseAdapter {
             @Override
             public void onClick(View v){
                 Log.d(LOGTAG, "listView's onClick() called");
-                if (usedPosition != position || usedView == null ||
-                        !path.equals(((TextView) usedView.findViewById(R.id.text_view_filename)).getText().toString())){
+                if (usedPosition != position || usedView == null){
                     hideActionView();
 
                     Bundle args = new Bundle();
@@ -144,7 +143,7 @@ public class CachedFilesAdapter extends BaseAdapter {
         View actionView = v.findViewById(R.id.action_view);
         View mainView = v.findViewById(R.id.main_view);
 
-        int height = mainView.getLayoutParams().height;
+        int height = mainView.getHeight();
         actionView.setMinimumHeight(height);
 
         YoYo.with(Techniques.SlideOutRight).

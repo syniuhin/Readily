@@ -3,7 +3,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:minHeight="60dp"
                 android:clickable="true"
                 android:longClickable="true"
                 android:background="@drawable/list_item_main_selector">
@@ -25,7 +24,6 @@
                 android:layout_marginRight="17dp"
                 android:paddingBottom="10dp"
                 android:singleLine="false"
-                android:text="Title"
                 android:textSize="18sp"
                 android:typeface="serif"
                 android:textStyle="bold"/>
@@ -41,10 +39,9 @@
                 android:layout_marginLeft="-5dp"
                 android:layout_marginRight="15dp"
                 android:layout_marginTop="15dp"
+                android:layout_marginBottom="5dp"
                 android:layout_toLeftOf="@+id/text_view_percent"
                 android:singleLine="true"
-                android:text="path"
-                android:textAlignment="viewEnd"
                 android:textColor="@android:color/secondary_text_dark"
                 android:textSize="12sp"
                 android:typeface="serif"/>
@@ -54,13 +51,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/text_view_title"
-                android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
                 android:layout_marginTop="15dp"
+                android:layout_marginRight="15dp"
                 android:singleLine="true"
-                android:text="percent"
-                android:textColor="@android:color/secondary_text_light"
-                android:textIsSelectable="false"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:typeface="serif"/>
