@@ -1,123 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="90dp"
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp"
-    android:background="@drawable/reader_border">
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="@style/Widget.AppCompat.Base.ProgressBar.Horizontal"
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_height="5dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="3dp"
-        android:layout_marginLeft="3dp"
-        android:layout_marginRight="3dp"
-        android:indeterminateOnly="false"/>
-
-    <ImageButton
-        android:id="@+id/previousWordImageButton"
-        android:layout_width="20dp"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/progressBar"
-        android:layout_alignParentBottom="false"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_margin="3dp"
-        android:background="#53ededed"
-        android:contentDescription="@string/top_pointer_description"
-        android:src="@drawable/abc_ic_ab_back_holo_light"
-        android:visibility="invisible"
-        />
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/reader_border"
+        android:orientation="vertical"
+        >
 
     <RelativeLayout
-        android:id="@+id/reader_layout"
-        android:layout_width="match_parent"
-        android:layout_height="65dp"
-        android:layout_alignParentEnd="true"
-        android:layout_centerInParent="true"
-        android:layout_toRightOf="@id/previousWordImageButton"
-        android:background="@android:color/transparent"
-        android:visibility="gone">
-
-    <TextView
-                android:id="@+id/currentWordTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/pointerTopImageView"
-                android:layout_centerVertical="true"
-                android:singleLine="true"
-                android:textSize="20sp"
-                android:typeface="monospace"/>
-
-        <TextView
-                android:id="@+id/leftWordTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/currentWordTextView"
-                android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/currentWordTextView"
-                android:singleLine="true"
-                android:textSize="20sp"
-                android:typeface="monospace"/>
-
-        <TextView
-                android:id="@+id/rightWordTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/currentWordTextView"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@+id/currentWordTextView"
-                android:singleLine="true"
-                android:textSize="20sp"
-                android:typeface="monospace"/>
+            android:id="@+id/up_bar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/mosaic_pattern"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="2dp"
+            android:layout_marginRight="2dp">
 
         <ImageView
-                android:id="@+id/pointerTopImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="12sp"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:contentDescription="@string/top_pointer_description"
-                android:paddingLeft="4sp"
-                android:paddingRight="80dp"
-                android:src="@drawable/pointer"/>
-
-        <ImageView
-                android:id="@+id/pointerBottomImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="12sp"
+                android:id="@+id/logo_up"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/logo_up"
+                android:layout_marginRight="5dp"
+                android:contentDescription="@string/app_name"
+                android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:contentDescription="@string/bottom_pointer_description"
-                android:paddingLeft="4sp"
-                android:paddingRight="80dp"
-                android:src="@drawable/pointer"/>
-
+                android:baselineAlignBottom="false"/>
         <TextView
                 android:id="@+id/speedo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/pointerTopImageView"
-                android:layout_toRightOf="@+id/pointerTopImageView"
-                android:textSize="14sp"
-                android:typeface="monospace"
-                android:visibility="invisible"/>
+                android:textSize="22sp"
+                android:visibility="invisible"
+                android:text="SPEED"
+                android:layout_centerInParent="true"
+                android:textColor="@android:color/primary_text_dark"
+                android:textStyle="bold"/>
 
     </RelativeLayout>
 
-    <ProgressBar
-        android:id="@+id/parsingProgressBar"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:indeterminate="false"
-        android:visibility="visible"/>
+    <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:id="@+id/imageView"
+            android:layout_marginLeft="2dp"
+            android:layout_marginRight="2dp"
+            android:background="#ff484848"/>
+    <RelativeLayout
+            android:id="@+id/reader_main_layout"
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:layout_gravity="center_horizontal">
 
-</RelativeLayout>
+        <ProgressBar
+                android:id="@+id/progressBar"
+                style="@style/Widget.AppCompat.Base.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="3dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
+                android:indeterminateOnly="false"/>
+
+        <ImageButton
+                android:id="@+id/previousWordImageButton"
+                android:layout_width="20dp"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/progressBar"
+                android:layout_alignParentBottom="false"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_margin="3dp"
+                android:background="#53ededed"
+                android:contentDescription="@string/top_pointer_description"
+                android:src="@drawable/abc_ic_ab_back_holo_light"
+                android:visibility="invisible"/>
+
+        <RelativeLayout
+                android:id="@+id/reader_layout"
+                android:layout_width="match_parent"
+                android:layout_height="65dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:layout_toRightOf="@id/previousWordImageButton"
+                android:background="@android:color/transparent"
+                android:visibility="gone">
+
+            <TextView
+                    android:id="@+id/currentWordTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignLeft="@+id/pointerTopImageView"
+                    android:layout_centerVertical="true"
+                    android:singleLine="true"
+                    android:textSize="20sp"
+                    android:typeface="monospace"/>
+
+            <TextView
+                    android:id="@+id/leftWordTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/currentWordTextView"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/currentWordTextView"
+                    android:singleLine="true"
+                    android:textSize="20sp"
+                    android:typeface="monospace"/>
+
+            <TextView
+                    android:id="@+id/rightWordTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/currentWordTextView"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/currentWordTextView"
+                    android:singleLine="true"
+                    android:textSize="20sp"
+                    android:typeface="monospace"/>
+
+            <ImageView
+                    android:id="@+id/pointerTopImageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="12sp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:contentDescription="@string/top_pointer_description"
+                    android:paddingLeft="4sp"
+                    android:paddingRight="80dp"
+                    android:src="@drawable/pointer"/>
+
+            <ImageView
+                    android:id="@+id/pointerBottomImageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="12sp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:contentDescription="@string/bottom_pointer_description"
+                    android:paddingLeft="4sp"
+                    android:paddingRight="80dp"
+                    android:src="@drawable/pointer"/>
+
+        </RelativeLayout>
+
+        <ProgressBar
+                android:id="@+id/parsingProgressBar"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:indeterminate="false"
+                android:visibility="visible"/>
+
+    </RelativeLayout>
+</LinearLayout>

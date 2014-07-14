@@ -36,6 +36,8 @@ import java.util.concurrent.Future;
 public class ReaderFragment extends Fragment {
 
     private static final String LOGTAG = "ReaderFragment";
+    private final int SPEEDO_APPEARING_DURATION = 300;
+
     //initialized in onCreate()
     Handler readerHandler;
     private long localTime = 0;
@@ -50,6 +52,7 @@ public class ReaderFragment extends Fragment {
     private ProgressBar progressBar;
     private ProgressBar parsingProgressBar;
     private ImageButton prevButton;
+    private View upLogo;
     //initialized in onActivityCreated()
     private Reader reader;
     private Readable readable;
@@ -74,7 +77,7 @@ public class ReaderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         Log.d(LOGTAG, "onCreateView() called");
 
-        RelativeLayout fragmentLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_reader, container, false);
+        LinearLayout fragmentLayout = (LinearLayout) inflater.inflate(R.layout.fragment_reader, container, false);
         findViews(fragmentLayout);
         periodicallyAnimate();
         return fragmentLayout;
@@ -94,9 +97,8 @@ public class ReaderFragment extends Fragment {
         parseText(getActivity(), args);
     }
 
-    public void setTime(long localTime){
+    public void setCurrentTime(long localTime){
         this.localTime = localTime;
-        speedoHided = false;
     }
 
     public TextParser getParser(){
@@ -160,6 +162,7 @@ public class ReaderFragment extends Fragment {
         progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
         speedo = (TextView) v.findViewById(R.id.speedo);
         prevButton = (ImageButton) v.findViewById(R.id.previousWordImageButton);
+        upLogo = v.findViewById(R.id.logo_up);
     }
 
     private void setReaderLayoutListener(Context context){
@@ -240,19 +243,51 @@ public class ReaderFragment extends Fragment {
         rightTextView.setText(getRightFormattedText(pos));
 
         progressBar.setProgress((int) (100f / wordList.size() * (pos + 1) + .5f));
-
-        if (!speedoHided){
-            if (System.currentTimeMillis() - localTime > Constants.SPEEDO_SHOWING_LENGTH){
-                speedo.setVisibility(View.INVISIBLE);
-                speedoHided = true;
-            }
-        }
+        hideSpeedo();
     }
 
     private void showSpeedo(int wpm){
-        speedo.setText(wpm + " wpm");
-        speedo.setVisibility(View.VISIBLE);
-        setTime(System.currentTimeMillis());
+        speedo.setText(wpm + " WPM");
+        setCurrentTime(System.currentTimeMillis());
+
+        if (speedoHided){
+            YoYo.with(Techniques.SlideInDown).
+                    duration(SPEEDO_APPEARING_DURATION).
+                    playOn(speedo);
+            speedo.postDelayed(new Runnable() {
+                @Override
+                public void run(){
+                    speedo.setVisibility(View.VISIBLE);
+                }
+            }, SPEEDO_APPEARING_DURATION);
+
+            YoYo.with(Techniques.FadeOut).
+                    duration(SPEEDO_APPEARING_DURATION).
+                    playOn(upLogo);
+            speedoHided = false;
+        }
+    }
+
+    private boolean hideSpeedo(){
+        if (!speedoHided){
+            if (System.currentTimeMillis() - localTime > Constants.SPEEDO_SHOWING_LENGTH){
+                YoYo.with(Techniques.SlideOutUp).
+                        duration(SPEEDO_APPEARING_DURATION).
+                        playOn(speedo);
+                speedo.postDelayed(new Runnable() {
+                    @Override
+                    public void run(){
+                        speedo.setVisibility(View.INVISIBLE);
+                    }
+                }, SPEEDO_APPEARING_DURATION);
+
+                YoYo.with(Techniques.FadeIn).
+                        duration(SPEEDO_APPEARING_DURATION).
+                        playOn(upLogo);
+                speedoHided = true;
+            }
+        }
+        return speedoHided;
     }
 
     /**
