@@ -1,11 +1,10 @@
 package com.infm.readit;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.annotation.TargetApi;
+import android.app.*;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -39,9 +38,16 @@ public class MainActivity extends Activity {
 /*
 		Crashlytics.start(this);
 */
-
+        changeActionBarIcon();
 		startFileListFragment();
 	}
+
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    private void changeActionBarIcon(){
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null)
+            actionBar.setIcon(R.drawable.logo_up);
+    }
 
 	@Override
 	protected void onStart(){

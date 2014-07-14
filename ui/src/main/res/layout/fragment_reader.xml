@@ -15,13 +15,12 @@
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="@drawable/mosaic_pattern"
-            android:layout_marginLeft="2dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginRight="2dp">
+            android:layout_marginRight="2dp"
+            android:layout_marginTop="2dp">
 
         <ImageView
                 android:id="@+id/logo_up"
-                android:layout_width="160dp"
+                android:layout_width="125dp"
                 android:layout_height="wrap_content"
                 android:src="@drawable/logo_up"
                 android:layout_marginRight="5dp"
@@ -29,6 +28,13 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"
                 android:baselineAlignBottom="false"/>
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/imageViewGradient"
+                android:background="@drawable/reader_up_border"
+                android:layout_toLeftOf="@+id/logo_up"/>
+
         <TextView
                 android:id="@+id/speedo"
                 android:layout_width="wrap_content"
@@ -46,26 +52,25 @@
             android:layout_width="match_parent"
             android:layout_height="3dp"
             android:id="@+id/imageView"
-            android:layout_marginLeft="2dp"
-            android:layout_marginRight="2dp"
             android:background="#ff484848"/>
     <RelativeLayout
             android:id="@+id/reader_main_layout"
             android:layout_width="match_parent"
-            android:layout_height="90dp"
+            android:layout_height="100dp"
             android:layout_gravity="center_horizontal">
 
         <ProgressBar
                 android:id="@+id/progressBar"
                 style="@style/Widget.AppCompat.Base.ProgressBar.Horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="5dp"
+                android:layout_height="4dp"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="3dp"
                 android:layout_marginLeft="3dp"
                 android:layout_marginRight="3dp"
-                android:indeterminateOnly="false"/>
+                android:indeterminateOnly="false"
+                android:progressDrawable="@drawable/reader_progress_bar"/>
 
         <ImageButton
                 android:id="@+id/previousWordImageButton"

@@ -2,4 +2,6 @@
 
 <bitmap xmlns:android="http://schemas.android.com/apk/res/android"
         android:src="@drawable/mosaic"
+        android:antialias="true"
+        android:dither="true"
         android:tileMode="repeat"/>

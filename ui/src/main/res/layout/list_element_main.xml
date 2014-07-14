@@ -5,7 +5,7 @@
                 android:layout_height="match_parent"
                 android:clickable="true"
                 android:longClickable="true"
-                android:background="@drawable/list_item_main_selector">
+                android:background="?android:attr/selectableItemBackground">
 
     <RelativeLayout
             android:layout_width="match_parent"
