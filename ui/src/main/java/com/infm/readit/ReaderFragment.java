@@ -487,8 +487,8 @@ public class ReaderFragment extends Fragment {
                 completed = false;
                 if (!isCancelled()){
                     updateView(position);
-                    position++;
                     readerHandler.postDelayed(this, calcDelay());
+                    position++;
                 }
             } else {
                 completed = true;

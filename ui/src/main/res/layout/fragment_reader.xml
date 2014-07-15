@@ -84,7 +84,7 @@
                 android:background="#53ededed"
                 android:contentDescription="@string/top_pointer_description"
                 android:src="@drawable/abc_ic_ab_back_holo_light"
-                android:visibility="invisible"/>
+                android:visibility="gone"/>
 
         <RelativeLayout
                 android:id="@+id/reader_layout"
@@ -136,8 +136,9 @@
                     android:layout_centerHorizontal="true"
                     android:contentDescription="@string/top_pointer_description"
                     android:paddingLeft="4sp"
-                    android:paddingRight="80dp"
-                    android:src="@drawable/pointer"/>
+                    android:paddingRight="70dp"
+                    android:src="@drawable/pointer"
+                    android:layout_alignParentLeft="false"/>
 
             <ImageView
                     android:id="@+id/pointerBottomImageView"
@@ -147,8 +148,9 @@
                     android:layout_centerHorizontal="true"
                     android:contentDescription="@string/bottom_pointer_description"
                     android:paddingLeft="4sp"
-                    android:paddingRight="80dp"
-                    android:src="@drawable/pointer"/>
+                    android:paddingRight="70dp"
+                    android:src="@drawable/pointer"
+                    android:layout_alignParentLeft="false"/>
 
         </RelativeLayout>
 

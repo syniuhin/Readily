@@ -20,6 +20,9 @@ public class TextParser implements Serializable, Callable<TextParser> {
 	public static final int RESULT_CODE_WRONG_EXT = 2;
 	public static final int RESULT_CODE_WTF = 3;
 	public static final int RESULT_CODE_CANT_FETCH = 4;
+
+    private static final int MAX_LEFT_CHARACTER_COUNT = 8;
+
 	static{
 		Map<String, Integer> priorityMap = new HashMap<String, Integer>();
 		/**
@@ -259,8 +262,8 @@ public class TextParser implements Serializable, Callable<TextParser> {
 			while (word.length() - 1 > lengthPreference){
 				isComplex = true;
 				String toAppend;
-				int pos = word.length() - 3;
-				while (pos > 1 && !Character.isLetter(word.charAt(pos)))
+				int pos = lengthPreference - 2;
+				while (pos > 3 && !Character.isLetter(word.charAt(pos)))
 					--pos;
 				toAppend = word.substring(0, pos);
 				word = word.substring(pos);
@@ -282,6 +285,8 @@ public class TextParser implements Serializable, Callable<TextParser> {
 		int res = 0;
 		for (char ch : word.toCharArray()){
 			int tempRes = delayCoefficients.get(0);
+            if (Character.isDigit(ch))
+                tempRes = delayCoefficients.get(1);
 			if (ch == '\t')
 				tempRes = delayCoefficients.get(4);
 			switch (ch){
@@ -338,7 +343,7 @@ public class TextParser implements Serializable, Callable<TextParser> {
 		    /* some kind of experiment, huh? */
 			Map<String, Pair<Integer, Integer>> priorities = new HashMap<String, Pair<Integer, Integer>>();
 			int len = word.length();
-			for (int i = 0; i < len; ++i){
+			for (int i = 0; i < Math.min(MAX_LEFT_CHARACTER_COUNT, len); ++i){
 				if (!Character.isLetter(word.charAt(i))) continue;
 
 				String ch = word.substring(i, i + 1).toLowerCase();
