@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
-    package="com.infm.readit"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:installLocation="preferExternal">
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        package="com.infm.readit"
+        android:installLocation="preferExternal">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
-        android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/title_activity_main"
-        android:theme="@style/AppTheme">
-        <activity
-            android:name=".MainActivity"
+            android:allowBackup="true"
+            android:icon="@drawable/ic_launcher"
             android:label="@string/title_activity_main"
-            android:configChanges="orientation|screenSize">
+            android:theme="@style/AppTheme">
+        <activity
+                android:name=".MainActivity"
+                android:label="@string/title_activity_main"
+                android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -24,14 +24,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ReceiverActivity"
-            android:clearTaskOnLaunch="true"
-            android:configChanges="orientation|screenSize"
-            android:exported="true"
-            android:label="@string/title_activity_receiver"
-            android:launchMode="singleInstance"
-            android:noHistory="true"
-            android:theme="@style/Theme.TransparentActivity">
+                android:name=".ReceiverActivity"
+                android:excludeFromRecents="true"
+                android:clearTaskOnLaunch="true"
+                android:configChanges="orientation|screenSize"
+                android:exported="true"
+                android:label="@string/title_activity_receiver"
+                android:launchMode="singleInstance"
+                android:noHistory="true"
+                android:theme="@style/Theme.TransparentActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEND"/>
 
@@ -42,29 +43,29 @@
         </activity>
 
         <provider
-            android:name=".database.LastReadContentProvider"
-            android:authorities="com.infm.readit.provider"
-            android:enabled="true"
-            android:exported="false"/>
+                android:name=".database.LastReadContentProvider"
+                android:authorities="com.infm.readit.provider"
+                android:enabled="true"
+                android:exported="false"/>
 
         <meta-data
-            android:name="com.crashlytics.ApiKey"
-            android:value="0db4f67b016e755d7cc9ec045205dcab746e7c46"/>
+                android:name="com.crashlytics.ApiKey"
+                android:value="0db4f67b016e755d7cc9ec045205dcab746e7c46"/>
 
         <service
-            android:name=".service.LastReadService"
-            android:exported="false"/>
+                android:name=".service.LastReadService"
+                android:exported="false"/>
 
         <service
-            android:name=".service.StorageCheckerService"
-            android:exported="false"/>
+                android:name=".service.StorageCheckerService"
+                android:exported="false"/>
 
         <activity
-            android:name="com.ipaulpro.afilechooser.FileChooserActivity"
-            android:enabled="@bool/use_activity"
-            android:exported="true"
-            android:icon="@drawable/ic_chooser"
-            android:label="@string/choose_file">
+                android:name="com.ipaulpro.afilechooser.FileChooserActivity"
+                android:enabled="@bool/use_activity"
+                android:exported="true"
+                android:icon="@drawable/ic_chooser"
+                android:label="@string/choose_file">
             <intent-filter>
                 <action android:name="android.intent.action.GET_CONTENT"/>
 
@@ -76,16 +77,24 @@
         </activity>
 
         <provider
-            android:name="com.ianhanniballake.localstorage.LocalStorageProvider"
-            android:authorities="com.ianhanniballake.localstorage.documents"
-            android:enabled="@bool/use_provider"
-            android:exported="true"
-            android:grantUriPermissions="true"
-            android:permission="android.permission.MANAGE_DOCUMENTS">
+                android:name="com.ianhanniballake.localstorage.LocalStorageProvider"
+                android:authorities="com.ianhanniballake.localstorage.documents"
+                android:enabled="@bool/use_provider"
+                android:exported="true"
+                android:grantUriPermissions="true"
+                android:permission="android.permission.MANAGE_DOCUMENTS">
             <intent-filter>
                 <action android:name="android.content.action.DOCUMENTS_PROVIDER"/>
             </intent-filter>
         </provider>
+
+        <activity
+                android:name="com.flurry.android.FlurryFullscreenTakeoverActivity"
+                android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize">
+        </activity>
+
+        <meta-data android:name="com.google.android.gms.version"
+                   android:value="@integer/google_play_services_version"/>
 
     </application>
 
