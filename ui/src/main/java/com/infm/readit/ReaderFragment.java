@@ -179,11 +179,7 @@ public class ReaderFragment extends Fragment {
                     if (!reader.isCancelled()){
                         reader.performPause();
                     } else {
-                        int pos = reader.getPosition();
-                        if (pos > 0){
-                            reader.setPosition(pos - 1);
-                            updateView(pos - 1);
-                        }
+                        reader.moveToPrevious();
                     }
                 }
             }
@@ -195,11 +191,7 @@ public class ReaderFragment extends Fragment {
                     if (!reader.isCancelled()){
                         reader.performPause();
                     } else {
-                        int pos = reader.getPosition();
-                        if (pos < wordList.size() - 1){
-                            reader.setPosition(pos + 1);
-                            updateView(pos + 1);
-                        }
+                        reader.moveToNext();
                     }
                 }
             }
@@ -220,25 +212,12 @@ public class ReaderFragment extends Fragment {
             prevButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v){
-                    int pos = reader.getPosition();
-                    if (pos > 0){
-                        updateView(pos - 1);
-                        reader.setPosition(pos - 1);
-                    }
+                    reader.moveToPrevious();
                 }
             });
             prevButton.setVisibility(View.INVISIBLE);
         } else
             prevButton.setVisibility(View.INVISIBLE);
-    }
-
-    private void updateView(int pos){
-        currentTextView.setText(getCurrentFormattedText(pos));
-        leftTextView.setText(getLeftFormattedText(pos));
-        rightTextView.setText(getRightFormattedText(pos));
-
-        progressBar.setProgress((int) (100f / wordList.size() * (pos + 1) + .5f));
-        hideSpeedo();
     }
 
     private void showSpeedo(int wpm){
@@ -327,7 +306,15 @@ public class ReaderFragment extends Fragment {
                 }
             });
             readable.setPosition(Math.max(readable.getPosition() - Constants.READER_START_OFFSET, 0));
-            reader = new Reader(handler, readable.getPosition());
+
+            final int initialPosition = readable.getPosition();
+            reader = new Reader(handler, initialPosition);
+            readerLayout.post(new Runnable() {
+                @Override
+                public void run(){
+                    reader.updateView(initialPosition);
+                }
+            });
             handler.postDelayed(reader, 3 * Constants.SECOND);
         } else {
             Activity a = getActivity();
@@ -481,8 +468,6 @@ public class ReaderFragment extends Fragment {
             this.position = position;
             completed = false;
             cancelled = 1;
-            if (position < wordList.size())
-                updateView(position);
         }
 
         @Override
@@ -507,8 +492,16 @@ public class ReaderFragment extends Fragment {
         }
 
         public void setPosition(int position){
-            this.position = position;
+            if (wordList != null &&
+                    position < wordList.size() && position >= 0){
+                this.position = position;
+                updateView(position);
+            }
         }
+
+        public void moveToPrevious(){ setPosition(position - 1); }
+
+        public void moveToNext(){ setPosition(position + 1); }
 
         public boolean isCompleted(){
             return completed;
@@ -547,5 +540,15 @@ public class ReaderFragment extends Fragment {
         private int calcDelay(){
             return delayList.get(position) * Math.round(100 * 60 * 1f / settingsBundle.getWPM());
         }
+
+        private void updateView(int pos){
+            currentTextView.setText(getCurrentFormattedText(pos));
+            leftTextView.setText(getLeftFormattedText(pos));
+            rightTextView.setText(getRightFormattedText(pos));
+
+            progressBar.setProgress((int) (100f / wordList.size() * (pos + 1) + .5f));
+            hideSpeedo();
+        }
+
     }
 }

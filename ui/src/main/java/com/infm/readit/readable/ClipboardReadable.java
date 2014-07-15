@@ -20,7 +20,16 @@ public class ClipboardReadable extends Readable {
 	}
 
 	public void process(final Context context){
-		new Handler(Looper.getMainLooper()).
+        Looper.prepare();
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        if (processFailed = !clipboard.hasText()){
+            Log.d(LOGTAG, "There's nothing in clipboard");
+        } else {
+            text.append(paste(clipboard));
+        }
+
+/*
+		new Handler(context.getMainLooper()).
 				post(new Runnable() {
 					@Override
 					public void run(){
@@ -30,9 +39,9 @@ public class ClipboardReadable extends Readable {
 						} else {
 							text.append(paste(clipboard));
 						}
-
 					}
 				});
+*/
 	}
 
 	private String paste(ClipboardManager clipboard){
