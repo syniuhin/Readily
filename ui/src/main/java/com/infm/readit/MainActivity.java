@@ -62,9 +62,9 @@ public class MainActivity extends Activity {
 	}
 
 	private void isAnybodyOutThere(Context context){
-		if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_NEWCOMER, false)){
+		if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.Preferences.NEWCOMER, false)){
 			Constants.showInstructionsDialog(context);
-			PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(Constants.PREF_NEWCOMER, true).apply();
+			PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(Constants.Preferences.NEWCOMER, true).apply();
 		}
 	}
 

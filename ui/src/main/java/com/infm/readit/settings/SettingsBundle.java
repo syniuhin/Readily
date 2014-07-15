@@ -65,26 +65,26 @@ public class SettingsBundle {
 	}
 
 	public void assignFields(){
-		WPM = Integer.parseInt(sharedPreferences.getString(Constants.PREF_WPM, Constants.DEFAULT_WPM));
-		typeface = Integer.parseInt(sharedPreferences.getString(Constants.PREF_TYPEFACE, "0"));
-		swipesEnabled = sharedPreferences.getBoolean(Constants.PREF_SWIPE, true);
-		showingContextEnabled = sharedPreferences.getBoolean(Constants.PREF_SHOW_CONTEXT, true);
-		punctuationSpeedDiffers = sharedPreferences.getBoolean(Constants.PREF_PUNCTUATION_DIFFERS, true);
-		cachingEnabled = sharedPreferences.getBoolean(Constants.PREF_STORAGE, true);
+		WPM = Integer.parseInt(sharedPreferences.getString(Constants.Preferences.WPM, Constants.DEFAULT_WPM));
+		typeface = Integer.parseInt(sharedPreferences.getString(Constants.Preferences.TYPEFACE, "0"));
+		swipesEnabled = sharedPreferences.getBoolean(Constants.Preferences.SWIPE, true);
+		showingContextEnabled = sharedPreferences.getBoolean(Constants.Preferences.SHOW_CONTEXT, true);
+		punctuationSpeedDiffers = sharedPreferences.getBoolean(Constants.Preferences.PUNCTUATION_DIFFERS, true);
+		cachingEnabled = sharedPreferences.getBoolean(Constants.Preferences.STORAGE, true);
 		delayCoefficients = buildDelayListCoefficients();
 	}
 
 	public void updatePreferences(){
 		SharedPreferences.Editor editor = sharedPreferences.edit();
 
-		editor.putString(Constants.PREF_WPM, Integer.toString(WPM));
-		editor.putString(Constants.PREF_TYPEFACE, Integer.toString(typeface));
-		editor.putBoolean(Constants.PREF_SWIPE, swipesEnabled);
-		editor.putBoolean(Constants.PREF_SHOW_CONTEXT, showingContextEnabled);
-		editor.putBoolean(Constants.PREF_PUNCTUATION_DIFFERS, punctuationSpeedDiffers);
-		editor.putBoolean(Constants.PREF_STORAGE, cachingEnabled);
+		editor.putString(Constants.Preferences.WPM, Integer.toString(WPM));
+		editor.putString(Constants.Preferences.TYPEFACE, Integer.toString(typeface));
+		editor.putBoolean(Constants.Preferences.SWIPE, swipesEnabled);
+		editor.putBoolean(Constants.Preferences.SHOW_CONTEXT, showingContextEnabled);
+		editor.putBoolean(Constants.Preferences.PUNCTUATION_DIFFERS, punctuationSpeedDiffers);
+		editor.putBoolean(Constants.Preferences.STORAGE, cachingEnabled);
 		for (int i = 0; i < delayCoefficients.size(); ++i)
-			editor.putString(Constants.STR_PUNCTUATION_PREFS[i], delayCoefficients.get(i).toString());
+			editor.putString(Constants.Preferences.STR_PUNCTUATION_PREFS[i], delayCoefficients.get(i).toString());
 		editor.apply(); //advised by IDE, lol
 	}
 	
@@ -97,8 +97,8 @@ public class SettingsBundle {
 		ArrayList<Integer> delayCoeffs = new ArrayList<Integer>();
 		for (int i = 0; i < 5; ++i)
 			delayCoeffs.add(
-					Integer.parseInt(sharedPreferences.getString(Constants.STR_PUNCTUATION_PREFS[i],
-							Constants.STR_PUNCTUATION_DEFAULTS[i]))
+					Integer.parseInt(sharedPreferences.getString(Constants.Preferences.STR_PUNCTUATION_PREFS[i],
+							Constants.Preferences.STR_PUNCTUATION_DEFAULTS[i]))
 			); //might be tricky, look at Constants class
 		return delayCoeffs;
 	}

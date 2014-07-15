@@ -50,7 +50,8 @@ abstract public class Storable extends Readable {
 	}
 
 	public static void createStorageFile(Context context, String path, String text){
-		if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.PREF_STORAGE, true)){
+		if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.Preferences.STORAGE,
+                true)){
 			File storageFile = new File(path);
 			try {
 				storageFile.createNewFile();

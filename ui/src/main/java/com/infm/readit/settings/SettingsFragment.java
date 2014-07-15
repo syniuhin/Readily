@@ -49,22 +49,22 @@ public class SettingsFragment extends PreferenceFragment {
 	public void onActivityCreated(Bundle savedInstanceState){
 		super.onActivityCreated(savedInstanceState);
 		WPM = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(getActivity()).
-				getString(Constants.PREF_WPM, Constants.DEFAULT_WPM));
+				getString(Constants.Preferences.WPM, Constants.DEFAULT_WPM));
 	}
 
 	@Override
 	public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference){
 		String key = preference.getKey();
 		if (!TextUtils.isEmpty(key)){
-			if (key.equals(Constants.PREF_WPM)){
+			if (key.equals(Constants.Preferences.WPM)){
 				showSpeedPickerDialog(getActivity(), Constants.MIN_WPM, Constants.MAX_WPM);
 				return true;
 			}
-			if (key.equals(Constants.PREF_INSTRUCTIONS)){
+			if (key.equals(Constants.Preferences.INSTRUCTIONS)){
 				Constants.showInstructionsDialog(getActivity());
 				return true;
 			}
-			if (key.equals(Constants.PREF_TEST)){
+			if (key.equals(Constants.Preferences.TEST)){
 				ReceiverActivity.startReceiverActivity(getActivity(), Readable.TYPE_RAW,
 						getResources().getString(R.string.sample_text));
 				return true;
@@ -76,7 +76,7 @@ public class SettingsFragment extends PreferenceFragment {
 	@Override
 	public void onStop(){
 		super.onStop();
-		PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putString(Constants.PREF_WPM, WPM.toString()).apply();
+		PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putString(Constants.Preferences.WPM, WPM.toString()).apply();
 	}
 
 	private void showSpeedPickerDialog(Context context, final int min, final int max){

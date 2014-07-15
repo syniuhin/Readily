@@ -27,37 +27,10 @@ public class Constants {
 	public static final int WPM_STEP_READER = 50;
 	public static final int SPEEDO_SHOWING_LENGTH = 1500; //time in ms for which speedo becomes visible
 
-	public static final String PREF_NEWCOMER = "is_anybody_out_there?";
-
-	public static final String PREF_INSTRUCTIONS = "pref_instructions";
-	public static final String PREF_TEST = "pref_test";
-	public static final String PREF_STORAGE = "pref_cache";
-	public static final String PREF_WPM = "pref_wpm";
-	public static final String PREF_SHOW_CONTEXT = "pref_showContext";
-	public static final String PREF_SWIPE = "pref_swipe";
-	public static final String PREF_TYPEFACE = "pref_typeface";
-	public static final String PREF_PUNCTUATION_DIFFERS = "pref_punct";
-
-	public static final String PREF_PUNCTUATION_DEFAULT = "pref_punctuationDefault";
-	public static final String PREF_COMA_OR_LONG = "pref_comaOrLong";
-	public static final String PREF_END_OF_SENTENCE = "pref_endOfSentence";
-	public static final String PREF_DASH_OR_COLON = "pref_dashOrColon";
-	public static final String PREF_BEGINNING_OF_PARAGRAPH = "pref_begOfPar";
-	public static final String[] STR_PUNCTUATION_PREFS =
-			{PREF_PUNCTUATION_DEFAULT, PREF_COMA_OR_LONG, PREF_END_OF_SENTENCE, PREF_DASH_OR_COLON,
-					PREF_BEGINNING_OF_PARAGRAPH};
-	public static final String[] STR_PUNCTUATION_DEFAULTS =
-			{"10", "15", "20", "18", "20"};
-
+    //defines a length, which limits links with description(to reduce working time of regexp)
 	public static final int NON_LINK_LENGTH = 500;
-	//defines a length, which limits links with description(to reduce working time of regexp)
-
-	public static final String TEXT_PARSER_READY = "com.infm.readit.TEXTPARSERISREADY";
-	public static final String TEXT_PARSER_NOT_READY = "com.infm.readit.TEXTPARSERISNOTREADY";
 
 	public static final int SECOND = 1000;
-
-	public static final int MAX_CACHED_FILES_COUNT = 100;
 
 	public static final int READER_START_OFFSET = 10;
 
@@ -83,4 +56,28 @@ public class Constants {
 						}
 				).show();
 	}
+    
+    public static class Preferences {
+        public static final String NEWCOMER = "is_anybody_out_there?";
+
+        public static final String INSTRUCTIONS = "pref_instructions";
+        public static final String TEST = "pref_test";
+        public static final String STORAGE = "pref_cache";
+        public static final String WPM = "pref_wpm";
+        public static final String SHOW_CONTEXT = "pref_showContext";
+        public static final String SWIPE = "pref_swipe";
+        public static final String TYPEFACE = "pref_typeface";
+        public static final String PUNCTUATION_DIFFERS = "pref_punct";
+
+        public static final String PUNCTUATION_DEFAULT = "pref_punctuationDefault";
+        public static final String COMA_OR_LONG = "pref_comaOrLong";
+        public static final String END_OF_SENTENCE = "pref_endOfSentence";
+        public static final String DASH_OR_COLON = "pref_dashOrColon";
+        public static final String BEGINNING_OF_PARAGRAPH = "pref_begOfPar";
+        public static final String[] STR_PUNCTUATION_PREFS =
+                {PUNCTUATION_DEFAULT, COMA_OR_LONG, END_OF_SENTENCE, DASH_OR_COLON,
+                        BEGINNING_OF_PARAGRAPH};
+        public static final String[] STR_PUNCTUATION_DEFAULTS =
+                {"10", "15", "20", "18", "20"};
+    }
 }
