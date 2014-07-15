@@ -13,14 +13,14 @@ import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.flurry.android.FlurryAgent;
 import com.infm.readit.readable.FileStorable;
 import com.infm.readit.readable.Readable;
 import com.infm.readit.service.StorageCheckerService;
 import com.infm.readit.settings.SettingsFragment;
+import com.infm.readit.util.BaseActivity;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 
-public class MainActivity extends Activity {
+public class MainActivity extends BaseActivity {
 
 	public static final String LOGTAG = "MainActivity";
 
@@ -48,18 +48,6 @@ public class MainActivity extends Activity {
         if (actionBar != null)
             actionBar.setIcon(R.drawable.logo_up);
     }
-
-	@Override
-	protected void onStart(){
-		super.onStart();
-		FlurryAgent.onStartSession(this, "6CNDCMYSWHYDFYDVKDMD");
-	}
-
-	@Override
-	protected void onStop(){
-		super.onStop();
-		FlurryAgent.onEndSession(this);
-	}
 
 	private void isAnybodyOutThere(Context context){
 		if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.Preferences.NEWCOMER, false)){

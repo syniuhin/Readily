@@ -1,15 +1,14 @@
 package com.infm.readit;
 
-import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
-import com.flurry.android.FlurryAgent;
+import com.infm.readit.util.BaseActivity;
 
-public class ReceiverActivity extends Activity {
+public class ReceiverActivity extends BaseActivity {
 
 	private static final String LOGTAG = "ReceiverActivity";
 	private static final String READER_FRAGMENT_TAG = "ReaSq!d99erFra{{1239gm..1ent1923";
@@ -39,18 +38,6 @@ public class ReceiverActivity extends Activity {
 
 		Bundle bundle = bundleReceivedData();
 		startReaderFragment(bundle);
-	}
-
-	@Override
-	protected void onStart(){
-		super.onStart();
-		FlurryAgent.onStartSession(this, "6CNDCMYSWHYDFYDVKDMD");
-	}
-
-	@Override
-	protected void onStop(){
-		super.onStop();
-		FlurryAgent.onEndSession(this);
 	}
 
 	private Bundle bundleReceivedData(){
