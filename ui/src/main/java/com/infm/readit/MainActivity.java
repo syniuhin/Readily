@@ -9,12 +9,10 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.flurry.android.*;
 import com.infm.readit.readable.FileStorable;
 import com.infm.readit.readable.Readable;
 import com.infm.readit.service.StorageCheckerService;
@@ -22,16 +20,13 @@ import com.infm.readit.settings.SettingsFragment;
 import com.infm.readit.util.BaseActivity;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 
-public class MainActivity extends BaseActivity implements FlurryAdListener {
+public class MainActivity extends BaseActivity {
 
 	public static final String LOGTAG = "MainActivity";
 
 	private static final int FILE_SELECT_CODE = 7331;
 	private static final String SETTINGS_FRAGMENT_TAG = "SettingsFragment0182";
     private static final String FILE_LIST_FRAGMENT_TAG = "FileLis11101asdtFraagment123";
-
-    private ViewGroup adViewGroup;
-    private String adSpace = "ReadItMainAd";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
@@ -46,24 +41,6 @@ public class MainActivity extends BaseActivity implements FlurryAdListener {
         changeActionBarIcon();
 		startFileListFragment();
 	}
-
-    @Override
-    protected void onStart(){
-        super.onStart();
-        integrateAds();
-    }
-
-    @Override
-    protected void onStop(){
-        FlurryAds.removeAd(this, adSpace, adViewGroup);
-        super.onStop();
-    }
-
-    private void integrateAds(){
-        FlurryAds.setAdListener(this);
-        adViewGroup = (ViewGroup) findViewById(R.id.ad_space);
-        FlurryAds.fetchAd(this, adSpace, adViewGroup, FlurryAdSize.BANNER_BOTTOM);
-    }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     private void changeActionBarIcon(){
@@ -154,54 +131,4 @@ public class MainActivity extends BaseActivity implements FlurryAdListener {
 				replace(R.id.content_layout, new FileListFragment()).
 				commit();
 	}
-
-    @Override
-    public boolean shouldDisplayAd(String s, FlurryAdType flurryAdType){
-        return true;
-    }
-
-    @Override
-    public void onAdClosed(String s){
-
-    }
-
-    @Override
-    public void onApplicationExit(String s){
-
-    }
-
-    @Override
-    public void onRendered(String s){
-
-    }
-
-    @Override
-    public void onRenderFailed(String s){
-
-    }
-
-    @Override
-    public void spaceDidReceiveAd(String s){
-        FlurryAds.displayAd(this, s, adViewGroup);
-    }
-
-    @Override
-    public void spaceDidFailToReceiveAd(String s){
-
-    }
-
-    @Override
-    public void onAdClicked(String s){
-
-    }
-
-    @Override
-    public void onAdOpened(String s){
-
-    }
-
-    @Override
-    public void onVideoCompleted(String s){
-
-    }
 }

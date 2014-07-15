@@ -31,6 +31,11 @@ import java.util.List;
  */
 public class ReaderFragment extends Fragment {
 
+    public interface ReaderListener {
+        public void stop();
+    }
+
+    private ReaderListener callback;
     private static final String LOGTAG = "ReaderFragment";
     private final int SPEEDO_APPEARING_DURATION = 300;
     private final int READER_PULSE_DURATION = 400;
@@ -61,6 +66,17 @@ public class ReaderFragment extends Fragment {
     private Thread parserThread;
     //receiving status
     private Boolean parserReceived = false;
+
+    @Override
+    public void onAttach(Activity activity){
+        super.onAttach(activity);
+
+        try {
+            callback = (ReaderListener) activity;
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -402,7 +418,7 @@ public class ReaderFragment extends Fragment {
             parserThread.interrupt();
             Log.d(LOGTAG, "parserThread has been interrupted");
         }
-        activity.finish();
+        callback.stop();
         super.onStop();
     }
 
@@ -492,9 +508,13 @@ public class ReaderFragment extends Fragment {
             }
         }
 
-        public void moveToPrevious(){ setPosition(position - 1); }
+        public void moveToPrevious(){
+            setPosition(position - 1);
+        }
 
-        public void moveToNext(){ setPosition(position + 1); }
+        public void moveToNext(){
+            setPosition(position + 1);
+        }
 
         public boolean isCompleted(){
             return completed;
