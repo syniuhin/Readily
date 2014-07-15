@@ -32,12 +32,14 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 
 	public FileListFragment(){}
 
+    //TODO: remove in release v
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		Log.d(LOGTAG, "onCreate() called");
         super.onCreate(savedInstanceState);
 	}
 
+    //TODO: remove in release v
     @Override
     public void onStart(){
         Log.d(LOGTAG, "onStart() called");
@@ -85,21 +87,21 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args){
-        Log.d(LOGTAG, "onCreateLoader() called");
+        Log.d(LOGTAG, "onCreateLoader() called"); //TODO: remove in release v
 		return new CursorLoader(getActivity(), LastReadContentProvider.CONTENT_URI,
                 null, null, null, null);
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data){
-        Log.d(LOGTAG, "onLoadFinished() called");
+        Log.d(LOGTAG, "onLoadFinished() called"); //TODO: remove in release v
         objectsContainer = MiniReadable.getFromCursor(data);
 		adapter.updateAll(objectsContainer);
 	}
 
 	@Override
 	public void onLoaderReset(Loader loader){
-        Log.d(LOGTAG, "onLoaderReset() called");
+        Log.d(LOGTAG, "onLoaderReset() called"); //TODO: remove in release v
 		objectsContainer = new ArrayList<MiniReadable>();
         adapter.updateAll(objectsContainer);
 	}

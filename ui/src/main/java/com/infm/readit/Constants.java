@@ -77,7 +77,9 @@ public class Constants {
 				setPositiveButton(android.R.string.ok,
 						new DialogInterface.OnClickListener() {
 							@Override
-							public void onClick(DialogInterface dialog, int which){}
+							public void onClick(DialogInterface dialog, int which){
+                                dialog.dismiss();
+                            }
 						}
 				).show();
 	}
