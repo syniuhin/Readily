@@ -33,6 +33,7 @@ public class ReaderFragment extends Fragment {
 
     private static final String LOGTAG = "ReaderFragment";
     private final int SPEEDO_APPEARING_DURATION = 300;
+    private final int READER_PULSE_DURATION = 400;
 
     //initialized in onCreate()
     private Handler handler;
@@ -292,6 +293,10 @@ public class ReaderFragment extends Fragment {
             emphasisList = readable.getEmphasisList();
             delayList = readable.getDelayList();
 
+            readable.setPosition(Math.max(readable.getPosition() - Constants.READER_START_OFFSET, 0));
+
+            final int initialPosition = readable.getPosition();
+            reader = new Reader(handler, initialPosition);
             readerLayout.post(new Runnable() {
                 @Override
                 public void run(){
@@ -303,19 +308,9 @@ public class ReaderFragment extends Fragment {
                             playOn(readerLayout);
 
                     Toast.makeText(context, R.string.tap_to_start, Toast.LENGTH_SHORT).show();
-                }
-            });
-            readable.setPosition(Math.max(readable.getPosition() - Constants.READER_START_OFFSET, 0));
-
-            final int initialPosition = readable.getPosition();
-            reader = new Reader(handler, initialPosition);
-            readerLayout.post(new Runnable() {
-                @Override
-                public void run(){
                     reader.updateView(initialPosition);
                 }
             });
-            handler.postDelayed(reader, 3 * Constants.SECOND);
         } else {
             Activity a = getActivity();
             a.runOnUiThread(new Runnable() {
@@ -476,10 +471,8 @@ public class ReaderFragment extends Fragment {
                 completed = false;
                 if (!isCancelled()){
                     updateView(position);
-                    readerHandler.postDelayed(this, calcDelay());
                     position++;
-                } else {
-                    readerHandler.postDelayed(this, Constants.READER_SLEEP_IDLE);
+                    readerHandler.postDelayed(this, calcDelay());
                 }
             } else {
                 completed = true;
@@ -522,7 +515,7 @@ public class ReaderFragment extends Fragment {
             if (!isCancelled()){
                 cancelled++;
                 YoYo.with(Techniques.Pulse).
-                        duration(500).
+                        duration(READER_PULSE_DURATION).
                         playOn(readerLayout);
                 if (!settingsBundle.isSwipesEnabled())
                     prevButton.setVisibility(View.VISIBLE);
@@ -532,8 +525,12 @@ public class ReaderFragment extends Fragment {
         public void performPlay(){
             if (isCancelled()){
                 cancelled++;
+                YoYo.with(Techniques.Pulse).
+                        duration(READER_PULSE_DURATION).
+                        playOn(readerLayout);
                 if (!settingsBundle.isSwipesEnabled())
                     prevButton.setVisibility(View.INVISIBLE);
+                readerHandler.postDelayed(this, READER_PULSE_DURATION + 100);
             }
         }
 
