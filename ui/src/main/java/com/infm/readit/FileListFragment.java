@@ -68,9 +68,8 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 	}
 
 	private void initViews(final Context context){
-		adapter = new CachedFilesAdapter(context, objectsContainer);
+		adapter = new CachedFilesAdapter(context);
 		listView.setAdapter(adapter);
-        adapter.updateAll(objectsContainer);
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState){
@@ -95,15 +94,13 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data){
         Log.d(LOGTAG, "onLoadFinished() called"); //TODO: remove in release v
-        objectsContainer = MiniReadable.getFromCursor(data);
-		adapter.updateAll(objectsContainer);
+        adapter.swapCursor(data);
 	}
 
 	@Override
 	public void onLoaderReset(Loader loader){
         Log.d(LOGTAG, "onLoaderReset() called"); //TODO: remove in release v
-		objectsContainer = new ArrayList<MiniReadable>();
-        adapter.updateAll(objectsContainer);
+		adapter.swapCursor(null);
 	}
 
 	@Override

@@ -44,21 +44,21 @@
                 android:singleLine="true"
                 android:textColor="@android:color/secondary_text_dark"
                 android:textSize="12sp"
-                android:typeface="serif"/>
+                android:typeface="sans"/>
 
         <TextView
                 android:id="@+id/text_view_percent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_above="@+id/text_view_title"
                 android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginTop="15dp"
+                android:layout_alignParentTop="false"
                 android:layout_marginRight="15dp"
                 android:singleLine="true"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:typeface="serif"/>
+                android:typeface="sans"
+                android:text="percent"
+                android:layout_alignBaseline="@+id/text_view_filename"/>
     </RelativeLayout>
 
     <LinearLayout

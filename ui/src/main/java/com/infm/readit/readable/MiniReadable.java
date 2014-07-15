@@ -25,7 +25,7 @@ public class MiniReadable extends Readable {
         this.position = position;
 	}
 
-	public static ArrayList<MiniReadable> getFromCursor(Cursor cursor){
+	public static ArrayList<MiniReadable> listFromCursor(Cursor cursor){
 		ArrayList<MiniReadable> result = new ArrayList<MiniReadable>();
 		if (cursor != null && cursor.getCount() > 0){
             cursor.moveToFirst();
@@ -40,6 +40,15 @@ public class MiniReadable extends Readable {
 		}
 		return result;
 	}
+
+    public static MiniReadable singletonFromCursor(Cursor cursor){
+        return new MiniReadable(
+                cursor.getString(LastReadDBHelper.COLUMN_PATH),
+                cursor.getString(LastReadDBHelper.COLUMN_HEADER),
+                cursor.getString(LastReadDBHelper.COLUMN_PERCENT),
+                cursor.getInt(LastReadDBHelper.COLUMN_POSITION)
+        );
+    }
 
 	public String getPercent(){
 		return percent;

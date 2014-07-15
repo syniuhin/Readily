@@ -11,8 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -23,50 +23,30 @@ import com.infm.readit.readable.MiniReadable;
 import com.infm.readit.readable.Storable;
 import com.infm.readit.service.LastReadService;
 
-import java.util.List;
-
-public class CachedFilesAdapter extends BaseAdapter {
+public class CachedFilesAdapter extends SimpleCursorAdapter {
 
     private static final String LOGTAG = "CachedFilesAdapter";
 
     private static final int DURATION = 300;
 
-    private List<MiniReadable> objects;
-    private LayoutInflater inflater;
-    private Context context;
-
     private View usedView;
     private int usedPosition = -1;
 
-    public CachedFilesAdapter(Context context, List<MiniReadable> objects){
-        this.context = context;
-        this.objects = objects;
-
-        inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    public CachedFilesAdapter(Context context){
+        super(context, R.layout.list_element_main, null, new String[]{}, new int[]{}, 0);
     }
 
     @Override
-    public int getCount(){
-        return objects.size();
+    public View newView(Context context, Cursor cursor, ViewGroup parent){
+        return LayoutInflater.from(context).inflate(R.layout.list_element_main, parent, false);
     }
 
     @Override
-    public MiniReadable getItem(int position){
-        return objects.get(position);
-    }
+    public void bindView(View v, final Context context, Cursor cursor){
+        final MiniReadable readable = MiniReadable.singletonFromCursor(cursor);
 
-    @Override
-    public long getItemId(int position){
-        return position;
-    }
-
-    @Override
-    public View getView(final int position, View convertView, ViewGroup parent){
-        final View view = (convertView == null)
-                ? inflater.inflate(R.layout.list_element_main, parent, false)
-                : convertView;
-        final MiniReadable readable = getItem(position);
-
+        final int position = cursor.getPosition();
+        final View view = v;
         final TextView textViewTitle = (TextView) view.findViewById(R.id.text_view_title);
         final TextView textViewFilename = (TextView) view.findViewById(R.id.text_view_filename);
         final TextView textViewPercent = (TextView) view.findViewById(R.id.text_view_percent);
@@ -75,7 +55,7 @@ public class CachedFilesAdapter extends BaseAdapter {
         String filename = path.substring(path.lastIndexOf('/') + 1);
         textViewTitle.setText(readable.getHeader());
         textViewFilename.setText(filename);
-        textViewPercent.setText(readable.getPercent());
+        textViewPercent.setText(readable.getPercent() + " " + context.getString(R.string.sth_left));
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,7 +68,7 @@ public class CachedFilesAdapter extends BaseAdapter {
                     args.putInt(Constants.EXTRA_TYPE, Storable.TYPE_FILE);
                     args.putString(Constants.EXTRA_PATH, path);
                     args.putString(Constants.EXTRA_HEADER, textViewTitle.getText().toString());
-                    ReceiverActivity.startReceiverActivity(CachedFilesAdapter.this.context, args);
+                    ReceiverActivity.startReceiverActivity(context, args);
                 }
             }
         });
@@ -107,14 +87,14 @@ public class CachedFilesAdapter extends BaseAdapter {
                     (view.findViewById(R.id.imageViewDelete)).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v){
-                            getConfirmation(path, position);
+                            getConfirmation(context, path, position);
                             hideActionView();
                         }
                     });
                     (view.findViewById(R.id.imageViewEdit)).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v){
-                            buildEditorDialog(readable);
+                            buildEditorDialog(context, readable);
                             hideActionView();
                         }
                     });
@@ -127,7 +107,7 @@ public class CachedFilesAdapter extends BaseAdapter {
                     (view.findViewById(R.id.imageViewAbout)).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v){
-                            buildInfoDialog(readable);
+                            buildInfoDialog(context, readable);
                             hideActionView();
                         }
                     });
@@ -136,7 +116,7 @@ public class CachedFilesAdapter extends BaseAdapter {
                 return false;
             }
         });
-        return view;
+
     }
 
     private void inflateActionMenu(View v){
@@ -175,21 +155,6 @@ public class CachedFilesAdapter extends BaseAdapter {
         }, DURATION);
     }
 
-    public void updateAll(Cursor cursor){
-        objects = MiniReadable.getFromCursor(cursor);
-        notifyDataSetChanged();
-    }
-
-    public void updateAll(List<MiniReadable> objects){
-        this.objects = objects;
-        notifyDataSetChanged();
-    }
-
-    public void remove(int position){
-        objects.remove(position);
-        notifyDataSetChanged();
-    }
-
     public void hideActionView(){
         if (usedView != null){
             inflateMainMenu(usedView);
@@ -198,7 +163,7 @@ public class CachedFilesAdapter extends BaseAdapter {
         }
     }
 
-    private void getConfirmation(final String path, final int position){
+    private void getConfirmation(final Context context, final String path, final int position){
         new AlertDialog.Builder(context).
                 setTitle(R.string.confirmation_dialog_title).
                 setMessage(R.string.gonna_delete).
@@ -207,7 +172,6 @@ public class CachedFilesAdapter extends BaseAdapter {
                             @Override
                             public void onClick(DialogInterface dialog, int which){
                                 LastReadService.start(context, path, Constants.DB_OPERATION_DELETE);
-                                remove(position);
                             }
                         }).
                 setNegativeButton(android.R.string.cancel,
@@ -220,8 +184,8 @@ public class CachedFilesAdapter extends BaseAdapter {
                 show();
     }
 
-    private void buildEditorDialog(final MiniReadable readable){
-        View dialogView = inflater.inflate(R.layout.dialog_editor, null);
+    private void buildEditorDialog(final Context context, final MiniReadable readable){
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_editor, null);
         final EditText headerView = (EditText) dialogView.findViewById(R.id.editTextHeader);
         final EditText positionView = (EditText) dialogView.findViewById(R.id.editTextPosition);
 
@@ -258,10 +222,10 @@ public class CachedFilesAdapter extends BaseAdapter {
                 show();
     }
 
-    private void buildInfoDialog(final MiniReadable readable){
+    private void buildInfoDialog(Context context, final MiniReadable readable){
         new AlertDialog.Builder(context).
                 setTitle(R.string.about).
-                setView(createInfoView(readable)).
+                setView(createInfoView(context, readable)).
                 setPositiveButton(android.R.string.ok,
                         new DialogInterface.OnClickListener() {
                             @Override
@@ -272,8 +236,8 @@ public class CachedFilesAdapter extends BaseAdapter {
                 show();
     }
 
-    private View createInfoView(final MiniReadable readable){
-        View view = inflater.inflate(R.layout.dialog_info, null);
+    private View createInfoView(Context context, final MiniReadable readable){
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_info, null);
         ((TextView) view.findViewById(R.id.textViewHeader)).setText(readable.getHeader());
         ((TextView) view.findViewById(R.id.textViewPath)).setText(readable.getPath());
         ((TextView) view.findViewById(R.id.textViewPosition)).
