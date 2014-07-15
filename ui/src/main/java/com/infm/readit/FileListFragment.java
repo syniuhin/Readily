@@ -47,9 +47,9 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         Log.d(LOGTAG, "onCreateView() called");
-		RelativeLayout layout = (RelativeLayout) inflater.inflate(R.layout.fragment_file_list, container, false);
-		findViews(layout);
-		return layout;
+		View view = inflater.inflate(R.layout.fragment_file_list, container, false);
+		findViews(view);
+		return view;
 	}
 
 	@Override
@@ -63,7 +63,6 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 	private void findViews(View v){
 		listView = (ListView) v.findViewById(R.id.fileListView);
 		tvEmpty = (TextView) v.findViewById(R.id.text_view_empty);
-		tvEmpty.setVisibility(View.VISIBLE);
 	}
 
 	private void initViews(final Context context){
@@ -80,6 +79,8 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount){
             }
         });
+
+        listView.setEmptyView(tvEmpty);
 	}
 
 	@Override
@@ -92,8 +93,6 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data){
         objectsContainer = MiniReadable.getFromCursor(data);
 		adapter.updateAll(objectsContainer);
-		if (data.getCount() > 0)
-			tvEmpty.setVisibility(View.GONE);
 	}
 
 	@Override

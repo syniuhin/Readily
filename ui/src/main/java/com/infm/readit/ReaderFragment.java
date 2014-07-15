@@ -25,10 +25,6 @@ import com.infm.readit.settings.SettingsBundle;
 import com.infm.readit.util.OnSwipeTouchListener;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * infm : 16/05/14. Enjoy it ;)
@@ -39,7 +35,7 @@ public class ReaderFragment extends Fragment {
     private final int SPEEDO_APPEARING_DURATION = 300;
 
     //initialized in onCreate()
-    Handler readerHandler;
+    private Handler handler;
     private long localTime = 0;
     private boolean speedoHided = true;
     private Bundle args;
@@ -61,7 +57,6 @@ public class ReaderFragment extends Fragment {
     private List<Integer> delayList;
     private TextParser parser;
     private SettingsBundle settingsBundle;
-    private ExecutorService executorService;
     private Thread parserThread;
     //receiving status
     private Boolean parserReceived = false;
@@ -70,14 +65,14 @@ public class ReaderFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         args = getArguments();
-        readerHandler = new Handler();
+        handler = new Handler();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         Log.d(LOGTAG, "onCreateView() called");
 
-        LinearLayout fragmentLayout = (LinearLayout) inflater.inflate(R.layout.fragment_reader, container, false);
+        View fragmentLayout = inflater.inflate(R.layout.fragment_reader, container, false);
         findViews(fragmentLayout);
         periodicallyAnimate();
         return fragmentLayout;
@@ -97,7 +92,7 @@ public class ReaderFragment extends Fragment {
         parseText(getActivity(), args);
     }
 
-    public void setCurrentTime(long localTime){
+    private void setCurrentTime(long localTime){
         this.localTime = localTime;
     }
 
@@ -332,8 +327,8 @@ public class ReaderFragment extends Fragment {
                 }
             });
             readable.setPosition(Math.max(readable.getPosition() - Constants.READER_START_OFFSET, 0));
-            reader = new Reader(readerHandler, readable.getPosition());
-            readerHandler.postDelayed(reader, 3 * Constants.SECOND);
+            reader = new Reader(handler, readable.getPosition());
+            handler.postDelayed(reader, 3 * Constants.SECOND);
         } else {
             Activity a = getActivity();
             a.runOnUiThread(new Runnable() {
@@ -365,7 +360,6 @@ public class ReaderFragment extends Fragment {
      * periodically animates progressBar
      */
     private void periodicallyAnimate(){
-        final Handler handler = new Handler();
         Runnable anim = new Runnable() {
             @Override
             public void run(){
@@ -422,10 +416,10 @@ public class ReaderFragment extends Fragment {
 
         settingsBundle.updatePreferences();
 
-        if (executorService != null)
-            executorService.shutdownNow();
-        if (parserThread != null && parserThread.isAlive())
+        if (parserThread != null && parserThread.isAlive()){
             parserThread.interrupt();
+            Log.d(LOGTAG, "parserThread has been interrupted");
+        }
         activity.finish();
         super.onStop();
     }
@@ -458,22 +452,15 @@ public class ReaderFragment extends Fragment {
         parserThread = new Thread(new Runnable() {
             @Override
             public void run(){
-                try {
-                    executorService = Executors.newSingleThreadExecutor();
-                    Future<Readable> readableFuture = executorService.submit(new Readable.Builder(context, bundle));
-                    Readable readable = readableFuture.get();
-                    Future<TextParser> textParserFuture = executorService.submit(
-                            TextParser.newInstance(readable,
-                                    new SettingsBundle(PreferenceManager.getDefaultSharedPreferences(context)))
-                    );
-                    parser = textParserFuture.get();
-                    parser.checkResult();
-                    processParser(context);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+                Log.d(LOGTAG, "parserThread.run() called");
+                Readable readable = Readable.createReadable(context, bundle);
+                readable.process(context);
+
+                parser = TextParser.newInstance(readable,
+                        new SettingsBundle(PreferenceManager.getDefaultSharedPreferences(context)));
+                parser.process();
+
+                processParser(context);
             }
         });
         parserThread.start();
@@ -484,13 +471,13 @@ public class ReaderFragment extends Fragment {
      */
     private class Reader implements Runnable {
 
-        private Handler handler;
+        private Handler readerHandler;
         private int cancelled;
         private int position;
         private boolean completed;
 
-        public Reader(Handler handler, int position){
-            this.handler = handler;
+        public Reader(Handler readerHandler, int position){
+            this.readerHandler = readerHandler;
             this.position = position;
             completed = false;
             cancelled = 1;
@@ -504,10 +491,10 @@ public class ReaderFragment extends Fragment {
                 completed = false;
                 if (!isCancelled()){
                     updateView(position);
-                    handler.postDelayed(this, calcDelay());
+                    readerHandler.postDelayed(this, calcDelay());
                     position++;
                 } else {
-                    handler.postDelayed(this, Constants.READER_SLEEP_IDLE);
+                    readerHandler.postDelayed(this, Constants.READER_SLEEP_IDLE);
                 }
             } else {
                 completed = true;

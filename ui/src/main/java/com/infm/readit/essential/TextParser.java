@@ -162,6 +162,7 @@ public class TextParser implements Serializable, Callable<TextParser> {
 		cleanWordList(readable);
 		buildDelayList(readable);
 		buildEmphasis(readable);
+        checkResult();
 	}
 
 	public void setDelayCoefficients(List<Integer> delayCoefficients){

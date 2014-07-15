@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+import com.crashlytics.android.Crashlytics;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.flurry.android.FlurryAgent;
@@ -35,9 +36,8 @@ public class MainActivity extends Activity {
 
 		startService(createCheckerServiceIntent());
 
-/*
 		Crashlytics.start(this);
-*/
+
         changeActionBarIcon();
 		startFileListFragment();
 	}
@@ -91,9 +91,6 @@ public class MainActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	/**
-	 * This section is handled using abstract class Utils. Hope it's ok.
-	 */
 	private void getFromClipboard(){
 		ReceiverActivity.startReceiverActivity(this, Readable.TYPE_CLIPBOARD, "");
 	}
