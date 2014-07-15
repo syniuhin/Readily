@@ -27,14 +27,16 @@ public class MiniReadable extends Readable {
 
 	public static ArrayList<MiniReadable> getFromCursor(Cursor cursor){
 		ArrayList<MiniReadable> result = new ArrayList<MiniReadable>();
-		if (cursor != null){
-			while (cursor.moveToNext())
-				result.add(new MiniReadable(
-						cursor.getString(LastReadDBHelper.COLUMN_PATH),
-						cursor.getString(LastReadDBHelper.COLUMN_HEADER),
-						cursor.getString(LastReadDBHelper.COLUMN_PERCENT),
+		if (cursor != null && cursor.getCount() > 0){
+            cursor.moveToFirst();
+			do {
+                result.add(new MiniReadable(
+                        cursor.getString(LastReadDBHelper.COLUMN_PATH),
+                        cursor.getString(LastReadDBHelper.COLUMN_HEADER),
+                        cursor.getString(LastReadDBHelper.COLUMN_PERCENT),
                         cursor.getInt(LastReadDBHelper.COLUMN_POSITION)
-				));
+                ));
+            } while(cursor.moveToNext());
 		}
 		return result;
 	}

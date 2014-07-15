@@ -85,18 +85,21 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args){
+        Log.d(LOGTAG, "onCreateLoader() called");
 		return new CursorLoader(getActivity(), LastReadContentProvider.CONTENT_URI,
                 null, null, null, null);
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data){
+        Log.d(LOGTAG, "onLoadFinished() called");
         objectsContainer = MiniReadable.getFromCursor(data);
 		adapter.updateAll(objectsContainer);
 	}
 
 	@Override
 	public void onLoaderReset(Loader loader){
+        Log.d(LOGTAG, "onLoaderReset() called");
 		objectsContainer = new ArrayList<MiniReadable>();
         adapter.updateAll(objectsContainer);
 	}
