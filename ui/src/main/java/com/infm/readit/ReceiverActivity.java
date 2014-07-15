@@ -5,21 +5,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import com.flurry.android.FlurryAdListener;
-import com.flurry.android.FlurryAdSize;
-import com.flurry.android.FlurryAdType;
-import com.flurry.android.FlurryAds;
 import com.infm.readit.util.BaseActivity;
 
-public class ReceiverActivity extends BaseActivity implements FlurryAdListener, ReaderFragment.ReaderListener{
+public class ReceiverActivity extends BaseActivity implements /*FlurryAdListener,*/ ReaderFragment.ReaderListener{
 
 	private static final String LOGTAG = "ReceiverActivity";
 	private static final String READER_FRAGMENT_TAG = "ReaSq!d99erFra{{1239gm..1ent1923";
 
+/*
     private ViewGroup adViewGroup;
     private String adSpace = "ReadItIntAd";
+*/
 
 	public static void startReceiverActivity(Context context, Integer intentType, String intentPath){
 		Intent intent = new Intent(context, ReceiverActivity.class);
@@ -74,6 +71,7 @@ public class ReceiverActivity extends BaseActivity implements FlurryAdListener, 
             }
         }
 	}
+/*
 
     @Override
     protected void onStart(){
@@ -142,8 +140,12 @@ public class ReceiverActivity extends BaseActivity implements FlurryAdListener, 
         finish();
     }
 
+*/
     @Override
     public void stop(){
+/*
         FlurryAds.fetchAd(this, adSpace, adViewGroup, FlurryAdSize.FULLSCREEN);
+*/
+        finish();
     }
 }
