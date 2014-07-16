@@ -1,12 +1,16 @@
 package com.infm.readit;
 
 import android.annotation.TargetApi;
-import android.app.*;
+import android.app.ActionBar;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -30,6 +34,7 @@ public class MainActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
+        Log.d(LOGTAG, "onCreate() called");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		isAnybodyOutThere(this);
@@ -111,6 +116,7 @@ public class MainActivity extends BaseActivity {
 	}
 
 	private void startSettingsFragment(){
+        Log.d(LOGTAG, "startSettingsFragment() called");
 		FragmentManager fragmentManager = getFragmentManager();
 		Fragment existing = fragmentManager.findFragmentByTag(SETTINGS_FRAGMENT_TAG);
 		if (existing == null){
@@ -127,6 +133,7 @@ public class MainActivity extends BaseActivity {
 	}
 
 	private void startFileListFragment(){
+        Log.d(LOGTAG, "startFileListFragment() called");
 		getFragmentManager().beginTransaction().
 				replace(R.id.content_layout, new FileListFragment()).
 				commit();

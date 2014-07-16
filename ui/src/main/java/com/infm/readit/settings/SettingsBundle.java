@@ -13,7 +13,9 @@ import java.util.List;
 public class SettingsBundle {
 
 	//preferences fields
+/*
 	private boolean cachingEnabled;
+*/
 	private Integer WPM;
 	private boolean punctuationSpeedDiffers;
 	private List<Integer> delayCoefficients;
@@ -40,9 +42,11 @@ public class SettingsBundle {
 		this.WPM = WPM;
 	}
 
+/*
 	public boolean isCachingEnabled(){
 		return cachingEnabled;
 	}
+*/
 
 	public boolean isPunctuationSpeedDiffers(){
 		return punctuationSpeedDiffers;
@@ -70,7 +74,9 @@ public class SettingsBundle {
 		swipesEnabled = sharedPreferences.getBoolean(Constants.Preferences.SWIPE, true);
 		showingContextEnabled = sharedPreferences.getBoolean(Constants.Preferences.SHOW_CONTEXT, true);
 		punctuationSpeedDiffers = sharedPreferences.getBoolean(Constants.Preferences.PUNCTUATION_DIFFERS, true);
+/*
 		cachingEnabled = sharedPreferences.getBoolean(Constants.Preferences.STORAGE, true);
+*/
 		delayCoefficients = buildDelayListCoefficients();
 	}
 
@@ -82,9 +88,11 @@ public class SettingsBundle {
 		editor.putBoolean(Constants.Preferences.SWIPE, swipesEnabled);
 		editor.putBoolean(Constants.Preferences.SHOW_CONTEXT, showingContextEnabled);
 		editor.putBoolean(Constants.Preferences.PUNCTUATION_DIFFERS, punctuationSpeedDiffers);
+/*
 		editor.putBoolean(Constants.Preferences.STORAGE, cachingEnabled);
 		for (int i = 0; i < delayCoefficients.size(); ++i)
 			editor.putString(Constants.Preferences.STR_PUNCTUATION_PREFS[i], delayCoefficients.get(i).toString());
+*/
 		editor.apply(); //advised by IDE, lol
 	}
 	
@@ -95,11 +103,19 @@ public class SettingsBundle {
 	 */
 	private ArrayList<Integer> buildDelayListCoefficients(){
 		ArrayList<Integer> delayCoeffs = new ArrayList<Integer>();
-		for (int i = 0; i < 5; ++i)
-			delayCoeffs.add(
-					Integer.parseInt(sharedPreferences.getString(Constants.Preferences.STR_PUNCTUATION_PREFS[i],
-							Constants.Preferences.STR_PUNCTUATION_DEFAULTS[i]))
-			); //might be tricky, look at Constants class
+        if (punctuationSpeedDiffers){
+            for (int i = 0; i < 5; ++i)
+                delayCoeffs.add(Integer.parseInt(Constants.Preferences.STR_PUNCTUATION_DEFAULTS[i]));
+/*
+                delayCoeffs.add(
+                        Integer.parseInt(sharedPreferences.getString(Constants.Preferences.STR_PUNCTUATION_PREFS[i],
+                                Constants.Preferences.STR_PUNCTUATION_DEFAULTS[i]))
+                ); //might be tricky, look at Constants class
+*/
+        } else {
+            for (int i = 0; i < 5; ++i)
+                delayCoeffs.add(Integer.parseInt(Constants.Preferences.STR_PUNCTUATION_DEFAULTS[0]));
+        }
 		return delayCoeffs;
 	}
 }

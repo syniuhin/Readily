@@ -307,6 +307,7 @@ public class ReaderFragment extends Fragment {
 
     private void processParser(final Context context){
         final int resultCode = parser.getResultCode();
+        Log.d(LOGTAG, "processParser() called, result code: " + resultCode);
         if (resultCode == TextParser.RESULT_CODE_OK){
             parserReceived = true;
             readable = parser.getReadable();
@@ -319,20 +320,24 @@ public class ReaderFragment extends Fragment {
 
             final int initialPosition = readable.getPosition();
             reader = new Reader(handler, initialPosition);
-            readerLayout.post(new Runnable() {
-                @Override
-                public void run(){
-                    parsingProgressBar.setVisibility(View.GONE);
-
-                    readerLayout.setVisibility(View.VISIBLE);
-                    YoYo.with(Techniques.BounceIn).
-                            duration(2 * Constants.SECOND).
-                            playOn(readerLayout);
-
-                    showNotification(R.string.tap_to_start);
-                    reader.updateView(initialPosition);
-                }
-            });
+            Activity activity = getActivity();
+            if (activity != null){
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run(){
+                        Log.d(LOGTAG, "runOnUiThread called");
+                        parsingProgressBar.setVisibility(View.GONE);
+                        readerLayout.setVisibility(View.VISIBLE);
+                        showNotification(R.string.tap_to_start);
+                        reader.updateView(initialPosition);
+                        YoYo.with(Techniques.FadeIn).
+                                duration(READER_PULSE_DURATION).
+                                playOn(readerLayout);
+                    }
+                });
+            } else {
+                Log.e(LOGTAG, "WTF!?!??!! getActivity returned null");
+            }
         } else {
             Activity a = getActivity();
             a.runOnUiThread(new Runnable() {
@@ -400,7 +405,9 @@ public class ReaderFragment extends Fragment {
         return parserReceived &&
                 readable != null &&
                 settingsBundle != null &&
+/*
                 settingsBundle.isCachingEnabled() &&
+*/
                 !TextUtils.isEmpty(readable.getPath());
     }
 
@@ -484,12 +491,14 @@ public class ReaderFragment extends Fragment {
                 Log.d(LOGTAG, "parserThread.run() called");
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         Readable readable = Readable.createReadable(context, bundle);
                 readable.process(context);
+                Log.d(LOGTAG, "readable processed");
 
-                parser = TextParser.newInstance(readable,
-                        new SettingsBundle(PreferenceManager.getDefaultSharedPreferences(context)));
+                parser = TextParser.newInstance(readable, settingsBundle);
                 parser.process();
+                Log.d(LOGTAG, "parser processed()");
 
                 processParser(context);
+                Log.d(LOGTAG, "parserThread.run() finished");
             }
         });
         parserThread.start();

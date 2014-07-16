@@ -105,8 +105,8 @@
     <string name="instructions_emphasis_point">Emphasis point: when you concentrate on it,
         reading becomes faster.
     </string>
-    <string name="instructions_speed_change">Speed change: this will appear only when you swipe up or down to
-        indicate new speed of reading.
+    <string name="instructions_notification">Notification: this will appear only when you are need to be notified
+        (e.g. when you change speed of reading).
     </string>
     <string name="instructions_previous_word_button">Previous word button(optional): alternative to left and right
         swipes and designed to navigate through the reading. It will appear on pause state.

@@ -42,7 +42,7 @@ public class Constants {
 	public static void showInstructionsDialog(Context context){
 		LayoutInflater inflater = (LayoutInflater)
 				context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		final LinearLayout instructionsLayout = (LinearLayout) inflater.inflate(R.layout.instructions_layout, null);
+		final LinearLayout instructionsLayout = (LinearLayout) inflater.inflate(R.layout.dialog_instructions, null);
 		new AlertDialog.Builder(context).
 				setTitle(R.string.preferences_getStarted).
 				setView(instructionsLayout).
