@@ -37,8 +37,12 @@ public class ReaderFragment extends Fragment {
 
     private ReaderListener callback;
     private static final String LOGTAG = "ReaderFragment";
-    private final int SPEEDO_APPEARING_DURATION = 300;
-    private final int READER_PULSE_DURATION = 400;
+    private static final int SPEEDO_APPEARING_DURATION = 300;
+    private static final int READER_PULSE_DURATION = 400;
+    private static final int PORT_MARGIN_LEFT = 10;
+    private static final int LAND_MARGIN_LEFT = 90;
+    private static final int PORT_TABLET_MARGIN_LEFT = 100;
+    private static final int LAND_TABLET_MARGIN_LEFT = 230;
 
     //initialized in onCreate()
     private Handler handler;
@@ -422,26 +426,48 @@ public class ReaderFragment extends Fragment {
         super.onStop();
     }
 
+    private int pxFromDp(int dp){
+        return (int)(dp * getResources().getDisplayMetrics().density + 0.5f);
+    }
+
+    //it's very unflexible, TODO: fix it later
     @Override
     public void onConfigurationChanged(Configuration newConfig){
         super.onConfigurationChanged(newConfig);
         if (parserReceived && reader != null)
             reader.performPause();
+        View view = getView();
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
+        int currentMargin = params.leftMargin;
+        int portMargin, landMargin = pxFromDp(LAND_MARGIN_LEFT);
+        if (currentMargin <= landMargin){
+            portMargin = pxFromDp(PORT_MARGIN_LEFT);
+        } else {
+            portMargin = pxFromDp(PORT_TABLET_MARGIN_LEFT);
+            landMargin = pxFromDp(LAND_TABLET_MARGIN_LEFT);
+        }
+        int newMargin = (currentMargin == portMargin)
+                ? landMargin
+                : portMargin;
+        params.setMargins(newMargin, 0, newMargin, 0);
+        view.setLayoutParams(params);
 /*
-        Activity activity = getActivity();
-
-		LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View newView = inflater.inflate(R.layout.fragment_reader, null);
-		ViewGroup rootView = (ViewGroup) getView();
+		ViewGroup rootView = (ViewGroup) getView().getParent();
 		if (rootView != null){
-			rootView.removeAllViews();
-			rootView.addView(newView);
-		}
-		findViews(newView);
-		parsingProgressBar.setVisibility(View.GONE);
-		readerLayout.setVisibility(View.VISIBLE);
-		updateView(reader.getPosition());
-		setReaderLayoutListener(activity);
+            Activity activity = getActivity();
+
+            LayoutInflater inflater = LayoutInflater.from(activity);
+            ViewGroup newView = (ViewGroup) inflater.inflate(R.layout.fragment_reader, rootView, false);
+
+            rootView.removeAllViews();
+            rootView.addView(newView);
+
+            findViews(newView);
+            parsingProgressBar.setVisibility(View.GONE);
+            readerLayout.setVisibility(View.VISIBLE);
+            reader.updateView();
+            setReaderLayoutListener(activity);
+        }
 */
     }
 
@@ -566,6 +592,5 @@ public class ReaderFragment extends Fragment {
             progressBar.setProgress((int) (100f / wordList.size() * (pos + 1) + .5f));
             hideSpeedo();
         }
-
     }
 }
