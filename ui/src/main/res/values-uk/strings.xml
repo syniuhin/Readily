@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Basic -->
-    <string name="app_name">RSVP-Reader</string>
+    <string name="app_name">ReadIt!</string>
     <string name="title_activity_main">ReadIt!</string>
     <string name="title_activity_receiver">Додати у ReadIt!</string>
     <string name="title_activity_settings">Налаштування</string>
@@ -35,6 +35,7 @@
     <string name="path">Путь до файлу</string>
     <string name="position">Позиція у тексті</string>
     <string name="sth_left">залишилось</string>
+    <string name="pause">Пауза</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитати текст з буферу обміну</string>

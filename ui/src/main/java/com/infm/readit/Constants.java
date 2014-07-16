@@ -25,7 +25,6 @@ public class Constants {
 	public static final int MIN_WPM = 50;
 	public static final int WPM_STEP_PREFERENCES = 10;
 	public static final int WPM_STEP_READER = 50;
-	public static final int SPEEDO_SHOWING_LENGTH = 1500; //time in ms for which speedo becomes visible
 
     //defines a length, which limits links with description(to reduce working time of regexp)
 	public static final int NON_LINK_LENGTH = 500;

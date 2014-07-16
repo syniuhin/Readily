@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Basic -->
-    <string name="app_name">RSVP-Reader</string>
+    <string name="app_name">ReadIt!</string>
     <string name="title_activity_main">ReadIt!</string>
     <string name="title_activity_receiver">Add to ReadIt!</string>
     <string name="title_activity_settings">Settings</string>
@@ -35,6 +35,7 @@
     <string name="path">Path to a file</string>
     <string name="position">Position in a text</string>
     <string name="sth_left">left</string>
+    <string name="pause">Pause</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Read a text from the clipboard</string>

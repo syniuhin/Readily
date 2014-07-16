@@ -4,8 +4,8 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_marginLeft="90dp"
-        android:layout_marginRight="90dp"
+        android:layout_marginLeft="@dimen/land_margin_left"
+        android:layout_marginRight="@dimen/land_margin_left"
         android:background="@drawable/reader_border"
         android:orientation="vertical">
 

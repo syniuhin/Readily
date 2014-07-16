@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -37,24 +38,21 @@ public class ReaderFragment extends Fragment {
 
     private ReaderListener callback;
     private static final String LOGTAG = "ReaderFragment";
-    private static final int SPEEDO_APPEARING_DURATION = 300;
+    private static final int NOTIF_APPEARING_DURATION = 300;
+    private static final int NOTIF_SHOWING_LENGTH = 1500; //time in ms for which speedo becomes visible
     private static final int READER_PULSE_DURATION = 400;
-    private static final int PORT_MARGIN_LEFT = 10;
-    private static final int LAND_MARGIN_LEFT = 90;
-    private static final int PORT_TABLET_MARGIN_LEFT = 100;
-    private static final int LAND_TABLET_MARGIN_LEFT = 230;
 
     //initialized in onCreate()
     private Handler handler;
     private long localTime = 0;
-    private boolean speedoHided = true;
+    private boolean notificationHided = true;
     private Bundle args;
     //initialized in onCreateView()
     private RelativeLayout readerLayout;
     private TextView currentTextView;
     private TextView leftTextView;
     private TextView rightTextView;
-    private TextView speedo;
+    private TextView notification;
     private ProgressBar progressBar;
     private ProgressBar parsingProgressBar;
     private ImageButton prevButton;
@@ -176,7 +174,7 @@ public class ReaderFragment extends Fragment {
         leftTextView = (TextView) v.findViewById(R.id.leftWordTextView);
         rightTextView = (TextView) v.findViewById(R.id.rightWordTextView);
         progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
-        speedo = (TextView) v.findViewById(R.id.speedo);
+        notification = (TextView) v.findViewById(R.id.speedo);
         prevButton = (ImageButton) v.findViewById(R.id.previousWordImageButton);
         upLogo = v.findViewById(R.id.logo_up);
     }
@@ -241,48 +239,52 @@ public class ReaderFragment extends Fragment {
             prevButton.setVisibility(View.INVISIBLE);
     }
 
-    private void showSpeedo(int wpm){
-        speedo.setText(wpm + " WPM");
+    private void showNotification(String text){
+        notification.setText(text);
         setCurrentTime(System.currentTimeMillis());
 
-        if (speedoHided){
+        if (notificationHided){
             YoYo.with(Techniques.SlideInDown).
-                    duration(SPEEDO_APPEARING_DURATION).
-                    playOn(speedo);
-            speedo.postDelayed(new Runnable() {
+                    duration(NOTIF_APPEARING_DURATION).
+                    playOn(notification);
+            notification.postDelayed(new Runnable() {
                 @Override
                 public void run(){
-                    speedo.setVisibility(View.VISIBLE);
+                    notification.setVisibility(View.VISIBLE);
                 }
-            }, SPEEDO_APPEARING_DURATION);
+            }, NOTIF_APPEARING_DURATION);
 
             YoYo.with(Techniques.FadeOut).
-                    duration(SPEEDO_APPEARING_DURATION).
+                    duration(NOTIF_APPEARING_DURATION).
                     playOn(upLogo);
-            speedoHided = false;
+            notificationHided = false;
         }
     }
 
-    private boolean hideSpeedo(){
-        if (!speedoHided){
-            if (System.currentTimeMillis() - localTime > Constants.SPEEDO_SHOWING_LENGTH){
+    private void showNotification(int resourceId){
+        showNotification(getResources().getString(resourceId));
+    }
+
+    private boolean hideNotification(boolean force){
+        if (!notificationHided){
+            if (force || System.currentTimeMillis() - localTime > NOTIF_SHOWING_LENGTH){
                 YoYo.with(Techniques.SlideOutUp).
-                        duration(SPEEDO_APPEARING_DURATION).
-                        playOn(speedo);
-                speedo.postDelayed(new Runnable() {
+                        duration(NOTIF_APPEARING_DURATION).
+                        playOn(notification);
+                notification.postDelayed(new Runnable() {
                     @Override
                     public void run(){
-                        speedo.setVisibility(View.INVISIBLE);
+                        notification.setVisibility(View.INVISIBLE);
                     }
-                }, SPEEDO_APPEARING_DURATION);
+                }, NOTIF_APPEARING_DURATION);
 
                 YoYo.with(Techniques.FadeIn).
-                        duration(SPEEDO_APPEARING_DURATION).
+                        duration(NOTIF_APPEARING_DURATION).
                         playOn(upLogo);
-                speedoHided = true;
+                notificationHided = true;
             }
         }
-        return speedoHided;
+        return notificationHided;
     }
 
     /**
@@ -297,7 +299,7 @@ public class ReaderFragment extends Fragment {
         if (wpm != wpmNew){
             settingsBundle.setWPM(wpmNew);
             Log.d(LOGTAG, "WPM changed from " + wpm + " to " + wpmNew);
-            showSpeedo(wpmNew);
+            showNotification(wpmNew + " WPM");
         } else {
             Log.d(LOGTAG, "WPM remained the same: " + wpm);
         }
@@ -327,7 +329,7 @@ public class ReaderFragment extends Fragment {
                             duration(2 * Constants.SECOND).
                             playOn(readerLayout);
 
-                    Toast.makeText(context, R.string.tap_to_start, Toast.LENGTH_SHORT).show();
+                    showNotification(R.string.tap_to_start);
                     reader.updateView(initialPosition);
                 }
             });
@@ -439,12 +441,15 @@ public class ReaderFragment extends Fragment {
         View view = getView();
         FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
         int currentMargin = params.leftMargin;
-        int portMargin, landMargin = pxFromDp(LAND_MARGIN_LEFT);
+
+        Resources resources = getResources();
+        int portMargin,
+                landMargin = (int)resources.getDimension(R.dimen.land_margin_left);
         if (currentMargin <= landMargin){
-            portMargin = pxFromDp(PORT_MARGIN_LEFT);
+            portMargin = (int)resources.getDimension(R.dimen.port_margin_left);
         } else {
-            portMargin = pxFromDp(PORT_TABLET_MARGIN_LEFT);
-            landMargin = pxFromDp(LAND_TABLET_MARGIN_LEFT);
+            portMargin = (int)resources.getDimension(R.dimen.port_tablet_margin_left);
+            landMargin = (int)resources.getDimension(R.dimen.land_tablet_margin_left);
         }
         int newMargin = (currentMargin == portMargin)
                 ? landMargin
@@ -477,7 +482,7 @@ public class ReaderFragment extends Fragment {
             @Override
             public void run(){
                 Log.d(LOGTAG, "parserThread.run() called");
-                Readable readable = Readable.createReadable(context, bundle);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        Readable readable = Readable.createReadable(context, bundle);
                 readable.process(context);
 
                 parser = TextParser.newInstance(readable,
@@ -565,6 +570,7 @@ public class ReaderFragment extends Fragment {
                         playOn(readerLayout);
                 if (!settingsBundle.isSwipesEnabled())
                     prevButton.setVisibility(View.VISIBLE);
+                showNotification(R.string.pause);
             }
         }
 
@@ -576,6 +582,7 @@ public class ReaderFragment extends Fragment {
                         playOn(readerLayout);
                 if (!settingsBundle.isSwipesEnabled())
                     prevButton.setVisibility(View.INVISIBLE);
+                hideNotification(true);
                 readerHandler.postDelayed(this, READER_PULSE_DURATION + 100);
             }
         }
@@ -590,7 +597,7 @@ public class ReaderFragment extends Fragment {
             rightTextView.setText(getRightFormattedText(pos));
 
             progressBar.setProgress((int) (100f / wordList.size() * (pos + 1) + .5f));
-            hideSpeedo();
+            hideNotification(false);
         }
     }
 }
