@@ -78,6 +78,9 @@ public class MainActivity extends BaseActivity {
 			case R.id.action_file:
 				getFromFile();
 				break;
+            case R.id.action_instructions:
+                InstructionsActivity.start(this);
+                break;
 		}
 
 		return super.onOptionsItemSelected(item);

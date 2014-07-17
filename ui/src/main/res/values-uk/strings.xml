@@ -55,7 +55,7 @@
     <string name="preferences_advanced">Розширені налаштування</string>
     <string name="preferences_showContext">Показувати контекст</string>
     <string name="preferences_showContext_summary">Наступні слова у реченні</string>
-    <string name="preferences_getStarted">Інструкції</string>
+    <string name="preferences_instrucions">Інструкції</string>
     <string name="preferences_swipe">Свайп для прокрутки</string>
     <string name="preferences_swipe_summary">Наліво для наступного, направо для попереднього слова</string>
     <string name="preferences_share_feedback">Контакти</string>

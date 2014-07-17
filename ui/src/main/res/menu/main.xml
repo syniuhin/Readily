@@ -20,6 +20,15 @@
         android:title="@string/preferences_clipboard"
         android:visible="true" />
 
+
+    <item
+            android:id="@+id/action_instructions"
+            android:enabled="true"
+            android:icon="@drawable/ic_action_help"
+            android:showAsAction="ifRoom"
+            android:title="@string/preferences_instrucions"
+            android:visible="true" />
+
     <item
         android:id="@+id/action_settings"
         android:enabled="true"

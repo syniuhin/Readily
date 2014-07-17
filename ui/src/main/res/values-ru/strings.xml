@@ -54,7 +54,7 @@
     <string name="preferences_advanced">Расширенные настройки</string>
     <string name="preferences_showContext">Отображать контекст</string>
     <string name="preferences_showContext_summary">Следующие слова в предложении</string>
-    <string name="preferences_getStarted">Инструкции</string>
+    <string name="preferences_instrucions">Инструкции</string>
     <string name="preferences_swipe">Свайп для прокрутки</string>
     <string name="preferences_swipe_summary">Влево для следующего, вправо для предыдущего слова</string>
     <string name="preferences_share_feedback">Контакты</string>
