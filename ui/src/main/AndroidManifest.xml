@@ -92,7 +92,6 @@
 
         <activity
             android:name=".instructions.InstructionsActivity"
-            android:label="@string/title_activity_instructions"
             android:theme="@android:style/Theme.Light.NoTitleBar">
         </activity>
     </application>

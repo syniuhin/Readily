@@ -18,13 +18,11 @@
             <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="New Text"
                     android:id="@+id/textViewHeader"
                     android:layout_marginLeft="15dp"
                     android:layout_margin="10dp"
                     android:typeface="serif"
                     android:textSize="20sp"
-                    android:visibility="visible"
                     android:textStyle="bold"
                     android:gravity="center_horizontal"
                     android:layout_marginRight="15dp"
@@ -33,7 +31,6 @@
             <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="New Text"
                     android:id="@+id/textViewPath"
                     android:layout_marginLeft="15dp"
                     android:layout_margin="10dp"
@@ -46,11 +43,11 @@
             <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="New Text"
                     android:id="@+id/textViewPosition"
                     android:layout_marginLeft="15dp"
                     android:layout_margin="10dp"
-                    android:typeface="serif"
+                    android:typeface="sans"
+                    android:textStyle="bold"
                     android:gravity="right"
                     android:layout_marginRight="15dp"
                     android:layout_weight="1"/>

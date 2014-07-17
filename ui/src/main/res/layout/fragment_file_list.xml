@@ -16,8 +16,8 @@
         android:layout_centerVertical="true"
         android:text="@string/list_empty_view"
         android:textIsSelectable="false"
-        android:textSize="26sp"
+        android:textSize="22sp"
         android:textStyle="bold"
-        android:typeface="serif" />
+        android:textColor="@android:color/secondary_text_dark"/>
 
 </RelativeLayout>

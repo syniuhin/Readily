@@ -27,6 +27,8 @@ import java.util.List;
 public class SettingsFragment extends PreferenceFragment {
 
     private static final String LOGTAG = "SettingsFragment";
+    private static final int DIALOG_PICKER_WIDTH = 250;
+    private static final int DIALOG_PICKER_HEIGHT = 300;
 
 	private Integer WPM;
 
@@ -79,9 +81,13 @@ public class SettingsFragment extends PreferenceFragment {
 		PreferenceManager.getDefaultSharedPreferences(getActivity()).edit().putString(Constants.Preferences.WPM, WPM.toString()).apply();
 	}
 
+    private int pxFromDp(int dp){
+        return (int)(dp * getActivity().getResources().getDisplayMetrics().density + 0.5f);
+    }
+
 	private void showSpeedPickerDialog(Context context, final int min, final int max){
 		final NumberPicker numberPicker = new NumberPicker(context);
-		numberPicker.setMinValue(min);
+        numberPicker.setMinValue(min);
 		numberPicker.setMaxValue(min + (max - min) / Constants.WPM_STEP_PREFERENCES);
 
 		List<String> values = new ArrayList<String>();
@@ -90,24 +96,27 @@ public class SettingsFragment extends PreferenceFragment {
 		}
 		numberPicker.setDisplayedValues(values.toArray(new String[values.size()]));
 		numberPicker.setValue(min + (WPM - min) / Constants.WPM_STEP_PREFERENCES);
-		new AlertDialog.Builder(context).
-				setTitle(R.string.preferences_set_wpm).
-				setView(numberPicker).
-				setPositiveButton(android.R.string.ok,
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which){
-								WPM = min + Constants.WPM_STEP_PREFERENCES * (numberPicker.getValue() - min);
-							}
-						}
-				).
-				setNegativeButton(android.R.string.cancel,
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which){
-								dialog.cancel();
-							}
-						}
-				).show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(R.string.preferences_set_wpm).
+                setView(numberPicker).
+                setPositiveButton(android.R.string.ok,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which){
+                                WPM = min + Constants.WPM_STEP_PREFERENCES * (numberPicker.getValue() - min);
+                            }
+                        }
+                ).
+                setNegativeButton(android.R.string.cancel,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which){
+                                dialog.cancel();
+                            }
+                        }
+                );
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        dialog.getWindow().setLayout(pxFromDp(DIALOG_PICKER_WIDTH), pxFromDp(DIALOG_PICKER_HEIGHT));
 	}
 }

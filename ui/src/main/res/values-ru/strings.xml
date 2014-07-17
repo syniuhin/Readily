@@ -23,7 +23,7 @@
     <string name="cant_fetch">Проблемы с загрузкой текста</string>
     <string name="delete">Удалить выбранные элементы</string>
     <string name="choose_file">Выберите файл</string>
-    <string name="tap_to_start">Коснитесь, чтобы начать чтение</string>
+    <string name="tap_to_start">Коснитесь, чтобы начать</string>
     <string name="confirmation_dialog_title">Вы уверены?</string>
     <string name="gonna_delete">Вы удаляете этот элемент. Это действие необратимо!</string>
     <string name="editor_dialog_title">Редактировать чтение</string>
@@ -75,31 +75,27 @@
 
     <!-- Instructions -->
     <string name="instructions_welcome">Добро пожаловать!</string>
-    <string name="instructions_first_paragraph">ReadIt! - это приложение для скорочтения, основанное на технологии RSVP
-        и
-        вдохновлённое приложением Spritzer. С этой технологией Вы можете читать до 1200 слов в минуту вместо 220 при
-        обычном чтении.
+    <string name="instructions_first_paragraph">\tReadIt! - это приложение для скорочтения, основанное на технологии
+        RSVP(Rapid Serial Visual Presentation). С этой технологией Вы можете читать до 1200 слов в минуту вместо 220
+        при обычном чтении.
     </string>
 
     <string name="instructions_source_text">Источники текста</string>
-    <string name="instructions_second_paragraph">Чтобы начать читать, Вы можете скопировать текст в буфер обмена и
-        выбрать "Прочитать текст из буфера обмена" на панели действий.
+    <string name="instructions_second_paragraph">\tЧтобы начать читать, Вы можете скопировать текст в буфер обмена и
+        выбрать \"Прочитать текст из буфера обмена\" на панели действий.
     </string>
-    <string name="instructions_third_paragraph">Так же, Вы можете выбрать действие "Прочитать текст из файла" и выбрать
+    <string name="instructions_third_paragraph">\tТак же, Вы можете выбрать действие \"Прочитать текст из файла\" и сам
         файл (доступные расширения: .txt и .epub) из системы.
     </string>
-    <string name="instructions_fourth_paragraph">Наконец, вы можете поделиться с ReadIt! из своего любимого приложения
-        (например
-        Flipboard, Instapaper).
+    <string name="instructions_fourth_paragraph">\tНаконец, вы можете поделиться с ReadIt! из своего любимого
+        приложения для чтения (например Flipboard, Instapaper).
     </string>
 
     <string name="instructions_controls_header">Управление</string>
-    <string name="instructions_fifth_paragraph">Для паузы / продолжения работы чтения коснитесь окна ридера. В
-        зависимост
-        и от
-        ваших настроек, вы сможете передвигаться по тексту с помощью либо свайпов либо просто кнопки слева. Так же,
-        вы можете изменять скорость по ходу работы чтения: свайпните вверх или вниз для того,
-        чтобы изменить скорость на 50 слов/мин.
+    <string name="instructions_fifth_paragraph">\tДля паузы или продолжения работы чтения коснитесь окна ридера.
+        В зависимости от ваших настроек, вы сможете передвигаться по тексту с помощью свайпов или кнопки слева.\n
+        \tЕсли Вам кажется, что чтение идёт слишком медленно или быстро, Вы можете изменить скорость по ходу работы
+        чтения: свайпните вверх или вниз, чтобы изменить скорость на 50 слов/мин.
     </string>
     <string name="instructions_emphasis_point">Точка ударения: сконцентрируйтесь на ней и чтение станет быстрее.
     </string>
