@@ -372,7 +372,7 @@ public class ReaderFragment extends Fragment {
 				}
 			}
 		};
-		handler.postDelayed(anim, Constants.SECOND); //TODO: make time relatively large
+		handler.postDelayed(anim, Constants.SECOND);
 	}
 
 	private Boolean isStorable(){
@@ -452,6 +452,7 @@ public class ReaderFragment extends Fragment {
 		parserThread = new Thread(new Runnable() {
 			@Override
 			public void run(){
+				Readable readable = Readable.createReadable(context, bundle);
 				readable.process(context);
 				parser = TextParser.newInstance(readable, settingsBundle);
 				parser.process();

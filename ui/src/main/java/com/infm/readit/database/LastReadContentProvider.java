@@ -43,6 +43,8 @@ public class LastReadContentProvider extends ContentProvider {
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder){
 		switch (uriMatcher.match(uri)){
+			case URI_LAST_READ:
+				break;
 			case URI_LAST_READ_ID:
 				String rowId = uri.getLastPathSegment();
 				selection = updateSingleSelection(selection, rowId);
@@ -82,6 +84,8 @@ public class LastReadContentProvider extends ContentProvider {
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs){
 		switch (uriMatcher.match(uri)){
+			case URI_LAST_READ:
+				break;
 			case URI_LAST_READ_ID:
 				String rowId = uri.getLastPathSegment();
 				selection = updateSingleSelection(selection, rowId);
@@ -98,6 +102,8 @@ public class LastReadContentProvider extends ContentProvider {
 	@Override
 	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs){
 		switch (uriMatcher.match(uri)){
+			case URI_LAST_READ:
+				break;
 			case URI_LAST_READ_ID:
 				String rowId = uri.getLastPathSegment();
 				selection = updateSingleSelection(selection, rowId);
