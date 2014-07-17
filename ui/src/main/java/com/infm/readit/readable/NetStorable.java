@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.TextUtils;
-
 import de.jetwick.snacktory.HtmlFetcher;
 import de.jetwick.snacktory.JResult;
 
@@ -13,7 +12,6 @@ import de.jetwick.snacktory.JResult;
  */
 public class NetStorable extends Storable {
 
-	private static final String LOGTAG = "NetStorable";
 	private String link;
 
 	public NetStorable(String link){
@@ -41,10 +39,9 @@ public class NetStorable extends Storable {
 		}
 		path = context.getFilesDir() + "/" + cleanFileName(title) + ".txt";
 		rowData = takeRowData(context);
-		if (rowData != null)
-			position = rowData.getPosition();
-		else
+		if (rowData != null){ position = rowData.getPosition(); } else {
 			createStorageFile(context, path, text.toString());
+		}
 	}
 
 	private String parseArticle(String url){

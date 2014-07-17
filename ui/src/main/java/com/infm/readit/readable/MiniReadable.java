@@ -22,33 +22,42 @@ public class MiniReadable extends Readable {
 		this.path = path;
 		this.header = header;
 		this.percent = percent;
-        this.position = position;
+		this.position = position;
 	}
 
 	public static ArrayList<MiniReadable> listFromCursor(Cursor cursor){
 		ArrayList<MiniReadable> result = new ArrayList<MiniReadable>();
 		if (cursor != null && cursor.getCount() > 0){
-            cursor.moveToFirst();
+			cursor.moveToFirst();
 			do {
-                result.add(new MiniReadable(
-                        cursor.getString(LastReadDBHelper.COLUMN_PATH),
-                        cursor.getString(LastReadDBHelper.COLUMN_HEADER),
-                        cursor.getString(LastReadDBHelper.COLUMN_PERCENT),
-                        cursor.getInt(LastReadDBHelper.COLUMN_POSITION)
-                ));
-            } while(cursor.moveToNext());
+				result.add(new MiniReadable(
+						cursor.getString(LastReadDBHelper.COLUMN_PATH),
+						cursor.getString(LastReadDBHelper.COLUMN_HEADER),
+						cursor.getString(LastReadDBHelper.COLUMN_PERCENT),
+						cursor.getInt(LastReadDBHelper.COLUMN_POSITION)
+				));
+			} while (cursor.moveToNext());
 		}
 		return result;
 	}
 
-    public static MiniReadable singletonFromCursor(Cursor cursor){
-        return new MiniReadable(
-                cursor.getString(LastReadDBHelper.COLUMN_PATH),
-                cursor.getString(LastReadDBHelper.COLUMN_HEADER),
-                cursor.getString(LastReadDBHelper.COLUMN_PERCENT),
-                cursor.getInt(LastReadDBHelper.COLUMN_POSITION)
-        );
-    }
+	public static MiniReadable singletonFromCursor(Cursor cursor){
+		return new MiniReadable(
+				cursor.getString(LastReadDBHelper.COLUMN_PATH),
+				cursor.getString(LastReadDBHelper.COLUMN_HEADER),
+				cursor.getString(LastReadDBHelper.COLUMN_PERCENT),
+				cursor.getInt(LastReadDBHelper.COLUMN_POSITION)
+		);
+	}
+
+	public static Intent createDBServiceIntent(Context context, MiniReadable readable){
+		Intent intent = new Intent(context, LastReadService.class);
+		intent.putExtra(Constants.EXTRA_HEADER, readable.getHeader());
+		intent.putExtra(Constants.EXTRA_PATH, readable.getPath());
+		intent.putExtra(Constants.EXTRA_POSITION, readable.getPosition());
+		intent.putExtra(Constants.EXTRA_PERCENT, readable.getPercent()); //dirty, dirty hack..
+		return intent;
+	}
 
 	public String getPercent(){
 		return percent;
@@ -61,17 +70,8 @@ public class MiniReadable extends Readable {
 	@Override
 	public void process(Context context){}
 
-    @Override
-    public String toString() {
-        return header + ", " + path + ", " + percent + ".";
-    }
-
-    public static Intent createDBServiceIntent(Context context, MiniReadable readable){
-        Intent intent = new Intent(context, LastReadService.class);
-        intent.putExtra(Constants.EXTRA_HEADER, readable.getHeader());
-        intent.putExtra(Constants.EXTRA_PATH, readable.getPath());
-        intent.putExtra(Constants.EXTRA_POSITION, readable.getPosition());
-        intent.putExtra(Constants.EXTRA_PERCENT, readable.getPercent()); //dirty, dirty hack..
-        return intent;
-    }
+	@Override
+	public String toString(){
+		return header + ", " + path + ", " + percent + ".";
+	}
 }

@@ -1,13 +1,10 @@
 package com.infm.readit.readable;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.util.Log;
-
 import com.infm.readit.Constants;
 import com.infm.readit.database.DataBundle;
 import com.infm.readit.database.LastReadContentProvider;
@@ -23,13 +20,11 @@ import java.io.IOException;
  */
 abstract public class Storable extends Readable {
 
-	private static final String LOGTAG = "Storable";
 
 	protected String extension;
 	protected String title;
 
 	public static DataBundle getRowData(Cursor cursor, String path){
-		Log.d(LOGTAG, "getRowData() called; cursor size: " + cursor.getCount() + "; path: " + path);
 		DataBundle rowData = null;
 		if (!TextUtils.isEmpty(path)){
 			while (cursor.moveToNext() && rowData == null){
@@ -45,20 +40,18 @@ abstract public class Storable extends Readable {
 			}
 		}
 		cursor.close();
-		Log.d(LOGTAG, "getRowData() : " + ((rowData == null) ? "null" : rowData.toString()));
 		return rowData;
 	}
 
 	public static void createStorageFile(Context context, String path, String text){
 		if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.Preferences.STORAGE,
-                true)){
+																			  true)){
 			File storageFile = new File(path);
 			try {
 				storageFile.createNewFile();
 				FileOutputStream fos = new FileOutputStream(storageFile);
 				fos.write(text.getBytes());
 				fos.close();
-				Log.d(LOGTAG, "caching performed successfully");
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -69,7 +62,8 @@ abstract public class Storable extends Readable {
 
 	protected DataBundle takeRowData(Context context){
 		return Storable.getRowData(context.getContentResolver().query(LastReadContentProvider.CONTENT_URI,
-				null, null, null, null), path); //looks weird, actually. upd: it will be in separate thread, so ok.
+																	  null, null, null, null),
+								   path); //looks weird, actually. upd: it will be in separate thread, so ok.
 	}
 
 	/**
@@ -84,8 +78,7 @@ abstract public class Storable extends Readable {
 	}
 
 	protected void makeHeader(){
-		if (TextUtils.isEmpty(header))
-            header = text.toString().substring(0, Math.min(text.length(), 40));
+		if (TextUtils.isEmpty(header)){ header = text.toString().substring(0, Math.min(text.length(), 40)); }
 	}
 
 	protected String cleanFileName(String s){

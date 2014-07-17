@@ -15,45 +15,45 @@ import com.infm.readit.R;
  * created on 7/16/14 by infm. Enjoy ;)
  */
 public class InstructionsActivity extends FragmentActivity {
-    private static final int NUM_PAGES = 4;
+	private static final int NUM_PAGES = 4;
 
-    private ViewPager pager;
-    private PagerAdapter pagerAdapter;
+	private ViewPager pager;
+	private PagerAdapter pagerAdapter;
 
-    public static void start(Context context){
-        context.startActivity(new Intent(context, InstructionsActivity.class));
-    }
+	public static void start(Context context){
+		context.startActivity(new Intent(context, InstructionsActivity.class));
+	}
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_instructions);
+	@Override
+	protected void onCreate(Bundle savedInstanceState){
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_instructions);
 
-        pager = (ViewPager) findViewById(R.id.instructions_pager);
-        pagerAdapter = new InstructionsPagerAdapter(getSupportFragmentManager());
-        pager.setAdapter(pagerAdapter);
-        pager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position){
-                invalidateOptionsMenu();
-            }
-        });
-    }
+		pager = (ViewPager) findViewById(R.id.instructions_pager);
+		pagerAdapter = new InstructionsPagerAdapter(getSupportFragmentManager());
+		pager.setAdapter(pagerAdapter);
+		pager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position){
+				invalidateOptionsMenu();
+			}
+		});
+	}
 
-    private class InstructionsPagerAdapter extends FragmentStatePagerAdapter {
+	private class InstructionsPagerAdapter extends FragmentStatePagerAdapter {
 
-        public InstructionsPagerAdapter(FragmentManager fm){
-            super(fm);
-        }
+		public InstructionsPagerAdapter(FragmentManager fm){
+			super(fm);
+		}
 
-        @Override
-        public Fragment getItem(int i){
-            return InstructionsFragment.create(i);
-        }
+		@Override
+		public Fragment getItem(int i){
+			return InstructionsFragment.create(i);
+		}
 
-        @Override
-        public int getCount(){
-            return NUM_PAGES;
-        }
-    }
+		@Override
+		public int getCount(){
+			return NUM_PAGES;
+		}
+	}
 }

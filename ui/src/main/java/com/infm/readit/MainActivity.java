@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -25,15 +24,11 @@ import com.ipaulpro.afilechooser.utils.FileUtils;
 
 public class MainActivity extends BaseActivity {
 
-	public static final String LOGTAG = "MainActivity";
-
 	private static final int FILE_SELECT_CODE = 7331;
 	private static final String SETTINGS_FRAGMENT_TAG = "SettingsFragment0182";
-    private static final String FILE_LIST_FRAGMENT_TAG = "FileLis11101asdtFraagment123";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
-        Log.d(LOGTAG, "onCreate() called");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		isAnybodyOutThere(this);
@@ -42,21 +37,23 @@ public class MainActivity extends BaseActivity {
 
 		Crashlytics.start(this);
 
-        changeActionBarIcon();
+		changeActionBarIcon();
 		startFileListFragment();
 	}
 
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    private void changeActionBarIcon(){
-        ActionBar actionBar = getActionBar();
-        if (actionBar != null)
-            actionBar.setIcon(R.drawable.logo_up);
-    }
+	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+	private void changeActionBarIcon(){
+		ActionBar actionBar = getActionBar();
+		if (actionBar != null){ actionBar.setIcon(R.drawable.logo_up); }
+	}
 
 	private void isAnybodyOutThere(Context context){
 		if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.Preferences.NEWCOMER, false)){
 			InstructionsActivity.start(this);
-			PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(Constants.Preferences.NEWCOMER, true).apply();
+			PreferenceManager.getDefaultSharedPreferences(context)
+					.edit()
+					.putBoolean(Constants.Preferences.NEWCOMER, true)
+					.apply();
 		}
 	}
 
@@ -78,9 +75,9 @@ public class MainActivity extends BaseActivity {
 			case R.id.action_file:
 				getFromFile();
 				break;
-            case R.id.action_instructions:
-                InstructionsActivity.start(this);
-                break;
+			case R.id.action_instructions:
+				InstructionsActivity.start(this);
+				break;
 		}
 
 		return super.onOptionsItemSelected(item);
@@ -91,7 +88,8 @@ public class MainActivity extends BaseActivity {
 	}
 
 	private void getFromFile(){
-		Intent intent = Intent.createChooser(FileUtils.createGetContentIntent(), getResources().getString(R.string.choose_file));
+		Intent intent = Intent.createChooser(FileUtils.createGetContentIntent(),
+											 getResources().getString(R.string.choose_file));
 		startActivityForResult(intent, FILE_SELECT_CODE);
 	}
 
@@ -102,10 +100,9 @@ public class MainActivity extends BaseActivity {
 				if (resultCode == RESULT_OK){
 					if (data != null){
 						String relativePath = FileUtils.getPath(this, data.getData());
-						if (FileStorable.isExtensionValid(FileUtils.getExtension(relativePath)))
+						if (FileStorable.isExtensionValid(FileUtils.getExtension(relativePath))){
 							ReceiverActivity.startReceiverActivity(this, Readable.TYPE_FILE, relativePath);
-						else
-							Toast.makeText(this, R.string.wrong_ext, Toast.LENGTH_SHORT).show();
+						} else { Toast.makeText(this, R.string.wrong_ext, Toast.LENGTH_SHORT).show(); }
 					}
 				}
 				break;
@@ -118,23 +115,21 @@ public class MainActivity extends BaseActivity {
 	}
 
 	private void startSettingsFragment(){
-        Log.d(LOGTAG, "startSettingsFragment() called");
 		FragmentManager fragmentManager = getFragmentManager();
 		Fragment existing = fragmentManager.findFragmentByTag(SETTINGS_FRAGMENT_TAG);
 		if (existing == null){
-            fragmentManager.beginTransaction().
-                    replace(R.id.content_layout, new SettingsFragment(), SETTINGS_FRAGMENT_TAG).
-                    addToBackStack(null).
-                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).
-                    commit();
+			fragmentManager.beginTransaction().
+					replace(R.id.content_layout, new SettingsFragment(), SETTINGS_FRAGMENT_TAG).
+					addToBackStack(null).
+					setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).
+					commit();
 		}
 
-    }
+	}
 
 	private void startFileListFragment(){
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        Log.d(LOGTAG, "startFileListFragment() called");
+		FragmentManager fragmentManager = getFragmentManager();
+		fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 		fragmentManager.beginTransaction().
 				replace(R.id.content_layout, new FileListFragment()).
 				commit();

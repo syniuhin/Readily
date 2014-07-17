@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-
 import com.infm.readit.Constants;
 import com.infm.readit.R;
 import com.infm.readit.database.DataBundle;
@@ -54,19 +53,19 @@ abstract public class Readable implements Serializable {
 		Readable readable = null;
 		if (bundle != null){
 			readable = createReadable(
-                    bundle.getInt(Constants.EXTRA_TYPE, -1),
+					bundle.getInt(Constants.EXTRA_TYPE, -1),
 					bundle.getString(Intent.EXTRA_TEXT, context.getResources().getString(R.string.sample_text)),
 					bundle.getString(Constants.EXTRA_PATH, null),
 					PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.Preferences.STORAGE,
-                            true));
+																					  true));
 			readable.setPosition(Math.max(bundle.getInt(Constants.EXTRA_POSITION), 0));
-            readable.setHeader(bundle.getString(Constants.EXTRA_HEADER));
+			readable.setHeader(bundle.getString(Constants.EXTRA_HEADER));
 		}
 		return readable;
 	}
 
 	public static Readable createReadable(Integer intentType, String intentText, String intentPath,
-                                          Boolean cacheEnabled){
+										  Boolean cacheEnabled){
 		Readable readable;
 		switch (intentType){
 			case TYPE_RAW:
@@ -88,10 +87,11 @@ abstract public class Readable implements Serializable {
 				String link;
 				if (!TextUtils.isEmpty(intentText) &&
 						intentText.length() < Constants.NON_LINK_LENGTH &&
-						!TextUtils.isEmpty(link = TextParser.findLink(TextParser.compilePattern(), intentText)))
+						!TextUtils.isEmpty(link = TextParser.findLink(TextParser.compilePattern(), intentText))){
 					readable = new NetStorable(link);
-				else
+				} else {
 					readable = new RawReadable(intentText, cacheEnabled); //neutral value, actually
+				}
 		}
 		return readable;
 	}

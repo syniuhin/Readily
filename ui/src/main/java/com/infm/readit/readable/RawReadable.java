@@ -21,10 +21,9 @@ public class RawReadable extends Storable {
 			makeHeader();
 			path = context.getFilesDir() + "/" + cleanFileName(header) + ".txt";
 			rowData = takeRowData(context);
-			if (rowData != null)
-				position = rowData.getPosition();
-			else
+			if (rowData != null){ position = rowData.getPosition(); } else {
 				createStorageFile(context, path, text.toString());
+			}
 		}
 	}
 }

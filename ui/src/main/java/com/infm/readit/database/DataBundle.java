@@ -2,7 +2,6 @@ package com.infm.readit.database;
 
 import android.content.ContentValues;
 import android.content.Intent;
-
 import com.infm.readit.Constants;
 
 import java.io.Serializable;
@@ -37,27 +36,27 @@ public class DataBundle implements Serializable {
 
 	public static DataBundle createElementFromIntent(Intent intent){
 		return new DataBundle(intent.getStringExtra(Constants.EXTRA_HEADER),
-				intent.getStringExtra(Constants.EXTRA_PATH),
-				intent.getIntExtra(Constants.EXTRA_POSITION, 0),
-				intent.getStringExtra(Constants.EXTRA_PERCENT));
+							  intent.getStringExtra(Constants.EXTRA_PATH),
+							  intent.getIntExtra(Constants.EXTRA_POSITION, 0),
+							  intent.getStringExtra(Constants.EXTRA_PERCENT));
 	}
 
-    public static ContentValues getInsertContentValues(DataBundle dataBundle){
-        ContentValues values = new ContentValues();
-        values.put(LastReadDBHelper.KEY_HEADER, dataBundle.getHeader());
-        values.put(LastReadDBHelper.KEY_PATH, dataBundle.getPath());
-        values.put(LastReadDBHelper.KEY_POSITION, dataBundle.getPosition());
-        values.put(LastReadDBHelper.KEY_PERCENT, dataBundle.getPercent());
-        return values;
-    }
+	public static ContentValues getInsertContentValues(DataBundle dataBundle){
+		ContentValues values = new ContentValues();
+		values.put(LastReadDBHelper.KEY_HEADER, dataBundle.getHeader());
+		values.put(LastReadDBHelper.KEY_PATH, dataBundle.getPath());
+		values.put(LastReadDBHelper.KEY_POSITION, dataBundle.getPosition());
+		values.put(LastReadDBHelper.KEY_PERCENT, dataBundle.getPercent());
+		return values;
+	}
 
-    public static ContentValues getUpdateContentValues(DataBundle dataBundle){
-        ContentValues values = new ContentValues();
-        values.put(LastReadDBHelper.KEY_POSITION, dataBundle.getPosition());
-        values.put(LastReadDBHelper.KEY_PERCENT, dataBundle.getPercent());
-        values.put(LastReadDBHelper.KEY_HEADER, dataBundle.getHeader());
-        return values;
-    }
+	public static ContentValues getUpdateContentValues(DataBundle dataBundle){
+		ContentValues values = new ContentValues();
+		values.put(LastReadDBHelper.KEY_POSITION, dataBundle.getPosition());
+		values.put(LastReadDBHelper.KEY_PERCENT, dataBundle.getPercent());
+		values.put(LastReadDBHelper.KEY_HEADER, dataBundle.getHeader());
+		return values;
+	}
 
 	public Integer getRowId(){
 		return rowId;

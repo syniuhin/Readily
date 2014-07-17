@@ -3,7 +3,6 @@ package com.infm.readit.readable;
 import android.content.Context;
 import android.net.Uri;
 import android.text.TextUtils;
-
 import com.infm.readit.Constants;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 
@@ -11,8 +10,6 @@ import com.ipaulpro.afilechooser.utils.FileUtils;
  * Created by infm on 6/13/14. Enjoy ;)
  */
 abstract public class FileStorable extends Storable {
-
-	private static final String LOGTAG = "FileStorable";
 
 	public static FileStorable createFileStorable(String intentPath){
 		FileStorable fileStorable;
@@ -31,17 +28,14 @@ abstract public class FileStorable extends Storable {
 
 	public static String takePath(Context context, String s){
 		String candidate = FileUtils.getPath(context, Uri.parse(s));
-		if (TextUtils.isEmpty(candidate))
-			return s;
+		if (TextUtils.isEmpty(candidate)){ return s; }
 		return candidate;
 	}
 
 	public static int getIntentType(String intentPath){
 		String ext = FileUtils.getExtension(intentPath);
-		if (Constants.EXTENSION_TXT.equals(ext))
-			return Readable.TYPE_TXT;
-		if (Constants.EXTENSION_EPUB.equals(ext))
-			return Readable.TYPE_EPUB;
+		if (Constants.EXTENSION_TXT.equals(ext)){ return Readable.TYPE_TXT; }
+		if (Constants.EXTENSION_EPUB.equals(ext)){ return Readable.TYPE_EPUB; }
 		return -1;
 	}
 
@@ -54,7 +48,6 @@ abstract public class FileStorable extends Storable {
 
 	protected void createRowData(Context context){
 		rowData = takeRowData(context);
-		if (rowData != null)
-			position = rowData.getPosition();
+		if (rowData != null){ position = rowData.getPosition(); }
 	}
 }

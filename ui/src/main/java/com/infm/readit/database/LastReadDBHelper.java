@@ -20,6 +20,11 @@ public class LastReadDBHelper extends SQLiteOpenHelper {
 	public static final String KEY_PERCENT = "percent_left";
 	public static final String KEY_TIME_MODIFIED = "time_modified";
 	public static final String KEY_LINK = "link";
+	public static final Integer COLUMN_ROWID = 0;
+	public static final Integer COLUMN_HEADER = 1;
+	public static final Integer COLUMN_PATH = 2;
+	public static final Integer COLUMN_POSITION = 5;
+	public static final Integer COLUMN_PERCENT = 4;
 	static final String CREATE =
 			"CREATE TABLE " + TABLE + " (" +
 					KEY_ROWID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -29,13 +34,6 @@ public class LastReadDBHelper extends SQLiteOpenHelper {
 					KEY_PERCENT + " INTEGER, " +
 					KEY_POSITION + " INTEGER, " +
 					KEY_LINK + "TEXT);";
-	public static final Integer COLUMN_ROWID = 0;
-	public static final Integer COLUMN_HEADER = 1;
-	public static final Integer COLUMN_PATH = 2;
-	public static final Integer COLUMN_POSITION = 5;
-	public static final Integer COLUMN_PERCENT = 4;
-	public static final Integer COLUMN_TIME_MODIFIED = 3;
-	public static final Integer COLUMN_LINK = 6;
 
 	public LastReadDBHelper(Context context){
 		super(context, NAME, null, VERSION);

@@ -40,10 +40,9 @@ public class StorageCheckerService extends IntentService {
 	private Map<String, Integer> getBaseData(ContentResolver contentResolver){
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		Cursor cursor = contentResolver.query(LastReadContentProvider.CONTENT_URI,
-				new String[]{LastReadDBHelper.KEY_ROWID, LastReadDBHelper.KEY_PATH},
-				null, null, null);
-		while (cursor.moveToNext())
-			result.put(cursor.getString(1), cursor.getInt(0));
+											  new String[]{LastReadDBHelper.KEY_ROWID, LastReadDBHelper.KEY_PATH},
+											  null, null, null);
+		while (cursor.moveToNext()){ result.put(cursor.getString(1), cursor.getInt(0)); }
 		cursor.close();
 		return result;
 	}
@@ -51,14 +50,15 @@ public class StorageCheckerService extends IntentService {
 	private void processFolder(Map<String, Integer> baseData, ContentResolver contentResolver){
 		File homeDir = getFilesDir();
 		File[] files = homeDir.listFiles();
-		for (File file : files)
-			if (file.exists() && !baseData.containsKey(file.getAbsolutePath()))
-				file.delete();
+		for (File file : files){ if (file.exists() && !baseData.containsKey(file.getAbsolutePath())){ file.delete();
+		} }
 		for (Map.Entry<String, Integer> entry : baseData.entrySet()){
 			String path = entry.getKey();
-            if (!(new File(path)).exists())
-                contentResolver.delete(ContentUris.withAppendedId(LastReadContentProvider.CONTENT_URI, entry.getValue()),
+			if (!(new File(path)).exists()){
+				contentResolver.delete(
+						ContentUris.withAppendedId(LastReadContentProvider.CONTENT_URI, entry.getValue()),
 						null, null);
+			}
 		}
 	}
 }
