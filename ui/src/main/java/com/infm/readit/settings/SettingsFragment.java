@@ -12,10 +12,10 @@ import android.preference.PreferenceScreen;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.NumberPicker;
-
 import com.infm.readit.Constants;
 import com.infm.readit.R;
 import com.infm.readit.ReceiverActivity;
+import com.infm.readit.instructions.InstructionsActivity;
 import com.infm.readit.readable.Readable;
 
 import java.util.ArrayList;
@@ -61,8 +61,8 @@ public class SettingsFragment extends PreferenceFragment {
 				return true;
 			}
 			if (key.equals(Constants.Preferences.INSTRUCTIONS)){
-				Constants.showInstructionsDialog(getActivity());
-				return true;
+                InstructionsActivity.start(getActivity());
+                return true;
 			}
 			if (key.equals(Constants.Preferences.TEST)){
 				ReceiverActivity.startReceiverActivity(getActivity(), Readable.TYPE_RAW,

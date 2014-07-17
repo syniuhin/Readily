@@ -1,11 +1,5 @@
 package com.infm.readit;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.view.LayoutInflater;
-import android.widget.LinearLayout;
-
 /**
  * Created by infm on 6/25/14. Enjoy ;)
  */
@@ -39,23 +33,6 @@ public class Constants {
 	public static final String EXTENSION_TXT = ".txt";
 	public static final String EXTENSION_EPUB = ".epub";
 
-	public static void showInstructionsDialog(Context context){
-		LayoutInflater inflater = (LayoutInflater)
-				context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		final LinearLayout instructionsLayout = (LinearLayout) inflater.inflate(R.layout.dialog_instructions, null);
-		new AlertDialog.Builder(context).
-				setTitle(R.string.preferences_getStarted).
-				setView(instructionsLayout).
-				setPositiveButton(android.R.string.ok,
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which){
-                                dialog.dismiss();
-                            }
-						}
-				).show();
-	}
-    
     public static class Preferences {
         public static final String NEWCOMER = "is_anybody_out_there?";
 

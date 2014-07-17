@@ -4,4 +4,4 @@
         android:src="@drawable/mosaic"
         android:antialias="true"
         android:dither="true"
-        android:tileMode="repeat"/>
+        android:tileMode="mirror"/>

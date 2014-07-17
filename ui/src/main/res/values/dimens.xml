@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <dimen name="port_margin_left">10dp</dimen>
     <dimen name="land_margin_left">80dp</dimen>
     <dimen name="port_tablet_margin_left">90dp</dimen>
     <dimen name="land_tablet_margin_left">230dp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
 </resources>

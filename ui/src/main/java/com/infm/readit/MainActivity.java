@@ -15,8 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
-import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
+import com.infm.readit.instructions.InstructionsActivity;
 import com.infm.readit.readable.FileStorable;
 import com.infm.readit.readable.Readable;
 import com.infm.readit.service.StorageCheckerService;
@@ -56,7 +55,7 @@ public class MainActivity extends BaseActivity {
 
 	private void isAnybodyOutThere(Context context){
 		if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.Preferences.NEWCOMER, false)){
-			Constants.showInstructionsDialog(context);
+			InstructionsActivity.start(this);
 			PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(Constants.Preferences.NEWCOMER, true).apply();
 		}
 	}
@@ -120,21 +119,20 @@ public class MainActivity extends BaseActivity {
 		FragmentManager fragmentManager = getFragmentManager();
 		Fragment existing = fragmentManager.findFragmentByTag(SETTINGS_FRAGMENT_TAG);
 		if (existing == null){
-			getFragmentManager().beginTransaction().
-					replace(R.id.content_layout, new SettingsFragment(), SETTINGS_FRAGMENT_TAG).
-					addToBackStack(SETTINGS_FRAGMENT_TAG).
-					setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).
-					commit();
-		} else {
-			YoYo.with(Techniques.Tada).
-					duration(700).
-					playOn(findViewById(R.id.content_layout));
+            fragmentManager.beginTransaction().
+                    replace(R.id.content_layout, new SettingsFragment(), SETTINGS_FRAGMENT_TAG).
+                    addToBackStack(null).
+                    setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).
+                    commit();
 		}
-	}
+
+    }
 
 	private void startFileListFragment(){
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         Log.d(LOGTAG, "startFileListFragment() called");
-		getFragmentManager().beginTransaction().
+		fragmentManager.beginTransaction().
 				replace(R.id.content_layout, new FileListFragment()).
 				commit();
 	}

@@ -97,57 +97,42 @@
                 android:visibility="gone">
 
             <TextView
+                    style="@style/reader_text_main"
                     android:id="@+id/currentWordTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignLeft="@+id/pointerTopImageView"
-                    android:layout_centerVertical="true"
-                    android:singleLine="true"
-                    android:textSize="20sp"
-                    android:typeface="monospace"/>
+                    android:layout_alignLeft="@+id/pointerTopImageView"/>
 
             <TextView
+                    style="@style/reader_text_main"
                     android:id="@+id/leftWordTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/currentWordTextView"
-                    android:layout_centerVertical="true"
-                    android:layout_toLeftOf="@+id/currentWordTextView"
-                    android:singleLine="true"
-                    android:textSize="20sp"
-                    android:typeface="monospace"/>
+                    android:layout_toLeftOf="@+id/currentWordTextView"/>
 
             <TextView
+                    style="@style/reader_text_main"
                     android:id="@+id/rightWordTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:layout_alignBaseline="@+id/currentWordTextView"
-                    android:layout_centerVertical="true"
-                    android:layout_toRightOf="@+id/currentWordTextView"
-                    android:singleLine="true"
-                    android:textSize="20sp"
-                    android:typeface="monospace"/>
+                    android:layout_toRightOf="@+id/currentWordTextView"/>
 
             <ImageView
                     android:id="@+id/pointerTopImageView"
                     android:layout_width="wrap_content"
-                    android:layout_height="12sp"
+                    android:layout_height="10dp"
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
                     android:contentDescription="@string/top_pointer_description"
-                    android:paddingLeft="4sp"
-                    android:paddingRight="100dp"
+                    android:paddingLeft="3.5dp"
+                    android:paddingRight="95dp"
                     android:src="@drawable/pointer"/>
 
             <ImageView
                     android:id="@+id/pointerBottomImageView"
                     android:layout_width="wrap_content"
-                    android:layout_height="12sp"
+                    android:layout_height="10dp"
                     android:layout_alignParentBottom="true"
                     android:layout_centerHorizontal="true"
                     android:contentDescription="@string/bottom_pointer_description"
-                    android:paddingLeft="4sp"
-                    android:paddingRight="100dp"
+                    android:paddingLeft="3.5dp"
+                    android:paddingRight="95dp"
                     android:src="@drawable/pointer"/>
 
         </RelativeLayout>
