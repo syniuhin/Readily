@@ -61,7 +61,7 @@ public class SettingsBundle {
 	public void assignFields(){
 		WPM = Integer.parseInt(sharedPreferences.getString(Constants.Preferences.WPM, Constants.DEFAULT_WPM));
 		typeface = Integer.parseInt(sharedPreferences.getString(Constants.Preferences.TYPEFACE, "0"));
-		swipesEnabled = sharedPreferences.getBoolean(Constants.Preferences.SWIPE, true);
+		swipesEnabled = sharedPreferences.getBoolean(Constants.Preferences.SWIPE, false);
 		showingContextEnabled = sharedPreferences.getBoolean(Constants.Preferences.SHOW_CONTEXT, true);
 		punctuationSpeedDiffers = sharedPreferences.getBoolean(Constants.Preferences.PUNCTUATION_DIFFERS, true);
 		delayCoefficients = buildDelayListCoefficients();
