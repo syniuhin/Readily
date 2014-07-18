@@ -2,37 +2,31 @@
 
 ##Welcome :)
 
-**ReadIt!** is a speed-reading android application powered by [RSVP] technology and inspired by [Spritzer] app.
+**ReadIt!** is a speed-reading android application powered by [RSVP] technology and inspired by [Spritzer] project.
 
-![Screenshot](http://cs608727.vk.me/v608727090/a06e/bzoLRnPrCfY.jpg)
+![Screencast](http://i61.tinypic.com/2la7xc1.gif)
 
 With this technology you can read up to 1200 words per minute instead of 220 when reading normally. 
-
-##Instructions
-
-To start reading copy some the text to clipboard or choose plain text / `.epub` file from your filesystem (*this action actually requires file manager*). 
-
-To pause or play, slightly swipe on the reader window. You can scroll through a text using either button or left and right swipe.
-
-To change speed on the go, swipe a bit harder up or down. Step is 50 wpm.
 
 ##Features
 
 List of functions already implemented:
 
 * Splitting of long words (*max length of word is not currently optional, default value is 13*).
-* Speed change before punctuation, in the beginning of a paragraph and on long words (*optional*).
-* Preview of next words in paragraph (*opitonal*).
+* Speed change before punctuation, on long words and on digits (*optional*).
+* Preview of next words in a paragraph (*opitonal*).
 * Storage of incomplete readings: 
   * **From files**: saves your progress, so you can resume reading in one click.
   * **From net**: caches text to a file and further works as a reading from file.
+* Changing speed on the go.
 
 ##Supported sources of text:
 
 * Clipboard
 * Internet
-* `.txt`
-* `.epub`(*alpha*).
+* Files: 
+  * `.txt`
+  * `.epub`(*alpha*).
 
 ##Languages supported
 
@@ -40,19 +34,23 @@ List of functions already implemented:
 * Russian
 * Ukrainian
 
-If you know some other language and want to help me - please, [contact me], I'd appreciate it a lot!
+*If you know some other language and want to help - please, [contact me], I'd appreciate it a lot!*
 
-##TODO:
+##License
 
-Well, I'm trying to design very flexible and powerful app, so demands are really ambitious sometimes: 
+This app is under [MIT License].
 
-* Work on emphasis building deeper
-* Parse all e-book formats
-* Improve html parsing(e.g. take all pages, instead of 1)
-* Add some nice themes
+##Thanks
 
-# **Have fun!**
+Libraries and code:
+
+* [aFileChooser](https://github.com/iPaulPro/aFileChooser)
+* [Snacktory](https://github.com/karussell/snacktory)
+* [EpubLib](http://www.siegmann.nl/epublib)
+* [Animations](https://github.com/daimajia/AndroidViewAnimations)
+
 
 [RSVP]:http://en.wikipedia.org/wiki/Rapid_Serial_Visual_Presentation "Rapid Serial Visual Representation"
 [Spritzer]:http://www.spritzinc.com
-[contact me]:mailto:i.s.sinyugin@gmail.com
+[contact me]:mailto:syniuhin@gmail.com
+[MIT License]:https://github.com/infm/ReadIt/LICENSE.txt
