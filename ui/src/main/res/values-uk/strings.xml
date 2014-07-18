@@ -2,9 +2,9 @@
 <resources>
 
     <!-- Basic -->
-    <string name="app_name">RSVP-Reader</string>
+    <string name="app_name">ReadIt!</string>
     <string name="title_activity_main">ReadIt!</string>
-    <string name="title_activity_receiver">ReadIt!</string>
+    <string name="title_activity_receiver">Додати у ReadIt!</string>
     <string name="title_activity_settings">Налаштування</string>
 
     <!-- UI -->
@@ -17,17 +17,34 @@
     <string name="choose_chapter">Виберіть главу</string>
     <string name="last_reading_title">Last reading title</string>
     <string name="continue_reading">Продовжити</string>
+    <string name="list_empty_view">Спробуйте рідер!</string>
     <string name="file_manager_required">Будь ласка, встановіть файловий менеджер</string>
     <string name="wrong_ext">Неправильне розширення</string>
+    <string name="text_null">Текст відсутній</string>
+    <string name="cant_fetch">Проблеми із завантаженням тексту</string>
+    <string name="delete">Видалити вибрані елементи</string>
+    <string name="choose_file">Виберіть файл</string>
+    <string name="tap_to_start">Торкніться, щоб почати</string>
+    <string name="confirmation_dialog_title">Ви впевнені?</string>
+    <string name="gonna_delete">Ви видаляєте цей елемент. Ця дія незворотня!</string>
+    <string name="editor_dialog_title">Редагувати це читання</string>
+    <string name="editor_dialog_header_hint">Назва читання (наприклад "Сяйво")</string>
+    <string name="editor_dialog_position_hint">Позиція в тексті</string>
+    <string name="about">Загальна інформація</string>
+    <string name="title">Назва</string>
+    <string name="path">Путь до файлу</string>
+    <string name="position">Позиція у тексті</string>
+    <string name="sth_left">залишилось</string>
+    <string name="pause">Пауза</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитати текст з буферу обміну</string>
-    <string name="preferences_clipboard_summary"> </string>
     <string name="preferences_pick_file">Прочитати текст із файлу</string>
     <string name="preferences_pick_file_summary">Виберіть .txt чи .epub файл, з якого будете читати</string>
     <string name="preferences_test">Перевірити налаштування</string>
     <string name="preferences_basic_settings">Базові налаштування</string>
     <string name="preferences_set_wpm">Встановити швидкість(слів у хвилину)</string>
+    <string name="preferences_set_wpm_summary">Кількість слів у хвилину</string>
     <string name="preferences_punctuation_settings">Швидкість при пунктуації</string>
     <string name="preferences_different_speed_punctuation">Змінити швидкість при пунктуації</string>
     <string name="preferences_different_speed_punctuation_summary">наприклад кома або двокрапка</string>
@@ -38,7 +55,7 @@
     <string name="preferences_advanced">Розширені налаштування</string>
     <string name="preferences_showContext">Показувати контекст</string>
     <string name="preferences_showContext_summary">Наступні слова у реченні</string>
-    <string name="preferences_getStarted">Інструкції</string>
+    <string name="preferences_instrucions">Інструкції</string>
     <string name="preferences_swipe">Свайп для прокрутки</string>
     <string name="preferences_swipe_summary">Наліво для наступного, направо для попереднього слова</string>
     <string name="preferences_share_feedback">Контакти</string>
@@ -46,9 +63,50 @@
     <string name="preferences_send_feedback_summary">Розкажіть мені свої ідеї :)</string>
     <string name="preference_cache">Зберігати читання</string>
     <string name="preference_cache_summary">Кешує незакінчені читання</string>
-    <string name="about">Загальна інформація</string>
+    <string name="mail_to_me">mailto:syniuhin@gmail.com</string>
 
-    <string name="sample_text">А коли приходив той прекрасний брат смерті і брав мене до себе - люди і там чигали на мене. Вони сплітали своє існування з моїм в химерну сітку, намагались налити мої вуха та моє серце тим, чим самі були повні. Слухай-но, слухай! Ти й тут несеш до мене свої страждання? Своє мерзенство? Моє серце не може більше вмістити. Воно повне ущерть. Дай мені спокій.
-     Так було по ночах.
-     А вдень я здригався, коли чув за собою тінь від людини, і з огидою слухав ревучі потоки людського життя, що мчали назустріч, як дикі коні, з усіх городських вулиць.</string>
+    <string name="sample_text">А коли приходив той прекрасний брат смерті і брав мене до себе - люди і там чигали на
+        мене. Вони сплітали своє існування з моїм в химерну сітку, намагались налити мої вуха та моє серце тим, чим самі
+        були повні. Слухай-но, слухай! Ти й тут несеш до мене свої страждання? Своє мерзенство? Моє серце не може більше
+        вмістити. Воно повне ущерть. Дай мені спокій.
+        Так було по ночах.
+        А вдень я здригався, коли чув за собою тінь від людини, і з огидою слухав ревучі потоки людського життя, що
+        мчали назустріч, як дикі коні, з усіх городських вулиць.
+    </string>
+
+    <!-- Instructions -->
+    <string name="instructions_welcome">Доброго дня!</string>
+    <string name="instructions_first_paragraph">\tReadIt! - це додаток для швидкого читання, базований на технології RSVP
+        (Rapid Serial Visual Presentation). Із цією технологією Ви зможете читати до 1200 слів у хвилину замість 220 при
+        звичайному читанні.
+    </string>
+
+    <string name="instructions_source_text">Джерела тексту</string>
+    <string name="instructions_second_paragraph">\tДля того, шоб почати читати, Ви можете скопіювати текст до буферу
+        обміну і вибрати \"Прочитати текст з буферу обміну\" на панелі дій.
+    </string>
+    <string name="instructions_third_paragraph">\tТакож Ви можете вибрати дію \"Прочитати текст із файлу\" та вибрати
+        сам файл (доступні розширення: .txt і .epub) із системи.
+    </string>
+    <string name="instructions_fourth_paragraph">\tНарешті, Ви можете поділитися із ReadIt! зі свого улюбленого додатка
+        для читання (наприклад Flipboard, Instapaper).
+    </string>
+
+    <string name="instructions_controls_header">Управління</string>
+    <string name="instructions_fifth_paragraph">\tДля паузи або продовження роботи читання торкніться вікна рідера.
+        В залежності від ваших налаштувань, Ви зможете пересуватися по тексту за допомогою свайпів або кнопки
+        зліва.\n \tЯкщо читання занадто швидке або повільне для Вас, Ви можете міняти швидкість на ходу: свайпніть
+        уверх чи униз для того, щоб змінити швидкість на 50 слів/хв.
+    </string>
+
+    <string name="instructions_emphasis_point">Точка наголосу: зконцентруйтеся на ній і читання буде швидшим.
+    </string>
+    <string name="instructions_notification">Оповіщення: з’явиться, коли Вас потрібно оповістити (наприклад коли Ви
+        зміните швидкість читання).шве
+    </string>
+    <string name="instructions_previous_word_button">Кнопка попереднього слова(опціонально): один з варіантів
+        навігації по тексту.
+    </string>
+    <string name="instructions_progress_bar">Індикатор прогресу: показує, скільки Ви вже прочитали.</string>
+    <string name="enjoyit">Насолоджуйтесь ;)</string>
 </resources>

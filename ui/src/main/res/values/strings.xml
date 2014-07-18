@@ -2,9 +2,9 @@
 <resources>
 
     <!-- Basic -->
-    <string name="app_name">RSVP-Reader</string>
+    <string name="app_name">ReadIt!</string>
     <string name="title_activity_main">ReadIt!</string>
-    <string name="title_activity_receiver">ReadIt!</string>
+    <string name="title_activity_receiver">Add to ReadIt!</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- UI -->
@@ -12,21 +12,29 @@
     <string name="next_words">next words</string>
     <string name="top_pointer_description">points to emphasis from top</string>
     <string name="bottom_pointer_description">points to emphasis from bottom</string>
-    <string name="clipboard_button">Read text from clipboard</string>
+    <string name="clipboard_button">Read a text from clipboard</string>
     <string name="clipboard_empty">There is nothing in the clipboard</string>
-    <string name="choose_chapter">Choose a chapter</string>
-    <string name="last_reading_title">Last reading title</string>
-    <string name="last_reading_percent">%</string>
-    <string name="last_reading_time">sec</string>
-    <string name="monospace">Monospace</string>
-    <string name="sans">Sans</string>
-    <string name="serif">Serif</string>
     <string name="continue_reading">Continue</string>
     <string name="list_empty_view">Hey, take some reading!</string>
-    <string name="pause">Pause</string>
-    <string name="play">Play</string>
-    <string name="file_manager_required">Please install a File Manager</string>
+    <string name="file_manager_required">Please install a file manager</string>
     <string name="wrong_ext">Wrong extension</string>
+    <string name="text_null">Text is missing</string>
+    <string name="cant_fetch">Text fetching problems</string>
+    <string name="delete">Delete</string>
+    <string name="edit_header">Edit header</string>
+    <string name="choose_file">Choose a file</string>
+    <string name="tap_to_start">Tap to start</string>
+    <string name="confirmation_dialog_title">Are you sure?</string>
+    <string name="gonna_delete">You are deleting this item. This action cannot be undone!</string>
+    <string name="editor_dialog_title">Edit the reading</string>
+    <string name="editor_dialog_header_hint">Title of the reading (e.g. "The Shining")</string>
+    <string name="editor_dialog_position_hint">Position in the text</string>
+    <string name="about">General info</string>
+    <string name="title">Title</string>
+    <string name="path">Path to a file</string>
+    <string name="position">Position in a text</string>
+    <string name="sth_left">left</string>
+    <string name="pause">Pause</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Read a text from the clipboard</string>
@@ -34,7 +42,8 @@
     <string name="preferences_pick_file_summary">Choose a .txt or .epub file to read</string>
     <string name="preferences_test">Test your settings</string>
     <string name="preferences_basic_settings">Basic settings</string>
-    <string name="preferences_set_wpm">Set speed(words per minute)</string>
+    <string name="preferences_set_wpm">Set speed</string>
+    <string name="preferences_set_wpm_summary">Words per minute rate</string>
     <string name="preferences_punctuation_settings">Speed on punctuation</string>
     <string name="preferences_different_speed_punctuation">Change speed on punctuation</string>
     <string name="preferences_different_speed_punctuation_summary">e.g. when meeting coma or colon</string>
@@ -45,27 +54,51 @@
     <string name="preferences_advanced">Advanced settings</string>
     <string name="preferences_showContext">Show context</string>
     <string name="preferences_showContext_summary">Next words in a sentence</string>
-    <string name="preferences_readLastOne">Read last parsed text</string>
-    <string name="preferences_getStarted">Instructions</string>
+    <string name="preferences_instrucions">Instructions</string>
     <string name="preferences_swipe">Swipe to scroll</string>
     <string name="preferences_swipe_summary">Left to next word, right to previous one</string>
     <string name="preferences_share_feedback">Feedback</string>
     <string name="preferences_send_feedback">Send a feedback</string>
     <string name="preferences_send_feedback_summary">Tell me your ideas :)</string>
-    <string name="preferences_typeface_title">Choose text typeface</string>
     <string name="preference_cache">Save readings</string>
     <string name="preference_cache_summary">Caches uncompleted readings</string>
-    <string name="mail_to_me">mailto:i.s.sinyugin@gmail.com</string>
-    <string name="about">About</string>
-
-    <string name="sample_text"> Inside the flat a fruity voice was reading out a list of figures which had something to do with the production of pig iron.
-        The voice came from an oblong metal plaque like a dulled mirror which formed part of the surface of the right-hand wall.
+    <string name="mail_to_me">mailto:syniuhin@gmail.com</string>
+    <string name="sample_text">Inside the flat a fruity voice was reading out a list of figures which had something to
+        do with the production of pig iron.
+        The voice came from an oblong metal plaque like a dulled mirror which formed part of the surface of the
+        right-hand wall.
         Winston turned a switch and the voice sank somewhat, though the words were still distinguishable.
-        The instrument (the telescreen, it was called) could be dimmed) but there was no way of shutting it off completely.
+        The instrument (the telescreen, it was called) could be dimmed) but there was no way of shutting it off
+        completely.
         He moved over to the window: a smallish, frail figure,
         the meagerness of his body merely emphasized by the blue overalls which were the uniform of the Party.
         His hair was very fair, his face naturally sanguine,
         his skin roughened by coarse soap and blunt razor blades and the cold of the winter that had just ended.</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Instructions -->
+    <string name="instructions_welcome">Welcome!</string>
+    <string name="instructions_first_paragraph">\tReadIt! is a speed reading android application powered by RSVP(Rapid Serial Visual Presentation)
+        technology. It allows you read up to 1200 words per minute instead of 220 when reading normally.</string>
+    <string name="instructions_source_text">Sources of a text</string>
+    <string name="instructions_second_paragraph">\tTo start reading you can copy a text to clipboard and choose
+        \"Read a text from the clipboard\" action.</string>
+    <string name="instructions_third_paragraph">\tAlso you can use \"Read a text from a file\" action and pick a file
+        (of .txt or .epub extensions) from file system.</string>
+    <string name="instructions_fourth_paragraph">\tFinally, you can share data to ReadIt! from your favorite reader (e.g.
+        Flipboard, Instapaper).</string>
+    <string name="instructions_controls_header">Controls</string>
+    <string name="instructions_fifth_paragraph">\tTo pause or play reader, just tap on its window. Depending on your
+        preferences, you will be able to swipe over content or use simple button to access previous word in a text.\n
+        \tIf you feel that reading goes too slow or fast you can change speed on-the-go:
+		just swipe up or down to change the speed by 50 WPM(words per minute).</string>
+    <string name="instructions_emphasis_point">Emphasis point: when you concentrate on it,
+        reading becomes faster.</string>
+    <string name="instructions_notification">Notification: this will appear only when you are need to be notified
+        (e.g. when you change speed of reading).</string>
+    <string name="instructions_previous_word_button">Previous word button(optional): alternative to left and right
+        swipes, designed to navigate through the reading. It will appear on paused state.</string>
+    <string name="instructions_progress_bar">Progress bar: shows your progress through a text.</string>
+    <string name="action_settings">Settings</string>
+    <string name="enjoyit">Enjoy it ;)</string>
 
 </resources>

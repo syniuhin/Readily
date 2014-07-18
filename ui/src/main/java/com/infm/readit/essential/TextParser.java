@@ -1,376 +1,402 @@
 package com.infm.readit.essential;
 
+import android.text.TextUtils;
 import android.util.Pair;
-
 import com.infm.readit.readable.Readable;
-import com.infm.readit.util.SettingsBundle;
+import com.infm.readit.settings.SettingsBundle;
+import com.infm.readit.util.Base64Coder;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class TextParser implements Serializable {
+public class TextParser implements Serializable, Callable<TextParser> {
 
-    public static final String LOGTAG = "TextParser";
-    public static final Map<String, Integer> PRIORITIES;
+	public static final int RESULT_CODE_OK = 0;
+	public static final int RESULT_CODE_EMPTY_CLIPBOARD = 1;
+	public static final int RESULT_CODE_WRONG_EXT = 2;
+	public static final int RESULT_CODE_WTF = 3;
+	public static final int RESULT_CODE_CANT_FETCH = 4;
+	public static final String makeMeSpecial =
+			" " + "." + "!" + "?" + "-" + "—" + ":" + ";" + "," + '\"' + "(" + ")";
+	private static final int MAX_LEFT_CHARACTER_COUNT = 8;
+	static{
+		Map<String, Integer> priorityMap = new HashMap<String, Integer>();
+		/**
+		 a 	b 	c 	d 	e 	f 	g 	h 	i 	j 	k 	l 	m 	n 	o 	p 	q 	r 	s 	t 	u 	v 	w 	x 	y 	z
+		 */
+		final String englishAlpha = "abcdefghijklmnoprstuvwxyz";
+		final int[] englishPriorities =
+				{10, 4, 4, 4, 9, 12, 10, 12, 8, 10, 8, 6, 6, 5, 8, 6, 12, 5, 15, 12, 14, 12, 14, 13, 14, 12};
+		int i = 0;
+		for (char c : englishAlpha.toCharArray()){ priorityMap.put(Character.toString(c), englishPriorities[i++]); }
+		/**
+		 а  б   в 	г 	д 	е 	ё   ж 	з 	и 	й 	к 	л 	м   н 	о 	п 	р 	с 	т 	у   ф   х 	ц 	ч 	ш 	щ 	ъ
+		 ы 	ь 	э 	ю   я
+		 */
+		final String russianAlpha = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
+		final int[] russianPriorities =
+				{10, 4, 4, 7, 4, 7, 14, 9, 9, 6, 7, 5, 4, 4, 4, 10, 8, 10, 12, 5, 9, 15, 14, 14, 13, 10, 10, 0, 10, 0,
+						10, 12, 11};
+		i = 0;
+		for (char c : russianAlpha.toCharArray()){ priorityMap.put(Character.toString(c), russianPriorities[i++]); }
+		/**
+		 ґ  і   ї   є
+		 */
+		final String uniqueUkrainianChars = "ґіїє";
+		final int[] ukrainianPriorities = {15, 14, 18, 12};
+		i = 0;
+		for (char c : uniqueUkrainianChars.toCharArray()){
+			priorityMap.put(Character.toString(c), ukrainianPriorities[i++]);
+		}
 
-    static{
-        /**
-         * a 	b 	c 	d 	e 	f 	g 	h 	i 	j 	k 	l 	m 	n 	o 	p 	q 	r 	s 	t 	u 	v 	w 	x 	y 	z
-         * 9    4   4   4   10  12  10  12  8   10  8   6   6   5   8   6   12  5   15  12  14  12  14  13  14  12
-         */
-        final int[] englishPriorities =
-                {10, 4, 4, 4, 9, 12, 10, 12, 8, 10, 8, 6, 6, 5, 8, 6, 12, 5, 15, 12, 14, 12, 14, 13, 14, 12};
-        Map<String, Integer> priorityMap = new HashMap<String, Integer>();
-        int i = 0;
-        for (char c = 'a'; c <= 'z'; ++i, ++c)
-            priorityMap.put(Character.toString(c), englishPriorities[i]);
+		PRIORITIES = Collections.unmodifiableMap(priorityMap);
+	}
+	private static final Map<String, Integer> PRIORITIES;
+	private Readable readable;
+	private int lengthPreference;
+	private List<Integer> delayCoefficients;
+	private int resultCode;
 
-        /**
-         А а 	Б б 	В в 	Г г 	Д д 	Е е 	Ё ё
-         Ж ж 	З з 	И и 	Й й 	К к 	Л л 	М м
-         Н н 	О о 	П п 	Р р 	С с 	Т т 	У у
-         Ф ф 	Х х 	Ц ц 	Ч ч 	Ш ш 	Щ щ 	Ъ ъ
-         Ы ы 	Ь ь 	Э э 	Ю ю 	Я я
-         */
-        final String russianAlpha = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
-        final int[] russianPriorities =
-                {10, 4, 4, 7, 4, 7, 14, 9, 9, 6, 7, 5, 4, 4, 4, 10, 8, 10, 12, 5, 9, 15, 14, 14, 13, 10, 10, 0, 10, 0,
-                        10, 12, 11};
+	/**
+	 * stackOverFlow guys told about it
+	 */
+	public TextParser(){}
 
-        i = 0;
-        for (char c : russianAlpha.toCharArray())
-            priorityMap.put(Character.toString(c), russianPriorities[i++]);
+	public TextParser(Readable readable){
+		this.readable = readable;
+		lengthPreference = 13; //TODO:implement it optional
+	}
 
-        /**
-         * ґ і ї є
-         */
-        final String uniqueUkrainianChars = "ґіїє";
-        final int[] ukrainianPriorities = {15, 14, 18, 12};
+	/**
+	 * Need it to get rid of Context, which isn't Serializable
+	 *
+	 * @param readable       : Readable instance to process
+	 * @param settingsBundle : settingsBundle to get some settings.
+	 * @return TextParser instance
+	 */
+	public static TextParser newInstance(Readable readable, SettingsBundle settingsBundle){
+		TextParser textParser = new TextParser(readable);
+		textParser.setDelayCoefficients(settingsBundle.getDelayCoefficients());
+		return textParser;
+	}
 
-        i = 0;
-        for (char c : uniqueUkrainianChars.toCharArray())
-            priorityMap.put(Character.toString(c), ukrainianPriorities[i++]);
+	public static String findLink(Pattern pattern, String text){
+		if (!text.isEmpty()){
+			Matcher matcher = pattern.matcher(text);
+			if (matcher.find()){ return matcher.group(); }
+		}
+		return null;
+	}
 
-        PRIORITIES = Collections.unmodifiableMap(priorityMap);
-    }
+	/**
+	 * @return pattern to detect links in text
+	 */
+	public static Pattern compilePattern(){
+		return Pattern.compile(
+				"\\b(((ht|f)tp(s?)\\:\\/\\/|~\\/|\\/)|www.)" +
+						"(\\w+:\\w+@)?(([-\\w]+\\.)+(com|org|net|gov" +
+						"|mil|biz|info|mobi|name|aero|jobs|museum" +
+						"|travel|edu|[a-z]{2}))(:[\\d]{1,5})?" +
+						"(((\\/([-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|\\/)+|\\?|#)?" +
+						"((\\?([-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
+						"([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)" +
+						"(&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
+						"([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*" +
+						"(#([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?\\b"
+							  );
+	}
 
-    public static final String makeMeSpecial =
-            " " + "." + "!" + "?" + "-" + "—" + ":" + ";" + "," + "\n" + '\"' + "(" + ")" + "\t";
-    private Readable readable;
-    private int lengthPreference;
-    private List<Integer> delayCoefficients;
+	/**
+	 * Read the object from Base64 string.
+	 *
+	 * @param s : serialized TextParser instance
+	 * @return : decoded TextParser instance
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	public static TextParser fromString(String s) throws IOException,
+			ClassNotFoundException{
+		byte[] data = Base64Coder.decode(s);
+		ObjectInputStream ois = new ObjectInputStream(
+				new ByteArrayInputStream(data));
+		TextParser o = (TextParser) ois.readObject();
+		ois.close();
+		return o;
+	}
 
-    /**
-     * stackOverFlow guys told about it
-     */
-    public TextParser(){
-    }
+	public int getResultCode(){
+		return resultCode;
+	}
 
-    /**
-     * TODO: design it in more elegant way
-     */
-    public TextParser(Readable readable){
-        this.readable = readable;
-        lengthPreference = 13; //TODO:implement it optional
-    }
+	public void setResultCode(int resultCode){
+		this.resultCode = resultCode;
+	}
 
-    public static TextParser newInstance(Readable readable, SettingsBundle settingsBundle){
-        TextParser textParser = new TextParser(readable);
-        textParser.setDelayCoefficients(settingsBundle.getDelayCoefficients());
-        textParser.process();
-        return textParser;
-    }
+	/**
+	 * @return serialized instance
+	 */
+	@Override
+	public String toString(){
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = null;
+		try {
+			oos = new ObjectOutputStream(baos);
+			oos.writeObject(this);
+			oos.close();
+			return new String(Base64Coder.encode(baos.toByteArray()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
-    public static String findLink(Pattern pattern, String text){
-        if (!text.isEmpty()){
-            Matcher matcher = pattern.matcher(text);
-            if (matcher.find())
-                return matcher.group();
-        }
-        return "";
-    }
+	public void process(){
+		normalize(readable);
+		cutLongWords(readable);
+		readable.setWordList(Arrays.asList(readable.getText().split(" ")));
+		cleanWordList(readable);
+		buildDelayList(readable);
+		buildEmphasis(readable);
+		checkResult();
+	}
 
-    public static Pattern compilePattern(){
-        return Pattern.compile(
-                "\\b(((ht|f)tp(s?)\\:\\/\\/|~\\/|\\/)|www.)" +
-                        "(\\w+:\\w+@)?(([-\\w]+\\.)+(com|org|net|gov" +
-                        "|mil|biz|info|mobi|name|aero|jobs|museum" +
-                        "|travel|[a-z]{2}))(:[\\d]{1,5})?" +
-                        "(((\\/([-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|\\/)+|\\?|#)?" +
-                        "((\\?([-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
-                        "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)" +
-                        "(&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=?" +
-                        "([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*" +
-                        "(#([-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?\\b"
-        );
-    }
+	public void setDelayCoefficients(List<Integer> delayCoefficients){
+		this.delayCoefficients = delayCoefficients;
+	}
 
-    /**
-     * Read the object from Base64 string.
-     */
-    public static TextParser fromString(String s) throws IOException,
-            ClassNotFoundException{
-        byte[] data = Base64Coder.decode(s);
-        ObjectInputStream ois = new ObjectInputStream(
-                new ByteArrayInputStream(data));
-        TextParser o = (TextParser) ois.readObject();
-        ois.close();
-        return o;
-    }
+	public Readable getReadable(){
+		return readable;
+	}
 
-    public void process(){
-        normalize(readable);
-        cutLongWords(readable);
-        buildDelayList(readable);
-        buildTimeSuffixSum(readable);
-        cleanFromLines(readable);
-        buildEmphasis(readable);
-    }
+	public void setReadable(Readable readable){
+		this.readable = readable;
+	}
 
-    /**
-     * Write the object to a Base64 string.
-     */
-    @Override
-    public String toString(){
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = null;
-        try {
-            oos = new ObjectOutputStream(baos);
-            oos.writeObject(this);
-            oos.close();
-            return new String(Base64Coder.encode(baos.toByteArray()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+	protected void normalize(Readable readable){
+		readable.setText(
+				handleSpecialCases(
+						insertSpacesAfterPunctuation(
+								removeSpacesBeforePunctuation(
+										clearFromRepetitions(
+												readable.getText().replaceAll("\\s+", " ")
+															)
+															 )
+													)
+								  )
+						);
+	}
 
-    public int getLengthPreference(){
-        return lengthPreference;
-    }
+	/* normalize() auxiliary methods */
+	protected String clearFromRepetitions(String text){
+		StringBuilder res = new StringBuilder();
+		int previousPosition = -1;
+		for (Character ch : text.toCharArray()){
+			int position = makeMeSpecial.indexOf(ch);
+			if (position > -1 && position != previousPosition){
+				previousPosition = position;
+				res.append(ch);
+			} else if (position < 0){
+				previousPosition = -1;
+				res.append(ch);
+			}
+		}
+		return res.toString();
+	}
 
-    public List<Integer> getDelayCoefficients(){
-        return delayCoefficients;
-    }
+	protected String removeSpacesBeforePunctuation(String text){
+		StringBuilder res = new StringBuilder();
+		String madeMeSpecial = makeMeSpecial.substring(1, 9) + ")";
+		for (Character ch : text.toCharArray()){
+			if (madeMeSpecial.indexOf(ch) > -1 &&
+					res.length() > 0 &&
+					" ".equals(res.substring(res.length() - 1))){ res.deleteCharAt(res.length() - 1); }
+			res.append(ch);
+		}
+		return res.toString();
+	}
 
-    public void setDelayCoefficients(List<Integer> delayCoefficients){
-        this.delayCoefficients = delayCoefficients;
-    }
+	protected String insertSpacesAfterPunctuation(String text){
+		StringBuilder res = new StringBuilder();
+		String madeMeSpecial = makeMeSpecial.substring(1, 9) + ")";
+		for (int i = 0; i < text.length(); ++i){
+			Character ch = text.charAt(i);
+			res.append(ch);
+			if (i < text.length() - 1){
+				Character nextCh = text.charAt(i + 1);
+				if (madeMeSpecial.indexOf(ch) > -1 && Character.isLetter(nextCh)){ res.append(" "); }
+			}
+		}
+		return res.toString();
+	}
 
-    public Readable getReadable(){
-        return readable;
-    }
+	protected String handleSpecialCases(String text){
+		return handleAbbreviations(text); //TODO: implement more cases
+	}
 
-    public void setReadable(Readable readable){
-        this.readable = readable;
-    }
+	protected String handleAbbreviations(String text){
+		StringBuilder res = new StringBuilder();
+		for (int i = 0; i < text.length(); ++i){
+			if (i > 0 && text.charAt(i - 1) == '.'){
+				if (!(i + 2 < text.length() && text.charAt(i + 2) == '.')){ res.append(text.charAt(i)); }
+			} else { res.append(text.charAt(i)); }
+		}
+		return res.toString();
+	}
 
-    private int checkForRepetitions(char ch){
-        for (int i = 0; i < makeMeSpecial.length(); ++i){
-            if (Character.isWhitespace(ch))
-                return 0;
-            if (ch == makeMeSpecial.charAt(i))
-                return i;
-        }
-        return -1;
-    }
+	protected void cutLongWords(Readable readable){
+		String text = readable.getText();
+		List<String> res = new ArrayList<String>();
+		for (String word : text.split(" ")){
+			boolean isComplex = false;
+			while (word.length() - 1 > lengthPreference){
+				isComplex = true;
+				String toAppend;
+				int pos = lengthPreference - 2;
+				while (pos > 3 && !Character.isLetter(word.charAt(pos))){ --pos; }
+				toAppend = word.substring(0, pos);
+				word = word.substring(pos);
+				res.add(toAppend + "-");
+			}
+			if (isComplex){ res.add(word); } else { res.add(word); }
+		}
+		StringBuilder sb = new StringBuilder();
+		for (String s : res) sb.append(s).append(" ");
+		readable.setText(sb.toString());
+	}
 
-    protected void normalize(Readable readable){
-        String text = readable.getText();
+	protected int measureWord(String word){
+		if (word.length() == 0){ return delayCoefficients.get(0); }
+		int res = 0;
+		for (char ch : word.toCharArray()){
+			int tempRes = delayCoefficients.get(0);
+			if (Character.isDigit(ch)){ tempRes = delayCoefficients.get(1); }
+			if (ch == '\t'){ tempRes = delayCoefficients.get(4); }
+			switch (ch){
+				case ',':
+					tempRes = delayCoefficients.get(1);
+					break;
+				case '.':
+					tempRes = delayCoefficients.get(2);
+					break;
+				case '!':
+					tempRes = delayCoefficients.get(2);
+					break;
+				case '?':
+					tempRes = delayCoefficients.get(2);
+					break;
+				case '-':
+					tempRes = delayCoefficients.get(3);
+					break;
+				case '—':
+					tempRes = delayCoefficients.get(3);
+					break;
+				case ':':
+					tempRes = delayCoefficients.get(3);
+					break;
+				case ';':
+					tempRes = delayCoefficients.get(3);
+					break;
+				case '\n':
+					tempRes = delayCoefficients.get(4);
+			}
+			res = Math.max(res, tempRes);
+		}
+		return res;
+	}
 
-        StringBuilder res = new StringBuilder();
+	protected void cleanWordList(Readable readable){
+		List<String> wordList = readable.getWordList();
+		List<String> res = new ArrayList<String>();
+		for (String word : wordList){ if (!TextUtils.isEmpty(word)){ res.add(word); } }
+		readable.setWordList(res);
+	}
 
-		/* repetitions */
-        int prev = -1;
-        for (int i = 0; i < text.length(); ++i){
-            char ch = text.charAt(i);
-            int pos = checkForRepetitions(ch);
-            if (pos > 0){
-                if (prev != pos){
-                    prev = pos;
-                    res.append(ch);
-                }
-            } else {
-                prev = -1;
-                res.append(ch);
-            }
-        }
+	protected void buildDelayList(Readable readable){
+		List<Integer> res = new ArrayList<Integer>();
+		for (String word : readable.getWordList()) res.add(measureWord(word));
+		readable.setDelayList(res);
+	}
 
-		/* spaces before punctuation */
-        text = res.toString();
-        res = new StringBuilder();
-        for (int i = 0; i < text.length(); ++i){
-            String ch = text.substring(i, i + 1);
-            if (res.length() > 0 && makeMeSpecial.contains(ch) && !Character.isWhitespace(ch.charAt(0)) &&
-                    res.charAt(res.length() - 1) == ' ')
-                res.deleteCharAt(res.length() - 1);
-            res.append(ch);
-        }
+	protected void buildEmphasis(Readable readable){
+		List<Integer> res = new ArrayList<Integer>();
+		for (String word : readable.getWordList()){
+			/* some kind of experiment, huh? */
+			Map<String, Pair<Integer, Integer>> priorities = new HashMap<String, Pair<Integer, Integer>>();
+			int len = word.length();
+			for (int i = 0; i < Math.min(MAX_LEFT_CHARACTER_COUNT, len); ++i){
+				if (!Character.isLetter(word.charAt(i))) continue;
 
-		/* spaces after punct. */
-        text = res.toString();
-        res = new StringBuilder();
-        for (int i = 0; i < text.length(); ++i){
-            String ch = text.substring(i, i + 1);
-            res.append(ch);
-            if (makeMeSpecial.contains(ch) && !Character.isWhitespace(
-                    ch.charAt(0)) && i < text.length() - 1 && Character.isLetter(text.charAt(i + 1)))
-                res.append(" ");
-        }
+				String ch = word.substring(i, i + 1).toLowerCase();
+				if (PRIORITIES.get(ch) != null &&
+						(priorities.get(ch) == null ||
+								priorities.get(ch).first < PRIORITIES.get(ch) * 100 / Math.max(1,
+																							   Math.abs(len / 2 - i)
+																							  ))){
+					priorities.put(ch,
+								   new Pair<Integer, Integer>(
+										   PRIORITIES.get(ch) * 100 / Math.max(1, Math.abs(len / 2 - i)),
+										   i)
+								  );
+				} else { priorities.put(ch, new Pair<Integer, Integer>(0, i)); }
+				if (i + 1 < word.length() && word.charAt(i) == word.charAt(i + 1)){
+					priorities.put(ch, new Pair<Integer, Integer>(priorities.get(ch).first * 4, i));
+				}
+			}
+			int resInd = word.length() / 2, mmax = 0;
+			for (Map.Entry<String, Pair<Integer, Integer>> entry : priorities.entrySet()){
+				if (mmax < entry.getValue().first){
+					mmax = entry.getValue().first;
+					resInd = entry.getValue().second;
+				}
+			}
+			res.add(resInd);
+		}
+		readable.setEmphasisList(res);
+	}
 
-        /* abbreviations */
-        text = res.toString();
-        res = new StringBuilder();
-        for (int i = 0; i < text.length(); ++i){
-            if (i > 0 && text.charAt(i - 1) == '.'){
-                if (!(i + 2 < text.length() && text.charAt(i + 2) == '.'))
-                    res.append(text.charAt(i));
-            } else res.append(text.charAt(i));
-        }
-        readable.setText(res.toString());
-    }
+	public void checkResult(){
+		int resultCode;
+		if (readable != null){
+			if (TextUtils.isEmpty(readable.getText()) ||
+					readable.getWordList().isEmpty() ||
+					readable.getWordList().size() < 2 ||
+					readable.getProcessFailed()){
+				switch (this.getReadable().getType()){
+					case Readable.TYPE_CLIPBOARD:
+						resultCode = RESULT_CODE_EMPTY_CLIPBOARD;
+						break;
+					case Readable.TYPE_FILE:
+						resultCode = RESULT_CODE_WRONG_EXT;
+						break;
+					case Readable.TYPE_TXT:
+						resultCode = RESULT_CODE_WRONG_EXT;
+						break;
+					case Readable.TYPE_EPUB:
+						resultCode = RESULT_CODE_WRONG_EXT;
+						break;
+					case Readable.TYPE_NET:
+						resultCode = RESULT_CODE_CANT_FETCH;
+						break;
+					default:
+						resultCode = RESULT_CODE_WTF;
+						break;
+				}
+			} else {
+				resultCode = RESULT_CODE_OK;
+			}
+		} else {
+			resultCode = RESULT_CODE_WTF;
+		}
+		setResultCode(resultCode);
+	}
 
-    protected void cutLongWords(Readable readable){
-        String text = readable.getText();
-        List<String> res = new ArrayList<String>();
-        for (String word : text.split(" ")){
-            boolean isComplex = false;
-            while (word.length() - 1 > lengthPreference){
-                isComplex = true;
-                String toAppend;
-                int pos = word.length() - 3;
-                while (pos > 1 && !Character.isLetter(word.charAt(pos)))
-                    --pos;
-                toAppend = word.substring(0, pos);
-                word = word.substring(pos);
-                res.add("-" + toAppend + "-");
-            }
-            if (isComplex)
-                res.add("-" + word);
-            else
-                res.add(word);
-        }
-        StringBuilder sb = new StringBuilder();
-        for (String s : res) sb.append(s).append(" ");
-        readable.setText(sb.toString());
-    }
 
-    protected void cleanFromLines(Readable readable){
-        List<String> words = new ArrayList<String>(Arrays.asList(readable.getText().split(" ")));
-        List<String> res = new ArrayList<String>();
-        for (String word : words)
-            if (word.length() == 0) continue;
-            else if (word.charAt(0) == '-') res.add(word.substring(1, word.length()));
-            else res.add(word);
-        readable.setWordList(res);
-    }
-
-    protected int measureWord(String word){
-        if (word.length() == 0)
-            return delayCoefficients.get(0);
-        int res = 0;
-        for (char ch : word.toCharArray()){
-            int tempRes = delayCoefficients.get(0);
-            if (ch == '-')
-                tempRes = delayCoefficients.get(1);
-            if (ch == '\t')
-                tempRes = delayCoefficients.get(4);
-            switch (ch){
-                case ',':
-                    tempRes = delayCoefficients.get(1);
-                    break;
-                case '.':
-                    tempRes = delayCoefficients.get(2);
-                    break;
-                case '!':
-                    tempRes = delayCoefficients.get(2);
-                    break;
-                case '?':
-                    tempRes = delayCoefficients.get(2);
-                    break;
-                case '-':
-                    tempRes = delayCoefficients.get(3);
-                    break;
-                case '—':
-                    tempRes = delayCoefficients.get(3);
-                    break;
-                case ':':
-                    tempRes = delayCoefficients.get(3);
-                    break;
-                case ';':
-                    tempRes = delayCoefficients.get(3);
-                    break;
-                case '\n':
-                    tempRes = delayCoefficients.get(4);
-            }
-            res = Math.max(res, tempRes);
-        }
-        return res;
-    }
-
-    protected void buildDelayList(Readable readable){
-        String text = readable.getText();
-        List<Integer> res = new ArrayList<Integer>();
-        String[] words = text.split(" ");
-        for (String word : words) res.add(measureWord(word));
-        readable.setDelayList(res);
-    }
-
-    protected void buildTimeSuffixSum(Readable readable){
-        List<Integer> delayList = readable.getDelayList();
-        List<Integer> res = new ArrayList<Integer>();
-        res.add(delayList.get(0));
-        for (int i = delayList.size() - 2; i >= 0; --i)
-            res.add(res.get(res.size() - 1) + delayList.get(i));
-        Collections.reverse(res);
-        readable.setTimeSuffixSum(res);
-    }
-
-    protected void buildEmphasis(Readable readable){
-        List<String> words = readable.getWordList();
-        List<Integer> res = new ArrayList<Integer>();
-        for (String word : words){
-            /* some kind of experiment, huh? */
-            Map<String, Pair<Integer, Integer>> priorities = new HashMap<String, Pair<Integer, Integer>>();
-            int len = word.length();
-            for (int i = 0; i < len; ++i){
-                if (!Character.isLetter(word.charAt(i))) continue;
-
-                String ch = word.substring(i, i + 1).toLowerCase();
-                if (PRIORITIES.get(ch) != null &&
-                        (priorities.get(ch) == null ||
-                                priorities.get(ch).first < PRIORITIES.get(ch) * 100 / Math.max(1,
-                                        Math.abs(len / 2 - i)))){
-                    priorities.put(ch,
-                            new Pair<Integer, Integer>(PRIORITIES.get(ch) * 100 / Math.max(1, Math.abs(len / 2 - i)),
-                                    i)
-                    );
-                } else priorities.put(ch, new Pair<Integer, Integer>(0, i));
-                if (i + 1 < word.length() && word.charAt(i) == word.charAt(i + 1)){
-                    priorities.put(ch, new Pair<Integer, Integer>(priorities.get(ch).first * 4, i));
-                }
-            }
-            int resInd = word.length() / 2, mmax = 0;
-            for (Map.Entry<String, Pair<Integer, Integer>> entry : priorities.entrySet()){
-                if (mmax < entry.getValue().first){
-                    mmax = entry.getValue().first;
-                    resInd = entry.getValue().second;
-                }
-            }
-            res.add(resInd);
-        }
-        readable.setEmphasisList(res);
-    }
+	@Override
+	public TextParser call() throws Exception{
+		process();
+		return this;
+	}
 }

@@ -2,9 +2,9 @@
 <resources>
 
     <!-- Basic -->
-    <string name="app_name">RSVP-Reader</string>
+    <string name="app_name">ReadIt!</string>
     <string name="title_activity_main">ReadIt!</string>
-    <string name="title_activity_receiver">ReadIt!</string>
+    <string name="title_activity_receiver">Добавить в ReadIt!</string>
     <string name="title_activity_settings">Настройки</string>
 
     <!-- UI -->
@@ -16,17 +16,34 @@
     <string name="clipboard_empty">Буфер обмена пуст</string>
     <string name="choose_chapter">Выберите главу</string>
     <string name="continue_reading">Продолжить</string>
+    <string name="list_empty_view">Попробуйте прочитать!</string>
     <string name="file_manager_required">Пожалуйста, установите файловый менеджер</string>
     <string name="wrong_ext">Неправильное расширение</string>
+    <string name="text_null">Текст отсутствует</string>
+    <string name="cant_fetch">Проблемы с загрузкой текста</string>
+    <string name="delete">Удалить выбранные элементы</string>
+    <string name="choose_file">Выберите файл</string>
+    <string name="tap_to_start">Коснитесь, чтобы начать</string>
+    <string name="confirmation_dialog_title">Вы уверены?</string>
+    <string name="gonna_delete">Вы удаляете этот элемент. Это действие необратимо!</string>
+    <string name="editor_dialog_title">Редактировать чтение</string>
+    <string name="editor_dialog_header_hint">Название чтения (например "Сияние")</string>
+    <string name="editor_dialog_position_hint">Позиция в тексте</string>
+    <string name="about">Общая информация</string>
+    <string name="title">Название</string>
+    <string name="path">Путь к файлу</string>
+    <string name="position">Позиция в тексте</string>
+    <string name="sth_left">осталось</string>
+    <string name="pause">Пауза</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитать текст из буфера обмена</string>
-    <string name="preferences_clipboard_summary"> </string>
     <string name="preferences_pick_file">Прочитать текст из файла</string>
     <string name="preferences_pick_file_summary">Выберите .txt или .epub файл, из которого будете читать</string>
     <string name="preferences_test">Проверить настройки</string>
     <string name="preferences_basic_settings">Базовые настройки</string>
-    <string name="preferences_set_wpm">Установить скорость(слов в минуту)</string>
+    <string name="preferences_set_wpm">Установить скорость</string>
+    <string name="preferences_set_wpm_summary">Количество слов в минуту</string>
     <string name="preferences_punctuation_settings">Скорость при пунктуации</string>
     <string name="preferences_different_speed_punctuation">Изменить скорость при пунктуации</string>
     <string name="preferences_different_speed_punctuation_summary">Например перед запятой или двоеточием</string>
@@ -37,7 +54,7 @@
     <string name="preferences_advanced">Расширенные настройки</string>
     <string name="preferences_showContext">Отображать контекст</string>
     <string name="preferences_showContext_summary">Следующие слова в предложении</string>
-    <string name="preferences_getStarted">Инструкции</string>
+    <string name="preferences_instrucions">Инструкции</string>
     <string name="preferences_swipe">Свайп для прокрутки</string>
     <string name="preferences_swipe_summary">Влево для следующего, вправо для предыдущего слова</string>
     <string name="preferences_share_feedback">Контакты</string>
@@ -45,9 +62,50 @@
     <string name="preferences_send_feedback_summary">Расскажите мне ваши идеи :)</string>
     <string name="preference_cache">Сохранять чтения</string>
     <string name="preference_cache_summary">Кэширует незаконченные чтения</string>
+    <string name="mail_to_me">mailto:syniuhin@gmail.com</string>
 
     <string name="sample_text">
-        Он бродил без цели. Солнце заходило. Какая-то особенная тоска начала сказываться ему в последнее время. В ней не было чего-нибудь особенно едкого, жгучего; но от неё веяло чем-то постоянным, вечным, предчувствовались безысходные годы этой холодной мертвящей тоски, предчувствовалась какая-то вечность на "аршине пространства". В вечерний час это ощущение обыкновенно ещё сильней начинало его мучить.
-- Вот с этакими-то глупейшими, чисто физическими немощами, зависящими от какого-нибудь заката солнца, и удержись сделать глупость. Не то что к Соне, а к Дуне пойдёшь! - пробормотал он ненавистно.
+        Он бродил без цели. Солнце заходило. Какая-то особенная тоска начала сказываться ему в последнее время. В ней не
+        было чего-нибудь особенно едкого, жгучего; но от неё веяло чем-то постоянным, вечным, предчувствовались
+        безысходные годы этой холодной мертвящей тоски, предчувствовалась какая-то вечность на "аршине пространства". В
+        вечерний час это ощущение обыкновенно ещё сильней начинало его мучить.
+        - Вот с этакими-то глупейшими, чисто физическими немощами, зависящими от какого-нибудь заката солнца, и удержись
+        сделать глупость. Не то что к Соне, а к Дуне пойдёшь! - пробормотал он ненавистно.
     </string>
+
+    <!-- Instructions -->
+    <string name="instructions_welcome">Добро пожаловать!</string>
+    <string name="instructions_first_paragraph">\tReadIt! - это приложение для скорочтения, основанное на технологии
+        RSVP(Rapid Serial Visual Presentation). С этой технологией Вы можете читать до 1200 слов в минуту вместо 220
+        при обычном чтении.
+    </string>
+
+    <string name="instructions_source_text">Источники текста</string>
+    <string name="instructions_second_paragraph">\tЧтобы начать читать, Вы можете скопировать текст в буфер обмена и
+        выбрать \"Прочитать текст из буфера обмена\" на панели действий.
+    </string>
+    <string name="instructions_third_paragraph">\tТак же, Вы можете выбрать действие \"Прочитать текст из файла\" и сам
+        файл (доступные расширения: .txt и .epub) из системы.
+    </string>
+    <string name="instructions_fourth_paragraph">\tНаконец, вы можете поделиться с ReadIt! из своего любимого
+        приложения для чтения (например Flipboard, Instapaper).
+    </string>
+
+    <string name="instructions_controls_header">Управление</string>
+    <string name="instructions_fifth_paragraph">\tДля паузы или продолжения работы чтения коснитесь окна ридера.
+        В зависимости от ваших настроек, вы сможете передвигаться по тексту с помощью свайпов или кнопки слева.\n
+        \tЕсли Вам кажется, что чтение идёт слишком медленно или быстро, Вы можете изменить скорость по ходу работы
+        чтения: свайпните вверх или вниз, чтобы изменить скорость на 50 слов/мин.
+    </string>
+    <string name="instructions_emphasis_point">Точка ударения: сконцентрируйтесь на ней и чтение станет быстрее.
+    </string>
+    <string name="instructions_notification">Уведомление: появится только когда Вас нужно уведомить (например когда
+        Вы измените скорость чтения).
+    </string>
+    <string name="instructions_previous_word_button">Кнопка предыдущего слова(опционально): один из вариантов
+        навигации по тексту.
+    </string>
+    <string name="instructions_progress_bar">Индикатор прогресса: показывает сколько Вы уже прочитали.</string>
+    <string name="enjoyit">Наслаждайтесь ;)</string>
+
 </resources>

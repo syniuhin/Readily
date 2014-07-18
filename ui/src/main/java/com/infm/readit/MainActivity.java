@@ -1,138 +1,137 @@
 package com.infm.readit;
 
-import android.app.Activity;
-import android.app.LoaderManager;
-import android.content.ActivityNotFoundException;
-import android.content.CursorLoader;
+import android.annotation.TargetApi;
+import android.app.ActionBar;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import com.infm.readit.database.LastReadContentProvider;
-import com.infm.readit.database.LastReadDBHelper;
+import com.crashlytics.android.Crashlytics;
+import com.infm.readit.instructions.InstructionsActivity;
+import com.infm.readit.readable.FileStorable;
 import com.infm.readit.readable.Readable;
+import com.infm.readit.service.StorageCheckerService;
+import com.infm.readit.settings.SettingsFragment;
+import com.infm.readit.util.BaseActivity;
+import com.ipaulpro.afilechooser.utils.FileUtils;
 
-public class MainActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends BaseActivity {
 
-    public static final String LOGTAG = "MainActivity";
+	private static final int FILE_SELECT_CODE = 7331;
+	private static final String SETTINGS_FRAGMENT_TAG = "SettingsFragment0182";
 
-    private static final int FILE_SELECT_CODE = 0;
-    private SimpleCursorAdapter adapter;
+	@Override
+	protected void onCreate(Bundle savedInstanceState){
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		isAnybodyOutThere(this);
 
-    private TextView tvEmpty;
-    private ListView listView;
+		startService(createCheckerServiceIntent());
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState){
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        initLastReadingView();
-        // disable it for now
-        // Crashlytics.start(this);
+		Crashlytics.start(this);
 
-        LoaderManager loaderManager = getLoaderManager();
-        loaderManager.initLoader(0, null, this);
-    }
+		changeActionBarIcon();
+		startFileListFragment();
+	}
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
+	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+	private void changeActionBarIcon(){
+		ActionBar actionBar = getActionBar();
+		if (actionBar != null){ actionBar.setIcon(R.drawable.logo_up); }
+	}
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        switch (item.getItemId()){
-            case R.id.action_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
-                break;
-            case R.id.action_clipboard:
-                getFromClipboard();
-                break;
-            case R.id.action_file:
-                getFromFile();
-                break;
-        }
+	private void isAnybodyOutThere(Context context){
+		if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.Preferences.NEWCOMER, false)){
+			InstructionsActivity.start(this);
+			PreferenceManager.getDefaultSharedPreferences(context)
+					.edit()
+					.putBoolean(Constants.Preferences.NEWCOMER, true)
+					.apply();
+		}
+	}
 
-        return super.onOptionsItemSelected(item);
-    }
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu){
+		getMenuInflater().inflate(R.menu.main, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
 
-    /**
-     * This section is handled using abstract class Utils. Hope it's ok.
-     */
-    private void getFromClipboard(){
-        ReceiverActivity.startReceiverActivity(this, Readable.TYPE_CLIPBOARD, "");
-    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item){
+		switch (item.getItemId()){
+			case R.id.action_settings:
+				startSettingsFragment();
+				break;
+			case R.id.action_clipboard:
+				getFromClipboard();
+				break;
+			case R.id.action_file:
+				getFromFile();
+				break;
+			case R.id.action_instructions:
+				InstructionsActivity.start(this);
+				break;
+		}
 
-    private void getFromFile(){
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("text/plain");
-        try {
-            startActivityForResult(intent, FILE_SELECT_CODE);
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, getResources().getString(R.string.file_manager_required),
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
+		return super.onOptionsItemSelected(item);
+	}
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        switch (requestCode){
-            case FILE_SELECT_CODE:
-                if (resultCode == RESULT_OK)
-                    ReceiverActivity.startReceiverActivity(this, Readable.TYPE_FILE, data.getData().toString());
-                break;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-    }
+	private void getFromClipboard(){
+		ReceiverActivity.startReceiverActivity(this, Readable.TYPE_CLIPBOARD, "");
+	}
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args){
-        return new CursorLoader(this, LastReadContentProvider.CONTENT_URI, null, null, null, null);
-    }
+	private void getFromFile(){
+		Intent intent = Intent.createChooser(FileUtils.createGetContentIntent(),
+											 getResources().getString(R.string.choose_file));
+		startActivityForResult(intent, FILE_SELECT_CODE);
+	}
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data){
-        adapter.swapCursor(data);
-        if (data.getCount() > 0)
-            tvEmpty.setVisibility(View.GONE);
-    }
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data){
+		switch (requestCode){
+			case FILE_SELECT_CODE:
+				if (resultCode == RESULT_OK){
+					if (data != null){
+						String relativePath = FileUtils.getPath(this, data.getData());
+						if (FileStorable.isExtensionValid(FileUtils.getExtension(relativePath))){
+							ReceiverActivity.startReceiverActivity(this, Readable.TYPE_FILE, relativePath);
+						} else { Toast.makeText(this, R.string.wrong_ext, Toast.LENGTH_SHORT).show(); }
+					}
+				}
+				break;
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
 
-    @Override
-    public void onLoaderReset(Loader loader){
-        adapter.swapCursor(null);
-    }
+	private Intent createCheckerServiceIntent(){
+		return new Intent(this, StorageCheckerService.class);
+	}
 
-    private void initLastReadingView(){
-        listView = (ListView) findViewById(R.id.listView);
-        tvEmpty = (TextView) findViewById(R.id.text_view_empty);
-        tvEmpty.setVisibility(View.VISIBLE);
+	private void startSettingsFragment(){
+		FragmentManager fragmentManager = getFragmentManager();
+		Fragment existing = fragmentManager.findFragmentByTag(SETTINGS_FRAGMENT_TAG);
+		if (existing == null){
+			fragmentManager.beginTransaction().
+					replace(R.id.content_layout, new SettingsFragment(), SETTINGS_FRAGMENT_TAG).
+					addToBackStack(null).
+					setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).
+					commit();
+		}
 
-        listView.setEmptyView(tvEmpty);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id){
-                ReceiverActivity.startReceiverActivity(MainActivity.this,
-                        Readable.TYPE_FILE,
-                        ((TextView) view.findViewById(R.id.text_view_path)).getText().toString());
-                Log.d(LOGTAG, "listView's onItemClick called()");
-            }
-        });
+	}
 
-        adapter = new SimpleCursorAdapter(this, R.layout.list_element_main, null,
-                new String[]{LastReadDBHelper.KEY_HEADER, LastReadDBHelper.KEY_PATH, LastReadDBHelper.KEY_PERCENT},
-                new int[]{R.id.text_view_title, R.id.text_view_path, R.id.text_view_percent}, 0);
-        listView.setAdapter(adapter);
-    }
+	private void startFileListFragment(){
+		FragmentManager fragmentManager = getFragmentManager();
+		fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+		fragmentManager.beginTransaction().
+				replace(R.id.content_layout, new FileListFragment()).
+				commit();
+	}
 }

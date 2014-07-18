@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="@dimen/land_tablet_margin_left"
+        android:layout_marginRight="@dimen/land_tablet_margin_left"
+        android:background="@drawable/reader_border"
+        android:orientation="vertical">
+
+    <RelativeLayout
+            android:id="@+id/up_bar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/mosaic_pattern"
+            android:layout_marginRight="2dp"
+            android:layout_marginTop="2dp">
+
+        <ImageView
+                android:id="@+id/logo_up"
+                android:layout_width="125dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/logo_up"
+                android:layout_marginRight="5dp"
+                android:contentDescription="@string/app_name"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:baselineAlignBottom="false"/>
+        <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/imageViewGradient"
+                android:background="@drawable/reader_up_border"
+                android:layout_toLeftOf="@+id/logo_up"/>
+
+        <TextView
+                android:id="@+id/speedo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="22sp"
+                android:visibility="invisible"
+                android:layout_centerInParent="true"
+                android:textColor="@android:color/primary_text_dark"
+                android:textStyle="bold"/>
+
+    </RelativeLayout>
+
+    <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:id="@+id/imageView"
+            android:background="#ff484848"/>
+    <RelativeLayout
+            android:id="@+id/reader_main_layout"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal">
+
+        <ProgressBar
+                android:id="@+id/progressBar"
+                style="@style/Widget.AppCompat.Base.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="3dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
+                android:indeterminateOnly="false"
+                android:progressDrawable="@drawable/reader_progress_bar"/>
+
+        <ImageButton
+                android:id="@+id/previousWordImageButton"
+                android:layout_width="20dp"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/progressBar"
+                android:layout_alignParentBottom="false"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_margin="3dp"
+                android:background="#53ededed"
+                android:contentDescription="@string/top_pointer_description"
+                android:src="@drawable/abc_ic_ab_back_holo_light"
+                android:visibility="invisible"/>
+
+        <RelativeLayout
+                android:id="@+id/reader_layout"
+                android:layout_width="match_parent"
+                android:layout_height="65dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:layout_toRightOf="@id/previousWordImageButton"
+                android:background="@android:color/transparent"
+                android:visibility="gone">
+
+            <TextView
+                    style="@style/reader_text_main"
+                    android:id="@+id/currentWordTextView"
+                    android:layout_alignLeft="@+id/pointerTopImageView"/>
+
+            <TextView
+                    style="@style/reader_text_main"
+                    android:id="@+id/leftWordTextView"
+                    android:layout_alignBaseline="@+id/currentWordTextView"
+                    android:layout_toLeftOf="@+id/currentWordTextView"/>
+
+            <TextView
+                    style="@style/reader_text_main"
+                    android:id="@+id/rightWordTextView"
+                    android:layout_alignBaseline="@+id/currentWordTextView"
+                    android:layout_toRightOf="@+id/currentWordTextView"/>
+
+            <ImageView
+                    style="@style/reader_pointer"
+                    android:id="@+id/pointerTopImageView"
+                    android:layout_alignParentTop="true"/>
+
+            <ImageView
+                    style="@style/reader_pointer"
+                    android:id="@+id/pointerBottomImageView"
+                    android:layout_alignParentBottom="true"/>
+
+        </RelativeLayout>
+
+        <ProgressBar
+                android:id="@+id/parsingProgressBar"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:indeterminate="false"
+                android:visibility="visible"/>
+
+    </RelativeLayout>
+</LinearLayout>

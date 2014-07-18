@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
 
-    <ListView
-        android:id="@+id/listView"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FFFAFAEF"
+            android:id="@+id/content_layout"
+            android:layout_above="@+id/ad_space"/>
 
-    <TextView
-        android:id="@+id/text_view_empty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="@string/list_empty_view"
-        android:textIsSelectable="false"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        android:typeface="serif" />
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/ad_space"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"/>
 </RelativeLayout>
