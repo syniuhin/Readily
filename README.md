@@ -53,4 +53,4 @@ Libraries and code:
 [RSVP]:http://en.wikipedia.org/wiki/Rapid_Serial_Visual_Presentation "Rapid Serial Visual Representation"
 [Spritzer]:http://www.spritzinc.com
 [contact me]:mailto:syniuhin@gmail.com
-[MIT License]:https://github.com/infm/ReadIt/LICENSE.txt
+[MIT License]:https://raw.githubusercontent.com/infm/ReadIt/master/LICENSE.txt
