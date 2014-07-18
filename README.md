@@ -1,8 +1,6 @@
-#ReadIt!
-
 ##Welcome :)
 
-**ReadIt!** is a speed-reading android application powered by [RSVP] technology and inspired by [Spritzer] project.
+**Readily** is a speed-reading android application powered by [RSVP] technology and inspired by [Spritzer] project.
 
 ![Screencast](http://i61.tinypic.com/2la7xc1.gif)
 
@@ -53,4 +51,4 @@ Libraries and code:
 [RSVP]:http://en.wikipedia.org/wiki/Rapid_Serial_Visual_Presentation "Rapid Serial Visual Representation"
 [Spritzer]:http://www.spritzinc.com
 [contact me]:mailto:syniuhin@gmail.com
-[MIT License]:https://raw.githubusercontent.com/infm/ReadIt/master/LICENSE.txt
+[MIT License]:https://raw.githubusercontent.com/infm/Readily/master/LICENSE.txt
