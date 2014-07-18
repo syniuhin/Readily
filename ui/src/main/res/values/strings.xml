@@ -2,9 +2,9 @@
 <resources>
 
     <!-- Basic -->
-    <string name="app_name">ReadIt!</string>
-    <string name="title_activity_main">ReadIt!</string>
-    <string name="title_activity_receiver">Add to ReadIt!</string>
+    <string name="app_name">Readily</string>
+    <string name="title_activity_main">Readily</string>
+    <string name="title_activity_receiver">Add to Readily</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- UI -->
@@ -77,14 +77,14 @@
 
     <!-- Instructions -->
     <string name="instructions_welcome">Welcome!</string>
-    <string name="instructions_first_paragraph">\tReadIt! is a speed reading android application powered by RSVP(Rapid Serial Visual Presentation)
+    <string name="instructions_first_paragraph">\tReadily is a speed reading android application powered by RSVP(Rapid Serial Visual Presentation)
         technology. It allows you read up to 1200 words per minute instead of 220 when reading normally.</string>
     <string name="instructions_source_text">Sources of a text</string>
     <string name="instructions_second_paragraph">\tTo start reading you can copy a text to clipboard and choose
         \"Read a text from the clipboard\" action.</string>
     <string name="instructions_third_paragraph">\tAlso you can use \"Read a text from a file\" action and pick a file
         (of .txt or .epub extensions) from file system.</string>
-    <string name="instructions_fourth_paragraph">\tFinally, you can share data to ReadIt! from your favorite reader (e.g.
+    <string name="instructions_fourth_paragraph">\tFinally, you can share data to Readily from your favorite reader (e.g.
         Flipboard, Instapaper).</string>
     <string name="instructions_controls_header">Controls</string>
     <string name="instructions_fifth_paragraph">\tTo pause or play reader, just tap on its window. Depending on your

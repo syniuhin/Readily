@@ -2,9 +2,9 @@
 <resources>
 
     <!-- Basic -->
-    <string name="app_name">ReadIt!</string>
-    <string name="title_activity_main">ReadIt!</string>
-    <string name="title_activity_receiver">Добавить в ReadIt!</string>
+    <string name="app_name">Readily</string>
+    <string name="title_activity_main">Readily</string>
+    <string name="title_activity_receiver">Добавить в Readily</string>
     <string name="title_activity_settings">Настройки</string>
 
     <!-- UI -->
@@ -75,7 +75,7 @@
 
     <!-- Instructions -->
     <string name="instructions_welcome">Добро пожаловать!</string>
-    <string name="instructions_first_paragraph">\tReadIt! - это приложение для скорочтения, основанное на технологии
+    <string name="instructions_first_paragraph">\tReadily - это приложение для скорочтения, основанное на технологии
         RSVP(Rapid Serial Visual Presentation). С этой технологией Вы можете читать до 1200 слов в минуту вместо 220
         при обычном чтении.
     </string>
@@ -87,7 +87,7 @@
     <string name="instructions_third_paragraph">\tТак же, Вы можете выбрать действие \"Прочитать текст из файла\" и сам
         файл (доступные расширения: .txt и .epub) из системы.
     </string>
-    <string name="instructions_fourth_paragraph">\tНаконец, вы можете поделиться с ReadIt! из своего любимого
+    <string name="instructions_fourth_paragraph">\tНаконец, вы можете поделиться с Readily из своего любимого
         приложения для чтения (например Flipboard, Instapaper).
     </string>
 

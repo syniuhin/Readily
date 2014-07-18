@@ -5,6 +5,7 @@
                 android:layout_height="match_parent">
     <TextView
             style="@style/instructions_text_header"
+            android:id="@+id/text_view_enjoy_it"
             android:layout_centerVertical="true"
             android:text="@string/enjoyit"/>
 </RelativeLayout>
