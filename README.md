@@ -4,6 +4,8 @@
 
 ![Screencast](http://i61.tinypic.com/2la7xc1.gif)
 
+*this is screencast from older version with other name*
+
 With this technology you can read up to 1200 words per minute instead of 220 when reading normally. 
 
 ##Features
