@@ -11,12 +11,12 @@ With this technology you can read up to 1200 words per minute instead of 220 whe
 List of functions already implemented:
 
 * Splitting of long words (*max length of word is not currently optional, default value is 13*).
+* Changing speed on the go.
 * Speed change before punctuation, on long words and on digits (*optional*).
 * Preview of next words in a paragraph (*opitonal*).
 * Storage of incomplete readings: 
   * **From files**: saves your progress, so you can resume reading in one click.
   * **From net**: caches text to a file and further works as a reading from file.
-* Changing speed on the go.
 
 ##Supported sources of text:
 
