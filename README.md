@@ -42,14 +42,14 @@ This app is under [MIT License].
 
 Libraries and code:
 
-* [aFileChooser](https://github.com/iPaulPro/aFileChooser)
-* [Snacktory](https://github.com/karussell/snacktory)
-* [EpubLib](http://www.siegmann.nl/epublib)
-* [Animations](https://github.com/daimajia/AndroidViewAnimations)
+* Paul Burke and Ian Lake for [aFileChooser](https://github.com/iPaulPro/aFileChooser)
+* Peter Karich for [snacktory](https://github.com/karussell/snacktory)
+* Paul Siegmann for [epubLib](http://www.siegmann.nl/epublib)
+* daimajia for [animations](https://github.com/daimajia/AndroidViewAnimations)
 
 Artwork:
 
-* [Griko Nibras](http://grikomsn.deviantart.com/art/Flex-361665214)
+* Griko Nibras for [Flex](http://grikomsn.deviantart.com/art/Flex-361665214)
 
 Ideas and inspiration:
 
