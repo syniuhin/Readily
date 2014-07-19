@@ -30,6 +30,7 @@
                         android:text="@string/instructions_second_paragraph"
                         android:id="@+id/text_view_second_paragraph"
                         android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="true"
                         android:layout_toLeftOf="@+id/imageView_action_paste"/>
 
                 <ImageView
@@ -47,6 +48,7 @@
                         style="@style/instructions_text_ordinar"
                         android:text="@string/instructions_third_paragraph"
                         android:id="@+id/text_view_third_paragraph"
+                        android:layout_alignParentLeft="true"
                         android:layout_below="@+id/text_view_second_paragraph"
                         android:layout_toLeftOf="@+id/imageView_action_storage"/>
 
@@ -64,6 +66,7 @@
                 <TextView
                         style="@style/instructions_text_ordinar"
                         android:text="@string/instructions_fourth_paragraph"
+                        android:layout_alignParentLeft="true"
                         android:id="@+id/text_view_fourth_paragraph"
                         android:layout_below="@+id/imageView_action_storage"/>
 

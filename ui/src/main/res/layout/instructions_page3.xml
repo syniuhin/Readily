@@ -13,7 +13,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/instructions_header_controls"
-            android:layout_marginTop="5dp">
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="15dp">
 
         <ScrollView
                 android:layout_width="match_parent"
@@ -28,6 +29,7 @@
                         style="@style/instructions_text_ordinar"
                         android:text="@string/instructions_fifth_paragraph"
                         android:id="@+id/text_view_fifth_paragraph"
+                        android:layout_alignParentLeft="true"
                         android:layout_alignParentTop="true"/>
 
                 <ImageView
@@ -41,36 +43,62 @@
                         android:layout_below="@+id/text_view_fifth_paragraph"
                         android:layout_centerHorizontal="true"/>
 
+                <ImageView
+                        style="@style/instructions_color_line"
+                        android:id="@+id/line_emphasis_point"
+                        android:layout_alignTop="@+id/text_view_instructions_emphasis_point"
+                        android:layout_alignBottom="@+id/text_view_instructions_emphasis_point"
+                        android:background="#fffa2b2b"/>
+
                 <TextView
                         style="@style/instructions_text_ordinar"
                         android:text="@string/instructions_emphasis_point"
                         android:id="@+id/text_view_instructions_emphasis_point"
-                        android:textColor="#fffa2b2b"
-                        android:textStyle="bold"
-                        android:layout_below="@+id/imageView_screenshot"/>
+                        android:layout_below="@+id/imageView_screenshot"
+                        android:layout_toRightOf="@+id/line_emphasis_point"/>
+
+                <View
+                        style="@style/instructions_color_line"
+                        android:id="@+id/line_notification"
+                        android:layout_alignTop="@+id/text_view_instructions_notification"
+                        android:layout_alignBottom="@+id/text_view_instructions_notification"
+                        android:background="#ffA57CA0"/>
 
                 <TextView
                         style="@style/instructions_text_ordinar"
                         android:text="@string/instructions_notification"
                         android:id="@+id/text_view_instructions_notification"
-                        android:textColor="#ffA57CA0"
-                        android:textStyle="bold"
-                        android:layout_below="@+id/text_view_instructions_emphasis_point"/>
+                        android:layout_below="@+id/text_view_instructions_emphasis_point"
+                        android:layout_toRightOf="@+id/line_notification"/>
+
+                <View
+                        style="@style/instructions_color_line"
+                        android:id="@+id/line_previous_word_button"
+                        android:layout_alignTop="@+id/text_view_instructions_word_button"
+                        android:layout_alignBottom="@+id/text_view_instructions_word_button"
+                        android:background="#fffa8e58"/>
 
                 <TextView
                         style="@style/instructions_text_ordinar"
                         android:text="@string/instructions_previous_word_button"
                         android:id="@+id/text_view_instructions_word_button"
-                        android:textColor="#fffa8e58"
-                        android:textStyle="bold"
-                        android:layout_below="@+id/text_view_instructions_notification"/>
+                        android:layout_below="@+id/text_view_instructions_notification"
+                        android:layout_toRightOf="@+id/line_previous_word_button"/>
+
+                <View
+                        style="@style/instructions_color_line"
+                        android:id="@+id/line_progress_bar"
+                        android:layout_alignTop="@+id/text_view_instructions_progress_bar"
+                        android:layout_alignBottom="@+id/text_view_instructions_progress_bar"
+                        android:background="#ffcaea5a"/>
 
                 <TextView
                         style="@style/instructions_text_ordinar"
                         android:text="@string/instructions_progress_bar"
-                        android:textColor="#ffcaea5a"
-                        android:textStyle="bold"
-                        android:layout_below="@+id/text_view_instructions_word_button"/>
+                        android:id="@+id/text_view_instructions_progress_bar"
+                        android:layout_below="@+id/text_view_instructions_word_button"
+                        android:layout_toRightOf="@+id/line_progress_bar"/>
+
             </RelativeLayout>
 
         </ScrollView>
