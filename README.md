@@ -47,6 +47,16 @@ Libraries and code:
 * [EpubLib](http://www.siegmann.nl/epublib)
 * [Animations](https://github.com/daimajia/AndroidViewAnimations)
 
+Artwork:
+
+* [Griko Nibras](http://grikomsn.deviantart.com/art/Flex-361665214)
+
+Ideas and inspiration:
+
+* [Spritz](http://www.spritzinc.com)
+* [Catherine Lyubchenko](https://plus.google.com/114417077430631558278)
+* [Dayana Shevchenko](https://vk.com/kruasan.sovest)
+* [Lesha Sushkov](http://instagram.com/Maelemotion)
 
 [RSVP]:http://en.wikipedia.org/wiki/Rapid_Serial_Visual_Presentation "Rapid Serial Visual Representation"
 [Spritzer]:http://www.spritzinc.com
