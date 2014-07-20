@@ -4,6 +4,7 @@ import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.view.WindowManager;
 import com.infmme.readily.util.BaseActivity;
 import com.infmme.readily.util.OnSwipeTouchListener;
@@ -11,6 +12,7 @@ import com.infmme.readily.util.OnSwipeTouchListener;
 public class ReceiverActivity extends BaseActivity implements /*FlurryAdListener,*/ ReaderFragment.ReaderListener {
 
 	private static final String READER_FRAGMENT_TAG = "ReaSq!d99erFra{{1239gm..1ent1923";
+	private View contentView;
 
 	public static void startReceiverActivity(Context context, Integer intentType, String intentPath){
 		Intent intent = new Intent(context, ReceiverActivity.class);
@@ -40,7 +42,9 @@ public class ReceiverActivity extends BaseActivity implements /*FlurryAdListener
 	}
 
 	private void setOnSwipeListener(final ReaderFragment readerFragment){
-		this.findViewById(android.R.id.content).setOnTouchListener(new OnSwipeTouchListener(this) {
+		if (contentView == null){ contentView = this.findViewById(android.R.id.content); }
+
+		contentView.setOnTouchListener(new OnSwipeTouchListener(this) {
 			@Override
 			public void onSwipeTop(){
 				readerFragment.onSwipeTop();

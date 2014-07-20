@@ -35,6 +35,7 @@
     <string name="position">Position in a text</string>
     <string name="sth_left">left</string>
     <string name="pause">Pause</string>
+    <string name="reading_is_completed">Reading is completed. Tap to exit.</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Read a text from the clipboard</string>

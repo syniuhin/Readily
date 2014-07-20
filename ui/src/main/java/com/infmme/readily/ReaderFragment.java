@@ -401,11 +401,8 @@ public class ReaderFragment extends Fragment {
 		if (isStorable() && reader != null){
 			reader.performPause();
 			Storable storable = (Storable) readable;
-			storable.setPosition(reader.getPosition());
-			int operation = (reader.isCompleted())
-					? Constants.DB_OPERATION_DELETE
-					: Constants.DB_OPERATION_INSERT;
-			LastReadService.start(activity, storable, operation);
+			if (reader.isCompleted()){ storable.setPosition(0); } else { storable.setPosition(reader.getPosition()); }
+			LastReadService.start(activity, storable, Constants.DB_OPERATION_INSERT);
 		}
 
 		settingsBundle.updatePreferences();
@@ -503,6 +500,10 @@ public class ReaderFragment extends Fragment {
 					position++;
 				}
 			} else {
+				Context context = getActivity();
+				if (context != null){
+					Toast.makeText(context, R.string.reading_is_completed, Toast.LENGTH_SHORT).show();
+				}
 				completed = true;
 				cancelled = 1;
 			}

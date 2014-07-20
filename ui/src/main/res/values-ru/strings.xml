@@ -35,6 +35,7 @@
     <string name="position">Позиция в тексте</string>
     <string name="sth_left">осталось</string>
     <string name="pause">Пауза</string>
+    <string name="reading_is_completed">Чтение закончено. Коснитесь для выхода.</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитать текст из буфера обмена</string>
