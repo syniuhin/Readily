@@ -45,7 +45,8 @@ public class LastReadService extends IntentService {
 	}
 
 	public static void start(Context context, Storable storable, int operation){
-		context.startService(createIntent(context, storable, operation));
+		if (context != null)
+			context.startService(createIntent(context, storable, operation));
 	}
 
 	public static void start(Context context, String path, int operation){
