@@ -17,6 +17,7 @@ public class SettingsBundle {
 	private List<Integer> delayCoefficients;
 	private boolean showingContextEnabled;
 	private boolean swipesEnabled;
+	private boolean storingComplete;
 	private Integer typeface;
 	//preferences themselves
 	private SharedPreferences sharedPreferences;
@@ -24,6 +25,14 @@ public class SettingsBundle {
 	public SettingsBundle(SharedPreferences sharedPreferences){
 		this.sharedPreferences = sharedPreferences;
 		assignFields();
+	}
+
+	public boolean isStoringComplete(){
+		return storingComplete;
+	}
+
+	public void setStoringComplete(boolean storingComplete){
+		this.storingComplete = storingComplete;
 	}
 
 	public List<Integer> getDelayCoefficients(){
@@ -65,6 +74,7 @@ public class SettingsBundle {
 		showingContextEnabled = sharedPreferences.getBoolean(Constants.Preferences.SHOW_CONTEXT, true);
 		punctuationSpeedDiffers = sharedPreferences.getBoolean(Constants.Preferences.PUNCTUATION_DIFFERS, true);
 		delayCoefficients = buildDelayListCoefficients();
+		storingComplete = sharedPreferences.getBoolean(Constants.Preferences.STORE_COMPLETE, false);
 	}
 
 	public void updatePreferences(){
@@ -75,6 +85,7 @@ public class SettingsBundle {
 		editor.putBoolean(Constants.Preferences.SWIPE, swipesEnabled);
 		editor.putBoolean(Constants.Preferences.SHOW_CONTEXT, showingContextEnabled);
 		editor.putBoolean(Constants.Preferences.PUNCTUATION_DIFFERS, punctuationSpeedDiffers);
+		editor.putBoolean(Constants.Preferences.STORE_COMPLETE, storingComplete);
 		editor.apply(); //advised by IDE, lol
 	}
 

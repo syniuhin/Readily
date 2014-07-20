@@ -35,7 +35,7 @@
     <string name="position">Позиция в тексте</string>
     <string name="sth_left">осталось</string>
     <string name="pause">Пауза</string>
-    <string name="reading_is_completed">Чтение закончено. Коснитесь для выхода.</string>
+    <string name="reading_is_completed">Коснитесь для выхода</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитать текст из буфера обмена</string>
@@ -52,6 +52,8 @@
     <string name="preferences_endOfSentence_coeff">Окончание предложения</string>
     <string name="preferences_dashOrColon_coeff">Тиреб двоеточие или точка с запятой</string>
     <string name="preferences_begOfPar_coeff">Начало абзаца</string>
+    <string name="preferences_again">Сохранять законченные чтения</string>
+    <string name="preferences_again_summary">Не удалять чтения после того, как Вы их закончили</string>
     <string name="preferences_advanced">Расширенные настройки</string>
     <string name="preferences_showContext">Отображать контекст</string>
     <string name="preferences_showContext_summary">Следующие слова в предложении</string>

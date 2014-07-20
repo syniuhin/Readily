@@ -35,7 +35,7 @@
     <string name="position">Position in a text</string>
     <string name="sth_left">left</string>
     <string name="pause">Pause</string>
-    <string name="reading_is_completed">Reading is completed. Tap to exit.</string>
+    <string name="reading_is_completed">Tap to exit</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Read a text from the clipboard</string>
@@ -52,6 +52,8 @@
     <string name="preferences_endOfSentence_coeff">Sentence ending</string>
     <string name="preferences_dashOrColon_coeff">Dash or (semi)colon</string>
     <string name="preferences_begOfPar_coeff">Beginning of a paragraph</string>
+    <string name="preferences_again">Store complete readings</string>
+    <string name="preferences_again_summary">Do not delete readings when you complete them</string>
     <string name="preferences_advanced">Advanced settings</string>
     <string name="preferences_showContext">Show context</string>
     <string name="preferences_showContext_summary">Next words in a sentence</string>

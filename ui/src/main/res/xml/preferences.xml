@@ -15,6 +15,11 @@
             android:key="pref_punct"
             android:summary="@string/preferences_different_speed_punctuation_summary"
             android:title="@string/preferences_different_speed_punctuation"/>
+        <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="pref_again"
+                android:summary="@string/preferences_again_summary"
+                android:title="@string/preferences_again"/>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/preferences_advanced">

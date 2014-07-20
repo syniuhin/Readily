@@ -35,7 +35,7 @@
     <string name="position">Позиція у тексті</string>
     <string name="sth_left">залишилось</string>
     <string name="pause">Пауза</string>
-    <string name="reading_is_completed">Читання закінчилось. Торкніться для виходу.</string>
+    <string name="reading_is_completed">Торкніться для виходу</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитати текст з буферу обміну</string>
@@ -52,6 +52,8 @@
     <string name="preferences_endOfSentence_coeff">Кінець речення</string>
     <string name="preferences_dashOrColon_coeff">Тире, дефіс, двокрапка або крапка з комою</string>
     <string name="preferences_begOfPar_coeff">Початок абзацу</string>
+    <string name="preferences_again">Зберігати закінчені читання</string>
+    <string name="preferences_again_summary">Не видаляти читання після того, як Ви їх закінчили</string>
     <string name="preferences_advanced">Розширені налаштування</string>
     <string name="preferences_showContext">Показувати контекст</string>
     <string name="preferences_showContext_summary">Наступні слова у реченні</string>

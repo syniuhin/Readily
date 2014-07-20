@@ -227,24 +227,26 @@ public class ReaderFragment extends Fragment {
 	}
 
 	private void showNotification(String text){
-		notification.setText(text);
-		setCurrentTime(System.currentTimeMillis());
+		if (!TextUtils.isEmpty(text)){
+			notification.setText(text);
+			setCurrentTime(System.currentTimeMillis());
 
-		if (notificationHided){
-			YoYo.with(Techniques.SlideInDown).
-					duration(NOTIF_APPEARING_DURATION).
-					playOn(notification);
-			notification.postDelayed(new Runnable() {
-				@Override
-				public void run(){
-					notification.setVisibility(View.VISIBLE);
-				}
-			}, NOTIF_APPEARING_DURATION);
+			if (notificationHided){
+				YoYo.with(Techniques.SlideInDown).
+						duration(NOTIF_APPEARING_DURATION).
+						playOn(notification);
+				notification.postDelayed(new Runnable() {
+					@Override
+					public void run(){
+						notification.setVisibility(View.VISIBLE);
+					}
+				}, NOTIF_APPEARING_DURATION);
 
-			YoYo.with(Techniques.FadeOut).
-					duration(NOTIF_APPEARING_DURATION).
-					playOn(upLogo);
-			notificationHided = false;
+				YoYo.with(Techniques.FadeOut).
+						duration(NOTIF_APPEARING_DURATION).
+						playOn(upLogo);
+				notificationHided = false;
+			}
 		}
 	}
 
@@ -401,8 +403,21 @@ public class ReaderFragment extends Fragment {
 		if (isStorable() && reader != null){
 			reader.performPause();
 			Storable storable = (Storable) readable;
-			if (reader.isCompleted()){ storable.setPosition(0); } else { storable.setPosition(reader.getPosition()); }
-			LastReadService.start(activity, storable, Constants.DB_OPERATION_INSERT);
+			int operation;
+			if (settingsBundle.isStoringComplete()){
+				if (reader.isCompleted()){
+					storable.setPosition(0);
+				} else {
+					storable.setPosition(reader.getPosition());
+				}
+				operation = Constants.DB_OPERATION_INSERT;
+			} else {
+				storable.setPosition(reader.getPosition());
+				operation = (reader.isCompleted())
+						? Constants.DB_OPERATION_DELETE
+						: Constants.DB_OPERATION_INSERT;
+			}
+			LastReadService.start(activity, storable, operation);
 		}
 
 		settingsBundle.updatePreferences();
@@ -500,10 +515,7 @@ public class ReaderFragment extends Fragment {
 					position++;
 				}
 			} else {
-				Context context = getActivity();
-				if (context != null){
-					Toast.makeText(context, R.string.reading_is_completed, Toast.LENGTH_SHORT).show();
-				}
+				showNotification(R.string.reading_is_completed);
 				completed = true;
 				cancelled = 1;
 			}
