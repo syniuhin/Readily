@@ -17,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.*;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.infmme.readily.R;
 import com.infmme.readily.essential.TextParser;
 import com.infmme.readily.readable.Readable;
 import com.infmme.readily.readable.Storable;
@@ -101,6 +100,14 @@ public class ReaderFragment extends Fragment {
 		parseText(getActivity(), args);
 	}
 
+	public void onSwipeTop(){
+		changeWPM(Constants.WPM_STEP_READER);
+	}
+
+	public void onSwipeBottom(){
+		changeWPM(-1 * Constants.WPM_STEP_READER);
+	}
+
 	private void setCurrentTime(long localTime){
 		this.localTime = localTime;
 	}
@@ -138,7 +145,7 @@ public class ReaderFragment extends Fragment {
 		return Html.fromHtml(format);
 	}
 
-	public String getNextFormat(int pos){
+	private String getNextFormat(int pos){
 		int charLen = 0;
 		int i = pos;
 		StringBuilder format = new StringBuilder("&nbsp;<font color='#AAAAAA'>");
@@ -169,12 +176,12 @@ public class ReaderFragment extends Fragment {
 		readerLayout.setOnTouchListener(new OnSwipeTouchListener(context) {
 			@Override
 			public void onSwipeTop(){
-				changeWPM(Constants.WPM_STEP_READER);
+				ReaderFragment.this.onSwipeTop();
 			}
 
 			@Override
 			public void onSwipeBottom(){
-				changeWPM(-1 * Constants.WPM_STEP_READER);
+				ReaderFragment.this.onSwipeBottom();
 			}
 
 			@Override
@@ -273,12 +280,14 @@ public class ReaderFragment extends Fragment {
 	 * @param delta: delta itself. Default value: 50
 	 */
 	private void changeWPM(int delta){
-		int wpm = settingsBundle.getWPM();
-		int wpmNew = Math.min(Constants.MAX_WPM, Math.max(wpm + delta, Constants.MIN_WPM));
+		if (settingsBundle != null){
+			int wpm = settingsBundle.getWPM();
+			int wpmNew = Math.min(Constants.MAX_WPM, Math.max(wpm + delta, Constants.MIN_WPM));
 
-		if (wpm != wpmNew){
-			settingsBundle.setWPM(wpmNew);
-			showNotification(wpmNew + " WPM");
+			if (wpm != wpmNew){
+				settingsBundle.setWPM(wpmNew);
+				showNotification(wpmNew + " WPM");
+			}
 		}
 	}
 

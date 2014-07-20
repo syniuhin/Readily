@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.WindowManager;
-import com.infmme.readily.R;
 import com.infmme.readily.util.BaseActivity;
+import com.infmme.readily.util.OnSwipeTouchListener;
 
 public class ReceiverActivity extends BaseActivity implements /*FlurryAdListener,*/ ReaderFragment.ReaderListener {
 
@@ -39,6 +39,20 @@ public class ReceiverActivity extends BaseActivity implements /*FlurryAdListener
 		startReaderFragment(bundle);
 	}
 
+	private void setOnSwipeListener(final ReaderFragment readerFragment){
+		this.findViewById(android.R.id.content).setOnTouchListener(new OnSwipeTouchListener(this) {
+			@Override
+			public void onSwipeTop(){
+				readerFragment.onSwipeTop();
+			}
+
+			@Override
+			public void onSwipeBottom(){
+				readerFragment.onSwipeBottom();
+			}
+		});
+	}
+
 	private Bundle bundleReceivedData(){
 		return getIntent().getExtras();
 	}
@@ -54,6 +68,7 @@ public class ReceiverActivity extends BaseActivity implements /*FlurryAdListener
 						add(R.id.fragment_container, readerFragment, READER_FRAGMENT_TAG).
 						addToBackStack(null).
 						commit();
+				setOnSwipeListener(readerFragment);
 			}
 		}
 	}
