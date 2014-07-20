@@ -42,7 +42,7 @@
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитать текст из буфера обмена</string>
     <string name="preferences_pick_file">Прочитать текст из файла</string>
-    <string name="preferences_pick_file_summary">Выберите .txt или .epub файл, из которого будете читать</string>
+    <string name="preferences_pick_file_summary">Выберите .txt, .epub или .fb2 файл, из которого будете читать</string>
     <string name="preferences_test">Проверить настройки</string>
     <string name="preferences_basic_settings">Базовые настройки</string>
     <string name="preferences_set_wpm">Установить скорость</string>
@@ -90,7 +90,7 @@
         выбрать \"Прочитать текст из буфера обмена\" на панели действий.
     </string>
     <string name="instructions_third_paragraph">Так же, Вы можете выбрать действие \"Прочитать текст из файла\" и сам
-        файл (доступные расширения: .txt и .epub) из системы.
+        файл (доступные расширения: .txt, .epub и .fb2) из системы.
     </string>
     <string name="instructions_fourth_paragraph">Наконец, вы можете поделиться с Readily из своего любимого
         приложения для чтения (например Flipboard, Instapaper).

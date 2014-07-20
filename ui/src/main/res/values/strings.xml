@@ -42,7 +42,7 @@
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Read a text from the clipboard</string>
     <string name="preferences_pick_file">Read a text from a file</string>
-    <string name="preferences_pick_file_summary">Choose a .txt or .epub file to read</string>
+    <string name="preferences_pick_file_summary">Choose a .txt, .epub or .fb2 file to read</string>
     <string name="preferences_test">Test your settings</string>
     <string name="preferences_basic_settings">Basic settings</string>
     <string name="preferences_set_wpm">Set speed</string>
@@ -89,7 +89,7 @@
     <string name="instructions_second_paragraph">To start reading you can copy a text to clipboard and choose
         \"Read a text from the clipboard\" action.</string>
     <string name="instructions_third_paragraph">Also you can use \"Read a text from a file\" action and pick a file
-        (of .txt or .epub extensions) from file system.</string>
+        (of .txt, .epub or .fb2 extensions) from file system.</string>
     <string name="instructions_fourth_paragraph">Finally, you can share data to Readily from your favorite reader (e.g.
         Flipboard, Instapaper).</string>
     <string name="instructions_controls_header">Controls</string>
