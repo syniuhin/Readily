@@ -6,10 +6,20 @@ import android.text.TextUtils;
 import com.infmme.readily.Constants;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 
+import java.util.HashMap;
+
 /**
  * Created by infm on 6/13/14. Enjoy ;)
  */
 abstract public class FileStorable extends Storable {
+
+	public static final HashMap<String, Integer> extensionsMap = new HashMap<String, Integer>();
+
+	static{
+		extensionsMap.put(Constants.EXTENSION_TXT, Readable.TYPE_TXT);
+		extensionsMap.put(Constants.EXTENSION_EPUB, Readable.TYPE_EPUB);
+		extensionsMap.put(Constants.EXTENSION_FB2, Readable.TYPE_FB2);
+	}
 
 	public static FileStorable createFileStorable(String intentPath){
 		FileStorable fileStorable;
@@ -19,6 +29,9 @@ abstract public class FileStorable extends Storable {
 				break;
 			case Readable.TYPE_EPUB:
 				fileStorable = new EpubFileStorable(intentPath);
+				break;
+			case Readable.TYPE_FB2:
+				fileStorable = new FB2FileStorable(intentPath);
 				break;
 			default:
 				fileStorable = null;
@@ -33,18 +46,14 @@ abstract public class FileStorable extends Storable {
 	}
 
 	public static int getIntentType(String intentPath){
-		String ext = FileUtils.getExtension(intentPath);
-		if (Constants.EXTENSION_TXT.equals(ext)){ return Readable.TYPE_TXT; }
-		if (Constants.EXTENSION_EPUB.equals(ext)){ return Readable.TYPE_EPUB; }
+		String extension = FileUtils.getExtension(intentPath);
+		if (isExtensionValid(extension)){ return extensionsMap.get(extension); }
 		return -1;
 	}
 
 	public static boolean isExtensionValid(String extension){
-		return Constants.EXTENSION_TXT.equals(extension) ||
-				Constants.EXTENSION_EPUB.equals(extension); //to be continued...
+		return extensionsMap.containsKey(extension);
 	}
-
-	public String getExtension(){ return extension; }
 
 	protected void createRowData(Context context){
 		rowData = takeRowData(context);

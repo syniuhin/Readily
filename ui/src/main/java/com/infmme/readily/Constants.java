@@ -31,6 +31,7 @@ public class Constants {
 
 	public static final String EXTENSION_TXT = ".txt";
 	public static final String EXTENSION_EPUB = ".epub";
+	public static final String EXTENSION_FB2 = ".fb2";
 
 	public static class Preferences {
 		public static final String NEWCOMER = "is_anybody_out_there?";

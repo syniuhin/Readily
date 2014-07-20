@@ -20,8 +20,6 @@ import java.io.IOException;
  */
 abstract public class Storable extends Readable {
 
-
-	protected String extension;
 	protected String title;
 
 	public static DataBundle getRowData(Cursor cursor, String path){

@@ -1,6 +1,7 @@
 package com.infmme.readily.readable;
 
 import android.content.Context;
+import android.text.TextUtils;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubReader;
@@ -16,7 +17,6 @@ import java.io.IOException;
 public class EpubFileStorable extends FileStorable {
 
 	public EpubFileStorable(String path){
-		extension = "epub";
 		type = TYPE_EPUB;
 		this.path = path;
 	}
@@ -50,6 +50,6 @@ public class EpubFileStorable extends FileStorable {
 
 	@Override
 	protected void makeHeader(){
-		if (title.isEmpty() || title.equals("Cover")){ super.makeHeader(); } else { header = title; }
+		if (TextUtils.isEmpty(title) || title.equals("Cover")){ super.makeHeader(); } else { header = title; }
 	}
 }

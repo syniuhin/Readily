@@ -26,6 +26,7 @@ abstract public class Readable implements Serializable {
 	public static final int TYPE_TXT = 3;
 	public static final int TYPE_EPUB = 4;
 	public static final int TYPE_NET = 5;
+	public static final int TYPE_FB2 = 6;
 
 	protected StringBuilder text;
 	protected String header;

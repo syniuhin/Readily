@@ -12,7 +12,6 @@ import java.io.IOException;
 public class TxtFileStorable extends FileStorable {
 
 	public TxtFileStorable(String path){
-		extension = "txt";
 		type = TYPE_TXT;
 		this.path = path;
 	}
