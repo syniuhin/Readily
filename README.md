@@ -6,7 +6,7 @@
 
 *this is screencast from older version with other name*
 
-With this technology you can read up to 1200 words per minute instead of 220 when reading normally. 
+With this technology you can read up to 1200 words per minute instead of 220 when reading normally.
 
 ##Features
 
@@ -16,7 +16,7 @@ List of functions already implemented:
 * Changing speed on the go.
 * Speed change before punctuation, on long words and on digits (*optional*).
 * Preview of next words in a paragraph (*opitonal*).
-* Storage of incomplete readings: 
+* Storage of incomplete readings:
   * **From files**: saves your progress, so you can resume reading in one click.
   * **From net**: caches text to a file and further works as a reading from file.
 
@@ -24,9 +24,10 @@ List of functions already implemented:
 
 * Clipboard
 * Internet
-* Files: 
+* Files:
   * `.txt`
   * `.epub`(*alpha*).
+  * `.fb2` (*alpha*).
 
 ##Languages supported
 
