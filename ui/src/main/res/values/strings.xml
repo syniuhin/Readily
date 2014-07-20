@@ -36,6 +36,8 @@
     <string name="sth_left">left</string>
     <string name="pause">Pause</string>
     <string name="reading_is_completed">Tap to exit</string>
+    <string name="speed">Speed: </string>
+    <string name="words_read">Words read: </string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Read a text from the clipboard</string>

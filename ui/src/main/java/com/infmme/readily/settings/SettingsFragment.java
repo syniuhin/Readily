@@ -71,15 +71,6 @@ public class SettingsFragment extends PreferenceFragment {
 		return super.onPreferenceTreeClick(preferenceScreen, preference);
 	}
 
-	@Override
-	public void onStop(){
-		super.onStop();
-		PreferenceManager.getDefaultSharedPreferences(getActivity())
-				.edit()
-				.putString(Constants.Preferences.WPM, WPM.toString())
-				.apply();
-	}
-
 	private int pxFromDp(int dp){
 		return (int) (dp * getActivity().getResources().getDisplayMetrics().density + 0.5f);
 	}
@@ -103,6 +94,10 @@ public class SettingsFragment extends PreferenceFragment {
 									  @Override
 									  public void onClick(DialogInterface dialog, int which){
 										  WPM = min + Constants.WPM_STEP_PREFERENCES * (numberPicker.getValue() - min);
+										  PreferenceManager.getDefaultSharedPreferences(getActivity())
+												  .edit()
+												  .putString(Constants.Preferences.WPM, WPM.toString())
+												  .commit();
 									  }
 								  }
 								 ).

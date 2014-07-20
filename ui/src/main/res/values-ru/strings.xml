@@ -36,6 +36,8 @@
     <string name="sth_left">осталось</string>
     <string name="pause">Пауза</string>
     <string name="reading_is_completed">Коснитесь для выхода</string>
+    <string name="speed">Скорость: </string>
+    <string name="words_read">Слов прочитано: </string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитать текст из буфера обмена</string>

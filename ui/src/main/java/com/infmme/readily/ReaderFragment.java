@@ -39,9 +39,13 @@ public class ReaderFragment extends Fragment {
 	private Handler handler;
 	private long localTime = 0;
 	private boolean notificationHided = true;
+	private boolean infoHided = true;
 	private Bundle args;
 	//initialized in onCreateView()
 	private RelativeLayout readerLayout;
+	private RelativeLayout infoLayout;
+	private TextView wpmTextView;
+	private TextView positionTextView;
 	private TextView currentTextView;
 	private TextView leftTextView;
 	private TextView rightTextView;
@@ -167,9 +171,12 @@ public class ReaderFragment extends Fragment {
 		leftTextView = (TextView) v.findViewById(R.id.leftWordTextView);
 		rightTextView = (TextView) v.findViewById(R.id.rightWordTextView);
 		progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
-		notification = (TextView) v.findViewById(R.id.speedo);
+		notification = (TextView) v.findViewById(R.id.reader_notification);
 		prevButton = (ImageButton) v.findViewById(R.id.previousWordImageButton);
 		upLogo = v.findViewById(R.id.logo_up);
+		infoLayout = (RelativeLayout) v.findViewById(R.id.reader_info_layout);
+		wpmTextView = (TextView) v.findViewById(R.id.text_view_info_speed_value);
+		positionTextView = (TextView) v.findViewById(R.id.text_view_info_position_value);
 	}
 
 	private void setReaderLayoutListener(Context context){
@@ -251,7 +258,7 @@ public class ReaderFragment extends Fragment {
 	}
 
 	private void showNotification(int resourceId){
-		showNotification(getResources().getString(resourceId));
+		if (isAdded()){ showNotification(getResources().getString(resourceId)); }
 	}
 
 	private boolean hideNotification(boolean force){
@@ -276,6 +283,43 @@ public class ReaderFragment extends Fragment {
 		return notificationHided;
 	}
 
+	private void showInfo(Reader reader){
+		if (reader != null && settingsBundle != null) showInfo(settingsBundle.getWPM(), reader.getPosition());
+	}
+
+	private void showInfo(int wpm, int position){
+		wpmTextView.setText(wpm + " WPM");
+		positionTextView.setText(Integer.toString(position));
+
+		if (infoHided){
+			YoYo.with(Techniques.FadeIn).
+					duration(NOTIF_APPEARING_DURATION * 2).
+					playOn(infoLayout);
+			infoLayout.postDelayed(new Runnable() {
+				@Override
+				public void run(){
+					infoLayout.setVisibility(View.VISIBLE);
+				}
+			}, NOTIF_APPEARING_DURATION);
+			infoHided = false;
+		}
+	}
+
+	private void hideInfo(){
+		if (!infoHided){
+			YoYo.with(Techniques.FadeOut).
+					duration(NOTIF_APPEARING_DURATION).
+					playOn(infoLayout);
+			infoLayout.postDelayed(new Runnable() {
+				@Override
+				public void run(){
+					infoLayout.setVisibility(View.INVISIBLE);
+				}
+			}, NOTIF_APPEARING_DURATION);
+			infoHided = true;
+		}
+	}
+
 	/**
 	 * TODO: make max/min optional
 	 *
@@ -289,6 +333,7 @@ public class ReaderFragment extends Fragment {
 			if (wpm != wpmNew){
 				settingsBundle.setWPM(wpmNew);
 				showNotification(wpmNew + " WPM");
+				wpmTextView.setText(wpmNew + " WPM");
 			}
 		}
 	}
@@ -314,8 +359,14 @@ public class ReaderFragment extends Fragment {
 					public void run(){
 						parsingProgressBar.setVisibility(View.GONE);
 						readerLayout.setVisibility(View.VISIBLE);
-						showNotification(R.string.tap_to_start);
-						reader.updateView(initialPosition);
+						if (initialPosition < wordList.size()){
+							showNotification(R.string.tap_to_start);
+							showInfo(reader);
+							reader.updateView(initialPosition);
+						} else {
+							showNotification(R.string.reading_is_completed);
+							reader.setCompleted(true);
+						}
 						YoYo.with(Techniques.FadeIn).
 								duration(READER_PULSE_DURATION).
 								playOn(readerLayout);
@@ -326,28 +377,30 @@ public class ReaderFragment extends Fragment {
 			}
 		} else {
 			Activity a = getActivity();
-			a.runOnUiThread(new Runnable() {
-				@Override
-				public void run(){
-					int stringId;
-					switch (resultCode){
-						case TextParser.RESULT_CODE_WRONG_EXT:
-							stringId = R.string.wrong_ext;
-							break;
-						case TextParser.RESULT_CODE_EMPTY_CLIPBOARD:
-							stringId = R.string.clipboard_empty;
-							break;
-						case TextParser.RESULT_CODE_CANT_FETCH:
-							stringId = R.string.cant_fetch;
-							break;
-						default:
-							stringId = R.string.text_null;
-							break;
+			if (a != null){
+				a.runOnUiThread(new Runnable() {
+					@Override
+					public void run(){
+						int stringId;
+						switch (resultCode){
+							case TextParser.RESULT_CODE_WRONG_EXT:
+								stringId = R.string.wrong_ext;
+								break;
+							case TextParser.RESULT_CODE_EMPTY_CLIPBOARD:
+								stringId = R.string.clipboard_empty;
+								break;
+							case TextParser.RESULT_CODE_CANT_FETCH:
+								stringId = R.string.cant_fetch;
+								break;
+							default:
+								stringId = R.string.text_null;
+								break;
+						}
+						Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
+						onStop();
 					}
-					Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
-					onStop();
-				}
-			});
+				});
+			}
 		}
 	}
 
@@ -530,6 +583,7 @@ public class ReaderFragment extends Fragment {
 					position < wordList.size() && position >= 0){
 				this.position = position;
 				updateView(position);
+				showInfo(this);
 			}
 		}
 
@@ -543,6 +597,10 @@ public class ReaderFragment extends Fragment {
 
 		public boolean isCompleted(){
 			return completed;
+		}
+
+		public void setCompleted(boolean completed){
+			this.completed = completed;
 		}
 
 		public boolean isCancelled(){
@@ -561,6 +619,7 @@ public class ReaderFragment extends Fragment {
 						playOn(readerLayout);
 				if (!settingsBundle.isSwipesEnabled()){ prevButton.setVisibility(View.VISIBLE); }
 				showNotification(R.string.pause);
+				showInfo(this);
 			}
 		}
 
@@ -572,6 +631,7 @@ public class ReaderFragment extends Fragment {
 						playOn(readerLayout);
 				if (!settingsBundle.isSwipesEnabled()){ prevButton.setVisibility(View.INVISIBLE); }
 				hideNotification(true);
+				hideInfo();
 				readerHandler.postDelayed(this, READER_PULSE_DURATION + 100);
 			}
 		}
