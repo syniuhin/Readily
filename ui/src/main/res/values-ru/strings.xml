@@ -78,26 +78,26 @@
 
     <!-- Instructions -->
     <string name="instructions_welcome">Добро пожаловать!</string>
-    <string name="instructions_first_paragraph">\tReadily - это приложение для скорочтения, основанное на технологии
+    <string name="instructions_first_paragraph">Readily - это приложение для скорочтения, основанное на технологии
         RSVP(Rapid Serial Visual Presentation). С этой технологией Вы можете читать до 1200 слов в минуту вместо 220
         при обычном чтении.
     </string>
 
     <string name="instructions_source_text">Источники текста</string>
-    <string name="instructions_second_paragraph">\tЧтобы начать читать, Вы можете скопировать текст в буфер обмена и
+    <string name="instructions_second_paragraph">Чтобы начать читать, Вы можете скопировать текст в буфер обмена и
         выбрать \"Прочитать текст из буфера обмена\" на панели действий.
     </string>
-    <string name="instructions_third_paragraph">\tТак же, Вы можете выбрать действие \"Прочитать текст из файла\" и сам
+    <string name="instructions_third_paragraph">Так же, Вы можете выбрать действие \"Прочитать текст из файла\" и сам
         файл (доступные расширения: .txt и .epub) из системы.
     </string>
-    <string name="instructions_fourth_paragraph">\tНаконец, вы можете поделиться с Readily из своего любимого
+    <string name="instructions_fourth_paragraph">Наконец, вы можете поделиться с Readily из своего любимого
         приложения для чтения (например Flipboard, Instapaper).
     </string>
 
     <string name="instructions_controls_header">Управление</string>
-    <string name="instructions_fifth_paragraph">\tДля паузы или продолжения работы чтения коснитесь окна ридера.
+    <string name="instructions_fifth_paragraph">Для паузы или продолжения работы чтения коснитесь окна ридера.
         В зависимости от ваших настроек, вы сможете передвигаться по тексту с помощью свайпов или кнопки слева.\n
-        \tЕсли Вам кажется, что чтение идёт слишком медленно или быстро, Вы можете изменить скорость по ходу работы
+        Если Вам кажется, что чтение идёт слишком медленно или быстро, Вы можете изменить скорость по ходу работы
         чтения: свайпните вверх или вниз, чтобы изменить скорость на 50 слов/мин.
     </string>
     <string name="instructions_emphasis_point">Точка ударения: сконцентрируйтесь на ней и чтение станет быстрее.
