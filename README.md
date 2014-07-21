@@ -2,7 +2,7 @@
 
 **Readily** is a speed-reading android application powered by [RSVP] technology and inspired by [Spritzer] project.
 
-![Example share from browser](http://s9.postimg.org/x6zntticd/share2habr.gif)
+![Example share from browser](http://i62.tinypic.com/2hqqauu.gif)
 
 With this technology you can read up to 1200 words per minute instead of 220 when reading normally.
 
