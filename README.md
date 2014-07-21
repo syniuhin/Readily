@@ -1,30 +1,30 @@
-##Welcome :)
+##Welcome
 
 **Readily** is a speed-reading android application powered by [RSVP] technology and inspired by [Spritzer] project.
 
-![Screencast](http://i61.tinypic.com/2la7xc1.gif)
-
-*this is screencast from older version with other name*
+![Example share from browser](http://s9.postimg.org/x6zntticd/share2habr.gif)
 
 With this technology you can read up to 1200 words per minute instead of 220 when reading normally.
 
 ##Features
 
-List of functions already implemented:
+####Parser of a text:
+  * **Normalizes**: parser checks text for and fixes bad characters and duplicates of punctuation, proper spacing before and after punctuation. Also it splits too long words in smaller ones. After that text is becoming easier to comprehend.
+  * **Emphasizes**: every word is processed in order to choose emphasis position - red letter's one, which gains maximum of your attention and helps you recognize the word in the fastest way.
+  * **Sets delay**(*optional*): when you reading on such a speed, you can miss an essence of sentence. Therefore, parser sets gentle delays before punctuation, on digits and on long words to help you grasp information clearly.
 
-* Splitting of long words (*max length of word is not currently optional, default value is 13*).
-* Changing speed on the go.
-* Speed change before punctuation, on long words and on digits (*optional*).
-* Preview of next words in a paragraph (*opitonal*).
-* Storage of incomplete readings:
-  * **From files**: saves your progress, so you can resume reading in one click.
-  * **From net**: caches text to a file and further works as a reading from file.
+####Handy controls:
+  * You can change speed on the go - just swipe to top or bottom.
+  * To pause or play just tap the reader's window.
+
+####Storage of incomplete readings:
+####Preview of next words in a paragraph (*opitonal*).
 
 ##Supported sources of text:
 
-* Clipboard
-* Internet
-* Files:
+* **Clipboard**: simply choose the "Paste" action.
+* **Shared text**: simply share to Readily from your browser, reader, note app, etc.
+* **Files**: choose file of supported extension
   * `.txt`
   * `.epub`(*alpha*).
   * `.fb2` (*alpha*).
@@ -34,6 +34,7 @@ List of functions already implemented:
 * English
 * Russian
 * Ukrainian
+* Indonesian (*very soon*)
 
 *If you know some other language and want to help - please, [contact me], I'd appreciate it a lot!*
 
@@ -49,10 +50,14 @@ Libraries and code:
 * Peter Karich for [snacktory](https://github.com/karussell/snacktory)
 * Paul Siegmann for [epubLib](http://www.siegmann.nl/epublib)
 * daimajia for [animations](https://github.com/daimajia/AndroidViewAnimations)
+* [Anton Bredykhin](https://github.com/abredykhin)
 
 Artwork:
 
 * Griko Nibras for [Flex](http://grikomsn.deviantart.com/art/Flex-361665214)
+
+Translation:
+* **Indonesian**: Griko Nibras
 
 Ideas and inspiration:
 
@@ -60,6 +65,8 @@ Ideas and inspiration:
 * [Catherine Lyubchenko](https://plus.google.com/114417077430631558278)
 * [Dayana Shevchenko](https://vk.com/kruasan.sovest)
 * [Lesha Sushkov](http://instagram.com/Maelemotion)
+* [Alexander Kizka](https://www.facebook.com/alexkizka)
+* [Anton Bredykhin](https://github.com/abredykhin)
 
 [RSVP]:http://en.wikipedia.org/wiki/Rapid_Serial_Visual_Presentation "Rapid Serial Visual Representation"
 [Spritzer]:http://www.spritzinc.com
