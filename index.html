@@ -25,13 +25,9 @@
         <span id="logo"></span>
 
         <a href="https://github.com/infm/Readily" class="button fork"><strong>View On GitHub</strong></a>
-        
         <div class="downloads">
           <span>Downloads:</span>
           <ul>
-            <li>
-              <a href="https://play.google.com/store/apps/details?id=com.infmme.readily" class="button">Google Play</a>
-            </li>
             <li><a href="https://github.com/infm/Readily/zipball/master" class="button">ZIP</a></li>
             <li><a href="https://github.com/infm/Readily/tarball/master" class="button">TAR</a></li>
           </ul>
@@ -44,43 +40,56 @@
       </nav>
       <section>
         <h2>
-<a name="welcome-" class="anchor" href="#welcome-"><span class="octicon octicon-link"></span></a>Welcome :)</h2>
+<a name="welcome" class="anchor" href="#welcome"><span class="octicon octicon-link"></span></a>Welcome</h2>
 
 <p><strong>Readily</strong> is a speed-reading android application powered by <a href="http://en.wikipedia.org/wiki/Rapid_Serial_Visual_Presentation" title="Rapid Serial Visual Representation">RSVP</a> technology and inspired by <a href="http://www.spritzinc.com">Spritzer</a> project.</p>
 
-<p>With this technology you can read up to 1200 words per minute instead of 220 when reading normally. </p>
+<p><img src="http://i62.tinypic.com/2hqqauu.gif" alt="Example share from browser"></p>
+
+<p>With this technology you can read up to 1200 words per minute instead of 220 when reading normally.</p>
 
 <h2>
 <a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h2>
 
-<p>List of functions already implemented:</p>
-
-<ul>
-<li>Splitting of long words (<em>max length of word is not currently optional, default value is 13</em>).</li>
-<li>Changing speed on the go.</li>
-<li>Speed change before punctuation, on long words and on digits (<em>optional</em>).</li>
-<li>Preview of next words in a paragraph (<em>opitonal</em>).</li>
-<li>Storage of incomplete readings: 
+<h4>
+<a name="parser-of-a-text" class="anchor" href="#parser-of-a-text"><span class="octicon octicon-link"></span></a>Parser of a text:</h4>
 
 <ul>
 <li>
-<strong>From files</strong>: saves your progress, so you can resume reading in one click.</li>
+<strong>Normalizes</strong>: parser checks text for and fixes bad characters and duplicates of punctuation, proper spacing before and after punctuation. Also it splits too long words in smaller ones. After that text is becoming easier to comprehend.</li>
 <li>
-<strong>From net</strong>: caches text to a file and further works as a reading from file.</li>
-</ul>
-</li>
-</ul><h2>
+<strong>Emphasizes</strong>: every word is processed in order to choose emphasis position - red letter's one, which gains maximum of your attention and helps you recognize the word in the fastest way.</li>
+<li>
+<strong>Sets delay</strong>(<em>optional</em>): when you reading on such a speed, you can miss an essence of sentence. Therefore, parser sets gentle delays before punctuation, on digits and on long words to help you grasp information clearly.</li>
+</ul><h4>
+<a name="handy-controls" class="anchor" href="#handy-controls"><span class="octicon octicon-link"></span></a>Handy controls:</h4>
+
+<ul>
+<li>You can change speed on the go - just swipe to top or bottom.</li>
+<li>To pause or play just tap the reader's window.</li>
+</ul><h4>
+<a name="storage-of-incomplete-readings" class="anchor" href="#storage-of-incomplete-readings"><span class="octicon octicon-link"></span></a>Storage of incomplete readings:</h4>
+
+<h4>
+<a name="preview-of-next-words-in-a-paragraph-opitonal" class="anchor" href="#preview-of-next-words-in-a-paragraph-opitonal"><span class="octicon octicon-link"></span></a>Preview of next words in a paragraph (<em>opitonal</em>).</h4>
+
+<h2>
 <a name="supported-sources-of-text" class="anchor" href="#supported-sources-of-text"><span class="octicon octicon-link"></span></a>Supported sources of text:</h2>
 
 <ul>
-<li>Clipboard</li>
-<li>Internet</li>
-<li>Files: 
+<li>
+<strong>Clipboard</strong>: simply choose the "Paste" action.</li>
+<li>
+<strong>Shared text</strong>: simply share to Readily from your browser, reader, note app, etc.</li>
+<li>
+<strong>Files</strong>: choose file of supported extension
 
 <ul>
 <li><code>.txt</code></li>
 <li>
 <code>.epub</code>(<em>alpha</em>).</li>
+<li>
+<code>.fb2</code> (<em>alpha</em>).</li>
 </ul>
 </li>
 </ul><h2>
@@ -90,6 +99,7 @@
 <li>English</li>
 <li>Russian</li>
 <li>Ukrainian</li>
+<li>Indonesian (<em>very soon</em>)</li>
 </ul><p><em>If you know some other language and want to help - please, <a href="mailto:syniuhin@gmail.com">contact me</a>, I'd appreciate it a lot!</em></p>
 
 <h2>
@@ -111,11 +121,17 @@
 </li>
 <li>daimajia for <a href="https://github.com/daimajia/AndroidViewAnimations">animations</a>
 </li>
+<li><a href="https://github.com/abredykhin">Anton Bredykhin</a></li>
 </ul><p>Artwork:</p>
 
 <ul>
 <li>Griko Nibras for <a href="http://grikomsn.deviantart.com/art/Flex-361665214">Flex</a>
 </li>
+</ul><p>Translation:</p>
+
+<ul>
+<li>
+<strong>Indonesian</strong>: Griko Nibras</li>
 </ul><p>Ideas and inspiration:</p>
 
 <ul>
@@ -123,6 +139,8 @@
 <li><a href="https://plus.google.com/114417077430631558278">Catherine Lyubchenko</a></li>
 <li><a href="https://vk.com/kruasan.sovest">Dayana Shevchenko</a></li>
 <li><a href="http://instagram.com/Maelemotion">Lesha Sushkov</a></li>
+<li><a href="https://www.facebook.com/alexkizka">Alexander Kizka</a></li>
+<li><a href="https://github.com/abredykhin">Anton Bredykhin</a></li>
 </ul>
       </section>
       <footer>
