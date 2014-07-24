@@ -19,12 +19,21 @@ public class SettingsBundle {
 	private boolean swipesEnabled;
 	private boolean storingComplete;
 	private Integer typeface;
+	private Integer fontSize;
 	//preferences themselves
 	private SharedPreferences sharedPreferences;
 
 	public SettingsBundle(SharedPreferences sharedPreferences){
 		this.sharedPreferences = sharedPreferences;
 		assignFields();
+	}
+
+	public Integer getFontSize(){
+		return fontSize;
+	}
+
+	public void setFontSize(Integer fontSize){
+		this.fontSize = fontSize;
 	}
 
 	public boolean isStoringComplete(){
@@ -69,6 +78,8 @@ public class SettingsBundle {
 
 	public void assignFields(){
 		WPM = Integer.parseInt(sharedPreferences.getString(Constants.Preferences.WPM, Constants.DEFAULT_WPM));
+		fontSize = Integer.parseInt(
+				sharedPreferences.getString(Constants.Preferences.FONT_SIZE, Constants.DEFAULT_FONT_SIZE));
 		typeface = Integer.parseInt(sharedPreferences.getString(Constants.Preferences.TYPEFACE, "0"));
 		swipesEnabled = sharedPreferences.getBoolean(Constants.Preferences.SWIPE, false);
 		showingContextEnabled = sharedPreferences.getBoolean(Constants.Preferences.SHOW_CONTEXT, true);
@@ -81,6 +92,7 @@ public class SettingsBundle {
 		SharedPreferences.Editor editor = sharedPreferences.edit();
 
 		editor.putString(Constants.Preferences.WPM, Integer.toString(WPM));
+		editor.putString(Constants.Preferences.FONT_SIZE, Integer.toString(fontSize));
 		editor.putString(Constants.Preferences.TYPEFACE, Integer.toString(typeface));
 		editor.putBoolean(Constants.Preferences.SWIPE, swipesEnabled);
 		editor.putBoolean(Constants.Preferences.SHOW_CONTEXT, showingContextEnabled);

@@ -8,7 +8,7 @@
     <string name="title_activity_settings">Settings</string>
 
     <!-- UI -->
-    <string name="current_word">Sample</string>
+    <string name="just_sample">Sample</string>
     <string name="next_words">next words</string>
     <string name="top_pointer_description">points to emphasis from top</string>
     <string name="bottom_pointer_description">points to emphasis from bottom</string>
@@ -68,6 +68,8 @@
     <string name="preferences_send_feedback_summary">Tell me your ideas :)</string>
     <string name="preference_cache">Save readings</string>
     <string name="preference_cache_summary">Caches uncompleted readings</string>
+    <string name="preference_font_size">Font size</string>
+    <string name="preference_font_size_summary">Caution: text may exceed the window!</string>
     <string name="mail_to_me">mailto:syniuhin@gmail.com</string>
     <string name="send_email">Send an email</string>
     <string name="sample_text">Inside the flat a fruity voice was reading out a list of figures which had something to

@@ -14,6 +14,7 @@ public class Constants {
 	public static final String EXTRA_DB_OPERATION = "db_operation";
 
 	public static final String DEFAULT_WPM = "250";
+	public static final String DEFAULT_FONT_SIZE = "18";
 	public static final int MAX_WPM = 1200;
 	public static final int MIN_WPM = 50;
 	public static final int WPM_STEP_PREFERENCES = 10;
@@ -45,6 +46,7 @@ public class Constants {
 		public static final String PUNCTUATION_DIFFERS = "pref_punct";
 		public static final String STORE_COMPLETE = "pref_again";
 		public static final String FEEDBACK = "pref_feedback";
+		public static final String FONT_SIZE = "pref_font_size";
 		/*
 				public static final String PUNCTUATION_DEFAULT = "pref_punctuationDefault";
 				public static final String COMA_OR_LONG = "pref_comaOrLong";

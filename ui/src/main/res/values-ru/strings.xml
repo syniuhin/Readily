@@ -8,7 +8,7 @@
     <string name="title_activity_settings">Настройки</string>
 
     <!-- UI -->
-    <string name="current_word">Пример</string>
+    <string name="just_sample">Пример</string>
     <string name="next_words">следующие слова</string>
     <string name="top_pointer_description">указывает на выделенную букву сверху</string>
     <string name="bottom_pointer_description">указывает на выделенную букву снизу</string>
@@ -68,6 +68,8 @@
     <string name="preferences_send_feedback_summary">Расскажите мне ваши идеи :)</string>
     <string name="preference_cache">Сохранять чтения</string>
     <string name="preference_cache_summary">Кэширует незаконченные чтения</string>
+    <string name="preference_font_size">Размер шрифта</string>
+    <string name="preference_font_size_summary">Внимание: текст может не уместится в окне ридера!</string>
     <string name="send_email">Отошлите письмо</string>
     <string name="mail_to_me">mailto:syniuhin@gmail.com</string>
 

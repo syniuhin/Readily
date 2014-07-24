@@ -55,7 +55,7 @@
     <style name="reader_text_main">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">18dp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:layout_centerVertical">true</item>
         <item name="android:singleLine">true</item>
         <item name="android:typeface">monospace</item>
@@ -65,7 +65,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_centerHorizontal">true</item>
-        <item name="android:paddingLeft">5dp</item>
+        <item name="android:paddingLeft">5sp</item>
         <item name="android:paddingRight">95dp</item>
         <item name="android:src">@drawable/word_pointer</item>
     </style>

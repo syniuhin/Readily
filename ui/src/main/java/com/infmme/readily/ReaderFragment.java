@@ -11,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,8 @@ public class ReaderFragment extends Fragment {
 	private static final int NOTIF_APPEARING_DURATION = 300;
 	private static final int NOTIF_SHOWING_LENGTH = 1500; //time in ms for which speedo becomes visible
 	private static final int READER_PULSE_DURATION = 400;
+	private static final float POINTER_LEFT_PADDING_COEFFICIENT = 5f / 18f;
+
 	private ReaderListener callback;
 	//initialized in onCreate()
 	private Handler handler;
@@ -100,6 +103,7 @@ public class ReaderFragment extends Fragment {
 		settingsBundle = new SettingsBundle(PreferenceManager.getDefaultSharedPreferences(activity));
 
 		initPrevButton();
+		handleFontSize();
 
 		parseText(getActivity(), args);
 	}
@@ -231,6 +235,24 @@ public class ReaderFragment extends Fragment {
 			});
 			prevButton.setVisibility(View.INVISIBLE);
 		} else { prevButton.setVisibility(View.INVISIBLE); }
+	}
+
+	private float spToPixels(Context context, float sp) {
+		float scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
+		return sp * scaledDensity;
+	}
+
+	private void handleFontSize(){
+		View pointerTop = readerLayout.findViewById(R.id.pointerTopImageView);
+		View pointerBottom = readerLayout.findViewById(R.id.pointerBottomImageView);
+		float fontSizePx = spToPixels(getActivity(), (float) settingsBundle.getFontSize());
+		pointerTop.setPadding((int)(fontSizePx * POINTER_LEFT_PADDING_COEFFICIENT + .5f), pointerTop.getPaddingTop(),
+							  pointerTop.getPaddingRight(), pointerTop.getPaddingBottom());
+		pointerBottom.setPadding((int)(fontSizePx * POINTER_LEFT_PADDING_COEFFICIENT + .5f), pointerBottom.getPaddingTop(),
+								 pointerBottom.getPaddingRight(), pointerBottom.getPaddingBottom());
+		currentTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, settingsBundle.getFontSize());
+		leftTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, settingsBundle.getFontSize());
+		rightTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, settingsBundle.getFontSize());
 	}
 
 	private void showNotification(String text){
