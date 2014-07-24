@@ -38,6 +38,7 @@
     <string name="reading_is_completed">Торкніться для виходу</string>
     <string name="speed">Швидкість: </string>
     <string name="words_read">Слів прочитано: </string>
+    <string name="email_app_not_found">Додаток для пошти не знайден</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитати текст з буферу обміну</string>
@@ -67,6 +68,7 @@
     <string name="preferences_send_feedback_summary">Розкажіть мені свої ідеї :)</string>
     <string name="preference_cache">Зберігати читання</string>
     <string name="preference_cache_summary">Кешує незакінчені читання</string>
+    <string name="send_email">Відправте письмо</string>
     <string name="mail_to_me">mailto:syniuhin@gmail.com</string>
 
     <string name="sample_text">А коли приходив той прекрасний брат смерті і брав мене до себе - люди і там чигали на

@@ -40,9 +40,6 @@
             android:key="pref_feedback"
             android:summary="@string/preferences_send_feedback_summary"
             android:title="@string/preferences_send_feedback">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="@string/mail_to_me"/>
         </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

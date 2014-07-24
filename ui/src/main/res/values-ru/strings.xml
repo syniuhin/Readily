@@ -38,6 +38,7 @@
     <string name="reading_is_completed">Коснитесь для выхода</string>
     <string name="speed">Скорость: </string>
     <string name="words_read">Слов прочитано: </string>
+    <string name="email_app_not_found">Приложение почты не найдено</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитать текст из буфера обмена</string>
@@ -67,6 +68,7 @@
     <string name="preferences_send_feedback_summary">Расскажите мне ваши идеи :)</string>
     <string name="preference_cache">Сохранять чтения</string>
     <string name="preference_cache_summary">Кэширует незаконченные чтения</string>
+    <string name="send_email">Отошлите письмо</string>
     <string name="mail_to_me">mailto:syniuhin@gmail.com</string>
 
     <string name="sample_text">

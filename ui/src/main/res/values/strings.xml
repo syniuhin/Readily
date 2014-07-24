@@ -38,6 +38,7 @@
     <string name="reading_is_completed">Tap to exit</string>
     <string name="speed">Speed: </string>
     <string name="words_read">Words read: </string>
+    <string name="email_app_not_found">Email app not found</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Read a text from the clipboard</string>
@@ -68,6 +69,7 @@
     <string name="preference_cache">Save readings</string>
     <string name="preference_cache_summary">Caches uncompleted readings</string>
     <string name="mail_to_me">mailto:syniuhin@gmail.com</string>
+    <string name="send_email">Send an email</string>
     <string name="sample_text">Inside the flat a fruity voice was reading out a list of figures which had something to
         do with the production of pig iron.
         The voice came from an oblong metal plaque like a dulled mirror which formed part of the surface of the

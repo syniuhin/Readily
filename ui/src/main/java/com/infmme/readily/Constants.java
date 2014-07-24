@@ -44,6 +44,7 @@ public class Constants {
 		public static final String TYPEFACE = "pref_typeface";
 		public static final String PUNCTUATION_DIFFERS = "pref_punct";
 		public static final String STORE_COMPLETE = "pref_again";
+		public static final String FEEDBACK = "pref_feedback";
 		/*
 				public static final String PUNCTUATION_DEFAULT = "pref_punctuationDefault";
 				public static final String COMA_OR_LONG = "pref_comaOrLong";

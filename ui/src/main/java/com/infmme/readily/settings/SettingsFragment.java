@@ -2,8 +2,12 @@ package com.infmme.readily.settings;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -13,6 +17,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.NumberPicker;
+import android.widget.Toast;
 import com.infmme.readily.Constants;
 import com.infmme.readily.R;
 import com.infmme.readily.ReceiverActivity;
@@ -66,6 +71,17 @@ public class SettingsFragment extends PreferenceFragment {
 				ReceiverActivity.startReceiverActivity(getActivity(), Readable.TYPE_RAW,
 													   getResources().getString(R.string.sample_text));
 				return true;
+			}
+			if (key.equals(Constants.Preferences.FEEDBACK)){
+				try {
+					Resources resources = getResources();
+					startActivity(Intent.createChooser(new Intent(Intent.ACTION_SENDTO,
+																  Uri.parse(
+																		  resources.getString(R.string.mail_to_me)
+																		   )), resources.getString(R.string.send_email)));
+				} catch (ActivityNotFoundException e) {
+					Toast.makeText(getActivity(), R.string.email_app_not_found, Toast.LENGTH_SHORT).show();
+				}
 			}
 		}
 		return super.onPreferenceTreeClick(preferenceScreen, preference);
