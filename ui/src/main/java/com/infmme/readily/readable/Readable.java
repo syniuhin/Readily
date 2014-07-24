@@ -36,6 +36,7 @@ abstract public class Readable implements Serializable {
 	protected Integer type;
 	protected DataBundle rowData;
 	protected Boolean processFailed;
+	protected boolean processed;
 
 	protected List<String> wordList;
 	protected List<Integer> delayList;
@@ -185,6 +186,10 @@ abstract public class Readable implements Serializable {
 
 	public void setEmphasisList(List<Integer> emphasisList){
 		this.emphasisList = emphasisList;
+	}
+
+	public boolean isProcessed(){
+		return processed;
 	}
 
 	public static class Builder implements Callable<Readable> {

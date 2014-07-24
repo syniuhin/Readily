@@ -21,6 +21,8 @@ abstract public class FileStorable extends Storable {
 		extensionsMap.put(Constants.EXTENSION_FB2, Readable.TYPE_FB2);
 	}
 
+	protected final int BUFFER_SIZE = 10 * 1024;
+
 	public static FileStorable createFileStorable(String intentPath){
 		FileStorable fileStorable;
 		switch (getIntentType(intentPath)){

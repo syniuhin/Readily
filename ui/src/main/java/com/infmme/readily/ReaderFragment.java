@@ -20,10 +20,13 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.infmme.readily.essential.TextParser;
 import com.infmme.readily.readable.Readable;
 import com.infmme.readily.readable.Storable;
+import com.infmme.readily.readable.TxtFileStorable;
 import com.infmme.readily.service.LastReadService;
 import com.infmme.readily.settings.SettingsBundle;
 import com.infmme.readily.util.OnSwipeTouchListener;
 
+import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.List;
 
 /**
@@ -60,6 +63,7 @@ public class ReaderFragment extends Fragment {
 	private List<String> wordList;
 	private List<Integer> emphasisList;
 	private List<Integer> delayList;
+	private ArrayDeque<TextParser> parserDeque = new ArrayDeque<TextParser>();
 	private TextParser parser;
 	private SettingsBundle settingsBundle;
 	private Thread parserThread;
@@ -101,7 +105,8 @@ public class ReaderFragment extends Fragment {
 
 		initPrevButton();
 
-		parseText(getActivity(), args);
+		readable = Readable.createReadable(activity, args);
+		parseText(activity);
 	}
 
 	public void onSwipeTop(){
@@ -523,12 +528,20 @@ public class ReaderFragment extends Fragment {
 */
 	}
 
-	private void parseText(final Context context, final Bundle bundle){
+	private void parseText(final Context context){
 		parserThread = new Thread(new Runnable() {
 			@Override
 			public void run(){
-				Readable readable = Readable.createReadable(context, bundle);
-				readable.process(context);
+				if (!readable.isProcessed())
+					readable.process(context);
+				if (isStorable()){
+					TxtFileStorable storable = (TxtFileStorable) readable;
+					try {
+						storable.readNext();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
 				parser = TextParser.newInstance(readable, settingsBundle);
 				parser.process();
 				processParser(context);
