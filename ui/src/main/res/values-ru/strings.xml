@@ -46,7 +46,7 @@
     <string name="preferences_pick_file_summary">Выберите .txt, .epub или .fb2 файл, из которого будете читать</string>
     <string name="preferences_test">Проверить настройки</string>
     <string name="preferences_basic_settings">Базовые настройки</string>
-    <string name="preferences_set_wpm">Установить скорость</string>
+    <string name="preferences_set_wpm">Скорость чтения</string>
     <string name="preferences_set_wpm_summary">Количество слов в минуту</string>
     <string name="preferences_punctuation_settings">Скорость при пунктуации</string>
     <string name="preferences_different_speed_punctuation">Изменить скорость при пунктуации</string>
@@ -70,6 +70,7 @@
     <string name="preference_cache_summary">Кэширует незаконченные чтения</string>
     <string name="preference_font_size">Размер шрифта</string>
     <string name="preference_font_size_summary">Внимание: текст может не уместится в окне ридера!</string>
+    <string name="preference_dark_theme">Тёмная тема</string>
     <string name="send_email">Отошлите письмо</string>
     <string name="mail_to_me">mailto:syniuhin@gmail.com</string>
 

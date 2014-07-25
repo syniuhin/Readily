@@ -46,7 +46,7 @@
     <string name="preferences_pick_file_summary">Choose a .txt, .epub or .fb2 file to read</string>
     <string name="preferences_test">Test your settings</string>
     <string name="preferences_basic_settings">Basic settings</string>
-    <string name="preferences_set_wpm">Set speed</string>
+    <string name="preferences_set_wpm">Speed of reading</string>
     <string name="preferences_set_wpm_summary">Words per minute rate</string>
     <string name="preferences_punctuation_settings">Speed on punctuation</string>
     <string name="preferences_different_speed_punctuation">Change speed on punctuation</string>
@@ -70,6 +70,7 @@
     <string name="preference_cache_summary">Caches uncompleted readings</string>
     <string name="preference_font_size">Font size</string>
     <string name="preference_font_size_summary">Caution: text may exceed the window!</string>
+    <string name="preference_dark_theme">Dark theme</string>
     <string name="mail_to_me">mailto:syniuhin@gmail.com</string>
     <string name="send_email">Send an email</string>
     <string name="sample_text">Inside the flat a fruity voice was reading out a list of figures which had something to

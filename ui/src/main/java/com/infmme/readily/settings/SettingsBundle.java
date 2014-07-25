@@ -13,19 +13,28 @@ public class SettingsBundle {
 
 	//preferences fields
 	private Integer WPM;
+	private Integer fontSize;
 	private boolean punctuationSpeedDiffers;
 	private List<Integer> delayCoefficients;
 	private boolean showingContextEnabled;
 	private boolean swipesEnabled;
 	private boolean storingComplete;
 	private Integer typeface;
-	private Integer fontSize;
+	private boolean darkTheme;
 	//preferences themselves
 	private SharedPreferences sharedPreferences;
 
 	public SettingsBundle(SharedPreferences sharedPreferences){
 		this.sharedPreferences = sharedPreferences;
 		assignFields();
+	}
+
+	public boolean isDarkTheme(){
+		return darkTheme;
+	}
+
+	public void setDarkTheme(boolean darkTheme){
+		this.darkTheme = darkTheme;
 	}
 
 	public Integer getFontSize(){
@@ -48,6 +57,10 @@ public class SettingsBundle {
 		return delayCoefficients;
 	}
 
+	public void setDelayCoefficients(List<Integer> delayCoefficients){
+		this.delayCoefficients = delayCoefficients;
+	}
+
 	public Integer getWPM(){
 		return WPM;
 	}
@@ -60,20 +73,40 @@ public class SettingsBundle {
 		return punctuationSpeedDiffers;
 	}
 
+	public void setPunctuationSpeedDiffers(boolean punctuationSpeedDiffers){
+		this.punctuationSpeedDiffers = punctuationSpeedDiffers;
+	}
+
 	public boolean isShowingContextEnabled(){
 		return showingContextEnabled;
+	}
+
+	public void setShowingContextEnabled(boolean showingContextEnabled){
+		this.showingContextEnabled = showingContextEnabled;
 	}
 
 	public boolean isSwipesEnabled(){
 		return swipesEnabled;
 	}
 
+	public void setSwipesEnabled(boolean swipesEnabled){
+		this.swipesEnabled = swipesEnabled;
+	}
+
 	public Integer getTypeface(){
 		return typeface;
 	}
 
+	public void setTypeface(Integer typeface){
+		this.typeface = typeface;
+	}
+
 	public SharedPreferences getSharedPreferences(){
 		return sharedPreferences;
+	}
+
+	public void setSharedPreferences(SharedPreferences sharedPreferences){
+		this.sharedPreferences = sharedPreferences;
 	}
 
 	public void assignFields(){
@@ -86,6 +119,7 @@ public class SettingsBundle {
 		punctuationSpeedDiffers = sharedPreferences.getBoolean(Constants.Preferences.PUNCTUATION_DIFFERS, true);
 		delayCoefficients = buildDelayListCoefficients();
 		storingComplete = sharedPreferences.getBoolean(Constants.Preferences.STORE_COMPLETE, false);
+		darkTheme = sharedPreferences.getBoolean(Constants.Preferences.DARK_THEME, false);
 	}
 
 	public void updatePreferences(){
@@ -98,6 +132,7 @@ public class SettingsBundle {
 		editor.putBoolean(Constants.Preferences.SHOW_CONTEXT, showingContextEnabled);
 		editor.putBoolean(Constants.Preferences.PUNCTUATION_DIFFERS, punctuationSpeedDiffers);
 		editor.putBoolean(Constants.Preferences.STORE_COMPLETE, storingComplete);
+		editor.putBoolean(Constants.Preferences.DARK_THEME, darkTheme);
 		editor.apply(); //advised by IDE, lol
 	}
 

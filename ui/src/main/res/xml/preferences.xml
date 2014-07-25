@@ -10,6 +10,10 @@
                 android:key="pref_wpm"
                 android:title="@string/preferences_set_wpm"
                 android:summary="@string/preferences_set_wpm_summary"/>
+        <Preference
+                android:key="pref_font_size"
+                android:title="@string/preference_font_size"
+                android:summary="@string/preference_font_size_summary"/>
         <CheckBoxPreference
                 android:defaultValue="true"
                 android:key="pref_punct"
@@ -20,10 +24,6 @@
                 android:key="pref_again"
                 android:summary="@string/preferences_again_summary"
                 android:title="@string/preferences_again"/>
-        <Preference
-                android:key="pref_font_size"
-                android:title="@string/preference_font_size"
-                android:summary="@string/preference_font_size_summary"/>
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/preferences_advanced">
@@ -37,6 +37,10 @@
                 android:key="pref_swipe"
                 android:summary="@string/preferences_swipe_summary"
                 android:title="@string/preferences_swipe"/>
+        <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="pref_dark_theme"
+                android:title="@string/preference_dark_theme"/>
     </PreferenceCategory>
     <PreferenceCategory
             android:title="@string/preferences_share_feedback">
