@@ -8,7 +8,7 @@
     <string name="title_activity_settings">Settings</string>
 
     <!-- UI -->
-    <string name="current_word">Sample</string>
+    <string name="just_sample">Sample</string>
     <string name="next_words">next words</string>
     <string name="top_pointer_description">points to emphasis from top</string>
     <string name="bottom_pointer_description">points to emphasis from bottom</string>
@@ -38,6 +38,7 @@
     <string name="reading_is_completed">Tap to exit</string>
     <string name="speed">Speed: </string>
     <string name="words_read">Words read: </string>
+    <string name="email_app_not_found">Email app not found</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Read a text from the clipboard</string>
@@ -45,7 +46,7 @@
     <string name="preferences_pick_file_summary">Choose a .txt, .epub or .fb2 file to read</string>
     <string name="preferences_test">Test your settings</string>
     <string name="preferences_basic_settings">Basic settings</string>
-    <string name="preferences_set_wpm">Set speed</string>
+    <string name="preferences_set_wpm">Speed of reading</string>
     <string name="preferences_set_wpm_summary">Words per minute rate</string>
     <string name="preferences_punctuation_settings">Speed on punctuation</string>
     <string name="preferences_different_speed_punctuation">Change speed on punctuation</string>
@@ -67,7 +68,11 @@
     <string name="preferences_send_feedback_summary">Tell me your ideas :)</string>
     <string name="preference_cache">Save readings</string>
     <string name="preference_cache_summary">Caches uncompleted readings</string>
+    <string name="preference_font_size">Font size</string>
+    <string name="preference_font_size_summary">Caution: text may exceed the window!</string>
+    <string name="preference_dark_theme">Dark theme</string>
     <string name="mail_to_me">mailto:syniuhin@gmail.com</string>
+    <string name="send_email">Send an email</string>
     <string name="sample_text">Inside the flat a fruity voice was reading out a list of figures which had something to
         do with the production of pig iron.
         The voice came from an oblong metal plaque like a dulled mirror which formed part of the surface of the

@@ -5,12 +5,14 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +39,10 @@ public class ReaderFragment extends Fragment {
 	private static final int NOTIF_APPEARING_DURATION = 300;
 	private static final int NOTIF_SHOWING_LENGTH = 1500; //time in ms for which speedo becomes visible
 	private static final int READER_PULSE_DURATION = 400;
+	private static final float POINTER_LEFT_PADDING_COEFFICIENT = 5f / 18f;
+	private static final String[] LIGHT_COLOR_SET = new String[]{"#0A0A0A", "#AAAAAA"};
+	private static final String[] DARK_COLOR_SET = new String[]{"#FFFFFF", "#999999", "#FF282828"};
+
 	private ReaderListener callback;
 	//initialized in onCreate()
 	private Handler handler;
@@ -69,6 +75,8 @@ public class ReaderFragment extends Fragment {
 	private Thread parserThread;
 	//receiving status
 	private Boolean parserReceived = false;
+	private String primaryTextColor = LIGHT_COLOR_SET[0];
+	private String secondaryTextColor = LIGHT_COLOR_SET[1];
 
 	@Override
 	public void onAttach(Activity activity){
@@ -103,7 +111,9 @@ public class ReaderFragment extends Fragment {
 		setReaderLayoutListener(activity);
 		settingsBundle = new SettingsBundle(PreferenceManager.getDefaultSharedPreferences(activity));
 
+		setReaderBackground();
 		initPrevButton();
+		setReaderFontSize();
 
 		readable = Readable.createReadable(activity, args);
 		parseText(activity);
@@ -130,7 +140,7 @@ public class ReaderFragment extends Fragment {
 		if (TextUtils.isEmpty(word)){ return Html.fromHtml(""); }
 		int emphasisPosition = emphasisList.get(pos);
 		String wordLeft = word.substring(0, emphasisPosition);
-		String format = "<font color='#0A0A0A'>" + wordLeft + "</font>";
+		String format = "<font color='" + primaryTextColor + "'>" + wordLeft + "</font>";
 		return Html.fromHtml(format);
 	}
 
@@ -148,7 +158,7 @@ public class ReaderFragment extends Fragment {
 		if (TextUtils.isEmpty(word)){ return Html.fromHtml(""); }
 		int emphasisPosition = emphasisList.get(pos);
 		String wordRight = word.substring(emphasisPosition + 1, word.length());
-		String format = "<font><font color='#0A0A0A'>" + wordRight + "</font>";
+		String format = "<font><font color='" + primaryTextColor + "'>" + wordRight + "</font>";
 		if (settingsBundle.isShowingContextEnabled()){ format += getNextFormat(pos); }
 		format += "</font>";
 		return Html.fromHtml(format);
@@ -157,7 +167,7 @@ public class ReaderFragment extends Fragment {
 	private String getNextFormat(int pos){
 		int charLen = 0;
 		int i = pos;
-		StringBuilder format = new StringBuilder("&nbsp;<font color='#AAAAAA'>");
+		StringBuilder format = new StringBuilder("&nbsp;<font color='" + secondaryTextColor + "'>");
 		while (charLen < 40 && i < wordList.size() - 1){
 			String word = wordList.get(++i);
 			if (!TextUtils.isEmpty(word)){
@@ -236,6 +246,36 @@ public class ReaderFragment extends Fragment {
 			});
 			prevButton.setVisibility(View.INVISIBLE);
 		} else { prevButton.setVisibility(View.INVISIBLE); }
+	}
+
+	private float spToPixels(Context context, float sp) {
+		float scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
+		return sp * scaledDensity;
+	}
+
+	private void setReaderFontSize(){
+		View pointerTop = readerLayout.findViewById(R.id.pointerTopImageView);
+		View pointerBottom = readerLayout.findViewById(R.id.pointerBottomImageView);
+		float fontSizePx = spToPixels(getActivity(), (float) settingsBundle.getFontSize());
+		pointerTop.setPadding((int)(fontSizePx * POINTER_LEFT_PADDING_COEFFICIENT + .5f), pointerTop.getPaddingTop(),
+							  pointerTop.getPaddingRight(), pointerTop.getPaddingBottom());
+		pointerBottom.setPadding((int)(fontSizePx * POINTER_LEFT_PADDING_COEFFICIENT + .5f), pointerBottom.getPaddingTop(),
+								 pointerBottom.getPaddingRight(), pointerBottom.getPaddingBottom());
+		currentTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, settingsBundle.getFontSize());
+		leftTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, settingsBundle.getFontSize());
+		rightTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, settingsBundle.getFontSize());
+	}
+
+	private void setReaderBackground(){
+		if (settingsBundle.isDarkTheme()){
+			((View)readerLayout.getParent()).setBackgroundColor(Color.parseColor(DARK_COLOR_SET[2]));
+			primaryTextColor = DARK_COLOR_SET[0];
+			secondaryTextColor = DARK_COLOR_SET[1];
+			((ImageView) readerLayout.findViewById(R.id.pointerTopImageView)).
+					setImageResource(R.drawable.word_pointer_dark);
+			((ImageView) readerLayout.findViewById(R.id.pointerBottomImageView)).
+					setImageResource(R.drawable.word_pointer_dark);
+		}
 	}
 
 	private void showNotification(String text){

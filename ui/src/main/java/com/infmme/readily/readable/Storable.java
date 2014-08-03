@@ -80,7 +80,9 @@ abstract public class Storable extends Readable {
 	}
 
 	protected String cleanFileName(String s){
-		String q = s.replace(' ', '_');
+		String q = (TextUtils.isEmpty(s))
+				? System.currentTimeMillis() + "t"
+				: s.replace(' ', '_');
 		q = q.replace('/', '|');
 		return q;
 	}

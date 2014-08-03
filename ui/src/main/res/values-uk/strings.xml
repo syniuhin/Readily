@@ -8,7 +8,7 @@
     <string name="title_activity_settings">Налаштування</string>
 
     <!-- UI -->
-    <string name="current_word">Приклад</string>
+    <string name="just_sample">Приклад</string>
     <string name="next_words">наступні слова</string>
     <string name="top_pointer_description">указує на виділене зверху</string>
     <string name="bottom_pointer_description">указує на виділене знизу</string>
@@ -38,6 +38,7 @@
     <string name="reading_is_completed">Торкніться для виходу</string>
     <string name="speed">Швидкість: </string>
     <string name="words_read">Слів прочитано: </string>
+    <string name="email_app_not_found">Додаток для пошти не знайден</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитати текст з буферу обміну</string>
@@ -45,7 +46,7 @@
     <string name="preferences_pick_file_summary">Виберіть .txt, .epub чи .fb2 файл, з якого будете читати</string>
     <string name="preferences_test">Перевірити налаштування</string>
     <string name="preferences_basic_settings">Базові налаштування</string>
-    <string name="preferences_set_wpm">Встановити швидкість(слів у хвилину)</string>
+    <string name="preferences_set_wpm">Швидкість читання</string>
     <string name="preferences_set_wpm_summary">Кількість слів у хвилину</string>
     <string name="preferences_punctuation_settings">Швидкість при пунктуації</string>
     <string name="preferences_different_speed_punctuation">Змінити швидкість при пунктуації</string>
@@ -67,6 +68,10 @@
     <string name="preferences_send_feedback_summary">Розкажіть мені свої ідеї :)</string>
     <string name="preference_cache">Зберігати читання</string>
     <string name="preference_cache_summary">Кешує незакінчені читання</string>
+    <string name="preference_font_size">Розмір шрифта</string>
+    <string name="preference_font_size_summary">Увага: текст може не уміститися у вікні рідера!</string>
+    <string name="preference_dark_theme">Темна тема</string>
+    <string name="send_email">Відправте письмо</string>
     <string name="mail_to_me">mailto:syniuhin@gmail.com</string>
 
     <string name="sample_text">А коли приходив той прекрасний брат смерті і брав мене до себе - люди і там чигали на
