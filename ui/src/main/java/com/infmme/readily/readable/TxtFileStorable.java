@@ -10,8 +10,8 @@ import java.io.IOException;
  */
 public class TxtFileStorable extends FileStorable {
 
-	private FileReader fileReader;
 	char[] inputData = new char[BUFFER_SIZE];
+	private FileReader fileReader;
 	private StringBuilder nextText;
 
 	public TxtFileStorable(String path){
@@ -47,11 +47,19 @@ public class TxtFileStorable extends FileStorable {
 		return false;
 	}
 
-	public boolean switchToNext(){
-		if (nextText != null){
-			text = nextText;
-			return true;
+	public void setText(StringBuilder nextText){
+		text = nextText;
+	}
+
+	public TxtFileStorable getNext(){
+		TxtFileStorable result = this;
+		try {
+			readNext();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		return false;
+		if (nextText != null)
+			result.setText(nextText);
+		return result;
 	}
 }

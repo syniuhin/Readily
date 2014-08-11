@@ -22,6 +22,7 @@ public class TextParser implements Serializable, Callable<TextParser> {
 	public static final String makeMeSpecial =
 			" " + "." + "!" + "?" + "-" + "—" + ":" + ";" + "," + '\"' + "(" + ")";
 	private static final int MAX_LEFT_CHARACTER_COUNT = 8;
+
 	static{
 		Map<String, Integer> priorityMap = new HashMap<String, Integer>();
 		/**
@@ -54,6 +55,7 @@ public class TextParser implements Serializable, Callable<TextParser> {
 
 		PRIORITIES = Collections.unmodifiableMap(priorityMap);
 	}
+
 	private static final Map<String, Integer> PRIORITIES;
 	private Readable readable;
 	private int lengthPreference;

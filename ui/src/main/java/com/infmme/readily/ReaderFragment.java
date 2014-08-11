@@ -20,6 +20,7 @@ import android.widget.*;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.infmme.readily.essential.TextParser;
+import com.infmme.readily.readable.FileStorable;
 import com.infmme.readily.readable.Readable;
 import com.infmme.readily.readable.Storable;
 import com.infmme.readily.readable.TxtFileStorable;
@@ -27,7 +28,6 @@ import com.infmme.readily.service.LastReadService;
 import com.infmme.readily.settings.SettingsBundle;
 import com.infmme.readily.util.OnSwipeTouchListener;
 
-import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.List;
 
@@ -69,7 +69,6 @@ public class ReaderFragment extends Fragment {
 	private List<String> wordList;
 	private List<Integer> emphasisList;
 	private List<Integer> delayList;
-	private ArrayDeque<TextParser> parserDeque = new ArrayDeque<TextParser>();
 	private TextParser parser;
 	private SettingsBundle settingsBundle;
 	private Thread parserThread;
@@ -116,7 +115,7 @@ public class ReaderFragment extends Fragment {
 		setReaderFontSize();
 
 		readable = Readable.createReadable(activity, args);
-		parseText(activity);
+		parseNext(activity);
 	}
 
 	public void onSwipeTop(){
@@ -568,23 +567,13 @@ public class ReaderFragment extends Fragment {
 */
 	}
 
-	private void parseText(final Context context){
+	private void parseNext(final Context context){
 		parserThread = new Thread(new Runnable() {
 			@Override
 			public void run(){
 				if (!readable.isProcessed())
 					readable.process(context);
-				if (isStorable()){
-					TxtFileStorable storable = (TxtFileStorable) readable;
-					try {
-						storable.readNext();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-				parser = TextParser.newInstance(readable, settingsBundle);
-				parser.process();
-				processParser(context);
+
 			}
 		});
 		parserThread.start();
@@ -700,6 +689,79 @@ public class ReaderFragment extends Fragment {
 
 			progressBar.setProgress((int) (100f / wordList.size() * (pos + 1) + .5f));
 			hideNotification(false);
+		}
+	}
+
+	private class ReaderTask implements Runnable {
+		private static final int DEQUE_SIZE_LIMIT = 3;
+		private final ArrayDeque<TextParser> parserDeque = new ArrayDeque<TextParser>();
+		private Readable readable;
+
+		public ReaderTask(Readable readable){
+			this.readable = readable;
+		}
+
+		@Override
+		public void run(){
+			while (true){
+				if (parserDeque.size() < DEQUE_SIZE_LIMIT){
+					if (readable == null){
+						//TODO: handle it
+					} else {
+						Readable lastReadable = (parserDeque.isEmpty())
+								? readable
+								: parserDeque.getLast().getReadable();
+						if (!lastReadable.isProcessed())
+							lastReadable.process(getActivity());
+						TxtFileStorable newStorable = ((TxtFileStorable) lastReadable).getNext();
+						TextParser newParser = TextParser.newInstance(newStorable, settingsBundle);
+						newParser.process();
+						parserDeque.addLast(newParser);
+					}
+				} else {
+					try {
+						pause();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+
+		public TextParser removeHeadParser(){
+			return parserDeque.removeFirst();
+		}
+
+		private void fillDeque(){
+			synchronized (parserDeque){
+				while (parserDeque.size() < 5 &&
+						(parserDeque.size() > 0 ||
+								parserDeque.getLast().getReadable().getText().length() == FileStorable.BUFFER_SIZE)){
+					TextParser current = parserDeque.getLast();
+
+				}
+			}
+		}
+	}
+
+	private class MonitorObject{
+
+		private boolean paused;
+
+		public synchronized boolean isPaused() {return paused;}
+
+		public synchronized void pauseTask() throws InterruptedException {
+			if (!isPaused()){
+				paused = true;
+				wait();
+			}
+		}
+
+		public synchronized void resumeTask() throws InterruptedException {
+			if (isPaused()){
+				paused = false;
+				notify();
+			}
 		}
 	}
 }
