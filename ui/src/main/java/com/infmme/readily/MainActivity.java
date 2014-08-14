@@ -13,7 +13,6 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-import com.crashlytics.android.Crashlytics;
 import com.infmme.readily.instructions.InstructionsActivity;
 import com.infmme.readily.readable.FileStorable;
 import com.infmme.readily.readable.Readable;
@@ -35,7 +34,9 @@ public class MainActivity extends BaseActivity {
 
 		startService(createCheckerServiceIntent());
 
+/*
 		Crashlytics.start(this);
+*/
 
 		changeActionBarIcon();
 		startFileListFragment();

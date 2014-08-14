@@ -10,13 +10,20 @@ import java.io.IOException;
  */
 public class TxtFileStorable extends FileStorable {
 
-	char[] inputData = new char[BUFFER_SIZE];
+	private char[] inputData = new char[BUFFER_SIZE];
 	private FileReader fileReader;
-	private StringBuilder nextText;
+	private String lastWord = "";
 
 	public TxtFileStorable(String path){
 		type = TYPE_TXT;
 		this.path = path;
+	}
+
+	public TxtFileStorable(TxtFileStorable that){
+		inputData = that.inputData;
+		fileReader = that.fileReader;
+		position = that.position;
+		path = that.path;
 	}
 
 	public void process(Context context){
@@ -26,12 +33,6 @@ public class TxtFileStorable extends FileStorable {
 				return;
 			}
 			fileReader = new FileReader(path);
-/*
-			BufferedReader br = new BufferedReader(fileReader);
-			String sCurrentLine;
-			while ((sCurrentLine = br.readLine()) != null){ text.append(sCurrentLine).append('\n'); }
-			br.close();
-*/
 			createRowData(context);
 			processed = true;
 		} catch (IOException e) {
@@ -39,12 +40,12 @@ public class TxtFileStorable extends FileStorable {
 		}
 	}
 
-	public boolean readNext() throws IOException{
+	public void readData() throws IOException{
 		if (fileReader.read(inputData) != -1){
-			nextText = new StringBuilder(new String(inputData));
-			return true;
+			setText(new StringBuilder(new String(inputData)));
+		} else {
+			setText("");
 		}
-		return false;
 	}
 
 	public void setText(StringBuilder nextText){
@@ -52,14 +53,28 @@ public class TxtFileStorable extends FileStorable {
 	}
 
 	public TxtFileStorable getNext(){
-		TxtFileStorable result = this;
+		TxtFileStorable result = new TxtFileStorable(this);
 		try {
-			readNext();
+			result.readData();
+			result.cutLastWord();
+			result.insertLastWord(lastWord);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		if (nextText != null)
-			result.setText(nextText);
 		return result;
+	}
+
+	/**
+	 * must be called before TextParser.process();
+	 */
+	public void cutLastWord(){
+		String textString = text.toString();
+		int index = textString.lastIndexOf(' ') + 1;
+		lastWord = textString.substring(index);
+		text = new StringBuilder(textString.substring(0, index));
+	}
+
+	public void insertLastWord(String lastWord){
+		text = new StringBuilder(lastWord).append(text);
 	}
 }

@@ -14,7 +14,7 @@ import java.util.HashMap;
 abstract public class FileStorable extends Storable {
 
 	public static final HashMap<String, Integer> extensionsMap = new HashMap<String, Integer>();
-	public static final int BUFFER_SIZE = 10 * 1024;
+	public static final int BUFFER_SIZE = 1000 /*10 * 1024*/;
 
 	static{
 		extensionsMap.put(Constants.EXTENSION_TXT, Readable.TYPE_TXT);

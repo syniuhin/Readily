@@ -20,7 +20,6 @@ import android.widget.*;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.infmme.readily.essential.TextParser;
-import com.infmme.readily.readable.FileStorable;
 import com.infmme.readily.readable.Readable;
 import com.infmme.readily.readable.Storable;
 import com.infmme.readily.readable.TxtFileStorable;
@@ -72,6 +71,8 @@ public class ReaderFragment extends Fragment {
 	private TextParser parser;
 	private SettingsBundle settingsBundle;
 	private Thread parserThread;
+	private ReaderTask readerTask;
+	private MonitorObject monitorObject;
 	//receiving status
 	private Boolean parserReceived = false;
 	private String primaryTextColor = LIGHT_COLOR_SET[0];
@@ -115,7 +116,10 @@ public class ReaderFragment extends Fragment {
 		setReaderFontSize();
 
 		readable = Readable.createReadable(activity, args);
-		parseNext(activity);
+		monitorObject = new MonitorObject();
+		readerTask = new ReaderTask(monitorObject, (TxtFileStorable) readable);
+		parserThread = new Thread(readerTask);
+		parserThread.start();
 	}
 
 	public void onSwipeTop(){
@@ -247,7 +251,7 @@ public class ReaderFragment extends Fragment {
 		} else { prevButton.setVisibility(View.INVISIBLE); }
 	}
 
-	private float spToPixels(Context context, float sp) {
+	private float spToPixels(Context context, float sp){
 		float scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
 		return sp * scaledDensity;
 	}
@@ -256,9 +260,10 @@ public class ReaderFragment extends Fragment {
 		View pointerTop = readerLayout.findViewById(R.id.pointerTopImageView);
 		View pointerBottom = readerLayout.findViewById(R.id.pointerBottomImageView);
 		float fontSizePx = spToPixels(getActivity(), (float) settingsBundle.getFontSize());
-		pointerTop.setPadding((int)(fontSizePx * POINTER_LEFT_PADDING_COEFFICIENT + .5f), pointerTop.getPaddingTop(),
+		pointerTop.setPadding((int) (fontSizePx * POINTER_LEFT_PADDING_COEFFICIENT + .5f), pointerTop.getPaddingTop(),
 							  pointerTop.getPaddingRight(), pointerTop.getPaddingBottom());
-		pointerBottom.setPadding((int)(fontSizePx * POINTER_LEFT_PADDING_COEFFICIENT + .5f), pointerBottom.getPaddingTop(),
+		pointerBottom.setPadding((int) (fontSizePx * POINTER_LEFT_PADDING_COEFFICIENT + .5f),
+								 pointerBottom.getPaddingTop(),
 								 pointerBottom.getPaddingRight(), pointerBottom.getPaddingBottom());
 		currentTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, settingsBundle.getFontSize());
 		leftTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, settingsBundle.getFontSize());
@@ -267,7 +272,7 @@ public class ReaderFragment extends Fragment {
 
 	private void setReaderBackground(){
 		if (settingsBundle.isDarkTheme()){
-			((View)readerLayout.getParent()).setBackgroundColor(Color.parseColor(DARK_COLOR_SET[2]));
+			((View) readerLayout.getParent()).setBackgroundColor(Color.parseColor(DARK_COLOR_SET[2]));
 			primaryTextColor = DARK_COLOR_SET[0];
 			secondaryTextColor = DARK_COLOR_SET[1];
 			((ImageView) readerLayout.findViewById(R.id.pointerTopImageView)).
@@ -382,18 +387,8 @@ public class ReaderFragment extends Fragment {
 		}
 	}
 
-	private void processParser(final Context context){
-		final int resultCode = parser.getResultCode();
-		if (resultCode == TextParser.RESULT_CODE_OK){
-			parserReceived = true;
-			readable = parser.getReadable();
-
-			wordList = readable.getWordList();
-			emphasisList = readable.getEmphasisList();
-			delayList = readable.getDelayList();
-
-			readable.setPosition(Math.max(readable.getPosition() - Constants.READER_START_OFFSET, 0));
-
+	private void startReader(TextParser parser, Context context){
+		if (changeParser(context, parser)){
 			final int initialPosition = readable.getPosition();
 			reader = new Reader(handler, initialPosition);
 			Activity activity = getActivity();
@@ -416,9 +411,20 @@ public class ReaderFragment extends Fragment {
 								playOn(readerLayout);
 					}
 				});
-			} else {
-				onStop();
 			}
+		}
+	}
+
+	private boolean changeParser(final Context context, final TextParser parser){
+		this.parser = parser;
+		final int resultCode = parser.getResultCode();
+		if (resultCode == TextParser.RESULT_CODE_OK){
+			parserReceived = true;
+
+			readable = parser.getReadable();
+			wordList = readable.getWordList();
+			emphasisList = readable.getEmphasisList();
+			delayList = readable.getDelayList();
 		} else {
 			Activity a = getActivity();
 			if (a != null){
@@ -446,6 +452,7 @@ public class ReaderFragment extends Fragment {
 				});
 			}
 		}
+		return resultCode == TextParser.RESULT_CODE_OK;
 	}
 
 	/**
@@ -567,18 +574,6 @@ public class ReaderFragment extends Fragment {
 */
 	}
 
-	private void parseNext(final Context context){
-		parserThread = new Thread(new Runnable() {
-			@Override
-			public void run(){
-				if (!readable.isProcessed())
-					readable.process(context);
-
-			}
-		});
-		parserThread.start();
-	}
-
 	public interface ReaderListener {
 		public void stop();
 	}
@@ -592,6 +587,8 @@ public class ReaderFragment extends Fragment {
 		private int cancelled;
 		private int position;
 		private boolean completed;
+		private boolean started;
+		private boolean chunkReady;
 
 		public Reader(Handler readerHandler, int position){
 			this.readerHandler = readerHandler;
@@ -602,18 +599,39 @@ public class ReaderFragment extends Fragment {
 
 		@Override
 		public void run(){
+			started = true;
 			if (position < wordList.size()){
+				if (wordList.size() - position < 100 && monitorObject.isPaused()){
+					try {
+						monitorObject.resumeTask();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
 				completed = false;
 				if (!isCancelled()){
 					updateView(position);
 					readerHandler.postDelayed(this, calcDelay());
 					position++;
 				}
+			} else if (chunkReady) {
+				changeParser(getActivity(), readerTask.removeDequeHead());
+				position = 0;
+				readerHandler.postDelayed(this, calcDelay());
+				chunkReady = false;
 			} else {
 				showNotification(R.string.reading_is_completed);
 				completed = true;
 				cancelled = 1;
 			}
+		}
+
+		public boolean isStarted(){
+			return started;
+		}
+
+		public void setChunkReady(boolean chunkReady){
+			this.chunkReady = chunkReady;
 		}
 
 		public int getPosition(){
@@ -694,70 +712,71 @@ public class ReaderFragment extends Fragment {
 
 	private class ReaderTask implements Runnable {
 		private static final int DEQUE_SIZE_LIMIT = 3;
-		private final ArrayDeque<TextParser> parserDeque = new ArrayDeque<TextParser>();
-		private Readable readable;
+		private final ArrayDeque<TextParser> parserDeque;
+		private MonitorObject object = new MonitorObject();
+		private TxtFileStorable currentStorable;
 
-		public ReaderTask(Readable readable){
-			this.readable = readable;
+		public ReaderTask(MonitorObject object, TxtFileStorable storable){
+			this.object = object;
+			currentStorable = storable;
+			parserDeque = new ArrayDeque<TextParser>();
 		}
 
 		@Override
 		public void run(){
 			while (true){
-				if (parserDeque.size() < DEQUE_SIZE_LIMIT){
-					if (readable == null){
-						//TODO: handle it
-					} else {
-						Readable lastReadable = (parserDeque.isEmpty())
-								? readable
-								: parserDeque.getLast().getReadable();
-						if (!lastReadable.isProcessed())
-							lastReadable.process(getActivity());
-						TxtFileStorable newStorable = ((TxtFileStorable) lastReadable).getNext();
-						TextParser newParser = TextParser.newInstance(newStorable, settingsBundle);
-						newParser.process();
-						parserDeque.addLast(newParser);
+				try {
+					synchronized (parserDeque){
+						if (!currentStorable.isProcessed()){
+							currentStorable.process(getActivity());
+							TextParser toAdd = getNextParser(TextParser.newInstance(currentStorable, settingsBundle));
+							toAdd.process();
+							parserDeque.add(toAdd);
+						}
+						while (parserDeque.size() < DEQUE_SIZE_LIMIT &&
+								parserDeque.size() > 0 &&
+								!TextUtils.isEmpty(parserDeque.getLast().getReadable().getText())){
+							parserDeque.addLast(getNextParser(parserDeque.getLast()));
+						}
 					}
-				} else {
-					try {
-						pause();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+					if (reader == null || !reader.isStarted())
+						startReader(removeDequeHead(), getActivity());
+					reader.setChunkReady(true);
+					object.pauseTask();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 			}
 		}
 
-		public TextParser removeHeadParser(){
-			return parserDeque.removeFirst();
-		}
-
-		private void fillDeque(){
+		public TextParser removeDequeHead(){
 			synchronized (parserDeque){
-				while (parserDeque.size() < 5 &&
-						(parserDeque.size() > 0 ||
-								parserDeque.getLast().getReadable().getText().length() == FileStorable.BUFFER_SIZE)){
-					TextParser current = parserDeque.getLast();
-
-				}
+				return parserDeque.pollFirst();
 			}
+		}
+
+		private TextParser getNextParser(TextParser current){
+			TxtFileStorable currentStorable = (TxtFileStorable) current.getReadable();
+			TextParser result = TextParser.newInstance(currentStorable.getNext(), settingsBundle);
+			result.process();
+			return result;
 		}
 	}
 
-	private class MonitorObject{
+	private class MonitorObject {
 
 		private boolean paused;
 
-		public synchronized boolean isPaused() {return paused;}
+		public synchronized boolean isPaused(){return paused;}
 
-		public synchronized void pauseTask() throws InterruptedException {
+		public synchronized void pauseTask() throws InterruptedException{
 			if (!isPaused()){
 				paused = true;
 				wait();
 			}
 		}
 
-		public synchronized void resumeTask() throws InterruptedException {
+		public synchronized void resumeTask() throws InterruptedException{
 			if (isPaused()){
 				paused = false;
 				notify();
