@@ -11,8 +11,6 @@ import java.io.IOException;
 public class TxtFileStorable extends FileStorable {
 
 	private char[] inputData = new char[BUFFER_SIZE];
-	private FileReader fileReader;
-	private String lastWord = "";
 
 	public TxtFileStorable(String path){
 		type = TYPE_TXT;
@@ -20,10 +18,9 @@ public class TxtFileStorable extends FileStorable {
 	}
 
 	public TxtFileStorable(TxtFileStorable that){
+		super(that);
 		inputData = that.inputData;
 		fileReader = that.fileReader;
-		position = that.position;
-		path = that.path;
 	}
 
 	public void process(Context context){
@@ -40,11 +37,16 @@ public class TxtFileStorable extends FileStorable {
 		}
 	}
 
-	public void readData() throws IOException{
-		if (fileReader.read(inputData) != -1){
-			setText(new StringBuilder(new String(inputData)));
-		} else {
-			setText("");
+	@Override
+	public void readData(){
+		try {
+			if (fileReader.read(inputData) != -1){
+				setText(new StringBuilder(new String(inputData)));
+			} else {
+				setText("");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -52,29 +54,12 @@ public class TxtFileStorable extends FileStorable {
 		text = nextText;
 	}
 
-	public TxtFileStorable getNext(){
+	@Override
+	public Readable getNext(){
 		TxtFileStorable result = new TxtFileStorable(this);
-		try {
-			result.readData();
-			result.cutLastWord();
-			result.insertLastWord(lastWord);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		result.readData();
+		result.cutLastWord();
+		result.insertLastWord(lastWord);
 		return result;
-	}
-
-	/**
-	 * must be called before TextParser.process();
-	 */
-	public void cutLastWord(){
-		String textString = text.toString();
-		int index = textString.lastIndexOf(' ') + 1;
-		lastWord = textString.substring(index);
-		text = new StringBuilder(textString.substring(0, index));
-	}
-
-	public void insertLastWord(String lastWord){
-		text = new StringBuilder(lastWord).append(text);
 	}
 }

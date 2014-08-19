@@ -22,6 +22,12 @@ abstract public class Storable extends Readable {
 
 	protected String title;
 
+	public Storable(){}
+
+	public Storable(Storable that){
+		super(that);
+	}
+
 	public static DataBundle getRowData(Cursor cursor, String path){
 		DataBundle rowData = null;
 		if (!TextUtils.isEmpty(path)){

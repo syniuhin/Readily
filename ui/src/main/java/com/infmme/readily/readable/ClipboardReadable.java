@@ -10,17 +10,38 @@ import android.os.Looper;
  */
 public class ClipboardReadable extends Readable {
 
+	private ClipboardManager clipboard;
+
 	public ClipboardReadable(){
-		super();
 		type = TYPE_CLIPBOARD;
+	}
+
+	public ClipboardReadable(ClipboardReadable that){
+		super(that);
+		clipboard = that.getClipboard();
+	}
+
+	public ClipboardManager getClipboard(){
+		return clipboard;
 	}
 
 	public void process(final Context context){
 		Looper.prepare(); //TODO: review it CAREFULLY
-		ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-		if (!(processFailed = !clipboard.hasText())){
-			text.append(paste(clipboard));
-		}
+		clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+		processFailed = !clipboard.hasText();
+		processed = true;
+	}
+
+	@Override
+	public void readData(){
+		text.append(paste(clipboard));
+	}
+
+	@Override
+	public Readable getNext(){
+		ClipboardReadable result = new ClipboardReadable(this);
+		result.readData();
+		return result;
 	}
 
 	private String paste(ClipboardManager clipboard){

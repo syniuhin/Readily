@@ -21,6 +21,10 @@ public class EpubFileStorable extends FileStorable {
 		this.path = path;
 	}
 
+	public EpubFileStorable(EpubFileStorable that){
+		super(that);
+	}
+
 	public void process(Context context){
 		try {
 			path = FileStorable.takePath(context, path);
@@ -32,9 +36,22 @@ public class EpubFileStorable extends FileStorable {
 			text = new StringBuilder(parseEpub(text.toString())); //NullPointerEx can be thrown
 
 			createRowData(context);
+			processed = true;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void readData(){
+
+	}
+
+	@Override
+	public Readable getNext(){
+		EpubFileStorable result = new EpubFileStorable(this);
+		result.setText("");
+		return result;
 	}
 
 	private String parseEpub(String text){

@@ -15,9 +15,13 @@ public class NetStorable extends Storable {
 	private String link;
 
 	public NetStorable(String link){
-		super();
 		this.link = link;
 		type = TYPE_NET;
+	}
+
+	public NetStorable(NetStorable that){
+		super(that);
+		link = that.getLink();
 	}
 
 	public String getLink(){ return link; }
@@ -42,6 +46,19 @@ public class NetStorable extends Storable {
 		if (rowData != null){ position = rowData.getPosition(); } else {
 			createStorageFile(context, path, text.toString());
 		}
+		processed = true;
+	}
+
+	@Override
+	public void readData(){
+		//???
+	}
+
+	@Override
+	public Readable getNext(){
+		NetStorable result = new NetStorable(this);
+		result.setText("");
+		return result;
 	}
 
 	private String parseArticle(String url){

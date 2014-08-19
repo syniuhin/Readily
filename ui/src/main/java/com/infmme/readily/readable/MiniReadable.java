@@ -16,8 +16,6 @@ public class MiniReadable extends Readable {
 
 	String percent;
 
-	public MiniReadable(){}
-
 	public MiniReadable(String path, String header, String percent, int position){
 		this.path = path;
 		this.header = header;
@@ -69,6 +67,12 @@ public class MiniReadable extends Readable {
 
 	@Override
 	public void process(Context context){}
+
+	@Override
+	public void readData(){}
+
+	@Override
+	public Readable getNext(){ return null; }
 
 	@Override
 	public String toString(){

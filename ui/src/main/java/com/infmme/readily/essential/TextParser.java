@@ -365,7 +365,7 @@ public class TextParser implements Serializable, Callable<TextParser> {
 			if (TextUtils.isEmpty(readable.getText()) ||
 					readable.getWordList().isEmpty() ||
 					readable.getWordList().size() < 2 ||
-					readable.getProcessFailed()){
+					readable.isProcessFailed()){
 				switch (this.getReadable().getType()){
 					case Readable.TYPE_CLIPBOARD:
 						resultCode = RESULT_CODE_EMPTY_CLIPBOARD;

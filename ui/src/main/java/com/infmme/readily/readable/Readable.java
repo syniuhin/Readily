@@ -13,7 +13,6 @@ import com.infmme.readily.essential.TextParser;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  * Created by infm on 6/12/14. Enjoy ;)
@@ -35,9 +34,9 @@ abstract public class Readable implements Serializable {
 	protected Integer position;
 	protected Integer type;
 	protected DataBundle rowData;
-	protected Boolean processFailed;
+	protected boolean processFailed;
 	protected boolean processed;
-
+	protected String lastWord;
 	protected List<String> wordList;
 	protected List<Integer> delayList;
 	protected List<Integer> emphasisList;
@@ -48,7 +47,39 @@ abstract public class Readable implements Serializable {
 		delayList = new ArrayList<Integer>();
 		emphasisList = new ArrayList<Integer>();
 		rowData = new DataBundle();
-		processFailed = false;
+		lastWord = "";
+	}
+
+	public Readable(Readable that){
+		text = that.getTextBuilder();
+		header = that.getHeader();
+		seconds = that.getSeconds();
+		path = that.getPath();
+		position = that.getPosition();
+		type = that.getType();
+		rowData = that.getRowData();
+		processFailed = that.isProcessFailed();
+		processed = that.isProcessed();
+
+		wordList = that.getWordList();
+		delayList = that.getDelayList();
+		emphasisList = that.getEmphasisList();
+	}
+
+	public static void cloneInstance(Readable receiver, Readable that){
+		receiver.setTextBuilder(that.getTextBuilder());
+		receiver.setHeader(that.getHeader());
+		receiver.setSeconds(that.getSeconds());
+		receiver.setPath(that.getPath());
+		receiver.setPosition(that.getPosition());
+		receiver.setType(that.getType());
+		receiver.setRowData(that.getRowData());
+		receiver.setProcessFailed(that.isProcessFailed());
+		receiver.setProcessed(that.isProcessed());
+
+		receiver.setWordList(that.getWordList());
+		receiver.setDelayList(that.getDelayList());
+		receiver.setEmphasisList(that.getEmphasisList());
 	}
 
 	public static Readable createReadable(Context context, Bundle bundle){
@@ -85,6 +116,9 @@ abstract public class Readable implements Serializable {
 			case TYPE_EPUB:
 				readable = new EpubFileStorable(intentPath);
 				break;
+			case TYPE_FB2:
+				readable = new FB2FileStorable(intentPath);
+				break;
 			default:
 				String link;
 				if (!TextUtils.isEmpty(intentText) &&
@@ -98,7 +132,31 @@ abstract public class Readable implements Serializable {
 		return readable;
 	}
 
+	public void cloneInstanceTo(Readable receiver){
+		receiver.setTextBuilder(getTextBuilder());
+		receiver.setHeader(getHeader());
+		receiver.setSeconds(getSeconds());
+		receiver.setPath(getPath());
+		receiver.setPosition(getPosition());
+		receiver.setType(getType());
+		receiver.setRowData(getRowData());
+		receiver.setProcessFailed(isProcessFailed());
+		receiver.setProcessed(isProcessed());
+
+		receiver.setWordList(getWordList());
+		receiver.setDelayList(getDelayList());
+		receiver.setEmphasisList(getEmphasisList());
+	}
+
+	public void setLastWord(String lastWord){
+		this.lastWord = lastWord;
+	}
+
 	abstract public void process(Context context);
+
+	abstract public void readData();
+
+	abstract public Readable getNext();
 
 	public Integer getType(){
 		return type;
@@ -116,11 +174,11 @@ abstract public class Readable implements Serializable {
 		this.seconds = seconds;
 	}
 
-	public Boolean getProcessFailed(){
+	public Boolean isProcessFailed(){
 		return processFailed;
 	}
 
-	public void setProcessFailed(Boolean processFailed){
+	public void setProcessFailed(boolean processFailed){
 		this.processFailed = processFailed;
 	}
 
@@ -130,6 +188,14 @@ abstract public class Readable implements Serializable {
 
 	public void setText(String text){
 		this.text = new StringBuilder(text);
+	}
+
+	public StringBuilder getTextBuilder(){
+		return text;
+	}
+
+	public void setTextBuilder(StringBuilder text){
+		this.text = text;
 	}
 
 	public String getHeader(){
@@ -192,20 +258,29 @@ abstract public class Readable implements Serializable {
 		return processed;
 	}
 
-	public static class Builder implements Callable<Readable> {
+	public void setProcessed(boolean processed){
+		this.processed = processed;
+	}
 
-		Context context;
-		Readable readable;
+	public DataBundle getRowData(){
+		return rowData;
+	}
 
-		public Builder(Context context, Bundle bundle){
-			this.context = context;
-			this.readable = createReadable(context, bundle);
-		}
+	public void setRowData(DataBundle rowData){
+		this.rowData = rowData;
+	}
 
-		@Override
-		public Readable call() throws Exception{
-			readable.process(context);
-			return readable;
-		}
+	/**
+	 * must be called before TextParser.process();
+	 */
+	public void cutLastWord(){
+		String textString = text.toString();
+		int index = textString.lastIndexOf(' ') + 1;
+		lastWord = textString.substring(index);
+		text = new StringBuilder(textString.substring(0, index));
+	}
+
+	public void insertLastWord(String lastWord){
+		text = new StringBuilder(lastWord).append(text);
 	}
 }

@@ -22,7 +22,6 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.infmme.readily.essential.TextParser;
 import com.infmme.readily.readable.Readable;
 import com.infmme.readily.readable.Storable;
-import com.infmme.readily.readable.TxtFileStorable;
 import com.infmme.readily.service.LastReadService;
 import com.infmme.readily.settings.SettingsBundle;
 import com.infmme.readily.util.OnSwipeTouchListener;
@@ -117,7 +116,7 @@ public class ReaderFragment extends Fragment {
 
 		readable = Readable.createReadable(activity, args);
 		monitorObject = new MonitorObject();
-		readerTask = new ReaderTask(monitorObject, (TxtFileStorable) readable);
+		readerTask = new ReaderTask(monitorObject, readable);
 		parserThread = new Thread(readerTask);
 		parserThread.start();
 	}
@@ -212,7 +211,7 @@ public class ReaderFragment extends Fragment {
 			@Override
 			public void onSwipeRight(){
 				if (settingsBundle.isSwipesEnabled()){
-					if (!reader.isCancelled()){
+					if (!reader.getPaused()){
 						reader.performPause();
 					} else {
 						reader.moveToPrevious();
@@ -223,7 +222,7 @@ public class ReaderFragment extends Fragment {
 			@Override
 			public void onSwipeLeft(){
 				if (settingsBundle.isSwipesEnabled()){
-					if (!reader.isCancelled()){
+					if (!reader.getPaused()){
 						reader.performPause();
 					} else {
 						reader.moveToNext();
@@ -387,8 +386,10 @@ public class ReaderFragment extends Fragment {
 		}
 	}
 
-	private void startReader(TextParser parser, Context context){
-		if (changeParser(context, parser)){
+	private void startReader(TextParser parser){
+		changeParser(parser);
+		final int resultCode = parser.getResultCode();
+		if (resultCode == TextParser.RESULT_CODE_OK){
 			final int initialPosition = readable.getPosition();
 			reader = new Reader(handler, initialPosition);
 			Activity activity = getActivity();
@@ -412,47 +413,47 @@ public class ReaderFragment extends Fragment {
 					}
 				});
 			}
+		} else {
+			notifyBadParser(resultCode);
 		}
 	}
 
-	private boolean changeParser(final Context context, final TextParser parser){
-		this.parser = parser;
-		final int resultCode = parser.getResultCode();
-		if (resultCode == TextParser.RESULT_CODE_OK){
-			parserReceived = true;
-
-			readable = parser.getReadable();
-			wordList = readable.getWordList();
-			emphasisList = readable.getEmphasisList();
-			delayList = readable.getDelayList();
-		} else {
-			Activity a = getActivity();
-			if (a != null){
-				a.runOnUiThread(new Runnable() {
-					@Override
-					public void run(){
-						int stringId;
-						switch (resultCode){
-							case TextParser.RESULT_CODE_WRONG_EXT:
-								stringId = R.string.wrong_ext;
-								break;
-							case TextParser.RESULT_CODE_EMPTY_CLIPBOARD:
-								stringId = R.string.clipboard_empty;
-								break;
-							case TextParser.RESULT_CODE_CANT_FETCH:
-								stringId = R.string.cant_fetch;
-								break;
-							default:
-								stringId = R.string.text_null;
-								break;
-						}
-						Toast.makeText(context, stringId, Toast.LENGTH_SHORT).show();
-						onStop();
+	private void notifyBadParser(final int resultCode){
+		final Activity a = getActivity();
+		if (a != null){
+			a.runOnUiThread(new Runnable() {
+				@Override
+				public void run(){
+					int stringId;
+					switch (resultCode){
+						case TextParser.RESULT_CODE_WRONG_EXT:
+							stringId = R.string.wrong_ext;
+							break;
+						case TextParser.RESULT_CODE_EMPTY_CLIPBOARD:
+							stringId = R.string.clipboard_empty;
+							break;
+						case TextParser.RESULT_CODE_CANT_FETCH:
+							stringId = R.string.cant_fetch;
+							break;
+						default:
+							stringId = R.string.text_null;
+							break;
 					}
-				});
-			}
+					Toast.makeText(a, stringId, Toast.LENGTH_SHORT).show();
+					onStop();
+				}
+			});
 		}
-		return resultCode == TextParser.RESULT_CODE_OK;
+	}
+
+	private void changeParser(final TextParser parser){
+		this.parser = parser;
+		parserReceived = true;
+
+		readable = parser.getReadable();
+		wordList = readable.getWordList();
+		emphasisList = readable.getEmphasisList();
+		delayList = readable.getDelayList();
 	}
 
 	/**
@@ -584,22 +585,19 @@ public class ReaderFragment extends Fragment {
 	private class Reader implements Runnable {
 
 		private Handler readerHandler;
-		private int cancelled;
+		private int paused;
 		private int position;
 		private boolean completed;
-		private boolean started;
 		private boolean chunkReady;
 
 		public Reader(Handler readerHandler, int position){
 			this.readerHandler = readerHandler;
 			this.position = position;
-			completed = false;
-			cancelled = 1;
+			paused = 1;
 		}
 
 		@Override
 		public void run(){
-			started = true;
 			if (position < wordList.size()){
 				if (wordList.size() - position < 100 && monitorObject.isPaused()){
 					try {
@@ -609,25 +607,21 @@ public class ReaderFragment extends Fragment {
 					}
 				}
 				completed = false;
-				if (!isCancelled()){
+				if (!getPaused()){
 					updateView(position);
 					readerHandler.postDelayed(this, calcDelay());
 					position++;
 				}
-			} else if (chunkReady) {
-				changeParser(getActivity(), readerTask.removeDequeHead());
+			} else if (chunkReady){
+				changeParser(readerTask.removeDequeHead());
 				position = 0;
-				readerHandler.postDelayed(this, calcDelay());
 				chunkReady = false;
+				readerHandler.postDelayed(this, calcDelay());
 			} else {
 				showNotification(R.string.reading_is_completed);
 				completed = true;
-				cancelled = 1;
+				paused = 1;
 			}
-		}
-
-		public boolean isStarted(){
-			return started;
 		}
 
 		public void setChunkReady(boolean chunkReady){
@@ -663,17 +657,17 @@ public class ReaderFragment extends Fragment {
 			this.completed = completed;
 		}
 
-		public boolean isCancelled(){
-			return cancelled % 2 == 1;
+		public boolean getPaused(){
+			return paused % 2 == 1;
 		}
 
 		public void incCancelled(){
-			if (!isCancelled()){ performPause(); } else { performPlay(); }
+			if (!getPaused()){ performPause(); } else { performPlay(); }
 		}
 
 		public void performPause(){
-			if (!isCancelled()){
-				cancelled++;
+			if (!getPaused()){
+				paused++;
 				YoYo.with(Techniques.Pulse).
 						duration(READER_PULSE_DURATION).
 						playOn(readerLayout);
@@ -684,8 +678,8 @@ public class ReaderFragment extends Fragment {
 		}
 
 		public void performPlay(){
-			if (isCancelled()){
-				cancelled++;
+			if (getPaused()){
+				paused++;
 				YoYo.with(Techniques.Pulse).
 						duration(READER_PULSE_DURATION).
 						playOn(readerLayout);
@@ -714,11 +708,11 @@ public class ReaderFragment extends Fragment {
 		private static final int DEQUE_SIZE_LIMIT = 3;
 		private final ArrayDeque<TextParser> parserDeque;
 		private MonitorObject object = new MonitorObject();
-		private TxtFileStorable currentStorable;
+		private Readable currentReadable;
 
-		public ReaderTask(MonitorObject object, TxtFileStorable storable){
+		public ReaderTask(MonitorObject object, Readable storable){
 			this.object = object;
-			currentStorable = storable;
+			currentReadable = storable;
 			parserDeque = new ArrayDeque<TextParser>();
 		}
 
@@ -727,9 +721,10 @@ public class ReaderFragment extends Fragment {
 			while (true){
 				try {
 					synchronized (parserDeque){
-						if (!currentStorable.isProcessed()){
-							currentStorable.process(getActivity());
-							TextParser toAdd = getNextParser(TextParser.newInstance(currentStorable, settingsBundle));
+						if (!currentReadable.isProcessed()){
+							currentReadable.process(getActivity());
+							currentReadable.readData();
+							TextParser toAdd = TextParser.newInstance(currentReadable, settingsBundle);
 							toAdd.process();
 							parserDeque.add(toAdd);
 						}
@@ -739,10 +734,13 @@ public class ReaderFragment extends Fragment {
 							parserDeque.addLast(getNextParser(parserDeque.getLast()));
 						}
 					}
-					if (reader == null || !reader.isStarted())
-						startReader(removeDequeHead(), getActivity());
-					reader.setChunkReady(true);
-					object.pauseTask();
+					if (reader == null){ startReader(removeDequeHead()); }
+					if (reader != null){
+						reader.setChunkReady(parserDeque.size() > 1);
+						object.pauseTask();
+					} else {
+						break;
+					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -756,8 +754,8 @@ public class ReaderFragment extends Fragment {
 		}
 
 		private TextParser getNextParser(TextParser current){
-			TxtFileStorable currentStorable = (TxtFileStorable) current.getReadable();
-			TextParser result = TextParser.newInstance(currentStorable.getNext(), settingsBundle);
+			Readable currentReadable = current.getReadable();
+			TextParser result = TextParser.newInstance(currentReadable.getNext(), settingsBundle);
 			result.process();
 			return result;
 		}

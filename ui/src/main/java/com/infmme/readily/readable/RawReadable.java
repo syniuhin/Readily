@@ -7,23 +7,47 @@ import android.content.Context;
  */
 public class RawReadable extends Storable {
 
-	private boolean isReallyStorable;
+	private boolean reallyStorable;
 
-	public RawReadable(String text, boolean isReallyStorable){
+	public RawReadable(String text, boolean reallyStorable){
 		this.text = new StringBuilder(text);
-		this.isReallyStorable = isReallyStorable;
+		this.reallyStorable = reallyStorable;
 		type = TYPE_RAW;
+	}
+
+	public RawReadable(RawReadable that){
+		super(that);
+		reallyStorable = that.isReallyStorable();
+	}
+
+	public boolean isReallyStorable(){
+		return reallyStorable;
 	}
 
 	@Override
 	public void process(Context context){
-		if (isReallyStorable){
+		if (reallyStorable){
 			makeHeader();
 			path = context.getFilesDir() + "/" + cleanFileName(header) + ".txt";
 			rowData = takeRowData(context);
-			if (rowData != null){ position = rowData.getPosition(); } else {
+			if (rowData != null){
+				position = rowData.getPosition();
+			} else {
 				createStorageFile(context, path, text.toString());
 			}
 		}
+		processed = true;
+	}
+
+	@Override
+	public void readData(){
+		//Well, actually all data is already read
+	}
+
+	@Override
+	public Readable getNext(){
+		RawReadable result = new RawReadable(this);
+		result.setText("");
+		return result;
 	}
 }
