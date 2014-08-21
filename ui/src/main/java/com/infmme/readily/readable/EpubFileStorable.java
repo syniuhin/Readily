@@ -8,13 +8,17 @@ import nl.siegmann.epublib.epub.EpubReader;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by infm on 7/2/14. Enjoy ;)
  */
 public class EpubFileStorable extends FileStorable {
+
+	private Book book;
+	private List<Resource> resources;
+	private int index;
 
 	public EpubFileStorable(String path){
 		type = TYPE_EPUB;
@@ -23,6 +27,9 @@ public class EpubFileStorable extends FileStorable {
 
 	public EpubFileStorable(EpubFileStorable that){
 		super(that);
+		book = that.book;
+		resources = that.resources;
+		index = that.index;
 	}
 
 	public void process(Context context){
@@ -31,9 +38,12 @@ public class EpubFileStorable extends FileStorable {
 			if (path == null){
 				return;
 			}
-			Book book = (new EpubReader()).readEpub(new FileInputStream(path));
+			book = (new EpubReader()).readEpubLazy(path, "UTF-8");
+			resources = book.getContents();
+/*
 			for (Resource res : book.getContents()){ text.append(new String(res.getData())); }
 			text = new StringBuilder(parseEpub(text.toString())); //NullPointerEx can be thrown
+*/
 
 			createRowData(context);
 			processed = true;
@@ -44,20 +54,31 @@ public class EpubFileStorable extends FileStorable {
 
 	@Override
 	public void readData(){
-
+		setText("");
+		try {
+			while (text.length() < BUFFER_SIZE && index < resources.size()){
+				text.append(new String(resources.get(index++).getData()));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		text = new StringBuilder(parseEpub(text.toString()));
+		if (index < resources.size() && TextUtils.isEmpty(text)){ readData(); }
 	}
 
 	@Override
 	public Readable getNext(){
 		EpubFileStorable result = new EpubFileStorable(this);
-		result.setText("");
+		result.readData();
+		result.cutLastWord();
+		result.insertLastWord(lastWord);
 		return result;
 	}
 
 	private String parseEpub(String text){
 		try {
 			Document doc = Jsoup.parse(text);
-			title = doc.title();
+			if (TextUtils.isEmpty(title)){ title = doc.title(); }
 			return doc.select("p").text();
 		} catch (Exception e) {
 			e.printStackTrace();
