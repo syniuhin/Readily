@@ -36,7 +36,6 @@ abstract public class Readable implements Serializable {
 	protected DataBundle rowData;
 	protected boolean processFailed;
 	protected boolean processed;
-	protected String lastWord;
 	protected List<String> wordList;
 	protected List<Integer> delayList;
 	protected List<Integer> emphasisList;
@@ -47,7 +46,6 @@ abstract public class Readable implements Serializable {
 		delayList = new ArrayList<Integer>();
 		emphasisList = new ArrayList<Integer>();
 		rowData = new DataBundle();
-		lastWord = "";
 	}
 
 	public Readable(Readable that){
@@ -61,9 +59,9 @@ abstract public class Readable implements Serializable {
 		processFailed = that.isProcessFailed();
 		processed = that.isProcessed();
 
-		wordList = that.getWordList();
-		delayList = that.getDelayList();
-		emphasisList = that.getEmphasisList();
+		wordList = new ArrayList<String>(that.getWordList());
+		delayList = new ArrayList<Integer>(that.getDelayList());
+		emphasisList = new ArrayList<Integer>(that.getEmphasisList());
 	}
 
 	public static void cloneInstance(Readable receiver, Readable that){
@@ -146,10 +144,6 @@ abstract public class Readable implements Serializable {
 		receiver.setWordList(getWordList());
 		receiver.setDelayList(getDelayList());
 		receiver.setEmphasisList(getEmphasisList());
-	}
-
-	public void setLastWord(String lastWord){
-		this.lastWord = lastWord;
 	}
 
 	abstract public void process(Context context);
@@ -238,6 +232,8 @@ abstract public class Readable implements Serializable {
 		this.wordList = wordList;
 	}
 
+	public void addToWordList(List<String> addition) { this.wordList.addAll(addition); }
+
 	public List<Integer> getDelayList(){
 		return delayList;
 	}
@@ -268,16 +264,6 @@ abstract public class Readable implements Serializable {
 
 	public void setRowData(DataBundle rowData){
 		this.rowData = rowData;
-	}
-
-	/**
-	 * must be called before TextParser.process();
-	 */
-	public void cutLastWord(){
-		String textString = text.toString();
-		int index = textString.lastIndexOf(' ') + 1;
-		lastWord = textString.substring(index);
-		text = new StringBuilder(textString.substring(0, index));
 	}
 
 	public void insertLastWord(String lastWord){

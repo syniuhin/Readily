@@ -19,8 +19,6 @@ public class TxtFileStorable extends FileStorable {
 
 	public TxtFileStorable(TxtFileStorable that){
 		super(that);
-		inputData = that.inputData;
-		fileReader = that.fileReader;
 	}
 
 	public void process(Context context){
@@ -60,6 +58,7 @@ public class TxtFileStorable extends FileStorable {
 		result.readData();
 		result.cutLastWord();
 		result.insertLastWord(lastWord);
+		result.copyListSuffix(this);
 		return result;
 	}
 }

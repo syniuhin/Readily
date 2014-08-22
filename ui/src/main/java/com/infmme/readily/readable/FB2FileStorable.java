@@ -107,6 +107,7 @@ public class FB2FileStorable extends FileStorable {
 		result.readData();
 		result.cutLastWord();
 		result.insertLastWord(lastWord);
+		result.copyListSuffix(this);
 		return result;
 	}
 

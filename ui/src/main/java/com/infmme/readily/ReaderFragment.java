@@ -20,6 +20,7 @@ import android.widget.*;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.infmme.readily.essential.TextParser;
+import com.infmme.readily.readable.FileStorable;
 import com.infmme.readily.readable.Readable;
 import com.infmme.readily.readable.Storable;
 import com.infmme.readily.service.LastReadService;
@@ -527,7 +528,11 @@ public class ReaderFragment extends Fragment {
 
 		settingsBundle.updatePreferences();
 
-		if (parserThread != null && parserThread.isAlive()){ parserThread.interrupt(); }
+		if (reader != null){
+			reader.setCompleted(true);
+		} else if (parserThread != null && parserThread.isAlive()){
+			parserThread.interrupt();
+		}
 		callback.stop();
 		super.onStop();
 	}
@@ -598,7 +603,8 @@ public class ReaderFragment extends Fragment {
 
 		@Override
 		public void run(){
-			if (position < wordList.size()){
+			if ((position < wordList.size() && !chunkReady) ||
+					(position < wordList.size() - FileStorable.LAST_WORD_SUFFIX_SIZE && chunkReady)){
 				if (wordList.size() - position < 100 && monitorObject.isPaused()){
 					try {
 						monitorObject.resumeTask();
@@ -718,7 +724,7 @@ public class ReaderFragment extends Fragment {
 
 		@Override
 		public void run(){
-			while (true){
+			while (reader == null || !reader.isCompleted()){
 				try {
 					synchronized (parserDeque){
 						if (!currentReadable.isProcessed()){

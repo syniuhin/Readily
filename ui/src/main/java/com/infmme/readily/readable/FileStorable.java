@@ -7,7 +7,9 @@ import com.infmme.readily.Constants;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by infm on 6/13/14. Enjoy ;)
@@ -16,8 +18,10 @@ abstract public class FileStorable extends Storable {
 
 	public static final HashMap<String, Integer> extensionsMap = new HashMap<String, Integer>();
 	public static final int BUFFER_SIZE = 1000 /*10 * 1024*/;
+	public static final int LAST_WORD_SUFFIX_SIZE = 10;
 
 	protected FileReader fileReader;
+	protected String lastWord = "";
 
 	static{
 		extensionsMap.put(Constants.EXTENSION_TXT, Readable.TYPE_TXT);
@@ -29,6 +33,7 @@ abstract public class FileStorable extends Storable {
 
 	public FileStorable(FileStorable that){
 		super(that);
+		fileReader = that.getFileReader();
 	}
 
 	public static FileStorable createFileStorable(String intentPath){
@@ -63,6 +68,30 @@ abstract public class FileStorable extends Storable {
 
 	public static boolean isExtensionValid(String extension){
 		return extensionsMap.containsKey(extension);
+	}
+
+	public FileReader getFileReader(){
+		return fileReader;
+	}
+
+	/**
+	 * must be called before TextParser.process();
+	 */
+	public void cutLastWord(){
+		String textString = text.toString();
+		int index = textString.lastIndexOf(' ') + 1;
+		lastWord = textString.substring(index);
+		text = new StringBuilder(textString.substring(0, index));
+	}
+
+	public void copyListSuffix(FileStorable previous){
+		wordList.clear();
+		List<String> previousWordList = previous.getWordList();
+		ArrayList<String> temp =
+				new ArrayList<String>(previousWordList.subList(Math.max(0, previousWordList.size()- LAST_WORD_SUFFIX_SIZE),
+																				previousWordList.size()));
+		temp.addAll(wordList);
+		wordList = temp;
 	}
 
 	protected void createRowData(Context context){

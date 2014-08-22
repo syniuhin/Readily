@@ -158,7 +158,7 @@ public class TextParser implements Serializable, Callable<TextParser> {
 	public void process(){
 		normalize(readable);
 		cutLongWords(readable);
-		readable.setWordList(Arrays.asList(readable.getText().split(" ")));
+		readable.addToWordList(Arrays.asList(readable.getText().split(" ")));
 		cleanWordList(readable);
 		buildDelayList(readable);
 		buildEmphasis(readable);

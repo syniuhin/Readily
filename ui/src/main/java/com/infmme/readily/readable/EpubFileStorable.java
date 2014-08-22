@@ -27,9 +27,21 @@ public class EpubFileStorable extends FileStorable {
 
 	public EpubFileStorable(EpubFileStorable that){
 		super(that);
-		book = that.book;
-		resources = that.resources;
-		index = that.index;
+		book = that.getBook();
+		resources = that.getResources();
+		index = that.getIndex();
+	}
+
+	public Book getBook(){
+		return book;
+	}
+
+	public List<Resource> getResources(){
+		return resources;
+	}
+
+	public int getIndex(){
+		return index;
 	}
 
 	public void process(Context context){
@@ -40,10 +52,6 @@ public class EpubFileStorable extends FileStorable {
 			}
 			book = (new EpubReader()).readEpubLazy(path, "UTF-8");
 			resources = book.getContents();
-/*
-			for (Resource res : book.getContents()){ text.append(new String(res.getData())); }
-			text = new StringBuilder(parseEpub(text.toString())); //NullPointerEx can be thrown
-*/
 
 			createRowData(context);
 			processed = true;
@@ -72,13 +80,14 @@ public class EpubFileStorable extends FileStorable {
 		result.readData();
 		result.cutLastWord();
 		result.insertLastWord(lastWord);
+		result.copyListSuffix(this);
 		return result;
 	}
 
 	private String parseEpub(String text){
 		try {
 			Document doc = Jsoup.parse(text);
-			if (TextUtils.isEmpty(title)){ title = doc.title(); }
+			if (TextUtils.isEmpty(header)){ header = doc.title(); }
 			return doc.select("p").text();
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -26,6 +26,7 @@ abstract public class Storable extends Readable {
 
 	public Storable(Storable that){
 		super(that);
+		title = that.title;
 	}
 
 	public static DataBundle getRowData(Cursor cursor, String path){
