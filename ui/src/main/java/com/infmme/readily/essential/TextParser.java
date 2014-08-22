@@ -143,7 +143,7 @@ public class TextParser implements Serializable, Callable<TextParser> {
 	@Override
 	public String toString(){
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream oos = null;
+		ObjectOutputStream oos;
 		try {
 			oos = new ObjectOutputStream(baos);
 			oos.writeObject(this);
@@ -364,7 +364,6 @@ public class TextParser implements Serializable, Callable<TextParser> {
 		if (readable != null){
 			if (TextUtils.isEmpty(readable.getText()) ||
 					readable.getWordList().isEmpty() ||
-					readable.getWordList().size() < 2 ||
 					readable.isProcessFailed()){
 				switch (this.getReadable().getType()){
 					case Readable.TYPE_CLIPBOARD:

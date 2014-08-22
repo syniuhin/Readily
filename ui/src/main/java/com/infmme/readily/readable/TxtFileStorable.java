@@ -38,8 +38,9 @@ public class TxtFileStorable extends FileStorable {
 	@Override
 	public void readData(){
 		try {
-			if (fileReader.read(inputData) != -1){
-				setText(new StringBuilder(new String(inputData)));
+			int inputDataLength = fileReader.read(inputData);
+			if (inputDataLength != -1){
+				setText(new StringBuilder((new String(inputData)).substring(0, inputDataLength)));
 			} else {
 				setText("");
 			}

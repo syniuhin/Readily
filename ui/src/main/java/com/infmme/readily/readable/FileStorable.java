@@ -88,7 +88,8 @@ abstract public class FileStorable extends Storable {
 		wordList.clear();
 		List<String> previousWordList = previous.getWordList();
 		ArrayList<String> temp =
-				new ArrayList<String>(previousWordList.subList(Math.max(0, previousWordList.size()- LAST_WORD_SUFFIX_SIZE),
+				new ArrayList<String>(
+						previousWordList.subList(Math.max(0, previousWordList.size() - LAST_WORD_SUFFIX_SIZE),
 																				previousWordList.size()));
 		temp.addAll(wordList);
 		wordList = temp;
