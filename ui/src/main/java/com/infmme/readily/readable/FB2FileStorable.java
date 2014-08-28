@@ -6,8 +6,8 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 
 /**
@@ -25,6 +25,7 @@ public class FB2FileStorable extends FileStorable {
 
 	public FB2FileStorable(FB2FileStorable that){
 		super(that);
+		type = TYPE_FB2;
 		xmlParser = that.getXmlParser();
 		openedTags = that.getOpenedTags();
 	}
@@ -44,17 +45,21 @@ public class FB2FileStorable extends FileStorable {
 			return;
 		}
 		try {
-			fileReader = new FileReader(path);
+			fileInputStream = new FileInputStream(path);
+			createRowData(context);
+			if (bytePosition > 0)
+				fileInputStream.skip(bytePosition);
 
 			XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
 			xmlParser = factory.newPullParser();
-			xmlParser.setInput(fileReader);
+			xmlParser.setInput(fileInputStream, "UTF-8"); //TODO: review encoding
 
-			createRowData(context);
 			processed = true;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (XmlPullParserException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -84,7 +89,7 @@ public class FB2FileStorable extends FileStorable {
 						needTitle = false;
 						nextTitle = true;
 					}
-				} else if (eventType == XmlPullParser.TEXT){
+				} else {
 					if (nextTitle){
 						title = xmlParser.getText();
 						nextTitle = false;
@@ -94,6 +99,7 @@ public class FB2FileStorable extends FileStorable {
 				}
 				eventType = xmlParser.next();
 			}
+			inputDataLength = (int) fileInputStream.getChannel().position() - bytePosition;
 		} catch (XmlPullParserException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -103,12 +109,7 @@ public class FB2FileStorable extends FileStorable {
 
 	@Override
 	public Readable getNext(){
-		FB2FileStorable result = new FB2FileStorable(this);
-		result.readData();
-		result.cutLastWord();
-		result.insertLastWord(lastWord);
-		result.copyListSuffix(this);
-		return result;
+		return prepareNext(new FB2FileStorable(this));
 	}
 
 	@Override

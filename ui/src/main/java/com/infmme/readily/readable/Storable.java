@@ -21,12 +21,14 @@ import java.io.IOException;
 abstract public class Storable extends Readable {
 
 	protected String title;
+	protected long bytePosition;
 
 	public Storable(){}
 
 	public Storable(Storable that){
 		super(that);
-		title = that.title;
+		title = that.getTitle();
+		bytePosition = that.getBytePosition();
 	}
 
 	public static DataBundle getRowData(Cursor cursor, String path){
@@ -39,6 +41,7 @@ abstract public class Storable extends Readable {
 							cursor.getString(LastReadDBHelper.COLUMN_HEADER),
 							path,
 							cursor.getInt(LastReadDBHelper.COLUMN_POSITION),
+							cursor.getLong(LastReadDBHelper.COLUMN_BYTE_POSITION),
 							cursor.getString(LastReadDBHelper.COLUMN_PERCENT)
 					);
 				}
@@ -65,6 +68,12 @@ abstract public class Storable extends Readable {
 		}
 	}
 
+	public String getTitle(){ return title; }
+
+	public long getBytePosition(){ return bytePosition; }
+
+	public void setBytePosition(long bytePosition){ this.bytePosition = bytePosition; }
+
 	protected DataBundle takeRowData(Context context){
 		return Storable.getRowData(context.getContentResolver().query(LastReadContentProvider.CONTENT_URI,
 																	  null, null, null, null),
@@ -79,6 +88,7 @@ abstract public class Storable extends Readable {
 		intent.putExtra(Constants.EXTRA_HEADER, header);
 		intent.putExtra(Constants.EXTRA_PATH, path);
 		intent.putExtra(Constants.EXTRA_POSITION, position);
+		intent.putExtra(Constants.EXTRA_BYTE_POSITION, bytePosition);
 		intent.putExtra(Constants.EXTRA_PERCENT, 100 - (int) (position * 100f / wordList.size() + .5f) + "%");
 	}
 

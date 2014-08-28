@@ -6,7 +6,8 @@ import android.text.TextUtils;
 import com.infmme.readily.Constants;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,8 +21,9 @@ abstract public class FileStorable extends Storable {
 	public static final int BUFFER_SIZE = 1000 /*10 * 1024*/;
 	public static final int LAST_WORD_SUFFIX_SIZE = 10;
 
-	protected FileReader fileReader;
+	protected FileInputStream fileInputStream;
 	protected String lastWord = "";
+	protected long inputDataLength;
 
 	static{
 		extensionsMap.put(Constants.EXTENSION_TXT, Readable.TYPE_TXT);
@@ -33,7 +35,7 @@ abstract public class FileStorable extends Storable {
 
 	public FileStorable(FileStorable that){
 		super(that);
-		fileReader = that.getFileReader();
+		fileInputStream = that.getFileInputStream();
 	}
 
 	public static FileStorable createFileStorable(String intentPath){
@@ -50,6 +52,7 @@ abstract public class FileStorable extends Storable {
 				break;
 			default:
 				fileStorable = null;
+				break;
 		}
 		return fileStorable;
 	}
@@ -70,8 +73,8 @@ abstract public class FileStorable extends Storable {
 		return extensionsMap.containsKey(extension);
 	}
 
-	public FileReader getFileReader(){
-		return fileReader;
+	public FileInputStream getFileInputStream(){
+		return fileInputStream;
 	}
 
 	/**
@@ -97,6 +100,25 @@ abstract public class FileStorable extends Storable {
 
 	protected void createRowData(Context context){
 		rowData = takeRowData(context);
-		if (rowData != null){ position = rowData.getPosition(); }
+		if (rowData != null){
+			position = rowData.getPosition();
+			bytePosition = rowData.getBytePosition();
+		}
+	}
+
+	public FileStorable prepareNext(FileStorable result){
+		result.readData();
+		if (TextUtils.isEmpty(result.getText())){
+			try {
+				result.getFileInputStream().close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		result.cutLastWord();
+		result.insertLastWord(lastWord);
+		result.copyListSuffix(this);
+		result.setBytePosition(bytePosition + inputDataLength);
+		return result;
 	}
 }

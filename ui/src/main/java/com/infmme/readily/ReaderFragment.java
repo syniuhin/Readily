@@ -391,7 +391,7 @@ public class ReaderFragment extends Fragment {
 		changeParser(parser);
 		final int resultCode = parser.getResultCode();
 		if (resultCode == TextParser.RESULT_CODE_OK){
-			final int initialPosition = readable.getPosition();
+			final int initialPosition = Math.max(readable.getPosition() - Constants.READER_START_OFFSET, 0);
 			reader = new Reader(handler, initialPosition);
 			Activity activity = getActivity();
 			if (activity != null){
@@ -500,7 +500,12 @@ public class ReaderFragment extends Fragment {
 /*
 				settingsBundle.isCachingEnabled() &&
 */
-				!TextUtils.isEmpty(readable.getPath());
+				!TextUtils.isEmpty(readable.getPath()) &&
+				(readable.getType() == Readable.TYPE_FILE ||
+						readable.getType() == Readable.TYPE_TXT ||
+						readable.getType() == Readable.TYPE_FB2 ||
+						readable.getType() == Readable.TYPE_NET ||
+						readable.getType() == Readable.TYPE_RAW);
 	}
 
 	@Override

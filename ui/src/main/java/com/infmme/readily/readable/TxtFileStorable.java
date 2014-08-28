@@ -2,7 +2,7 @@ package com.infmme.readily.readable;
 
 import android.content.Context;
 
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 /**
@@ -10,7 +10,7 @@ import java.io.IOException;
  */
 public class TxtFileStorable extends FileStorable {
 
-	private char[] inputData = new char[BUFFER_SIZE];
+	private byte[] inputData = new byte[BUFFER_SIZE];
 
 	public TxtFileStorable(String path){
 		type = TYPE_TXT;
@@ -19,6 +19,7 @@ public class TxtFileStorable extends FileStorable {
 
 	public TxtFileStorable(TxtFileStorable that){
 		super(that);
+		type = TYPE_TXT;
 	}
 
 	public void process(Context context){
@@ -27,8 +28,10 @@ public class TxtFileStorable extends FileStorable {
 			if (path == null){
 				return;
 			}
-			fileReader = new FileReader(path);
+			fileInputStream = new FileInputStream(path);
 			createRowData(context);
+			if (bytePosition > 0)
+				fileInputStream.skip(bytePosition);
 			processed = true;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -38,9 +41,10 @@ public class TxtFileStorable extends FileStorable {
 	@Override
 	public void readData(){
 		try {
-			int inputDataLength = fileReader.read(inputData);
+			inputDataLength = fileInputStream.read(inputData);
 			if (inputDataLength != -1){
-				setText(new StringBuilder((new String(inputData)).substring(0, inputDataLength)));
+				//TODO: review encoding
+				setText(new StringBuilder((new String(inputData, "UTF-8")).substring(0, (int) inputDataLength)));
 			} else {
 				setText("");
 			}
@@ -55,11 +59,6 @@ public class TxtFileStorable extends FileStorable {
 
 	@Override
 	public Readable getNext(){
-		TxtFileStorable result = new TxtFileStorable(this);
-		result.readData();
-		result.cutLastWord();
-		result.insertLastWord(lastWord);
-		result.copyListSuffix(this);
-		return result;
+		return prepareNext(new TxtFileStorable(this));
 	}
 }

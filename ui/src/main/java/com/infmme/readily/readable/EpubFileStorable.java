@@ -27,6 +27,7 @@ public class EpubFileStorable extends FileStorable {
 
 	public EpubFileStorable(EpubFileStorable that){
 		super(that);
+		type = TYPE_EPUB;
 		book = that.getBook();
 		resources = that.getResources();
 		index = that.getIndex();
@@ -54,6 +55,11 @@ public class EpubFileStorable extends FileStorable {
 			resources = book.getContents();
 
 			createRowData(context);
+			if (bytePosition > 0){
+				long passed = 0;
+				while (index < resources.size() && (passed += resources.get(index).getSize()) < bytePosition)
+					++index;
+			}
 			processed = true;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -63,9 +69,12 @@ public class EpubFileStorable extends FileStorable {
 	@Override
 	public void readData(){
 		setText("");
+		inputDataLength = 0;
 		try {
 			while (text.length() < BUFFER_SIZE && index < resources.size()){
-				text.append(new String(resources.get(index++).getData()));
+				Resource currentResource = resources.get(index++);
+				inputDataLength += currentResource.getSize();
+				text.append(new String(currentResource.getData()));
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -76,12 +85,7 @@ public class EpubFileStorable extends FileStorable {
 
 	@Override
 	public Readable getNext(){
-		EpubFileStorable result = new EpubFileStorable(this);
-		result.readData();
-		result.cutLastWord();
-		result.insertLastWord(lastWord);
-		result.copyListSuffix(this);
-		return result;
+		return prepareNext(new EpubFileStorable(this));
 	}
 
 	private String parseEpub(String text){

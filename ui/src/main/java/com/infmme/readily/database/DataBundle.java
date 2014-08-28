@@ -13,24 +13,34 @@ public class DataBundle implements Serializable {
 
 	private String header;
 	private String path;
-	private Integer position;
+	private int position;
+	private long bytePosition;
 	private String percent;
-	private Integer rowId;
+	private int rowId;
 
 	public DataBundle(){}
 
-	public DataBundle(String header, String path, Integer position, String percent){
+	public DataBundle(String header, String path, int position, String percent){
 		this.header = header;
 		this.path = path;
 		this.position = position;
 		this.percent = percent;
 	}
 
-	public DataBundle(Integer rowId, String header, String path, Integer position, String percent){
+	public DataBundle(String header, String path, int position, long bytePosition, String percent){
+		this.header = header;
+		this.path = path;
+		this.position = position;
+		this.bytePosition = bytePosition;
+		this.percent = percent;
+	}
+
+	public DataBundle(int rowId, String header, String path, int position, long bytePosition, String percent){
 		this.rowId = rowId;
 		this.header = header;
 		this.path = path;
 		this.position = position;
+		this.bytePosition = bytePosition;
 		this.percent = percent;
 	}
 
@@ -38,6 +48,7 @@ public class DataBundle implements Serializable {
 		return new DataBundle(intent.getStringExtra(Constants.EXTRA_HEADER),
 							  intent.getStringExtra(Constants.EXTRA_PATH),
 							  intent.getIntExtra(Constants.EXTRA_POSITION, 0),
+							  intent.getLongExtra(Constants.EXTRA_BYTE_POSITION, 0),
 							  intent.getStringExtra(Constants.EXTRA_PERCENT));
 	}
 
@@ -47,6 +58,7 @@ public class DataBundle implements Serializable {
 		values.put(LastReadDBHelper.KEY_PATH, dataBundle.getPath());
 		values.put(LastReadDBHelper.KEY_POSITION, dataBundle.getPosition());
 		values.put(LastReadDBHelper.KEY_PERCENT, dataBundle.getPercent());
+		values.put(LastReadDBHelper.KEY_BYTE_POSITION, dataBundle.getBytePosition());
 		return values;
 	}
 
@@ -55,14 +67,15 @@ public class DataBundle implements Serializable {
 		values.put(LastReadDBHelper.KEY_POSITION, dataBundle.getPosition());
 		values.put(LastReadDBHelper.KEY_PERCENT, dataBundle.getPercent());
 		values.put(LastReadDBHelper.KEY_HEADER, dataBundle.getHeader());
+		values.put(LastReadDBHelper.KEY_BYTE_POSITION, dataBundle.getBytePosition());
 		return values;
 	}
 
-	public Integer getRowId(){
+	public int getRowId(){
 		return rowId;
 	}
 
-	public void setRowId(Integer rowId){
+	public void setRowId(int rowId){
 		this.rowId = rowId;
 	}
 
@@ -82,12 +95,16 @@ public class DataBundle implements Serializable {
 		this.path = path;
 	}
 
-	public Integer getPosition(){
+	public int getPosition(){
 		return position;
 	}
 
-	public void setPosition(Integer position){
+	public void setPosition(int position){
 		this.position = position;
+	}
+
+	public long getBytePosition(){
+		return bytePosition;
 	}
 
 	public String getPercent(){
@@ -104,6 +121,7 @@ public class DataBundle implements Serializable {
 				"; header: " + header +
 				"; path: " + path +
 				"; position: " + position +
+				"; bytePosition: " + bytePosition +
 				"; percent: " + percent;
 	}
 }
