@@ -51,17 +51,18 @@ public class XMLParser {
 
 	public void setInput(FileInputStream fis, String encoding){
 		try {
-			position = fis.getChannel().position();
 			isr = new InputStreamReader(fis, encoding);
 		} catch (UnsupportedEncodingException e){
-			e.printStackTrace();
-		} catch (IOException e){
 			e.printStackTrace();
 		}
 	}
 
 	public void setInput(FileInputStream fis){
 		setInput(fis, "UTF-8");
+	}
+
+	public long getPosition() {
+		return position;
 	}
 
 	public XMLEvent next() throws IOException{

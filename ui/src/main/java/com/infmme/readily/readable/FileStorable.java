@@ -18,8 +18,9 @@ import java.util.List;
 abstract public class FileStorable extends Storable {
 
 	public static final HashMap<String, Integer> extensionsMap = new HashMap<String, Integer>();
-	public static final int BUFFER_SIZE = 1000 /*10 * 1024*/;
+	public static final int BUFFER_SIZE = 512/*4096*/;
 	public static final int LAST_WORD_SUFFIX_SIZE = 10;
+	public static final int LAST_WORD_PREFIX_SIZE = 10;
 
 	protected FileInputStream fileInputStream;
 	protected String lastWord = "";
@@ -87,7 +88,7 @@ abstract public class FileStorable extends Storable {
 		text = new StringBuilder(textString.substring(0, index));
 	}
 
-	public void copyListSuffix(FileStorable previous){
+	public void copyListSuffix(Readable previous){
 		wordList.clear();
 		List<String> previousWordList = previous.getWordList();
 		ArrayList<String> temp =
@@ -96,6 +97,16 @@ abstract public class FileStorable extends Storable {
 																				previousWordList.size()));
 		temp.addAll(wordList);
 		wordList = temp;
+	}
+
+	public void copyListPrefix(Readable next){
+		List<String> nextWordList = next.getWordList();
+		wordList.addAll(new ArrayList<String>(nextWordList.subList(0,
+				Math.min(LAST_WORD_PREFIX_SIZE, nextWordList.size()))));
+	}
+
+	public void clearWordList(){
+		wordList.clear();
 	}
 
 	protected void createRowData(Context context){
@@ -117,7 +128,7 @@ abstract public class FileStorable extends Storable {
 		}
 		result.cutLastWord();
 		result.insertLastWord(lastWord);
-		result.copyListSuffix(this);
+		result.clearWordList();
 		result.setBytePosition(bytePosition + inputDataLength);
 		return result;
 	}

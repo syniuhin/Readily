@@ -14,6 +14,8 @@ public class XMLEvent {
 	private String contentType;
 	private String tagName;
 
+	private boolean tagNameReady;
+
 	public XMLEvent(int type){
 		content = "";
 		tagName = "";
@@ -82,7 +84,10 @@ public class XMLEvent {
 	}
 
 	public void appendTagName(char c){
-		tagName += c;
+		if (!tagNameReady)
+			tagNameReady = Character.isWhitespace(c);
+		if (!tagNameReady)
+			tagName += c;
 	}
 
 	public void cutLastTagChar(){
@@ -91,7 +96,7 @@ public class XMLEvent {
 
 	@Override
 	public String toString(){
-		return "domain: from " + domain.first + " to " + domain.first +
+		return "domain: from " + domain.first + " to " + domain.second +
 				"; type: " + XMLParser.getTypeName(type) +
 				"; close type: " + XMLParser.getTypeName(closeType) +
 				"; content: " + content +

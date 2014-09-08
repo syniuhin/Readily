@@ -493,7 +493,7 @@ public class ReaderFragment extends Fragment {
 		handler.postDelayed(anim, Constants.SECOND);
 	}
 
-	private Boolean isStorable(){
+	private boolean isStorable(Readable readable){
 		return parserReceived &&
 				readable != null &&
 				settingsBundle != null &&
@@ -504,14 +504,21 @@ public class ReaderFragment extends Fragment {
 				(readable.getType() == Readable.TYPE_FILE ||
 						readable.getType() == Readable.TYPE_TXT ||
 						readable.getType() == Readable.TYPE_FB2 ||
+						readable.getType() == Readable.TYPE_EPUB ||
 						readable.getType() == Readable.TYPE_NET ||
 						readable.getType() == Readable.TYPE_RAW);
+	}
+
+	private boolean isFileStorable(Readable readable){
+		return isStorable(readable) &&
+				readable.getType() != Readable.TYPE_NET &&
+				readable.getType() != Readable.TYPE_RAW;
 	}
 
 	@Override
 	public void onStop(){
 		Activity activity = getActivity();
-		if (isStorable() && reader != null){
+		if (isStorable(readable) && reader != null){
 			reader.performPause();
 			Storable storable = (Storable) readable;
 			int operation;
@@ -768,6 +775,9 @@ public class ReaderFragment extends Fragment {
 			Readable currentReadable = current.getReadable();
 			TextParser result = TextParser.newInstance(currentReadable.getNext(), settingsBundle);
 			result.process();
+			if (isFileStorable(currentReadable)){
+				((FileStorable) currentReadable).copyListPrefix(result.getReadable());
+			}
 			return result;
 		}
 	}

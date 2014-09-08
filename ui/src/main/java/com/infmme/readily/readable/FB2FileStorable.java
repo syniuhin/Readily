@@ -2,6 +2,8 @@ package com.infmme.readily.readable;
 
 import android.content.Context;
 import android.text.TextUtils;
+import com.infmme.readily.xmlparser.XMLEvent;
+import com.infmme.readily.xmlparser.XMLParser;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -15,7 +17,7 @@ import java.io.IOException;
  */
 public class FB2FileStorable extends FileStorable {
 
-	private XmlPullParser xmlParser;
+	private XMLParser parser;
 	private int openedTags = 0;
 
 	public FB2FileStorable(String path){
@@ -26,12 +28,12 @@ public class FB2FileStorable extends FileStorable {
 	public FB2FileStorable(FB2FileStorable that){
 		super(that);
 		type = TYPE_FB2;
-		xmlParser = that.getXmlParser();
+		parser = that.getParser();
 		openedTags = that.getOpenedTags();
 	}
 
-	public XmlPullParser getXmlParser(){
-		return xmlParser;
+	public XMLParser getParser() {
+		return parser;
 	}
 
 	public int getOpenedTags(){
@@ -50,14 +52,10 @@ public class FB2FileStorable extends FileStorable {
 			if (bytePosition > 0)
 				fileInputStream.skip(bytePosition);
 
-			XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-			xmlParser = factory.newPullParser();
-			xmlParser.setInput(fileInputStream, "UTF-8"); //TODO: review encoding
-
+			parser = new XMLParser();
+			parser.setInput(fileInputStream, "UTF-8");
 			processed = true;
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (XmlPullParserException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -68,40 +66,28 @@ public class FB2FileStorable extends FileStorable {
 	public void readData(){
 		setText("");
 		try {
-			if (xmlParser == null){ return; }
-			int eventType = xmlParser.getEventType();
-			boolean nextTitle = false;
+			if (parser == null) { return; }
+			XMLEvent event = parser.next();
+			int eventType = event.getType();
 			boolean needTitle = TextUtils.isEmpty(title);
 
-			while (eventType != XmlPullParser.END_DOCUMENT && text.length() < BUFFER_SIZE){
-				String eventName = xmlParser.getName();
-				if (!TextUtils.isEmpty(eventName)){
-					if ("p".equals(eventName)){
-						switch (eventType){
-							case XmlPullParser.START_TAG:
-								openedTags++;
-								break;
-							case XmlPullParser.END_TAG:
-								openedTags--;
-								break;
-						}
-					} else if (needTitle && "title".equals(eventName)){
-						needTitle = false;
-						nextTitle = true;
+			while (eventType != XMLParser.DOCUMENT_CLOSE && text.length() < BUFFER_SIZE){
+				if (eventType == XMLParser.CONTENT){
+					String contentType = event.getContentType();
+					if (!TextUtils.isEmpty(contentType)){
+						if (needTitle && contentType.equals("book-title"))
+							title = event.getContent();
+						if (contentType.equals("p"))
+							text.append(event.getContent());
+					} else { //TODO: handle this situation carefully
+						text.append(event.getContent());
 					}
-				} else {
-					if (nextTitle){
-						title = xmlParser.getText();
-						nextTitle = false;
-					}
-					if (openedTags > 0)
-						text.append(xmlParser.getText()).append(" ");
+					text.append(" ");
 				}
-				eventType = xmlParser.next();
+				event = parser.next();
+				eventType = event.getType();
 			}
-			inputDataLength = (int) fileInputStream.getChannel().position() - bytePosition;
-		} catch (XmlPullParserException e) {
-			e.printStackTrace();
+			inputDataLength = event.getDomain().second;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

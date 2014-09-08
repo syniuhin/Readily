@@ -34,7 +34,8 @@ public class LastReadDBHelper extends SQLiteOpenHelper {
 					KEY_TIME_MODIFIED + " INTEGER, " +
 					KEY_PERCENT + " INTEGER, " +
 					KEY_POSITION + " INTEGER, " +
-					KEY_LINK + "TEXT);";
+					KEY_LINK + " TEXT, " +
+					KEY_BYTE_POSITION + " INTEGER);";
 
 	public LastReadDBHelper(Context context){
 		super(context, NAME, null, VERSION);
