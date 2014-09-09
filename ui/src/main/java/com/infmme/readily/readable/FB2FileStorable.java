@@ -18,7 +18,6 @@ import java.io.IOException;
 public class FB2FileStorable extends FileStorable {
 
 	private XMLParser parser;
-	private int openedTags = 0;
 
 	public FB2FileStorable(String path){
 		type = TYPE_FB2;
@@ -29,15 +28,10 @@ public class FB2FileStorable extends FileStorable {
 		super(that);
 		type = TYPE_FB2;
 		parser = that.getParser();
-		openedTags = that.getOpenedTags();
 	}
 
 	public XMLParser getParser() {
 		return parser;
-	}
-
-	public int getOpenedTags(){
-		return openedTags;
 	}
 
 	@Override
@@ -100,7 +94,7 @@ public class FB2FileStorable extends FileStorable {
 
 	@Override
 	protected void makeHeader(){
-		if (TextUtils.isEmpty(title) || title.equals("Cover")){
+		if (TextUtils.isEmpty(title)){
 			super.makeHeader();
 		} else {
 			header = title;

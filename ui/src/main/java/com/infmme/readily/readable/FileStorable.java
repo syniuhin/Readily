@@ -18,7 +18,7 @@ import java.util.List;
 abstract public class FileStorable extends Storable {
 
 	public static final HashMap<String, Integer> extensionsMap = new HashMap<String, Integer>();
-	public static final int BUFFER_SIZE = 512/*4096*/;
+	public static final int BUFFER_SIZE = 4096;
 	public static final int LAST_WORD_SUFFIX_SIZE = 10;
 	public static final int LAST_WORD_PREFIX_SIZE = 10;
 
@@ -43,7 +43,7 @@ abstract public class FileStorable extends Storable {
 		FileStorable fileStorable;
 		switch (getIntentType(intentPath)){
 			case Readable.TYPE_TXT:
-				fileStorable = new TxtFileStorable(intentPath);
+				fileStorable = new TxtFileStorable(intentPath, "UTF-8"); //TODO: make an option of it
 				break;
 			case Readable.TYPE_EPUB:
 				fileStorable = new EpubFileStorable(intentPath);
@@ -121,7 +121,9 @@ abstract public class FileStorable extends Storable {
 		result.readData();
 		if (TextUtils.isEmpty(result.getText())){
 			try {
-				result.getFileInputStream().close();
+				FileInputStream fis = result.getFileInputStream();
+				if (fis != null)
+					fis.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -131,5 +133,11 @@ abstract public class FileStorable extends Storable {
 		result.clearWordList();
 		result.setBytePosition(bytePosition + inputDataLength);
 		return result;
+	}
+
+	protected boolean doesHaveLetters(StringBuilder text){
+		for (Character ch : text.toString().toCharArray())
+			if (Character.isLetter(ch)) return true;
+		return false;
 	}
 }

@@ -19,6 +19,7 @@ public class EpubFileStorable extends FileStorable {
 	private Book book;
 	private List<Resource> resources;
 	private int index;
+	public static final int BUFFER_SIZE = 1024;
 
 	public EpubFileStorable(String path){
 		type = TYPE_EPUB;
@@ -29,8 +30,11 @@ public class EpubFileStorable extends FileStorable {
 		super(that);
 		type = TYPE_EPUB;
 		book = that.getBook();
-		resources = that.getResources();
-		index = that.getIndex();
+		List<Resource> oldResources = that.getResources();
+		int oldIndex = that.getIndex();
+		resources = oldResources.subList(oldIndex, oldResources.size());
+		index = 0;
+		inputDataLength = 0;
 	}
 
 	public Book getBook(){
@@ -57,8 +61,8 @@ public class EpubFileStorable extends FileStorable {
 			createRowData(context);
 			if (bytePosition > 0){
 				long passed = 0;
-				while (index < resources.size() && (passed += resources.get(index).getSize()) < bytePosition)
-					++index;
+				while (index < resources.size() && passed < bytePosition)
+					passed += resources.get(index++).getSize();
 			}
 			processed = true;
 		} catch (IOException e) {
@@ -69,7 +73,6 @@ public class EpubFileStorable extends FileStorable {
 	@Override
 	public void readData(){
 		setText("");
-		inputDataLength = 0;
 		try {
 			while (text.length() < BUFFER_SIZE && index < resources.size()){
 				Resource currentResource = resources.get(index++);
@@ -80,7 +83,7 @@ public class EpubFileStorable extends FileStorable {
 			e.printStackTrace();
 		}
 		text = new StringBuilder(parseEpub(text.toString()));
-		if (index < resources.size() && TextUtils.isEmpty(text)){ readData(); }
+		if (index < resources.size() && (TextUtils.isEmpty(text) || !doesHaveLetters(text))){ readData(); } //bad check actually
 	}
 
 	@Override
@@ -91,7 +94,7 @@ public class EpubFileStorable extends FileStorable {
 	private String parseEpub(String text){
 		try {
 			Document doc = Jsoup.parse(text);
-			if (TextUtils.isEmpty(header)){ header = doc.title(); }
+			if (TextUtils.isEmpty(header)){ header = doc.select("book-title").text(); }
 			return doc.select("p").text();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -101,6 +104,6 @@ public class EpubFileStorable extends FileStorable {
 
 	@Override
 	protected void makeHeader(){
-		if (TextUtils.isEmpty(title) || title.equals("Cover")){ super.makeHeader(); } else { header = title; }
+		if (TextUtils.isEmpty(title)){ super.makeHeader(); } else { header = title; }
 	}
 }

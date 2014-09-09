@@ -11,10 +11,12 @@ import java.io.IOException;
 public class TxtFileStorable extends FileStorable {
 
 	private byte[] inputData = new byte[BUFFER_SIZE];
+	private String encoding;
 
-	public TxtFileStorable(String path){
+	public TxtFileStorable(String path, String encoding){
 		type = TYPE_TXT;
 		this.path = path;
+		this.encoding = encoding;
 	}
 
 	public TxtFileStorable(TxtFileStorable that){
@@ -44,7 +46,8 @@ public class TxtFileStorable extends FileStorable {
 			inputDataLength = fileInputStream.read(inputData);
 			if (inputDataLength != -1){
 				//TODO: review encoding
-				setText(new StringBuilder((new String(inputData, "UTF-8")).substring(0, (int) inputDataLength)));
+				setText(new StringBuilder((new String(inputData, encoding)).
+						substring(0, (int) inputDataLength)));
 			} else {
 				setText("");
 			}
