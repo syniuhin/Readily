@@ -26,9 +26,10 @@ public class LastReadService extends IntentService {
 		super("LastReadService");
 	}
 
-	private static Intent createIntent(Context context, Storable storable, int operation){
+	private static Intent createIntent(Context context, Storable storable, int operation, int progress){
 		Intent intent = new Intent(context, LastReadService.class);
 		storable.putDataInIntent(intent);
+		intent.putExtra(Constants.EXTRA_PERCENT, (100 - progress) + "%");
 		intent.putExtra(Constants.EXTRA_DB_OPERATION, operation);
 		return intent;
 	}
@@ -44,9 +45,9 @@ public class LastReadService extends IntentService {
 		}
 	}
 
-	public static void start(Context context, Storable storable, int operation){
+	public static void start(Context context, Storable storable, int operation, int progress){
 		if (context != null)
-			context.startService(createIntent(context, storable, operation));
+			context.startService(createIntent(context, storable, operation, progress));
 	}
 
 	public static void start(Context context, String path, int operation){

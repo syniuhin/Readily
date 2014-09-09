@@ -89,7 +89,6 @@ abstract public class Storable extends Readable {
 		intent.putExtra(Constants.EXTRA_PATH, path);
 		intent.putExtra(Constants.EXTRA_POSITION, position);
 		intent.putExtra(Constants.EXTRA_BYTE_POSITION, bytePosition);
-		intent.putExtra(Constants.EXTRA_PERCENT, 100 - (int) (position * 100f / wordList.size() + .5f) + "%");
 	}
 
 	protected void makeHeader(){

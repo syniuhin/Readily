@@ -8,6 +8,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,7 +42,9 @@ public class FB2FileStorable extends FileStorable {
 			return;
 		}
 		try {
-			fileInputStream = new FileInputStream(path);
+			File file = new File(path);
+			fileInputStream = new FileInputStream(file);
+			fileSize = file.length();
 			createRowData(context);
 			if (bytePosition > 0)
 				fileInputStream.skip(bytePosition);

@@ -8,6 +8,7 @@ import nl.siegmann.epublib.epub.EpubReader;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -55,6 +56,8 @@ public class EpubFileStorable extends FileStorable {
 			if (path == null){
 				return;
 			}
+			File file = new File(path);
+			fileSize = file.length();
 			book = (new EpubReader()).readEpubLazy(path, "UTF-8");
 			resources = book.getContents();
 

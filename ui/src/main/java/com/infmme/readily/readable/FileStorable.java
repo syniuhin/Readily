@@ -25,6 +25,7 @@ abstract public class FileStorable extends Storable {
 	protected FileInputStream fileInputStream;
 	protected String lastWord = "";
 	protected long inputDataLength;
+	protected long fileSize;
 
 	static{
 		extensionsMap.put(Constants.EXTENSION_TXT, Readable.TYPE_TXT);
@@ -76,6 +77,10 @@ abstract public class FileStorable extends Storable {
 
 	public FileInputStream getFileInputStream(){
 		return fileInputStream;
+	}
+
+	public long getFileSize(){
+		return fileSize;
 	}
 
 	/**

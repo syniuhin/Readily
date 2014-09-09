@@ -2,6 +2,7 @@ package com.infmme.readily.readable;
 
 import android.content.Context;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
@@ -30,7 +31,9 @@ public class TxtFileStorable extends FileStorable {
 			if (path == null){
 				return;
 			}
-			fileInputStream = new FileInputStream(path);
+			File file = new File(path);
+			fileSize = file.length();
+			fileInputStream = new FileInputStream(file);
 			createRowData(context);
 			if (bytePosition > 0)
 				fileInputStream.skip(bytePosition);

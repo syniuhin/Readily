@@ -73,10 +73,15 @@ public class ReaderFragment extends Fragment {
 	private Thread parserThread;
 	private ReaderTask readerTask;
 	private MonitorObject monitorObject;
+	private long fileSize;
+	private long bytePosition;
 	//receiving status
 	private Boolean parserReceived = false;
 	private String primaryTextColor = LIGHT_COLOR_SET[0];
 	private String secondaryTextColor = LIGHT_COLOR_SET[1];
+	private boolean isFileStorable;
+	private boolean isStorable;
+	private int progress;
 
 	@Override
 	public void onAttach(Activity activity){
@@ -455,6 +460,9 @@ public class ReaderFragment extends Fragment {
 		wordList = readable.getWordList();
 		emphasisList = readable.getEmphasisList();
 		delayList = readable.getDelayList();
+		if (isStorable = isStorable(readable)){
+			bytePosition = ((Storable) readable).getBytePosition();
+		}
 	}
 
 	/**
@@ -493,7 +501,7 @@ public class ReaderFragment extends Fragment {
 		handler.postDelayed(anim, Constants.SECOND);
 	}
 
-	private boolean isStorable(Readable readable){
+	private boolean canBeSaved(Readable readable){
 		return parserReceived &&
 				readable != null &&
 				settingsBundle != null &&
@@ -501,7 +509,11 @@ public class ReaderFragment extends Fragment {
 				settingsBundle.isCachingEnabled() &&
 */
 				!TextUtils.isEmpty(readable.getPath()) &&
-				(readable.getType() == Readable.TYPE_FILE ||
+				isStorable(readable);
+	}
+
+	private boolean isStorable(Readable readable){
+		return (readable.getType() == Readable.TYPE_FILE ||
 						readable.getType() == Readable.TYPE_TXT ||
 						readable.getType() == Readable.TYPE_FB2 ||
 						readable.getType() == Readable.TYPE_EPUB ||
@@ -518,7 +530,7 @@ public class ReaderFragment extends Fragment {
 	@Override
 	public void onStop(){
 		Activity activity = getActivity();
-		if (isStorable(readable) && reader != null){
+		if (canBeSaved(readable) && reader != null){
 			reader.performPause();
 			Storable storable = (Storable) readable;
 			int operation;
@@ -535,7 +547,7 @@ public class ReaderFragment extends Fragment {
 						? Constants.DB_OPERATION_DELETE
 						: Constants.DB_OPERATION_INSERT;
 			}
-			LastReadService.start(activity, storable, operation);
+			LastReadService.start(activity, storable, operation, progress);
 		}
 
 		settingsBundle.updatePreferences();
@@ -606,11 +618,13 @@ public class ReaderFragment extends Fragment {
 		private int position;
 		private boolean completed;
 		private boolean chunkReady;
+		private int approxCharCount;
 
 		public Reader(Handler readerHandler, int position){
 			this.readerHandler = readerHandler;
 			this.position = position;
 			paused = 1;
+			approxCharCount = 0;
 		}
 
 		@Override
@@ -717,7 +731,11 @@ public class ReaderFragment extends Fragment {
 			leftTextView.setText(getLeftFormattedText(pos));
 			rightTextView.setText(getRightFormattedText(pos));
 
-			progressBar.setProgress((int) (100f / wordList.size() * (pos + 1) + .5f));
+			approxCharCount += wordList.get(pos).length();
+			progress = (isFileStorable)
+					? Math.min((int) (100f * (bytePosition + approxCharCount) / fileSize + .5f), 99)
+					: (int) (100f / wordList.size() * (pos + 1) + .5f);
+			progressBar.setProgress(progress);
 			hideNotification(false);
 		}
 	}
@@ -741,6 +759,9 @@ public class ReaderFragment extends Fragment {
 					synchronized (parserDeque){
 						if (!currentReadable.isProcessed()){
 							currentReadable.process(getActivity());
+							if (isFileStorable = isFileStorable(readable)){
+								fileSize = ((FileStorable) readable).getFileSize();
+							}
 							currentReadable.readData();
 							TextParser toAdd = TextParser.newInstance(currentReadable, settingsBundle);
 							toAdd.process();
@@ -775,7 +796,7 @@ public class ReaderFragment extends Fragment {
 			Readable currentReadable = current.getReadable();
 			TextParser result = TextParser.newInstance(currentReadable.getNext(), settingsBundle);
 			result.process();
-			if (isFileStorable(currentReadable)){
+			if (isFileStorable){
 				((FileStorable) currentReadable).copyListPrefix(result.getReadable());
 			}
 			return result;
