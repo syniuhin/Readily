@@ -151,7 +151,7 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/words_read"
+                android:text="@string/percent_left"
                 android:id="@+id/text_view_info_position"
                 android:layout_toLeftOf="@+id/text_view_info_position_value"
                 android:layout_centerVertical="true"

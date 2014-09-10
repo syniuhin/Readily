@@ -338,12 +338,12 @@ public class ReaderFragment extends Fragment {
 	}
 
 	private void showInfo(Reader reader){
-		if (reader != null && settingsBundle != null) showInfo(settingsBundle.getWPM(), reader.getPosition());
+		if (reader != null && settingsBundle != null) showInfo(settingsBundle.getWPM(), (100 - progress) + "%");
 	}
 
-	private void showInfo(int wpm, int position){
+	private void showInfo(int wpm, String percentLeft){
 		wpmTextView.setText(wpm + " WPM");
-		positionTextView.setText(Integer.toString(position));
+		positionTextView.setText(percentLeft);
 
 		if (infoHided){
 			YoYo.with(Techniques.FadeIn).
@@ -407,8 +407,8 @@ public class ReaderFragment extends Fragment {
 						readerLayout.setVisibility(View.VISIBLE);
 						if (initialPosition < wordList.size()){
 							showNotification(R.string.tap_to_start);
-							showInfo(reader);
 							reader.updateView(initialPosition);
+							showInfo(reader);
 						} else {
 							showNotification(R.string.reading_is_completed);
 							reader.setCompleted(true);

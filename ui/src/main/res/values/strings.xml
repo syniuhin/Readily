@@ -37,7 +37,7 @@
     <string name="pause">Pause</string>
     <string name="reading_is_completed">Tap to exit</string>
     <string name="speed">Speed: </string>
-    <string name="words_read">Words read: </string>
+    <string name="percent_left">Remaining: </string>
     <string name="email_app_not_found">Email app not found</string>
 
     <!-- Preferences.xml -->
