@@ -45,9 +45,14 @@ public class ClipboardReadable extends Readable {
 	}
 
 	private String paste(ClipboardManager clipboard){
-		ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
-		CharSequence pasteData = item.getText();
-		if (pasteData != null){ return pasteData.toString(); }
+		ClipData clipData = clipboard.getPrimaryClip();
+		if (clipData != null && clipData.getItemCount() > 0){
+			ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
+			CharSequence pasteData = item.getText();
+			if (pasteData != null){
+				return pasteData.toString();
+			}
+		}
 		return null;
 	}
 }
