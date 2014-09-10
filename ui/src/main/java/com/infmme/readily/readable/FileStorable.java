@@ -93,21 +93,18 @@ abstract public class FileStorable extends Storable {
 		text = new StringBuilder(textString.substring(0, index));
 	}
 
-	public void copyListSuffix(Readable previous){
-		wordList.clear();
-		List<String> previousWordList = previous.getWordList();
-		ArrayList<String> temp =
-				new ArrayList<String>(
-						previousWordList.subList(Math.max(0, previousWordList.size() - LAST_WORD_SUFFIX_SIZE),
-																				previousWordList.size()));
-		temp.addAll(wordList);
-		wordList = temp;
-	}
-
 	public void copyListPrefix(Readable next){
 		List<String> nextWordList = next.getWordList();
 		wordList.addAll(new ArrayList<String>(nextWordList.subList(0,
 				Math.min(LAST_WORD_PREFIX_SIZE, nextWordList.size()))));
+
+		List<Integer> nextEmphasisList = next.getEmphasisList();
+		emphasisList.addAll(new ArrayList<Integer>(nextEmphasisList.subList(0,
+				Math.min(LAST_WORD_PREFIX_SIZE, nextEmphasisList.size()))));
+
+		List<Integer> nextDelayList = next.getDelayList();
+		delayList.addAll(new ArrayList<Integer>(nextDelayList.subList(0,
+				Math.min(LAST_WORD_PREFIX_SIZE, nextDelayList.size()))));
 	}
 
 	public void clearWordList(){

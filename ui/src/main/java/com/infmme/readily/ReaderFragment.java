@@ -36,7 +36,7 @@ import java.util.List;
 public class ReaderFragment extends Fragment {
 
 	private static final int NOTIF_APPEARING_DURATION = 300;
-	private static final int NOTIF_SHOWING_LENGTH = 1500; //time in ms for which speedo becomes visible
+	private static final int NOTIF_SHOWING_LENGTH = 1500; //time in ms for which notification becomes visible
 	private static final int READER_PULSE_DURATION = 400;
 	private static final float POINTER_LEFT_PADDING_COEFFICIENT = 5f / 18f;
 	private static final String[] LIGHT_COLOR_SET = new String[]{"#0A0A0A", "#AAAAAA"};
@@ -80,7 +80,6 @@ public class ReaderFragment extends Fragment {
 	private String primaryTextColor = LIGHT_COLOR_SET[0];
 	private String secondaryTextColor = LIGHT_COLOR_SET[1];
 	private boolean isFileStorable;
-	private boolean isStorable;
 	private int progress;
 
 	@Override
@@ -460,7 +459,7 @@ public class ReaderFragment extends Fragment {
 		wordList = readable.getWordList();
 		emphasisList = readable.getEmphasisList();
 		delayList = readable.getDelayList();
-		if (isStorable = isStorable(readable)){
+		if (isStorable(readable)){
 			bytePosition = ((Storable) readable).getBytePosition();
 		}
 	}
@@ -617,7 +616,7 @@ public class ReaderFragment extends Fragment {
 		private int paused;
 		private int position;
 		private boolean completed;
-		private boolean chunkReady;
+		private boolean chunkAvailable;
 		private int approxCharCount;
 
 		public Reader(Handler readerHandler, int position){
@@ -629,8 +628,8 @@ public class ReaderFragment extends Fragment {
 
 		@Override
 		public void run(){
-			if ((position < wordList.size() && !chunkReady) ||
-					(position < wordList.size() - FileStorable.LAST_WORD_SUFFIX_SIZE && chunkReady)){
+			if ((position < wordList.size() && !chunkAvailable) ||
+					(position < wordList.size() - FileStorable.LAST_WORD_SUFFIX_SIZE && chunkAvailable)){
 				if (wordList.size() - position < 100 && monitorObject.isPaused()){
 					try {
 						monitorObject.resumeTask();
@@ -644,10 +643,10 @@ public class ReaderFragment extends Fragment {
 					readerHandler.postDelayed(this, calcDelay());
 					position++;
 				}
-			} else if (chunkReady){
+			} else if (chunkAvailable){
 				changeParser(readerTask.removeDequeHead());
 				position = 0;
-				chunkReady = false;
+				chunkAvailable = readerTask.isChunkAvailable();
 				readerHandler.postDelayed(this, calcDelay());
 			} else {
 				showNotification(R.string.reading_is_completed);
@@ -656,8 +655,8 @@ public class ReaderFragment extends Fragment {
 			}
 		}
 
-		public void setChunkReady(boolean chunkReady){
-			this.chunkReady = chunkReady;
+		public void setChunkAvailable(boolean chunkAvailable){
+			this.chunkAvailable = chunkAvailable;
 		}
 
 		public int getPosition(){
@@ -665,7 +664,7 @@ public class ReaderFragment extends Fragment {
 		}
 
 		public void setPosition(int position){
-			if (wordList != null &&
+			if (wordList != null && emphasisList != null && delayList != null &&
 					position < wordList.size() && position >= 0){
 				this.position = position;
 				updateView(position);
@@ -727,6 +726,8 @@ public class ReaderFragment extends Fragment {
 		}
 
 		private void updateView(int pos){
+			if (pos >= wordList.size())
+				return;
 			currentTextView.setText(getCurrentFormattedText(pos));
 			leftTextView.setText(getLeftFormattedText(pos));
 			rightTextView.setText(getRightFormattedText(pos));
@@ -775,7 +776,7 @@ public class ReaderFragment extends Fragment {
 					}
 					if (reader == null){ startReader(removeDequeHead()); }
 					if (reader != null){
-						reader.setChunkReady(parserDeque.size() > 1);
+						reader.setChunkAvailable(isChunkAvailable());
 						object.pauseTask();
 					} else {
 						break;
@@ -790,6 +791,10 @@ public class ReaderFragment extends Fragment {
 			synchronized (parserDeque){
 				return parserDeque.pollFirst();
 			}
+		}
+
+		public boolean isChunkAvailable(){
+			return parserDeque.size() > 1;
 		}
 
 		private TextParser getNextParser(TextParser current){

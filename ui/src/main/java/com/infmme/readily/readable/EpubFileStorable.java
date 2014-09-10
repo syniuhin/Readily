@@ -86,7 +86,9 @@ public class EpubFileStorable extends FileStorable {
 			e.printStackTrace();
 		}
 		text = new StringBuilder(parseEpub(text.toString()));
-		if (index < resources.size() && (TextUtils.isEmpty(text) || !doesHaveLetters(text))){ readData(); } //bad check actually
+		if (index < resources.size() && (TextUtils.isEmpty(text) || !doesHaveLetters(text))){ //bad check actually
+			readData();
+		}
 	}
 
 	@Override

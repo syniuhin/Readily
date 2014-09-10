@@ -61,7 +61,6 @@ public class TextParser implements Serializable, Callable<TextParser> {
 	private int lengthPreference;
 	private List<Integer> delayCoefficients;
 	private int resultCode;
-	private ArrayList<Integer> charIndexes;
 
 	/**
 	 * stackOverFlow guys told about it
