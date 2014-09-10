@@ -271,6 +271,10 @@ public class TextParser implements Serializable, Callable<TextParser> {
 
 	protected int measureWord(String word){
 		if (word.length() == 0){ return delayCoefficients.get(0); }
+		if ((word.length() == 2 && word.equals("не")) ||
+				(word.length() == 3 && word.equals("not"))){
+			return delayCoefficients.get(5);
+		}
 		int res = 0;
 		for (char ch : word.toCharArray()){
 			int tempRes = delayCoefficients.get(0);
@@ -304,6 +308,7 @@ public class TextParser implements Serializable, Callable<TextParser> {
 				case '\n':
 					tempRes = delayCoefficients.get(4);
 			}
+			res = Math.max(res, tempRes);
 			res = Math.max(res, tempRes);
 		}
 		return res;

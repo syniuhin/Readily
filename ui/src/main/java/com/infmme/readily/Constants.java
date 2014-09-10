@@ -61,6 +61,6 @@ public class Constants {
 								BEGINNING_OF_PARAGRAPH};
 		*/
 		public static final String[] STR_PUNCTUATION_DEFAULTS =
-				{"10", "15", "20", "18", "20"};
+				{"10", "15", "20", "18", "20", "18"};
 	}
 }
