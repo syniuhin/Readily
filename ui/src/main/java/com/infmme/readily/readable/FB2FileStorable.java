@@ -2,11 +2,9 @@ package com.infmme.readily.readable;
 
 import android.content.Context;
 import android.text.TextUtils;
+import com.infmme.readily.Constants;
 import com.infmme.readily.xmlparser.XMLEvent;
 import com.infmme.readily.xmlparser.XMLParser;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -43,6 +41,10 @@ public class FB2FileStorable extends FileStorable {
 		}
 		try {
 			File file = new File(path);
+			FileInputStream encodingHelper = new FileInputStream(file);
+			encoding = guessCharset(encodingHelper);
+			encodingHelper.close();
+
 			fileInputStream = new FileInputStream(file);
 			fileSize = file.length();
 			createRowData(context);
@@ -50,7 +52,7 @@ public class FB2FileStorable extends FileStorable {
 				fileInputStream.skip(bytePosition);
 
 			parser = new XMLParser();
-			parser.setInput(fileInputStream, "UTF-8");
+			parser.setInput(fileInputStream, encoding);
 			processed = true;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

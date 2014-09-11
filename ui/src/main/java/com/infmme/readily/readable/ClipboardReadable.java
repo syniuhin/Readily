@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Looper;
+import android.text.TextUtils;
 
 /**
  * Created by infm on 6/12/14. Enjoy ;)
@@ -34,7 +35,10 @@ public class ClipboardReadable extends Readable {
 
 	@Override
 	public void readData(){
-		text.append(paste(clipboard));
+		if (TextUtils.isEmpty(text))
+			text.append(paste(clipboard));
+		else
+			setText("");
 	}
 
 	@Override

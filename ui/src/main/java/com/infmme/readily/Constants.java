@@ -35,6 +35,9 @@ public class Constants {
 	public static final String EXTENSION_EPUB = ".epub";
 	public static final String EXTENSION_FB2 = ".fb2";
 
+	public static final String DEFAULT_ENCODING = "UTF-8";
+	public static final int ENCODING_HELPER_BUFFER_SIZE = 1024;
+
 	public static class Preferences {
 		public static final String NEWCOMER = "is_anybody_out_there?";
 

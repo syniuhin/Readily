@@ -1,6 +1,7 @@
 package com.infmme.readily.readable;
 
 import android.content.Context;
+import com.infmme.readily.Constants;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,12 +13,10 @@ import java.io.IOException;
 public class TxtFileStorable extends FileStorable {
 
 	private byte[] inputData = new byte[BUFFER_SIZE];
-	private String encoding;
 
-	public TxtFileStorable(String path, String encoding){
+	public TxtFileStorable(String path){
 		type = TYPE_TXT;
 		this.path = path;
-		this.encoding = encoding;
 	}
 
 	public TxtFileStorable(TxtFileStorable that){
@@ -33,6 +32,10 @@ public class TxtFileStorable extends FileStorable {
 			}
 			File file = new File(path);
 			fileSize = file.length();
+			FileInputStream encodingHelper = new FileInputStream(file);
+			encoding = guessCharset(encodingHelper);
+			encodingHelper.close();
+
 			fileInputStream = new FileInputStream(file);
 			createRowData(context);
 			if (bytePosition > 0)

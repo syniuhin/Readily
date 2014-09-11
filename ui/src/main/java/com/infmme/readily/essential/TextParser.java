@@ -266,7 +266,7 @@ public class TextParser implements Serializable, Callable<TextParser> {
 		}
 		StringBuilder sb = new StringBuilder();
 		for (String s : res) sb.append(s).append(" ");
-		readable.setText(sb.substring(0, sb.length() - 1));
+		readable.setText(sb.substring(0, Math.max(sb.length() ,sb.length() - 1)));
 	}
 
 	protected int measureWord(String word){

@@ -109,7 +109,7 @@ abstract public class Readable implements Serializable {
 				readable = FileStorable.createFileStorable(intentPath);
 				break;
 			case TYPE_TXT:
-				readable = new TxtFileStorable(intentPath, "UTF-8");
+				readable = new TxtFileStorable(intentPath);
 				break;
 			case TYPE_EPUB:
 				readable = new EpubFileStorable(intentPath);

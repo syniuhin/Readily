@@ -5,9 +5,11 @@ import android.net.Uri;
 import android.text.TextUtils;
 import com.infmme.readily.Constants;
 import com.ipaulpro.afilechooser.utils.FileUtils;
+import org.mozilla.universalchardet.UniversalDetector;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +28,7 @@ abstract public class FileStorable extends Storable {
 	protected String lastWord = "";
 	protected long inputDataLength;
 	protected long fileSize;
+	protected String encoding = "";
 
 	static{
 		extensionsMap.put(Constants.EXTENSION_TXT, Readable.TYPE_TXT);
@@ -38,13 +41,15 @@ abstract public class FileStorable extends Storable {
 	public FileStorable(FileStorable that){
 		super(that);
 		fileInputStream = that.getFileInputStream();
+		fileSize = that.getFileSize();
+		encoding = that.getEncoding();
 	}
 
 	public static FileStorable createFileStorable(String intentPath){
 		FileStorable fileStorable;
 		switch (getIntentType(intentPath)){
 			case Readable.TYPE_TXT:
-				fileStorable = new TxtFileStorable(intentPath, "UTF-8"); //TODO: make an option of it
+				fileStorable = new TxtFileStorable(intentPath);
 				break;
 			case Readable.TYPE_EPUB:
 				fileStorable = new EpubFileStorable(intentPath);
@@ -75,12 +80,31 @@ abstract public class FileStorable extends Storable {
 		return extensionsMap.containsKey(extension);
 	}
 
+	public static String guessCharset(InputStream is) throws IOException{
+		UniversalDetector detector = new UniversalDetector(null);
+		byte[] buf = new byte[Constants.ENCODING_HELPER_BUFFER_SIZE];
+		int nread;
+		while ((nread = is.read(buf)) > 0 && !detector.isDone()) {
+			detector.handleData(buf, 0, nread);
+		}
+		detector.dataEnd();
+		String encoding = detector.getDetectedCharset();
+		detector.reset();
+		if (encoding != null)
+			return encoding;
+		return Constants.DEFAULT_ENCODING;
+	}
+
 	public FileInputStream getFileInputStream(){
 		return fileInputStream;
 	}
 
 	public long getFileSize(){
 		return fileSize;
+	}
+
+	public String getEncoding(){
+		return encoding;
 	}
 
 	/**

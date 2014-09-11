@@ -2,6 +2,7 @@ package com.infmme.readily.readable;
 
 import android.content.Context;
 import android.text.TextUtils;
+import com.infmme.readily.Constants;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubReader;
@@ -9,8 +10,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.zip.ZipInputStream;
 
 /**
  * Created by infm on 7/2/14. Enjoy ;)
@@ -58,7 +61,9 @@ public class EpubFileStorable extends FileStorable {
 			}
 			File file = new File(path);
 			fileSize = file.length();
-			book = (new EpubReader()).readEpubLazy(path, "UTF-8");
+			encoding = Constants.DEFAULT_ENCODING;
+
+			book = (new EpubReader()).readEpubLazy(path, encoding);
 			resources = book.getContents();
 
 			createRowData(context);
