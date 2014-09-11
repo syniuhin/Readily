@@ -180,10 +180,8 @@ public class CachedFilesAdapter extends SimpleCursorAdapter {
 	private void buildEditorDialog(final Context context, final MiniReadable readable){
 		View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_editor, null);
 		final EditText headerView = (EditText) dialogView.findViewById(R.id.editTextHeader);
-		final EditText positionView = (EditText) dialogView.findViewById(R.id.editTextPosition);
 
 		headerView.setText(readable.getHeader());
-		positionView.setText(readable.getPosition().toString());
 
 		new AlertDialog.Builder(context).
 				setTitle(R.string.editor_dialog_title).
@@ -194,9 +192,6 @@ public class CachedFilesAdapter extends SimpleCursorAdapter {
 									  public void onClick(DialogInterface dialog, int which){
 										  String nHeader = headerView.getText().toString();
 										  if (!TextUtils.isEmpty(nHeader)){ readable.setHeader(nHeader); }
-
-										  int nPosition = Integer.parseInt(positionView.getText().toString());
-										  if (nPosition >= 0){ readable.setPosition(nPosition); }
 
 										  Intent intent = MiniReadable.createDBServiceIntent(context, readable);
 										  intent.putExtra(Constants.EXTRA_DB_OPERATION, Constants.DB_OPERATION_INSERT);
@@ -232,8 +227,7 @@ public class CachedFilesAdapter extends SimpleCursorAdapter {
 		((TextView) view.findViewById(R.id.textViewHeader)).setText(readable.getHeader());
 		((TextView) view.findViewById(R.id.textViewPath)).setText(readable.getPath());
 		((TextView) view.findViewById(R.id.textViewPosition)).
-				setText(readable.getPosition().toString() + " (" + readable.getPercent() + " " +
-								context.getResources().getString(R.string.sth_left) + ")");
+				setText(readable.getPercent());
 		return view;
 	}
 }
