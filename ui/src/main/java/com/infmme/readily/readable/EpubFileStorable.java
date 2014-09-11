@@ -75,19 +75,23 @@ public class EpubFileStorable extends FileStorable {
 
 	@Override
 	public void readData(){
-		setText("");
-		try {
-			while (text.length() < BUFFER_SIZE && index < resources.size()){
-				Resource currentResource = resources.get(index++);
-				inputDataLength += currentResource.getSize();
-				text.append(new String(currentResource.getData()));
+		int cycleCount = 0;
+		while (cycleCount < 5){
+			setText("");
+			try {
+				while (text.length() < BUFFER_SIZE && index < resources.size()){
+					Resource currentResource = resources.get(index++);
+					inputDataLength += currentResource.getSize();
+					text.append(new String(currentResource.getData()));
+				}
+			} catch (IOException e){
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		text = new StringBuilder(parseEpub(text.toString()));
-		if (index < resources.size() && (TextUtils.isEmpty(text) || !doesHaveLetters(text))){ //bad check actually
-			readData();
+			text = new StringBuilder(parseEpub(text.toString()));
+			if (index >= resources.size() || (!TextUtils.isEmpty(text) && doesHaveLetters(text))){
+				break;
+			}
+			cycleCount++;
 		}
 	}
 
