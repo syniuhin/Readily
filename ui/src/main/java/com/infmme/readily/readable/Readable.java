@@ -64,22 +64,6 @@ abstract public class Readable implements Serializable {
 		emphasisList = new ArrayList<Integer>(that.getEmphasisList());
 	}
 
-	public static void cloneInstance(Readable receiver, Readable that){
-		receiver.setTextBuilder(that.getTextBuilder());
-		receiver.setHeader(that.getHeader());
-		receiver.setSeconds(that.getSeconds());
-		receiver.setPath(that.getPath());
-		receiver.setPosition(that.getPosition());
-		receiver.setType(that.getType());
-		receiver.setRowData(that.getRowData());
-		receiver.setProcessFailed(that.isProcessFailed());
-		receiver.setProcessed(that.isProcessed());
-
-		receiver.setWordList(that.getWordList());
-		receiver.setDelayList(that.getDelayList());
-		receiver.setEmphasisList(that.getEmphasisList());
-	}
-
 	public static Readable createReadable(Context context, Bundle bundle){
 		Readable readable = null;
 		if (bundle != null){
@@ -100,7 +84,7 @@ abstract public class Readable implements Serializable {
 		Readable readable;
 		switch (intentType){
 			case TYPE_RAW:
-				readable = new RawReadable(intentText, false); //currently it's only for test
+				readable = new RawReadable(intentText, false); //currently it's hold only for test
 				break;
 			case TYPE_CLIPBOARD:
 				readable = new ClipboardReadable();
@@ -124,26 +108,10 @@ abstract public class Readable implements Serializable {
 						!TextUtils.isEmpty(link = TextParser.findLink(TextParser.compilePattern(), intentText))){
 					readable = new NetStorable(link);
 				} else {
-					readable = new RawReadable(intentText, cacheEnabled); //neutral value, actually
+					readable = new RawReadable(intentText, cacheEnabled); //neutral value
 				}
 		}
 		return readable;
-	}
-
-	public void cloneInstanceTo(Readable receiver){
-		receiver.setTextBuilder(getTextBuilder());
-		receiver.setHeader(getHeader());
-		receiver.setSeconds(getSeconds());
-		receiver.setPath(getPath());
-		receiver.setPosition(getPosition());
-		receiver.setType(getType());
-		receiver.setRowData(getRowData());
-		receiver.setProcessFailed(isProcessFailed());
-		receiver.setProcessed(isProcessed());
-
-		receiver.setWordList(getWordList());
-		receiver.setDelayList(getDelayList());
-		receiver.setEmphasisList(getEmphasisList());
 	}
 
 	abstract public void process(Context context);
@@ -198,14 +166,6 @@ abstract public class Readable implements Serializable {
 
 	public void setHeader(String header){
 		this.header = header;
-	}
-
-	public Long getDateChanged(){
-		return seconds;
-	}
-
-	public void setDateChanged(Long seconds){
-		this.seconds = seconds;
 	}
 
 	public String getPath(){

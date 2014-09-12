@@ -68,7 +68,6 @@ public class ReaderFragment extends Fragment {
 	private List<String> wordList;
 	private List<Integer> emphasisList;
 	private List<Integer> delayList;
-	private TextParser parser;
 	private SettingsBundle settingsBundle;
 	private Thread parserThread;
 	private ReaderTask readerTask;
@@ -136,10 +135,6 @@ public class ReaderFragment extends Fragment {
 
 	private void setCurrentTime(long localTime){
 		this.localTime = localTime;
-	}
-
-	public TextParser getParser(){
-		return parser;
 	}
 
 	private Spanned getLeftFormattedText(int pos){
@@ -452,7 +447,6 @@ public class ReaderFragment extends Fragment {
 	}
 
 	private void changeParser(final TextParser parser){
-		this.parser = parser;
 		parserReceived = true;
 
 		readable = parser.getReadable();
@@ -722,7 +716,9 @@ public class ReaderFragment extends Fragment {
 		}
 
 		private int calcDelay(){
-			return delayList.get(position) * Math.round(100 * 60 * 1f / settingsBundle.getWPM());
+			return (delayList.isEmpty())
+					? 10 * Math.round(100 * 60 * 1f / settingsBundle.getWPM())
+					: delayList.get(position) * Math.round(100 * 60 * 1f / settingsBundle.getWPM());
 		}
 
 		private void updateView(int pos){

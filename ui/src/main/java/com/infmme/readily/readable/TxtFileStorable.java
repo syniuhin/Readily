@@ -49,11 +49,11 @@ public class TxtFileStorable extends FileStorable {
 	@Override
 	public void readData(){
 		try {
-			inputDataLength = fileInputStream.read(inputData);
-			if (inputDataLength != -1){
-				//TODO: review encoding
-				setText(new StringBuilder((new String(inputData, encoding)).
-						substring(0, (int) inputDataLength)));
+			if ((inputDataLength = fileInputStream.read(inputData)) != -1){
+				String toSet = new String(inputData, encoding);
+				if (inputDataLength < toSet.length())
+					toSet = toSet.substring(0, (int) inputDataLength);
+				setText(new StringBuilder(toSet));
 			} else {
 				setText("");
 			}

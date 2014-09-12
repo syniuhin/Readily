@@ -52,17 +52,6 @@ public class Constants {
 		public static final String FEEDBACK = "pref_feedback";
 		public static final String FONT_SIZE = "pref_font_size";
 		public static final String DARK_THEME = "pref_dark_theme";
-		/*
-				public static final String PUNCTUATION_DEFAULT = "pref_punctuationDefault";
-				public static final String COMA_OR_LONG = "pref_comaOrLong";
-				public static final String END_OF_SENTENCE = "pref_endOfSentence";
-				public static final String DASH_OR_COLON = "pref_dashOrColon";
-				public static final String BEGINNING_OF_PARAGRAPH = "pref_begOfPar";
-
-				public static final String[] STR_PUNCTUATION_PREFS =
-						{PUNCTUATION_DEFAULT, COMA_OR_LONG, END_OF_SENTENCE, DASH_OR_COLON,
-								BEGINNING_OF_PARAGRAPH};
-		*/
 		public static final String[] STR_PUNCTUATION_DEFAULTS =
 				{"10", "15", "20", "18", "20", "18"};
 	}

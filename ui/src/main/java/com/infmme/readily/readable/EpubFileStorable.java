@@ -23,7 +23,7 @@ public class EpubFileStorable extends FileStorable {
 	private Book book;
 	private List<Resource> resources;
 	private int index;
-	public static final int BUFFER_SIZE = 1024;
+	public static final int BUFFER_SIZE = 1024; //epubs are larger, so buffer should be smaller
 
 	public EpubFileStorable(String path){
 		type = TYPE_EPUB;
