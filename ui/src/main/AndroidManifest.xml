@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.infmme.readily"
+    package="com.infmme.readilyapp"
     android:installLocation="preferExternal" >
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -13,7 +13,7 @@
         android:label="@string/title_activity_main"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.infmme.readily.MainActivity"
+            android:name="com.infmme.readilyapp.MainActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_main" >
             <intent-filter>
@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.infmme.readily.ReceiverActivity"
+            android:name="com.infmme.readilyapp.ReceiverActivity"
             android:clearTaskOnLaunch="true"
             android:configChanges="orientation|screenSize"
             android:excludeFromRecents="true"
@@ -42,8 +42,8 @@
         </activity>
 
         <provider
-            android:name="com.infmme.readily.database.LastReadContentProvider"
-            android:authorities="com.infmme.readily.provider"
+            android:name="com.infmme.readilyapp.database.LastReadContentProvider"
+            android:authorities="com.infmme.readilyapp.provider"
             android:enabled="true"
             android:exported="false" />
 
@@ -52,10 +52,10 @@
             android:value="0db4f67b016e755d7cc9ec045205dcab746e7c46" />
 
         <service
-            android:name="com.infmme.readily.service.LastReadService"
+            android:name="com.infmme.readilyapp.service.LastReadService"
             android:exported="false" />
         <service
-            android:name="com.infmme.readily.service.StorageCheckerService"
+            android:name="com.infmme.readilyapp.service.StorageCheckerService"
             android:exported="false" />
 
         <activity
@@ -91,7 +91,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name="com.infmme.readily.instructions.InstructionsActivity"
+            android:name="com.infmme.readilyapp.instructions.InstructionsActivity"
             android:theme="@android:style/Theme.Light.NoTitleBar">
         </activity>
     </application>
