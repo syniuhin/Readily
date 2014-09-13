@@ -1,6 +1,7 @@
 package com.infmme.readilyapp.readable;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 import com.infmme.readilyapp.Constants;
@@ -131,10 +132,6 @@ abstract public class FileStorable extends Storable {
 				Math.min(LAST_WORD_PREFIX_SIZE, nextDelayList.size()))));
 	}
 
-	public void clearWordList(){
-		wordList.clear();
-	}
-
 	protected void createRowData(Context context){
 		rowData = takeRowData(context);
 		if (rowData != null){
@@ -156,9 +153,20 @@ abstract public class FileStorable extends Storable {
 		}
 		result.cutLastWord();
 		result.insertLastWord(lastWord);
-		result.clearWordList();
 		result.setBytePosition(bytePosition + inputDataLength);
 		return result;
+	}
+
+	@Override
+	public int calcProgress(int pos, long approxCharCount){
+		return Math.min((int) (100f * (bytePosition + approxCharCount) / fileSize + .5f), 99);
+	}
+
+	@Override
+	public void putInsertDataInIntent(Intent intent){
+		super.putInsertDataInIntent(intent);
+		intent.putExtra(Constants.EXTRA_POSITION, position);
+		intent.putExtra(Constants.EXTRA_BYTE_POSITION, bytePosition);
 	}
 
 	protected boolean doesHaveLetters(StringBuilder text){

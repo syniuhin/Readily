@@ -50,8 +50,11 @@ public class StorageCheckerService extends IntentService {
 	private void processFolder(Map<String, Integer> baseData, ContentResolver contentResolver){
 		File homeDir = getFilesDir();
 		File[] files = homeDir.listFiles();
-		for (File file : files){ if (file.exists() && !baseData.containsKey(file.getAbsolutePath())){ file.delete();
-		} }
+		for (File file : files){
+			if (file.exists() && !baseData.containsKey(file.getAbsolutePath())){
+				file.delete();
+			}
+		}
 		for (Map.Entry<String, Integer> entry : baseData.entrySet()){
 			String path = entry.getKey();
 			if (!(new File(path)).exists()){

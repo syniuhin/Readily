@@ -9,6 +9,8 @@ import com.infmme.readilyapp.Constants;
 import com.infmme.readilyapp.database.DataBundle;
 import com.infmme.readilyapp.database.LastReadContentProvider;
 import com.infmme.readilyapp.database.LastReadDBHelper;
+import com.infmme.readilyapp.service.LastReadService;
+import com.ipaulpro.afilechooser.utils.FileUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,6 +24,7 @@ abstract public class Storable extends Readable {
 
 	protected String title;
 	protected long bytePosition;
+	protected long approxCharCount;
 
 	public Storable(){}
 
@@ -29,6 +32,7 @@ abstract public class Storable extends Readable {
 		super(that);
 		title = that.getTitle();
 		bytePosition = that.getBytePosition();
+		approxCharCount = that.getApproxCharCount();
 	}
 
 	public static DataBundle getRowData(Cursor cursor, String path){
@@ -51,15 +55,17 @@ abstract public class Storable extends Readable {
 		return rowData;
 	}
 
-	public static void createStorageFile(Context context, String path, String text){
+	public static void createInternalStorageFile(Context context, String path, String text){
 		if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.Preferences.STORAGE,
 																			  true)){
 			File storageFile = new File(path);
 			try {
-				storageFile.createNewFile();
-				FileOutputStream fos = new FileOutputStream(storageFile);
-				fos.write(text.getBytes());
-				fos.close();
+				if (!storageFile.exists()){ //TODO: implement check if path pointing to internal storage
+					storageFile.createNewFile();
+					FileOutputStream fos = new FileOutputStream(storageFile);
+					fos.write(text.getBytes());
+					fos.close();
+				}
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -74,6 +80,14 @@ abstract public class Storable extends Readable {
 
 	public void setBytePosition(long bytePosition){ this.bytePosition = bytePosition; }
 
+	public long getApproxCharCount(){
+		return approxCharCount;
+	}
+
+	public void setApproxCharCount(long approxCharCount){
+		this.approxCharCount = approxCharCount;
+	}
+
 	protected DataBundle takeRowData(Context context){
 		return Storable.getRowData(context.getContentResolver().query(LastReadContentProvider.CONTENT_URI,
 																	  null, null, null, null),
@@ -83,12 +97,43 @@ abstract public class Storable extends Readable {
 	/**
 	 * @param intent: intent to put
 	 */
-	public void putDataInIntent(Intent intent){
+	public void putInsertDataInIntent(Intent intent){
 		makeHeader();
 		intent.putExtra(Constants.EXTRA_HEADER, header);
 		intent.putExtra(Constants.EXTRA_PATH, path);
-		intent.putExtra(Constants.EXTRA_POSITION, position);
-		intent.putExtra(Constants.EXTRA_BYTE_POSITION, bytePosition);
+		intent.putExtra(Constants.EXTRA_POSITION, 0);
+		intent.putExtra(Constants.EXTRA_BYTE_POSITION, approxCharCount);
+		intent.putExtra(Constants.EXTRA_PERCENT, (100 - calcProgress(position, approxCharCount)) + "%");
+		intent.putExtra(Constants.EXTRA_DB_OPERATION, Constants.DB_OPERATION_INSERT);
+	}
+
+	public void putDeleteDataInIntent(Intent intent){
+		intent.putExtra(Constants.EXTRA_PATH, path);
+		intent.putExtra(Constants.EXTRA_DB_OPERATION, Constants.DB_OPERATION_DELETE);
+	}
+
+	public void onClose(Context context, boolean isCompleted, boolean storeComplete){
+		if (storeComplete){
+			save(context);
+		} else {
+			if (isCompleted)
+				delete(context);
+			else
+				save(context);
+		}
+		createInternalStorageFile(context, path, text.toString());
+	}
+
+	public void save(Context context){
+		Intent intent = new Intent(context, LastReadService.class);
+		putInsertDataInIntent(intent);
+		context.startService(intent);
+	}
+
+	public void delete(Context context){
+		Intent intent = new Intent(context, LastReadService.class);
+		putDeleteDataInIntent(intent);
+		context.startService(intent);
 	}
 
 	protected void makeHeader(){

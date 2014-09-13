@@ -12,6 +12,7 @@ import android.text.TextUtils;
 public class ClipboardReadable extends Readable {
 
 	private ClipboardManager clipboard;
+	private boolean oncePasted;
 
 	public ClipboardReadable(){
 		type = TYPE_CLIPBOARD;
@@ -20,6 +21,11 @@ public class ClipboardReadable extends Readable {
 	public ClipboardReadable(ClipboardReadable that){
 		super(that);
 		clipboard = that.getClipboard();
+		oncePasted = that.isOncePasted();
+	}
+
+	public boolean isOncePasted(){
+		return oncePasted;
 	}
 
 	public ClipboardManager getClipboard(){
@@ -35,7 +41,7 @@ public class ClipboardReadable extends Readable {
 
 	@Override
 	public void readData(){
-		if (TextUtils.isEmpty(text))
+		if (!oncePasted)
 			text.append(paste(clipboard));
 		else
 			setText("");
@@ -49,6 +55,7 @@ public class ClipboardReadable extends Readable {
 	}
 
 	private String paste(ClipboardManager clipboard){
+		oncePasted = true;
 		ClipData clipData = clipboard.getPrimaryClip();
 		if (clipData != null && clipData.getItemCount() > 0){
 			ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);

@@ -1,9 +1,11 @@
 package com.infmme.readilyapp.readable;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.TextUtils;
+import com.infmme.readilyapp.Constants;
 import de.jetwick.snacktory.HtmlFetcher;
 import de.jetwick.snacktory.JResult;
 
@@ -43,8 +45,10 @@ public class NetStorable extends Storable {
 		}
 		path = context.getFilesDir() + "/" + cleanFileName(title) + ".txt";
 		rowData = takeRowData(context);
-		if (rowData != null){ position = rowData.getPosition(); } else {
-			createStorageFile(context, path, text.toString());
+		if (rowData != null){
+			position = rowData.getPosition();
+		} else {
+			createInternalStorageFile(context, path, text.toString());
 		}
 		processed = true;
 	}

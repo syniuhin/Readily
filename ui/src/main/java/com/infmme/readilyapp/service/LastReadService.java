@@ -26,14 +26,6 @@ public class LastReadService extends IntentService {
 		super("LastReadService");
 	}
 
-	private static Intent createIntent(Context context, Storable storable, int operation, int progress){
-		Intent intent = new Intent(context, LastReadService.class);
-		storable.putDataInIntent(intent);
-		intent.putExtra(Constants.EXTRA_PERCENT, (100 - progress) + "%");
-		intent.putExtra(Constants.EXTRA_DB_OPERATION, operation);
-		return intent;
-	}
-
 	private static Intent createIntent(Context context, String path, int operation){
 		if (operation == Constants.DB_OPERATION_DELETE){
 			Intent intent = new Intent(context, LastReadService.class);
@@ -43,11 +35,6 @@ public class LastReadService extends IntentService {
 		} else {
 			throw new IllegalArgumentException("operation != DELETE");
 		}
-	}
-
-	public static void start(Context context, Storable storable, int operation, int progress){
-		if (context != null)
-			context.startService(createIntent(context, storable, operation, progress));
 	}
 
 	public static void start(Context context, String path, int operation){

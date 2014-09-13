@@ -33,7 +33,7 @@ public class RawReadable extends Storable {
 			if (rowData != null){
 				position = rowData.getPosition();
 			} else {
-				createStorageFile(context, path, text.toString());
+				createInternalStorageFile(context, path, text.toString());
 			}
 		}
 		processed = true;

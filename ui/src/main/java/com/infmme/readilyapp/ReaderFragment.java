@@ -19,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.*;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.essential.TextParser;
 import com.infmme.readilyapp.readable.FileStorable;
 import com.infmme.readilyapp.readable.Readable;
@@ -212,7 +211,7 @@ public class ReaderFragment extends Fragment {
 			@Override
 			public void onSwipeRight(){
 				if (settingsBundle.isSwipesEnabled()){
-					if (!reader.getPaused()){
+					if (!reader.isPaused()){
 						reader.performPause();
 					} else {
 						reader.moveToPrevious();
@@ -223,7 +222,7 @@ public class ReaderFragment extends Fragment {
 			@Override
 			public void onSwipeLeft(){
 				if (settingsBundle.isSwipesEnabled()){
-					if (!reader.getPaused()){
+					if (!reader.isPaused()){
 						reader.performPause();
 					} else {
 						reader.moveToNext();
@@ -402,6 +401,7 @@ public class ReaderFragment extends Fragment {
 						readerLayout.setVisibility(View.VISIBLE);
 						if (initialPosition < wordList.size()){
 							showNotification(R.string.tap_to_start);
+							progress = readable.calcProgress(initialPosition, 0);
 							reader.updateView(initialPosition);
 							showInfo(reader);
 						} else {
@@ -523,25 +523,13 @@ public class ReaderFragment extends Fragment {
 
 	@Override
 	public void onStop(){
-		Activity activity = getActivity();
+		reader.performPause();
 		if (canBeSaved(readable) && reader != null){
-			reader.performPause();
+			Activity activity = getActivity();
 			Storable storable = (Storable) readable;
-			int operation;
-			if (settingsBundle.isStoringComplete()){
-				if (reader.isCompleted()){
-					storable.setPosition(0);
-				} else {
-					storable.setPosition(reader.getPosition());
-				}
-				operation = Constants.DB_OPERATION_INSERT;
-			} else {
-				storable.setPosition(reader.getPosition());
-				operation = (reader.isCompleted())
-						? Constants.DB_OPERATION_DELETE
-						: Constants.DB_OPERATION_INSERT;
-			}
-			LastReadService.start(activity, storable, operation, progress);
+			storable.setPosition(reader.getPosition());
+			storable.setApproxCharCount(reader.getApproxCharCount());
+			storable.onClose(activity, reader.isCompleted(), settingsBundle.isStoringComplete());
 		}
 
 		settingsBundle.updatePreferences();
@@ -611,7 +599,6 @@ public class ReaderFragment extends Fragment {
 		private int paused;
 		private int position;
 		private boolean completed;
-		private boolean chunkAvailable;
 		private int approxCharCount;
 
 		public Reader(Handler readerHandler, int position){
@@ -623,8 +610,8 @@ public class ReaderFragment extends Fragment {
 
 		@Override
 		public void run(){
-			if ((position < wordList.size() && !chunkAvailable) ||
-					(position < wordList.size() - FileStorable.LAST_WORD_SUFFIX_SIZE && chunkAvailable)){
+			if ((position < wordList.size() && !readerTask.isChunkAvailable()) ||
+					(position < wordList.size() - FileStorable.LAST_WORD_PREFIX_SIZE && readerTask.isChunkAvailable())){
 				if (wordList.size() - position < 100 && monitorObject.isPaused()){
 					try {
 						monitorObject.resumeTask();
@@ -633,25 +620,22 @@ public class ReaderFragment extends Fragment {
 					}
 				}
 				completed = false;
-				if (!getPaused()){
+				if (!isPaused()){
+					approxCharCount += wordList.get(position).length() + 1;
+					progress = readable.calcProgress(position, approxCharCount);
 					updateView(position);
 					readerHandler.postDelayed(this, calcDelay());
 					position++;
 				}
-			} else if (chunkAvailable){
+			} else if (readerTask.isChunkAvailable()){
 				changeParser(readerTask.removeDequeHead());
 				position = 0;
-				chunkAvailable = readerTask.isChunkAvailable();
 				readerHandler.postDelayed(this, calcDelay());
 			} else {
 				showNotification(R.string.reading_is_completed);
 				completed = true;
 				paused = 1;
 			}
-		}
-
-		public void setChunkAvailable(boolean chunkAvailable){
-			this.chunkAvailable = chunkAvailable;
 		}
 
 		public int getPosition(){
@@ -683,16 +667,20 @@ public class ReaderFragment extends Fragment {
 			this.completed = completed;
 		}
 
-		public boolean getPaused(){
+		public boolean isPaused(){
 			return paused % 2 == 1;
 		}
 
+		public int getApproxCharCount(){
+			return approxCharCount;
+		}
+
 		public void incCancelled(){
-			if (!getPaused()){ performPause(); } else { performPlay(); }
+			if (!isPaused()){ performPause(); } else { performPlay(); }
 		}
 
 		public void performPause(){
-			if (!getPaused()){
+			if (!isPaused()){
 				paused++;
 				YoYo.with(Techniques.Pulse).
 						duration(READER_PULSE_DURATION).
@@ -704,7 +692,7 @@ public class ReaderFragment extends Fragment {
 		}
 
 		public void performPlay(){
-			if (getPaused()){
+			if (isPaused()){
 				paused++;
 				YoYo.with(Techniques.Pulse).
 						duration(READER_PULSE_DURATION).
@@ -728,11 +716,6 @@ public class ReaderFragment extends Fragment {
 			currentTextView.setText(getCurrentFormattedText(pos));
 			leftTextView.setText(getLeftFormattedText(pos));
 			rightTextView.setText(getRightFormattedText(pos));
-
-			approxCharCount += wordList.get(pos).length();
-			progress = (isFileStorable)
-					? Math.min((int) (100f * (bytePosition + approxCharCount) / fileSize + .5f), 99)
-					: (int) (100f / wordList.size() * (pos + 1) + .5f);
 			progressBar.setProgress(progress);
 			hideNotification(false);
 		}
@@ -773,7 +756,6 @@ public class ReaderFragment extends Fragment {
 					}
 					if (reader == null){ startReader(removeDequeHead()); }
 					if (reader != null){
-						reader.setChunkAvailable(isChunkAvailable());
 						object.pauseTask();
 					} else {
 						break;
@@ -790,7 +772,7 @@ public class ReaderFragment extends Fragment {
 			}
 		}
 
-		public boolean isChunkAvailable(){
+		public synchronized boolean isChunkAvailable(){
 			return parserDeque.size() > 1;
 		}
 

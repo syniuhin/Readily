@@ -120,6 +120,10 @@ abstract public class Readable implements Serializable {
 
 	abstract public Readable getNext();
 
+	public int calcProgress(int pos, long apc){
+		return (int) (100f / wordList.size() * (pos + 1) + .5f);
+	}
+
 	public Integer getType(){
 		return type;
 	}

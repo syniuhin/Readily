@@ -73,6 +73,7 @@
     <string name="preference_dark_theme">Тёмная тема</string>
     <string name="send_email">Отошлите письмо</string>
     <string name="mail_to_me">mailto:syniuhin@gmail.com</string>
+    <string name="action_settings">Настройки</string>
 
     <string name="sample_text">
         Он бродил без цели. Солнце заходило. Какая-то особенная тоска начала сказываться ему в последнее время. В ней не
