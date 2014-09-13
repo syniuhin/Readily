@@ -37,7 +37,7 @@
     <string name="pause">Пауза</string>
     <string name="reading_is_completed">Коснитесь для выхода</string>
     <string name="speed">Скорость: </string>
-    <string name="words_read">Слов прочитано: </string>
+    <string name="percent_left">Осталось: </string>
     <string name="email_app_not_found">Приложение почты не найдено</string>
 
     <!-- Preferences.xml -->
@@ -73,6 +73,7 @@
     <string name="preference_dark_theme">Тёмная тема</string>
     <string name="send_email">Отошлите письмо</string>
     <string name="mail_to_me">mailto:syniuhin@gmail.com</string>
+    <string name="action_settings">Настройки</string>
 
     <string name="sample_text">
         Он бродил без цели. Солнце заходило. Какая-то особенная тоска начала сказываться ему в последнее время. В ней не
@@ -94,28 +95,28 @@
     <string name="instructions_second_paragraph">Чтобы начать читать, Вы можете скопировать текст в буфер обмена и
         выбрать \"Прочитать текст из буфера обмена\" на панели действий.
     </string>
-    <string name="instructions_third_paragraph">Так же, Вы можете выбрать действие \"Прочитать текст из файла\" и сам
+    <string name="instructions_third_paragraph">Также Вы можете выбрать действие \"Прочитать текст из файла\" и сам
         файл (доступные расширения: .txt, .epub и .fb2) из системы.
     </string>
     <string name="instructions_fourth_paragraph">Наконец, вы можете поделиться с Readily из своего любимого
-        приложения для чтения (например Flipboard, Instapaper).
+        приложения для чтения (например, Flipboard, Instapaper).
     </string>
 
     <string name="instructions_controls_header">Управление</string>
-    <string name="instructions_fifth_paragraph">Для паузы или продолжения работы чтения коснитесь окна ридера.
-        В зависимости от ваших настроек, вы сможете передвигаться по тексту с помощью свайпов или кнопки слева.\n
-        Если Вам кажется, что чтение идёт слишком медленно или быстро, Вы можете изменить скорость по ходу работы
+    <string name="instructions_fifth_paragraph">Для паузы или продолжения чтения коснитесь окна ридера.
+        В зависимости от Ваших настроек Вы сможете передвигаться по тексту с помощью свайпов или кнопки слева.\n
+        Если Вам кажется, что чтение идёт слишком медленно или быстро, Вы можете изменить скорость по ходу
         чтения: свайпните вверх или вниз, чтобы изменить скорость на 50 слов/мин.
     </string>
-    <string name="instructions_emphasis_point">Точка ударения: сконцентрируйтесь на ней и чтение станет быстрее.
+    <string name="instructions_emphasis_point">Точка ударения: сконцентрируйтесь на ней, и чтение станет быстрее.
     </string>
-    <string name="instructions_notification">Уведомление: появится только когда Вас нужно уведомить (например когда
+    <string name="instructions_notification">Уведомление: появится, только когда Вас нужно уведомить (например, когда
         Вы измените скорость чтения).
     </string>
     <string name="instructions_previous_word_button">Кнопка предыдущего слова(опционально): один из вариантов
         навигации по тексту.
     </string>
-    <string name="instructions_progress_bar">Индикатор прогресса: показывает сколько Вы уже прочитали.</string>
+    <string name="instructions_progress_bar">Индикатор прогресса: показывает, сколько Вы уже прочитали.</string>
     <string name="enjoyit">Наслаждайтесь ;)</string>
 
 </resources>

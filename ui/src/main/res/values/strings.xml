@@ -21,7 +21,6 @@
     <string name="text_null">Text is missing</string>
     <string name="cant_fetch">Text fetching problems</string>
     <string name="delete">Delete</string>
-    <string name="edit_header">Edit header</string>
     <string name="choose_file">Choose a file</string>
     <string name="tap_to_start">Tap to start</string>
     <string name="confirmation_dialog_title">Are you sure?</string>
@@ -37,7 +36,7 @@
     <string name="pause">Pause</string>
     <string name="reading_is_completed">Tap to exit</string>
     <string name="speed">Speed: </string>
-    <string name="words_read">Words read: </string>
+    <string name="percent_left">Remaining: </string>
     <string name="email_app_not_found">Email app not found</string>
 
     <!-- Preferences.xml -->
