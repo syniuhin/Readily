@@ -19,7 +19,6 @@ repositories {
 android {
     compileSdkVersion 20
     buildToolsVersion '20.0.0'
-
     defaultConfig {
         minSdkVersion 13
         targetSdkVersion 20
@@ -40,7 +39,7 @@ android {
         // if true, only report errors
         ignoreWarnings true
         // turn off checking the given issue id's
-        disable 'TypographyFractions','TypographyQuotes'
+        disable 'TypographyFractions', 'TypographyQuotes'
         // if true, generate a text report of issues (false by default)
         textReport true
         // location to write the output; can be a file or 'stdout'

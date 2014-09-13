@@ -523,7 +523,8 @@ public class ReaderFragment extends Fragment {
 
 	@Override
 	public void onStop(){
-		reader.performPause();
+		if (reader != null && !reader.isPaused())
+			reader.performPause();
 		if (canBeSaved(readable) && reader != null){
 			Activity activity = getActivity();
 			Storable storable = (Storable) readable;
