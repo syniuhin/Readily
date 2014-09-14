@@ -9,6 +9,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.widget.Button;
 import com.infmme.readilyapp.R;
 
 /**
@@ -19,6 +21,7 @@ public class InstructionsActivity extends FragmentActivity {
 
 	private ViewPager pager;
 	private PagerAdapter pagerAdapter;
+	private Button nextButton;
 
 	public static void start(Context context){
 		context.startActivity(new Intent(context, InstructionsActivity.class));
@@ -36,8 +39,34 @@ public class InstructionsActivity extends FragmentActivity {
 			@Override
 			public void onPageSelected(int position){
 				invalidateOptionsMenu();
+				updateNextButton();
 			}
 		});
+
+		nextButton = (Button) findViewById(R.id.nextButton);
+		nextButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v){
+				boolean action = updateNextButton();
+				if (action)
+					pager.setCurrentItem(pager.getCurrentItem() + 1, true);
+				else
+					onStop();
+			}
+		});
+	}
+
+	private boolean updateNextButton(){
+		int pageNum = pager.getCurrentItem();
+		if (pageNum < NUM_PAGES - 2){
+			if (pageNum == NUM_PAGES - 3)
+				nextButton.setText(R.string.finish);
+			else
+				nextButton.setText(R.string.next);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private class InstructionsPagerAdapter extends FragmentStatePagerAdapter {

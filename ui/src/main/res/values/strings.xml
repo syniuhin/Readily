@@ -38,6 +38,8 @@
     <string name="speed">Speed: </string>
     <string name="percent_left">Remaining: </string>
     <string name="email_app_not_found">Email app not found</string>
+    <string name="next">Next</string>
+    <string name="finish">Finish</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Read a text from the clipboard</string>

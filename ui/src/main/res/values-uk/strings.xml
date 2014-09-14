@@ -39,6 +39,8 @@
     <string name="speed">Швидкість: </string>
     <string name="percent_left">Залишилося: </string>
     <string name="email_app_not_found">Додаток для пошти не знайден</string>
+    <string name="next">Далі</string>
+    <string name="finish">Вихід</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитати текст з буферу обміну</string>

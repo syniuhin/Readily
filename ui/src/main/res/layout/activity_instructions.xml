@@ -8,5 +8,23 @@
             android:id="@+id/instructions_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/transparent"/>
+            android:background="@android:color/transparent"
+            android:layout_above="@+id/nextButton"/>
+
+    <Button android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/next_button_shape"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/nextButton"
+            android:text="@string/next"
+            android:textSize="26sp"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold|italic"
+            android:paddingBottom="10dp"
+            android:paddingTop="5dp"
+            android:shadowColor="#000000"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="1" />
 </RelativeLayout>
