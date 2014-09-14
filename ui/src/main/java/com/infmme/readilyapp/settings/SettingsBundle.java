@@ -148,7 +148,7 @@ public class SettingsBundle {
 				delayCoeffs.add(Integer.parseInt(Constants.Preferences.STR_PUNCTUATION_DEFAULTS[i]));
 			}
 		} else {
-			for (int i = 0; i < 5; ++i){
+			for (int i = 0; i < 6; ++i){
 				delayCoeffs.add(Integer.parseInt(Constants.Preferences.STR_PUNCTUATION_DEFAULTS[0]));
 			}
 		}
