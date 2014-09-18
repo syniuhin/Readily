@@ -82,7 +82,7 @@ public class EpubFileStorable extends FileStorable {
 		while (cycleCount < 5){
 			setText("");
 			try {
-				while (text.length() < BUFFER_SIZE && index < resources.size()){
+				while (text.length() < BUFFER_SIZE && !resources.isEmpty() && index < resources.size()){
 					Resource currentResource = resources.get(index++);
 					inputDataLength += currentResource.getSize();
 					text.append(new String(currentResource.getData()));
