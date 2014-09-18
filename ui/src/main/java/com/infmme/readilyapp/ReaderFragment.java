@@ -71,8 +71,6 @@ public class ReaderFragment extends Fragment {
 	private Thread parserThread;
 	private ReaderTask readerTask;
 	private MonitorObject monitorObject;
-	private long fileSize;
-	private long bytePosition;
 	//receiving status
 	private Boolean parserReceived = false;
 	private String primaryTextColor = LIGHT_COLOR_SET[0];
@@ -454,9 +452,6 @@ public class ReaderFragment extends Fragment {
 		wordList = readable.getWordList();
 		emphasisList = readable.getEmphasisList();
 		delayList = readable.getDelayList();
-		if (isStorable(readable)){
-			bytePosition = ((Storable) readable).getBytePosition();
-		}
 	}
 
 	/**
@@ -741,9 +736,7 @@ public class ReaderFragment extends Fragment {
 					synchronized (parserDeque){
 						if (!currentReadable.isProcessed()){
 							currentReadable.process(getActivity());
-							if (isFileStorable = isFileStorable(readable)){
-								fileSize = ((FileStorable) readable).getFileSize();
-							}
+							isFileStorable = isFileStorable(readable);
 							currentReadable.readData();
 							TextParser toAdd = TextParser.newInstance(currentReadable, settingsBundle);
 							toAdd.process();
