@@ -1,12 +1,11 @@
 package com.infmme.readilyapp;
 
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.WindowManager;
-import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.util.BaseActivity;
 import com.infmme.readilyapp.util.OnSwipeTouchListener;
 
@@ -63,7 +62,7 @@ public class ReceiverActivity extends BaseActivity implements /*FlurryAdListener
 	}
 
 	private void startReaderFragment(Bundle bundle){
-		FragmentManager fragmentManager = getFragmentManager();
+		FragmentManager fragmentManager = getSupportFragmentManager();
 		ReaderFragment readerFragment = (ReaderFragment) fragmentManager.findFragmentByTag(READER_FRAGMENT_TAG);
 		if (readerFragment == null){
 			readerFragment = new ReaderFragment();

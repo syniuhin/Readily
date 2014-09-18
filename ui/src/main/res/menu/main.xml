@@ -2,13 +2,14 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.infmme.readilyapp.MainActivity">
+    tools:context="com.infmme.readilyapp.MainActivity"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/action_file"
         android:enabled="true"
         android:icon="@drawable/ic_action_storage"
-        android:showAsAction="ifRoom"
+        app:showAsAction="ifRoom"
         android:title="@string/preferences_pick_file"
         android:visible="true" />
 
@@ -16,24 +17,24 @@
         android:id="@+id/action_clipboard"
         android:enabled="true"
         android:icon="@drawable/ic_action_paste"
-        android:showAsAction="ifRoom"
+        app:showAsAction="ifRoom"
         android:title="@string/preferences_clipboard"
         android:visible="true" />
 
 
     <item
-            android:id="@+id/action_instructions"
-            android:enabled="true"
-            android:icon="@drawable/ic_action_help"
-            android:showAsAction="ifRoom"
-            android:title="@string/preferences_instrucions"
-            android:visible="true" />
+        android:id="@+id/action_instructions"
+        android:enabled="true"
+        android:icon="@drawable/ic_action_help"
+        app:showAsAction="ifRoom"
+        android:title="@string/preferences_instrucions"
+        android:visible="true" />
 
     <item
         android:id="@+id/action_settings"
         android:enabled="true"
         android:icon="@drawable/ic_action_settings"
-        android:showAsAction="ifRoom"
+        app:showAsAction="ifRoom"
         android:title="@string/title_activity_settings"
         android:visible="true" />
 

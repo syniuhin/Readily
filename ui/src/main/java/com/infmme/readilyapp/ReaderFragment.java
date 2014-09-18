@@ -1,7 +1,6 @@
 package com.infmme.readilyapp;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -9,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -23,7 +23,6 @@ import com.infmme.readilyapp.essential.TextParser;
 import com.infmme.readilyapp.readable.FileStorable;
 import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.readable.Storable;
-import com.infmme.readilyapp.service.LastReadService;
 import com.infmme.readilyapp.settings.SettingsBundle;
 import com.infmme.readilyapp.util.OnSwipeTouchListener;
 
@@ -102,7 +101,7 @@ public class ReaderFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 		View fragmentLayout = inflater.inflate(R.layout.fragment_reader, container, false);
 		findViews(fragmentLayout);
-		periodicallyAnimate();
+		//periodicallyAnimate();
 		return fragmentLayout;
 	}
 
@@ -386,7 +385,7 @@ public class ReaderFragment extends Fragment {
 		}
 	}
 
-	private void startReader(TextParser parser){
+	private void startReader(final TextParser parser){
 		changeParser(parser);
 		final int resultCode = parser.getResultCode();
 		if (resultCode == TextParser.RESULT_CODE_OK){
@@ -397,6 +396,7 @@ public class ReaderFragment extends Fragment {
 				activity.runOnUiThread(new Runnable() {
 					@Override
 					public void run(){
+						parsingProgressBar.clearAnimation();
 						parsingProgressBar.setVisibility(View.GONE);
 						readerLayout.setVisibility(View.VISIBLE);
 						if (initialPosition < wordList.size()){

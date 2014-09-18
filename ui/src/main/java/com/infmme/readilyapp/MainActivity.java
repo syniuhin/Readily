@@ -1,25 +1,21 @@
 package com.infmme.readilyapp;
 
 import android.annotation.TargetApi;
-import android.app.ActionBar;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
-import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.instructions.InstructionsActivity;
 import com.infmme.readilyapp.readable.FileStorable;
 import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.service.StorageCheckerService;
-import com.infmme.readilyapp.settings.SettingsFragment;
 import com.infmme.readilyapp.util.BaseActivity;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 
@@ -44,7 +40,7 @@ public class MainActivity extends BaseActivity {
 
 	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 	private void changeActionBarIcon(){
-		ActionBar actionBar = getActionBar();
+		ActionBar actionBar = getSupportActionBar();
 		if (actionBar != null){ actionBar.setIcon(R.drawable.logo_up); }
 	}
 
@@ -67,9 +63,11 @@ public class MainActivity extends BaseActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
 		switch (item.getItemId()){
+/*
 			case R.id.action_settings:
 				startSettingsFragment();
 				break;
+*/
 			case R.id.action_clipboard:
 				getFromClipboard();
 				break;
@@ -115,8 +113,9 @@ public class MainActivity extends BaseActivity {
 		return new Intent(this, StorageCheckerService.class);
 	}
 
+/*
 	private void startSettingsFragment(){
-		FragmentManager fragmentManager = getFragmentManager();
+		FragmentManager fragmentManager = getSupportFragmentManager();
 		Fragment existing = fragmentManager.findFragmentByTag(SETTINGS_FRAGMENT_TAG);
 		if (existing == null){
 			fragmentManager.beginTransaction().
@@ -127,9 +126,10 @@ public class MainActivity extends BaseActivity {
 		}
 
 	}
+*/
 
 	private void startFileListFragment(){
-		FragmentManager fragmentManager = getFragmentManager();
+		FragmentManager fragmentManager = getSupportFragmentManager();
 		fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 		fragmentManager.beginTransaction().
 				replace(R.id.content_layout, new FileListFragment()).
