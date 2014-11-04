@@ -11,11 +11,11 @@ import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-import com.crashlytics.android.Crashlytics;
 import com.infmme.readilyapp.instructions.InstructionsActivity;
 import com.infmme.readilyapp.readable.FileStorable;
 import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.service.StorageCheckerService;
+import com.infmme.readilyapp.settings.SettingsActivity;
 import com.infmme.readilyapp.util.BaseActivity;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 
@@ -32,7 +32,7 @@ public class MainActivity extends BaseActivity {
 
 		startService(createCheckerServiceIntent());
 
-		Crashlytics.start(this);
+//		Crashlytics.start(this);
 
 		changeActionBarIcon();
 		startFileListFragment();
@@ -63,11 +63,9 @@ public class MainActivity extends BaseActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
 		switch (item.getItemId()){
-/*
 			case R.id.action_settings:
-				startSettingsFragment();
+				startSettingsActivity();
 				break;
-*/
 			case R.id.action_clipboard:
 				getFromClipboard();
 				break;
@@ -113,20 +111,9 @@ public class MainActivity extends BaseActivity {
 		return new Intent(this, StorageCheckerService.class);
 	}
 
-/*
-	private void startSettingsFragment(){
-		FragmentManager fragmentManager = getSupportFragmentManager();
-		Fragment existing = fragmentManager.findFragmentByTag(SETTINGS_FRAGMENT_TAG);
-		if (existing == null){
-			fragmentManager.beginTransaction().
-					replace(R.id.content_layout, new SettingsFragment(), SETTINGS_FRAGMENT_TAG).
-					addToBackStack(null).
-					setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).
-					commit();
-		}
-
+	private void startSettingsActivity(){
+		startActivity(new Intent(this, SettingsActivity.class));
 	}
-*/
 
 	private void startFileListFragment(){
 		FragmentManager fragmentManager = getSupportFragmentManager();

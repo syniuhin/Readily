@@ -41,6 +41,7 @@
     <string name="email_app_not_found">Додаток для пошти не знайден</string>
     <string name="next">Далі</string>
     <string name="finish">Вихід</string>
+    <string name="illegal_value">Некоректне значення</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитати текст з буферу обміну</string>
@@ -70,8 +71,9 @@
     <string name="preferences_send_feedback_summary">Розкажіть мені свої ідеї :)</string>
     <string name="preference_cache">Зберігати читання</string>
     <string name="preference_cache_summary">Кешує незакінчені читання</string>
-    <string name="preference_font_size">Розмір шрифта</string>
+    <string name="preference_font_size">Розмір шрифту</string>
     <string name="preference_font_size_summary">Увага: текст може не уміститися у вікні рідера!</string>
+    <string name="hint_font_size">Введіть розмір шрифту</string>
     <string name="preference_dark_theme">Темна тема</string>
     <string name="send_email">Відправте письмо</string>
     <string name="mail_to_me">mailto:syniuhin@gmail.com</string>
