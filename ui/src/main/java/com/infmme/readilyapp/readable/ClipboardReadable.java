@@ -1,17 +1,18 @@
 package com.infmme.readilyapp.readable;
 
 import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
+import android.os.Build;
 import android.os.Looper;
-import android.text.TextUtils;
+import android.text.ClipboardManager;
 
 /**
  * Created by infm on 6/12/14. Enjoy ;)
  */
 public class ClipboardReadable extends Readable {
 
-	private ClipboardManager clipboard;
+	private ClipboardManager clipboardOld;
+	private android.content.ClipboardManager clipboardNew;
 	private boolean oncePasted;
 
 	public ClipboardReadable(){
@@ -20,7 +21,8 @@ public class ClipboardReadable extends Readable {
 
 	public ClipboardReadable(ClipboardReadable that){
 		super(that);
-		clipboard = that.getClipboard();
+		clipboardOld = that.getClipboardOld();
+		clipboardNew = that.getClipboardNew();
 		oncePasted = that.isOncePasted();
 	}
 
@@ -28,21 +30,28 @@ public class ClipboardReadable extends Readable {
 		return oncePasted;
 	}
 
-	public ClipboardManager getClipboard(){
-		return clipboard;
+	public ClipboardManager getClipboardOld(){
+		return clipboardOld;
 	}
+	public android.content.ClipboardManager getClipboardNew() { return clipboardNew; }
 
 	public void process(final Context context){
 		Looper.prepare(); //TODO: review it CAREFULLY
-		clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-		processFailed = !clipboard.hasText();
-		processed = true;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
+			clipboardNew = (android.content.ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+			processFailed = !clipboardNew.hasText();
+			processed = true;
+		} else {
+			clipboardOld = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+			processFailed = !clipboardOld.hasText();
+			processed = true;
+		}
 	}
 
 	@Override
 	public void readData(){
 		if (!oncePasted)
-			text.append(paste(clipboard));
+			text.append(paste());
 		else
 			setText("");
 	}
@@ -54,15 +63,19 @@ public class ClipboardReadable extends Readable {
 		return result;
 	}
 
-	private String paste(ClipboardManager clipboard){
+	private String paste(){
 		oncePasted = true;
-		ClipData clipData = clipboard.getPrimaryClip();
-		if (clipData != null && clipData.getItemCount() > 0){
-			ClipData.Item item = clipboard.getPrimaryClip().getItemAt(0);
-			CharSequence pasteData = item.getText();
-			if (pasteData != null){
-				return pasteData.toString();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
+			ClipData clipData = clipboardNew.getPrimaryClip();
+			if (clipData != null && clipData.getItemCount() > 0){
+				ClipData.Item item = clipboardNew.getPrimaryClip().getItemAt(0);
+				CharSequence pasteData = item.getText();
+				if (pasteData != null){
+					return pasteData.toString();
+				}
 			}
+		} else {
+			return clipboardOld.getText().toString();
 		}
 		return null;
 	}

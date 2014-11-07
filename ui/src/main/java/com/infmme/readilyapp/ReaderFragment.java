@@ -1,7 +1,6 @@
 package com.infmme.readilyapp;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -9,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -23,7 +23,6 @@ import com.infmme.readilyapp.essential.TextParser;
 import com.infmme.readilyapp.readable.FileStorable;
 import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.readable.Storable;
-import com.infmme.readilyapp.service.LastReadService;
 import com.infmme.readilyapp.settings.SettingsBundle;
 import com.infmme.readilyapp.util.OnSwipeTouchListener;
 
@@ -72,8 +71,6 @@ public class ReaderFragment extends Fragment {
 	private Thread parserThread;
 	private ReaderTask readerTask;
 	private MonitorObject monitorObject;
-	private long fileSize;
-	private long bytePosition;
 	//receiving status
 	private Boolean parserReceived = false;
 	private String primaryTextColor = LIGHT_COLOR_SET[0];
@@ -102,7 +99,6 @@ public class ReaderFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 		View fragmentLayout = inflater.inflate(R.layout.fragment_reader, container, false);
 		findViews(fragmentLayout);
-		periodicallyAnimate();
 		return fragmentLayout;
 	}
 
@@ -386,7 +382,7 @@ public class ReaderFragment extends Fragment {
 		}
 	}
 
-	private void startReader(TextParser parser){
+	private void startReader(final TextParser parser){
 		changeParser(parser);
 		final int resultCode = parser.getResultCode();
 		if (resultCode == TextParser.RESULT_CODE_OK){
@@ -397,6 +393,7 @@ public class ReaderFragment extends Fragment {
 				activity.runOnUiThread(new Runnable() {
 					@Override
 					public void run(){
+						parsingProgressBar.clearAnimation();
 						parsingProgressBar.setVisibility(View.GONE);
 						readerLayout.setVisibility(View.VISIBLE);
 						if (initialPosition < wordList.size()){
@@ -454,54 +451,12 @@ public class ReaderFragment extends Fragment {
 		wordList = readable.getWordList();
 		emphasisList = readable.getEmphasisList();
 		delayList = readable.getDelayList();
-		if (isStorable(readable)){
-			bytePosition = ((Storable) readable).getBytePosition();
-		}
-	}
-
-	/**
-	 * periodically animates progressBar
-	 */
-	private void periodicallyAnimate(){
-		Runnable anim = new Runnable() {
-			@Override
-			public void run(){
-				if (!parserReceived){
-					final int durationTime = 500 + (int) (Math.random() * 200);
-					final int sleepTime = 4 * Constants.SECOND + (int) (Math.random() * 2 * Constants.SECOND);
-					Techniques choice;
-					int r = (int) (Math.random() * 3);
-					switch (r){
-						case 0:
-							choice = Techniques.Pulse;
-							break;
-						case 1:
-							choice = Techniques.Wave;
-							break;
-						case 2:
-							choice = Techniques.Flash;
-							break;
-						default:
-							choice = Techniques.Wobble;
-							break;
-					}
-					YoYo.with(choice).
-							duration(durationTime).
-							playOn(parsingProgressBar);
-					handler.postDelayed(this, durationTime + sleepTime);
-				}
-			}
-		};
-		handler.postDelayed(anim, Constants.SECOND);
 	}
 
 	private boolean canBeSaved(Readable readable){
 		return parserReceived &&
 				readable != null &&
 				settingsBundle != null &&
-/*
-				settingsBundle.isCachingEnabled() &&
-*/
 				!TextUtils.isEmpty(readable.getPath()) &&
 				isStorable(readable);
 	}
@@ -567,24 +522,6 @@ public class ReaderFragment extends Fragment {
 				: portMargin;
 		params.setMargins(newMargin, 0, newMargin, 0);
 		view.setLayoutParams(params);
-/*
-		ViewGroup rootView = (ViewGroup) getView().getParent();
-		if (rootView != null){
-            Activity activity = getActivity();
-
-            LayoutInflater inflater = LayoutInflater.from(activity);
-            ViewGroup newView = (ViewGroup) inflater.inflate(R.layout.fragment_reader, rootView, false);
-
-            rootView.removeAllViews();
-            rootView.addView(newView);
-
-            findViews(newView);
-            parsingProgressBar.setVisibility(View.GONE);
-            readerLayout.setVisibility(View.VISIBLE);
-            reader.updateView();
-            setReaderLayoutListener(activity);
-        }
-*/
 	}
 
 	public interface ReaderListener {
@@ -741,9 +678,7 @@ public class ReaderFragment extends Fragment {
 					synchronized (parserDeque){
 						if (!currentReadable.isProcessed()){
 							currentReadable.process(getActivity());
-							if (isFileStorable = isFileStorable(readable)){
-								fileSize = ((FileStorable) readable).getFileSize();
-							}
+							isFileStorable = isFileStorable(readable);
 							currentReadable.readData();
 							TextParser toAdd = TextParser.newInstance(currentReadable, settingsBundle);
 							toAdd.process();
@@ -755,7 +690,9 @@ public class ReaderFragment extends Fragment {
 							parserDeque.addLast(getNextParser(parserDeque.getLast()));
 						}
 					}
-					if (reader == null){ startReader(removeDequeHead()); }
+					if (reader == null){
+						startReader(removeDequeHead());
+					}
 					if (reader != null){
 						object.pauseTask();
 					} else {
@@ -788,11 +725,14 @@ public class ReaderFragment extends Fragment {
 		}
 	}
 
+	/**
+	 * Class to preserve lock of task
+	 */
 	private class MonitorObject {
 
 		private boolean paused;
 
-		public synchronized boolean isPaused(){return paused;}
+		public synchronized boolean isPaused(){ return paused; }
 
 		public synchronized void pauseTask() throws InterruptedException{
 			if (!isPaused()){

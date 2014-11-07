@@ -67,10 +67,13 @@ abstract public class Readable implements Serializable {
 	public static Readable createReadable(Context context, Bundle bundle){
 		Readable readable = null;
 		if (bundle != null){
+			String extraText = bundle.getString(Intent.EXTRA_TEXT);
+			if (extraText == null)
+				extraText = context.getResources().getString(R.string.sample_text);
 			readable = createReadable(
 					bundle.getInt(Constants.EXTRA_TYPE, -1),
-					bundle.getString(Intent.EXTRA_TEXT, context.getResources().getString(R.string.sample_text)),
-					bundle.getString(Constants.EXTRA_PATH, null),
+					extraText,
+					bundle.getString(Constants.EXTRA_PATH),
 					PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.Preferences.STORAGE,
 																					  true));
 			readable.setPosition(Math.max(bundle.getInt(Constants.EXTRA_POSITION), 0));

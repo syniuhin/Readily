@@ -20,6 +20,10 @@ public class Constants {
 	public static final int MIN_WPM = 50;
 	public static final int WPM_STEP_PREFERENCES = 10;
 	public static final int WPM_STEP_READER = 50;
+	public static final int DIALOG_PICKER_WIDTH = 250;
+	public static final int DIALOG_PICKER_HEIGHT = 300;
+	public static final int MIN_FONT_SIZE = 12;
+	public static final int MAX_FONT_SIZE = 30;
 
 	//defines a length, which limits links with description(to reduce working time of regexp)
 	public static final int NON_LINK_LENGTH = 500;

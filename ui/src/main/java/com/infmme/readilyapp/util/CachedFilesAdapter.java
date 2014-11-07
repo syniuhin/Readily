@@ -30,7 +30,7 @@ public class CachedFilesAdapter extends SimpleCursorAdapter {
 	private int usedPosition = -1;
 
 	public CachedFilesAdapter(Context context){
-		super(context, R.layout.list_element_main, null, new String[]{}, new int[]{}, 0);
+		super(context, R.layout.list_element_main, null, new String[]{}, new int[]{});
 	}
 
 	@Override

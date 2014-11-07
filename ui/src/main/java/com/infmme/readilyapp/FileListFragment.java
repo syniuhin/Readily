@@ -1,20 +1,19 @@
 package com.infmme.readilyapp;
 
-import android.app.Fragment;
-import android.app.LoaderManager;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.TextView;
-import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.database.LastReadContentProvider;
 import com.infmme.readilyapp.util.CachedFilesAdapter;
 
@@ -71,12 +70,12 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data){
-		adapter.swapCursor(data);
+		adapter.changeCursor(data);
 	}
 
 	@Override
 	public void onLoaderReset(Loader loader){
-		adapter.swapCursor(null);
+		adapter.changeCursor(null);
 	}
 
 	@Override

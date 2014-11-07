@@ -41,6 +41,7 @@
     <string name="email_app_not_found">Приложение почты не найдено</string>
     <string name="next">Далее</string>
     <string name="finish">Выход</string>
+    <string name="illegal_value">Некорректное значение</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Прочитать текст из буфера обмена</string>
@@ -72,6 +73,7 @@
     <string name="preference_cache_summary">Кэширует незаконченные чтения</string>
     <string name="preference_font_size">Размер шрифта</string>
     <string name="preference_font_size_summary">Внимание: текст может не уместится в окне ридера!</string>
+    <string name="hint_font_size">Введите размер шрифта</string>
     <string name="preference_dark_theme">Тёмная тема</string>
     <string name="send_email">Отошлите письмо</string>
     <string name="mail_to_me">mailto:syniuhin@gmail.com</string>

@@ -20,10 +20,10 @@ android {
     compileSdkVersion 20
     buildToolsVersion '20.0.0'
     defaultConfig {
-        minSdkVersion 13
+        minSdkVersion 9
         targetSdkVersion 20
-        versionCode 5
-        versionName "1.0.3.1"
+        versionCode 6
+        versionName "1.1"
     }
     buildTypes {
         release {
@@ -33,11 +33,11 @@ android {
     }
     lintOptions {
         // set to true to turn off analysis progress reporting by lint
-        quiet true
+        quiet false
         // if true, stop the gradle build if errors are found
-        abortOnError false
+        abortOnError true
         // if true, only report errors
-        ignoreWarnings true
+        ignoreWarnings false
         // turn off checking the given issue id's
         disable 'TypographyFractions', 'TypographyQuotes'
         // if true, generate a text report of issues (false by default)
@@ -56,7 +56,7 @@ dependencies {
     compile project(':aFileChooser')
     compile 'com.android.support:appcompat-v7:20.+'
     compile 'com.android.support:support-v4:20.+'
-    compile 'com.google.android.gms:play-services:5.0.+'
+    compile 'com.google.android.gms:play-services:5.2.+'
     compile 'com.crashlytics.android:crashlytics:1.+'
     compile 'org.jsoup:jsoup:1.7.3'
     compile 'org.slf4j:slf4j-android:1.7.7'

@@ -48,7 +48,7 @@ public class TxtFileStorable extends FileStorable {
 	@Override
 	public void readData(){
 		try {
-			if ((inputDataLength = fileInputStream.read(inputData)) != -1){
+			if (fileInputStream != null && (inputDataLength = fileInputStream.read(inputData)) != -1){
 				String toSet = new String(inputData, encoding);
 				if (inputDataLength < toSet.length())
 					toSet = toSet.substring(0, (int) inputDataLength);
