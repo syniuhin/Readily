@@ -99,7 +99,6 @@ public class ReaderFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 		View fragmentLayout = inflater.inflate(R.layout.fragment_reader, container, false);
 		findViews(fragmentLayout);
-		//periodicallyAnimate();
 		return fragmentLayout;
 	}
 
@@ -454,49 +453,10 @@ public class ReaderFragment extends Fragment {
 		delayList = readable.getDelayList();
 	}
 
-	/**
-	 * periodically animates progressBar
-	 */
-	private void periodicallyAnimate(){
-		Runnable anim = new Runnable() {
-			@Override
-			public void run(){
-				if (!parserReceived){
-					final int durationTime = 500 + (int) (Math.random() * 200);
-					final int sleepTime = 4 * Constants.SECOND + (int) (Math.random() * 2 * Constants.SECOND);
-					Techniques choice;
-					int r = (int) (Math.random() * 3);
-					switch (r){
-						case 0:
-							choice = Techniques.Pulse;
-							break;
-						case 1:
-							choice = Techniques.Wave;
-							break;
-						case 2:
-							choice = Techniques.Flash;
-							break;
-						default:
-							choice = Techniques.Wobble;
-							break;
-					}
-					YoYo.with(choice).
-							duration(durationTime).
-							playOn(parsingProgressBar);
-					handler.postDelayed(this, durationTime + sleepTime);
-				}
-			}
-		};
-		handler.postDelayed(anim, Constants.SECOND);
-	}
-
 	private boolean canBeSaved(Readable readable){
 		return parserReceived &&
 				readable != null &&
 				settingsBundle != null &&
-/*
-				settingsBundle.isCachingEnabled() &&
-*/
 				!TextUtils.isEmpty(readable.getPath()) &&
 				isStorable(readable);
 	}
@@ -562,24 +522,6 @@ public class ReaderFragment extends Fragment {
 				: portMargin;
 		params.setMargins(newMargin, 0, newMargin, 0);
 		view.setLayoutParams(params);
-/*
-		ViewGroup rootView = (ViewGroup) getView().getParent();
-		if (rootView != null){
-            Activity activity = getActivity();
-
-            LayoutInflater inflater = LayoutInflater.from(activity);
-            ViewGroup newView = (ViewGroup) inflater.inflate(R.layout.fragment_reader, rootView, false);
-
-            rootView.removeAllViews();
-            rootView.addView(newView);
-
-            findViews(newView);
-            parsingProgressBar.setVisibility(View.GONE);
-            readerLayout.setVisibility(View.VISIBLE);
-            reader.updateView();
-            setReaderLayoutListener(activity);
-        }
-*/
 	}
 
 	public interface ReaderListener {
@@ -748,7 +690,9 @@ public class ReaderFragment extends Fragment {
 							parserDeque.addLast(getNextParser(parserDeque.getLast()));
 						}
 					}
-					if (reader == null){ startReader(removeDequeHead()); }
+					if (reader == null){
+						startReader(removeDequeHead());
+					}
 					if (reader != null){
 						object.pauseTask();
 					} else {
@@ -781,11 +725,14 @@ public class ReaderFragment extends Fragment {
 		}
 	}
 
+	/**
+	 * Class to preserve lock of task
+	 */
 	private class MonitorObject {
 
 		private boolean paused;
 
-		public synchronized boolean isPaused(){return paused;}
+		public synchronized boolean isPaused(){ return paused; }
 
 		public synchronized void pauseTask() throws InterruptedException{
 			if (!isPaused()){

@@ -22,8 +22,8 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 20
-        versionCode 5
-        versionName "1.0.3.1"
+        versionCode 6
+        versionName "1.1"
     }
     buildTypes {
         release {
@@ -33,11 +33,11 @@ android {
     }
     lintOptions {
         // set to true to turn off analysis progress reporting by lint
-        quiet true
+        quiet false
         // if true, stop the gradle build if errors are found
-        abortOnError false
+        abortOnError true
         // if true, only report errors
-        ignoreWarnings true
+        ignoreWarnings false
         // turn off checking the given issue id's
         disable 'TypographyFractions', 'TypographyQuotes'
         // if true, generate a text report of issues (false by default)

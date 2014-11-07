@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.view.WindowManager;
 import com.infmme.readilyapp.util.BaseActivity;
@@ -35,6 +36,11 @@ public class ReceiverActivity extends BaseActivity implements /*FlurryAdListener
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_receiver);
+		//TODO: fix NPE
+		ActionBar actionBar = getSupportActionBar();
+		if (actionBar != null)
+			actionBar.hide();
+
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
 		Bundle bundle = bundleReceivedData();
