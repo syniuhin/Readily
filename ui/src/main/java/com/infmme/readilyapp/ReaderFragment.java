@@ -264,7 +264,7 @@ public class ReaderFragment extends Fragment {
 	 */
 	private void initPrevButton(){
 		if (!settingsBundle.isSwipesEnabled()){
-			prevButton.setImageResource(R.drawable.abc_ic_ab_back_holo_light);
+			prevButton.setImageResource(android.R.drawable.ic_media_previous);
 			prevButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v){
