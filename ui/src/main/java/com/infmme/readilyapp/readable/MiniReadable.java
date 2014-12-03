@@ -7,8 +7,6 @@ import com.infmme.readilyapp.Constants;
 import com.infmme.readilyapp.database.LastReadDBHelper;
 import com.infmme.readilyapp.service.LastReadService;
 
-import java.util.ArrayList;
-
 /**
  * Created by infm on 7/11/14. Enjoy ;)
  */
@@ -21,22 +19,6 @@ public class MiniReadable extends Readable {
 		this.header = header;
 		this.percent = percent;
 		this.position = position;
-	}
-
-	public static ArrayList<MiniReadable> listFromCursor(Cursor cursor){
-		ArrayList<MiniReadable> result = new ArrayList<MiniReadable>();
-		if (cursor != null && cursor.getCount() > 0){
-			cursor.moveToFirst();
-			do {
-				result.add(new MiniReadable(
-						cursor.getString(LastReadDBHelper.COLUMN_PATH),
-						cursor.getString(LastReadDBHelper.COLUMN_HEADER),
-						cursor.getString(LastReadDBHelper.COLUMN_PERCENT),
-						cursor.getInt(LastReadDBHelper.COLUMN_POSITION)
-				));
-			} while (cursor.moveToNext());
-		}
-		return result;
 	}
 
 	public static MiniReadable singletonFromCursor(Cursor cursor){
@@ -59,10 +41,6 @@ public class MiniReadable extends Readable {
 
 	public String getPercent(){
 		return percent;
-	}
-
-	public void setPercent(String percent){
-		this.percent = percent;
 	}
 
 	@Override

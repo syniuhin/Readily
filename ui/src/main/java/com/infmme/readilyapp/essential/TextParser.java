@@ -4,9 +4,8 @@ import android.text.TextUtils;
 import android.util.Pair;
 import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.settings.SettingsBundle;
-import com.infmme.readilyapp.util.Base64Coder;
 
-import java.io.*;
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
@@ -62,11 +61,6 @@ public class TextParser implements Serializable, Callable<TextParser> {
 	private List<Integer> delayCoefficients;
 	private int resultCode;
 
-	/**
-	 * stackOverFlow guys told about it
-	 */
-	public TextParser(){}
-
 	public TextParser(Readable readable){
 		this.readable = readable;
 		lengthPreference = 13; //TODO:implement it optional
@@ -111,48 +105,12 @@ public class TextParser implements Serializable, Callable<TextParser> {
 							  );
 	}
 
-	/**
-	 * Read the object from Base64 string.
-	 *
-	 * @param s : serialized TextParser instance
-	 * @return : decoded TextParser instance
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 */
-	public static TextParser fromString(String s) throws IOException,
-			ClassNotFoundException{
-		byte[] data = Base64Coder.decode(s);
-		ObjectInputStream ois = new ObjectInputStream(
-				new ByteArrayInputStream(data));
-		TextParser o = (TextParser) ois.readObject();
-		ois.close();
-		return o;
-	}
-
 	public int getResultCode(){
 		return resultCode;
 	}
 
 	public void setResultCode(int resultCode){
 		this.resultCode = resultCode;
-	}
-
-	/**
-	 * @return serialized instance
-	 */
-	@Override
-	public String toString(){
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream oos;
-		try {
-			oos = new ObjectOutputStream(baos);
-			oos.writeObject(this);
-			oos.close();
-			return new String(Base64Coder.encode(baos.toByteArray()));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	public void process(){
@@ -195,7 +153,7 @@ public class TextParser implements Serializable, Callable<TextParser> {
 	protected String clearFromRepetitions(String text){
 		StringBuilder res = new StringBuilder();
 		int previousPosition = -1;
-		for (Character ch : text.toCharArray()){
+		for (char ch : text.toCharArray()){
 			int position = makeMeSpecial.indexOf(ch);
 			if (position > -1 && position != previousPosition){
 				previousPosition = position;
@@ -211,7 +169,7 @@ public class TextParser implements Serializable, Callable<TextParser> {
 	protected String removeSpacesBeforePunctuation(String text){
 		StringBuilder res = new StringBuilder();
 		String madeMeSpecial = makeMeSpecial.substring(1, 9) + ")";
-		for (Character ch : text.toCharArray()){
+		for (char ch : text.toCharArray()){
 			if (madeMeSpecial.indexOf(ch) > -1 &&
 					res.length() > 0 &&
 					" ".equals(res.substring(res.length() - 1))){ res.deleteCharAt(res.length() - 1); }
@@ -223,12 +181,15 @@ public class TextParser implements Serializable, Callable<TextParser> {
 	protected String insertSpacesAfterPunctuation(String text){
 		StringBuilder res = new StringBuilder();
 		String madeMeSpecial = makeMeSpecial.substring(1, 9) + ")";
+		char ch;
+		char nextCh;
 		for (int i = 0; i < text.length(); ++i){
-			Character ch = text.charAt(i);
+			ch = text.charAt(i);
 			res.append(ch);
 			if (i < text.length() - 1){
-				Character nextCh = text.charAt(i + 1);
-				if (madeMeSpecial.indexOf(ch) > -1 && Character.isLetter(nextCh)){ res.append(" "); }
+				nextCh = text.charAt(i + 1);
+				if (madeMeSpecial.indexOf(ch) > -1 && Character.isLetter(nextCh))
+					res.append(" ");
 			}
 		}
 		return res.toString();
@@ -242,44 +203,47 @@ public class TextParser implements Serializable, Callable<TextParser> {
 		StringBuilder res = new StringBuilder();
 		for (int i = 0; i < text.length(); ++i){
 			if (i > 0 && text.charAt(i - 1) == '.'){
-				if (!(i + 2 < text.length() && text.charAt(i + 2) == '.')){ res.append(text.charAt(i)); }
-			} else { res.append(text.charAt(i)); }
+				if (!(i + 2 < text.length() && text.charAt(i + 2) == '.'))
+					res.append(text.charAt(i));
+			} else {
+				res.append(text.charAt(i));
+			}
 		}
 		return res.toString();
 	}
 
 	protected void cutLongWords(Readable readable){
-		String text = readable.getText();
 		List<String> res = new ArrayList<String>();
-		for (String word : text.split(" ")){
-			boolean isComplex = false;
+		for (String word : readable.getText().split(" ")){
 			while (word.length() - 1 > lengthPreference){
-				isComplex = true;
-				String toAppend;
 				int pos = lengthPreference - 2;
-				while (pos > 3 && !Character.isLetter(word.charAt(pos))){ --pos; }
-				toAppend = word.substring(0, pos);
+				while (pos > 3 && !Character.isLetter(word.charAt(pos)))
+					--pos;
+				res.add(word.substring(0, pos) + "-");
 				word = word.substring(pos);
-				res.add(toAppend + "-");
 			}
-			if (isComplex){ res.add(word); } else { res.add(word); }
+			res.add(word);
 		}
 		StringBuilder sb = new StringBuilder();
-		for (String s : res) sb.append(s).append(" ");
+		for (String s : res)
+			sb.append(s).append(" ");
 		readable.setText(sb.substring(0, Math.max(0, sb.length() - 1)));
 	}
 
 	protected int measureWord(String word){
-		if (word.length() == 0){ return delayCoefficients.get(0); }
+		if (word.length() == 0)
+			return delayCoefficients.get(0);
 		if ((word.length() == 2 && word.equals("не")) ||
-				(word.length() == 3 && word.equals("not"))){
+				(word.length() == 3 && word.equals("not")))
 			return delayCoefficients.get(5);
-		}
 		int res = 0;
+		int tempRes;
 		for (char ch : word.toCharArray()){
-			int tempRes = delayCoefficients.get(0);
-			if (Character.isDigit(ch)){ tempRes = delayCoefficients.get(1); }
-			if (ch == '\t'){ tempRes = delayCoefficients.get(4); }
+			tempRes = delayCoefficients.get(0);
+			if (Character.isDigit(ch))
+				tempRes = delayCoefficients.get(1);
+			if (ch == '\t')
+				tempRes = delayCoefficients.get(4);
 			switch (ch){
 				case ',':
 					tempRes = delayCoefficients.get(1);
@@ -308,8 +272,8 @@ public class TextParser implements Serializable, Callable<TextParser> {
 				case '\n':
 					tempRes = delayCoefficients.get(4);
 			}
-			res = Math.max(res, tempRes);
-			res = Math.max(res, tempRes);
+			if (tempRes > res)
+				res = tempRes;
 		}
 		return res;
 	}
@@ -352,7 +316,8 @@ public class TextParser implements Serializable, Callable<TextParser> {
 					priorities.put(ch, new Pair<Integer, Integer>(priorities.get(ch).first * 4, i));
 				}
 			}
-			int resInd = word.length() / 2, mmax = 0;
+			int resInd = word.length() / 2;
+			int mmax = 0;
 			for (Map.Entry<String, Pair<Integer, Integer>> entry : priorities.entrySet()){
 				if (mmax < entry.getValue().first){
 					mmax = entry.getValue().first;

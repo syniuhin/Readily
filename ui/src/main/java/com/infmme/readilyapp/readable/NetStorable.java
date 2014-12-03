@@ -1,11 +1,9 @@
 package com.infmme.readilyapp.readable;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.TextUtils;
-import com.infmme.readilyapp.Constants;
 import de.jetwick.snacktory.HtmlFetcher;
 import de.jetwick.snacktory.JResult;
 
@@ -13,6 +11,8 @@ import de.jetwick.snacktory.JResult;
  * Created by infm on 6/13/14. Enjoy ;)
  */
 public class NetStorable extends Storable {
+
+	private static final String SAVED_FILE_EXT = ".txt";
 
 	private String link;
 
@@ -28,8 +28,6 @@ public class NetStorable extends Storable {
 
 	public String getLink(){ return link; }
 
-	public void setLink(String link){ this.link = link; }
-
 	@Override
 	public void process(Context context){
 		if (!TextUtils.isEmpty(link)){
@@ -43,7 +41,7 @@ public class NetStorable extends Storable {
 			processFailed = true;
 			return;
 		}
-		path = context.getFilesDir() + "/" + cleanFileName(title) + ".txt";
+		path = context.getFilesDir() + "/" + cleanFileName(title) + SAVED_FILE_EXT;
 		rowData = takeRowData(context);
 		if (rowData != null){
 			position = rowData.getPosition();
@@ -54,9 +52,7 @@ public class NetStorable extends Storable {
 	}
 
 	@Override
-	public void readData(){
-		//???
-	}
+	public void readData(){}
 
 	@Override
 	public Readable getNext(){
@@ -67,7 +63,7 @@ public class NetStorable extends Storable {
 
 	private String parseArticle(String url){
 		HtmlFetcher fetcher = new HtmlFetcher();
-		JResult res = null;
+		JResult res;
 		try {
 			res = fetcher.fetchAndExtract(url, 10000, true); //I don't know what it means, need to read docs/source
 			title = res.getTitle();

@@ -27,14 +27,12 @@ public class LastReadService extends IntentService {
 	}
 
 	private static Intent createIntent(Context context, String path, int operation){
-		if (operation == Constants.DB_OPERATION_DELETE){
-			Intent intent = new Intent(context, LastReadService.class);
-			intent.putExtra(Constants.EXTRA_PATH, path);
-			intent.putExtra(Constants.EXTRA_DB_OPERATION, operation);
-			return intent;
-		} else {
+		if (operation == Constants.DB_OPERATION_DELETE)
+			return new Intent(context, LastReadService.class).
+					putExtra(Constants.EXTRA_PATH, path).
+					putExtra(Constants.EXTRA_DB_OPERATION, operation);
+		else
 			throw new IllegalArgumentException("operation != DELETE");
-		}
 	}
 
 	public static void start(Context context, String path, int operation){
@@ -47,11 +45,10 @@ public class LastReadService extends IntentService {
 		switch (intent.getIntExtra(Constants.EXTRA_DB_OPERATION, -1)){
 			case Constants.DB_OPERATION_INSERT:
 				DataBundle dataBundle = DataBundle.createElementFromIntent(intent);
-				DataBundle rowData = Storable.getRowData(contentResolver.query(LastReadContentProvider.CONTENT_URI,
-																			   null, null, null, null),
-														 dataBundle.getPath());
-
-				insertDataWithoutConflict(contentResolver, dataBundle, rowData);
+				insertDataWithoutConflict(contentResolver, dataBundle,
+										  Storable.getRowData(contentResolver.query(LastReadContentProvider.CONTENT_URI,
+																					null, null, null, null),
+															  dataBundle.getPath()));
 				break;
 			case Constants.DB_OPERATION_DELETE:
 				deleteData(contentResolver, getPaths(intent));
@@ -74,7 +71,8 @@ public class LastReadService extends IntentService {
 
 	private String[] getPaths(Intent intent){
 		String[] paths = intent.getStringArrayExtra(Constants.EXTRA_PATH_ARRAY);
-		if (paths == null){ paths = new String[]{intent.getStringExtra(Constants.EXTRA_PATH)}; }
+		if (paths == null)
+			paths = new String[]{ intent.getStringExtra(Constants.EXTRA_PATH) };
 		return paths;
 	}
 

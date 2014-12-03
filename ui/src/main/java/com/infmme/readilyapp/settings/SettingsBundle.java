@@ -33,32 +33,16 @@ public class SettingsBundle {
 		return darkTheme;
 	}
 
-	public void setDarkTheme(boolean darkTheme){
-		this.darkTheme = darkTheme;
-	}
-
 	public Integer getFontSize(){
 		return fontSize;
-	}
-
-	public void setFontSize(Integer fontSize){
-		this.fontSize = fontSize;
 	}
 
 	public boolean isStoringComplete(){
 		return storingComplete;
 	}
 
-	public void setStoringComplete(boolean storingComplete){
-		this.storingComplete = storingComplete;
-	}
-
 	public List<Integer> getDelayCoefficients(){
 		return delayCoefficients;
-	}
-
-	public void setDelayCoefficients(List<Integer> delayCoefficients){
-		this.delayCoefficients = delayCoefficients;
 	}
 
 	public Integer getWPM(){
@@ -69,44 +53,12 @@ public class SettingsBundle {
 		this.WPM = WPM;
 	}
 
-	public boolean isPunctuationSpeedDiffers(){
-		return punctuationSpeedDiffers;
-	}
-
-	public void setPunctuationSpeedDiffers(boolean punctuationSpeedDiffers){
-		this.punctuationSpeedDiffers = punctuationSpeedDiffers;
-	}
-
 	public boolean isShowingContextEnabled(){
 		return showingContextEnabled;
 	}
 
-	public void setShowingContextEnabled(boolean showingContextEnabled){
-		this.showingContextEnabled = showingContextEnabled;
-	}
-
 	public boolean isSwipesEnabled(){
 		return swipesEnabled;
-	}
-
-	public void setSwipesEnabled(boolean swipesEnabled){
-		this.swipesEnabled = swipesEnabled;
-	}
-
-	public Integer getTypeface(){
-		return typeface;
-	}
-
-	public void setTypeface(Integer typeface){
-		this.typeface = typeface;
-	}
-
-	public SharedPreferences getSharedPreferences(){
-		return sharedPreferences;
-	}
-
-	public void setSharedPreferences(SharedPreferences sharedPreferences){
-		this.sharedPreferences = sharedPreferences;
 	}
 
 	public void assignFields(){
@@ -143,15 +95,12 @@ public class SettingsBundle {
 	 */
 	private ArrayList<Integer> buildDelayListCoefficients(){
 		ArrayList<Integer> delayCoeffs = new ArrayList<Integer>();
-		if (punctuationSpeedDiffers){
-			for (int i = 0; i < 6; ++i){
+		if (punctuationSpeedDiffers)
+			for (int i = 0; i < 6; ++i)
 				delayCoeffs.add(Integer.parseInt(Constants.Preferences.STR_PUNCTUATION_DEFAULTS[i]));
-			}
-		} else {
-			for (int i = 0; i < 6; ++i){
+		else
+			for (int i = 0; i < 6; ++i)
 				delayCoeffs.add(Integer.parseInt(Constants.Preferences.STR_PUNCTUATION_DEFAULTS[0]));
-			}
-		}
 		return delayCoeffs;
 	}
 }

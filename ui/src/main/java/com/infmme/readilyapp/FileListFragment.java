@@ -21,7 +21,7 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 
 	private CachedFilesAdapter adapter;
 
-	private TextView tvEmpty;
+	private TextView textViewEmpty;
 	private ListView listView;
 
 	public FileListFragment(){}
@@ -29,7 +29,7 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 		View view = inflater.inflate(R.layout.fragment_file_list, container, false);
-		findViews(view);
+		findViews((ViewGroup) view);
 		return view;
 	}
 
@@ -40,9 +40,9 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 		getLoaderManager().initLoader(0, null, this);
 	}
 
-	private void findViews(View v){
+	private void findViews(ViewGroup v){
 		listView = (ListView) v.findViewById(R.id.fileListView);
-		tvEmpty = (TextView) v.findViewById(R.id.text_view_empty);
+		textViewEmpty = (TextView) v.findViewById(R.id.text_view_empty);
 	}
 
 	private void initViews(final Context context){
@@ -55,11 +55,10 @@ public class FileListFragment extends Fragment implements LoaderManager.LoaderCa
 			}
 
 			@Override
-			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount){
-			}
+			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount){}
 		});
 
-		listView.setEmptyView(tvEmpty);
+		listView.setEmptyView(textViewEmpty);
 	}
 
 	@Override

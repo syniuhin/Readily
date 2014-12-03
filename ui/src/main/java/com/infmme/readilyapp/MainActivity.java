@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -23,7 +22,6 @@ import com.ipaulpro.afilechooser.utils.FileUtils;
 public class MainActivity extends BaseActivity {
 
 	private static final int FILE_SELECT_CODE = 7331;
-	private static final String SETTINGS_FRAGMENT_TAG = "SettingsFragment0182";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
@@ -41,10 +39,15 @@ public class MainActivity extends BaseActivity {
 
 	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 	private void changeActionBarIcon(){
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null){ actionBar.setIcon(R.drawable.logo_up); }
+		if (getSupportActionBar() != null){
+			getSupportActionBar().setIcon(R.drawable.logo_up);
+		}
 	}
 
+	/**
+	 * Checks if user opens app first time
+	 * @param context is used to get SharedPreferences
+	 */
 	private void isAnybodyOutThere(Context context){
 		if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean(Constants.Preferences.NEWCOMER, false)){
 			InstructionsActivity.start(this);
@@ -86,9 +89,9 @@ public class MainActivity extends BaseActivity {
 	}
 
 	private void getFromFile(){
-		Intent intent = Intent.createChooser(FileUtils.createGetContentIntent(),
-											 getResources().getString(R.string.choose_file));
-		startActivityForResult(intent, FILE_SELECT_CODE);
+		startActivityForResult(Intent.createChooser(FileUtils.createGetContentIntent(),
+													getResources().getString(R.string.choose_file)),
+							   FILE_SELECT_CODE);
 	}
 
 	@Override
@@ -100,7 +103,9 @@ public class MainActivity extends BaseActivity {
 						String relativePath = FileUtils.getPath(this, data.getData());
 						if (FileStorable.isExtensionValid(FileUtils.getExtension(relativePath))){
 							ReceiverActivity.startReceiverActivity(this, Readable.TYPE_FILE, relativePath);
-						} else { Toast.makeText(this, R.string.wrong_ext, Toast.LENGTH_SHORT).show(); }
+						} else {
+							Toast.makeText(this, R.string.wrong_ext, Toast.LENGTH_SHORT).show();
+						}
 					}
 				}
 				break;

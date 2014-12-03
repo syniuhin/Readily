@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.view.WindowManager;
 import com.infmme.readilyapp.util.BaseActivity;
@@ -36,19 +35,17 @@ public class ReceiverActivity extends BaseActivity implements /*FlurryAdListener
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_receiver);
-		//TODO: fix NPE
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null)
-			actionBar.hide();
+		if (getSupportActionBar() != null)
+			getSupportActionBar().hide();
 
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-		Bundle bundle = bundleReceivedData();
-		startReaderFragment(bundle);
+		startReaderFragment(bundleReceivedData());
 	}
 
 	private void setOnSwipeListener(final ReaderFragment readerFragment){
-		if (contentView == null){ contentView = this.findViewById(android.R.id.content); }
+		if (contentView == null)
+			contentView = findViewById(android.R.id.content);
 
 		contentView.setOnTouchListener(new OnSwipeTouchListener(this) {
 			@Override

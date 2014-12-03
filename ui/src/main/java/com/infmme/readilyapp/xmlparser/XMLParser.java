@@ -102,58 +102,6 @@ public class XMLParser {
 			currentEvent = new XMLEvent(type = CONTENT);
 		}
 		currentEvent.setStartPosition(position);
-/*			!????
-		if (tagStack.isEmpty()){
-			if (currentInt == '<'){
-				if (nextInt == '/') {
-					currentEvent = new XMLEvent(type = TAG_CLOSE);
-					readNext();
-				} else if (nextInt == '?'){
-					currentEvent = new XMLEvent(type = DOCUMENT_START);
-					readNext();
-				} else {
-					currentEvent = new XMLEvent(type = TAG);
-				}
-			} else { //consider random position as pointing to content of text;
-				currentEvent = new XMLEvent(type = CONTENT);
-			}
-		} else {
-			int prevType = tagStack.lastElement().getType();
-			switch (prevType){
-				case DOCUMENT_START:
-					currentEvent = new XMLEvent(type = EMPTINESS);
-					break;
-				case DOCUMENT_CLOSE:
-					throw new IllegalArgumentException("WTF, event has appeared after DOCUMENT_CLOSE");
-				case TAG_START:
-					if (currentInt == '<') {
-						if (nextInt == '/')
-							currentEvent = new XMLEvent(type = TAG_CLOSE);
-						else
-							currentEvent = new XMLEvent(type = TAG);
-					} else {
-						currentEvent = new XMLEvent(type = CONTENT);
-					}
-					break;
-				case TAG_CLOSE:
-					throw new IllegalArgumentException("TAG_CLOSE is in tagStack");
-				case CONTENT:
-					if (currentInt == '<') {
-						currentEvent = new XMLEvent(type = TAG);
-						break;
-					} else {
-						throw new IllegalArgumentException("non-TAG after EMPTINESS");
-					}
-				case EMPTINESS:
-					if (currentInt == '<') {
-						currentEvent = new XMLEvent(type = TAG);
-						break;
-					} else {
-						throw new IllegalArgumentException("non-TAG after EMPTINESS");
-					}
-			}
-		}
-*/
 		do {
 			readNext();
 			updateType(type, currentInt, nextInt);

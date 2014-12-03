@@ -29,10 +29,10 @@ abstract public class Readable implements Serializable {
 
 	protected StringBuilder text;
 	protected String header;
-	protected Long seconds;
+	protected long seconds;
 	protected String path;
-	protected Integer position;
-	protected Integer type;
+	protected int position;
+	protected int type;
 	protected DataBundle rowData;
 	protected boolean processFailed;
 	protected boolean processed;
@@ -139,16 +139,8 @@ abstract public class Readable implements Serializable {
 		return seconds;
 	}
 
-	public void setSeconds(Long seconds){
-		this.seconds = seconds;
-	}
-
 	public Boolean isProcessFailed(){
 		return processFailed;
-	}
-
-	public void setProcessFailed(boolean processFailed){
-		this.processFailed = processFailed;
 	}
 
 	public String getText(){
@@ -161,10 +153,6 @@ abstract public class Readable implements Serializable {
 
 	public StringBuilder getTextBuilder(){
 		return text;
-	}
-
-	public void setTextBuilder(StringBuilder text){
-		this.text = text;
 	}
 
 	public String getHeader(){
@@ -199,8 +187,6 @@ abstract public class Readable implements Serializable {
 		this.wordList = wordList;
 	}
 
-	public void addToWordList(List<String> addition) { this.wordList.addAll(addition); }
-
 	public List<Integer> getDelayList(){
 		return delayList;
 	}
@@ -221,16 +207,8 @@ abstract public class Readable implements Serializable {
 		return processed;
 	}
 
-	public void setProcessed(boolean processed){
-		this.processed = processed;
-	}
-
 	public DataBundle getRowData(){
 		return rowData;
-	}
-
-	public void setRowData(DataBundle rowData){
-		this.rowData = rowData;
 	}
 
 	public void insertLastWord(String lastWord){

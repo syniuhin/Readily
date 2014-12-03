@@ -28,8 +28,6 @@ public class Constants {
 	//defines a length, which limits links with description(to reduce working time of regexp)
 	public static final int NON_LINK_LENGTH = 500;
 
-	public static final int SECOND = 1000;
-
 	public static final int READER_START_OFFSET = 10;
 
 	public static final int DB_OPERATION_INSERT = 0;
