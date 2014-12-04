@@ -3,9 +3,9 @@ package com.infmme.readilyapp.util;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,11 +39,10 @@ public class CachedFilesAdapter extends SimpleCursorAdapter {
 	}
 
 	@Override
-	public void bindView(View v, final Context context, Cursor cursor){
+	public void bindView(@NonNull final View view, final Context context, @NonNull Cursor cursor){
 		final MiniReadable readable = MiniReadable.singletonFromCursor(cursor);
 
 		final int position = cursor.getPosition();
-		final View view = v;
 		final TextView textViewTitle = (TextView) view.findViewById(R.id.text_view_title);
 		final TextView textViewFilename = (TextView) view.findViewById(R.id.text_view_filename);
 		final TextView textViewPercent = (TextView) view.findViewById(R.id.text_view_percent);
@@ -116,8 +115,7 @@ public class CachedFilesAdapter extends SimpleCursorAdapter {
 		View actionView = v.findViewById(R.id.action_view);
 		View mainView = v.findViewById(R.id.main_view);
 
-		int height = mainView.getHeight();
-		actionView.setMinimumHeight(height);
+		actionView.setMinimumHeight(mainView.getHeight());
 
 		YoYo.with(Techniques.SlideOutRight).
 				duration(DURATION).
@@ -131,7 +129,6 @@ public class CachedFilesAdapter extends SimpleCursorAdapter {
 
 	private void inflateMainMenu(View v){
 		final View actionView = v.findViewById(R.id.action_view);
-		View mainView = v.findViewById(R.id.main_view);
 
 		YoYo.with(Techniques.FadeOut).
 				duration(DURATION).
@@ -139,7 +136,7 @@ public class CachedFilesAdapter extends SimpleCursorAdapter {
 
 		YoYo.with(Techniques.SlideInRight).
 				duration(DURATION).
-				playOn(mainView);
+				playOn(v.findViewById(R.id.main_view));
 		actionView.postDelayed(new Runnable() {
 			@Override
 			public void run(){
@@ -191,11 +188,12 @@ public class CachedFilesAdapter extends SimpleCursorAdapter {
 									  @Override
 									  public void onClick(DialogInterface dialog, int which){
 										  String nHeader = headerView.getText().toString();
-										  if (!TextUtils.isEmpty(nHeader)){ readable.setHeader(nHeader); }
+										  if (!TextUtils.isEmpty(nHeader))
+											  readable.setHeader(nHeader);
 
-										  Intent intent = MiniReadable.createDBServiceIntent(context, readable);
-										  intent.putExtra(Constants.EXTRA_DB_OPERATION, Constants.DB_OPERATION_INSERT);
-										  context.startService(intent);
+										  context.startService(MiniReadable.createDBServiceIntent(context, readable)
+																		   .putExtra(Constants.EXTRA_DB_OPERATION,
+																					 Constants.DB_OPERATION_INSERT));
 									  }
 								  }).
 				setNegativeButton(android.R.string.cancel,

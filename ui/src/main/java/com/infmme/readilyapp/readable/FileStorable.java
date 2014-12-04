@@ -22,7 +22,6 @@ abstract public class FileStorable extends Storable {
 
 	public static final HashMap<String, Integer> extensionsMap = new HashMap<String, Integer>();
 	public static final int BUFFER_SIZE = 4096;
-	public static final int LAST_WORD_SUFFIX_SIZE = 10;
 	public static final int LAST_WORD_PREFIX_SIZE = 10;
 
 	protected FileInputStream fileInputStream;
@@ -163,10 +162,10 @@ abstract public class FileStorable extends Storable {
 	}
 
 	@Override
-	public void putInsertDataInIntent(Intent intent){
-		super.putInsertDataInIntent(intent);
-		intent.putExtra(Constants.EXTRA_POSITION, position);
-		intent.putExtra(Constants.EXTRA_BYTE_POSITION, bytePosition);
+	public Intent putInsertionDataInIntent(Intent intent){
+		return super.putInsertionDataInIntent(intent).
+				putExtra(Constants.EXTRA_POSITION, position).
+				putExtra(Constants.EXTRA_BYTE_POSITION, bytePosition);
 	}
 
 	protected boolean doesHaveLetters(StringBuilder text){

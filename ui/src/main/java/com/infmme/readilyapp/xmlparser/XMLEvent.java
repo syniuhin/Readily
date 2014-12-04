@@ -19,7 +19,7 @@ public class XMLEvent {
 	public XMLEvent(int type){
 		content = "";
 		tagName = "";
-		domain = new Pair<Long, Long>((long) -1, (long) -1);
+		domain = new Pair<Long, Long>(-1L, -1L);
 		this.type = type;
 		generateCloseType();
 	}
@@ -28,16 +28,8 @@ public class XMLEvent {
 		return domain;
 	}
 
-	public long getEndPosition(){
-		return domain.second;
-	}
-
 	public void setEndPosition(long endPosition){
 		domain = new Pair<Long, Long>(domain.first, endPosition);
-	}
-
-	public long getStartPosition(){
-		return domain.first;
 	}
 
 	public void setStartPosition(long startPosition){
@@ -46,10 +38,6 @@ public class XMLEvent {
 
 	public int getType(){
 		return type;
-	}
-
-	public int getCloseType(){
-		return closeType;
 	}
 
 	public String getContent(){
@@ -77,10 +65,6 @@ public class XMLEvent {
 
 	public void appendContent(char c){
 		content += c;
-	}
-
-	public void cutLastContentChar(){
-		content = content.substring(0, content.length() - 1);
 	}
 
 	public void appendTagName(char c){

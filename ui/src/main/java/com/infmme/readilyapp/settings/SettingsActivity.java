@@ -149,8 +149,7 @@ public class SettingsActivity extends PreferenceActivity {
 		sampleText.setBackgroundColor(getResources().getColor(android.R.color.white));
 		sampleText.setText(R.string.just_sample);
 		sampleText.setTextSize(TypedValue.COMPLEX_UNIT_SP, initSize);
-		int textHeight = (int) (spToPixels(this, Constants.MAX_FONT_SIZE + 10) + .5f);
-		sampleText.setHeight(textHeight);
+		sampleText.setHeight((int) (spToPixels(this, Constants.MAX_FONT_SIZE + 10) + .5f));
 		sampleText.setGravity(Gravity.CENTER_HORIZONTAL);
 		sampleText.setTypeface(Typeface.MONOSPACE);
 		return sampleText;
@@ -220,9 +219,9 @@ public class SettingsActivity extends PreferenceActivity {
 		AlertDialog dialog = builder.create();
 		dialog.show();
 
-		int textHeight = (int) (spToPixels(this, Constants.MAX_FONT_SIZE + 10) + .5f);
 		dialog.getWindow().setLayout(pxFromDp(Constants.DIALOG_PICKER_WIDTH),
-									 pxFromDp(Constants.DIALOG_PICKER_HEIGHT) + textHeight);
+									 pxFromDp(Constants.DIALOG_PICKER_HEIGHT) +
+											 (int) (spToPixels(this, Constants.MAX_FONT_SIZE + 10) + .5f));
 
 	}
 
