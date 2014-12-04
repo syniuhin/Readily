@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Basic -->
+    <string name="app_name">Readily</string>
+    <string name="title_activity_main">Readily</string>
+    <string name="title_activity_receiver">Ajouter à Readily</string>
+    <string name="title_activity_settings">Paramètres</string>
+
+    <!-- UI -->
+    <string name="just_sample">Example</string>
+    <string name="next_words">mots suivants</string>
+    <string name="top_pointer_description">points d'accentuation en haut</string>
+    <string name="bottom_pointer_description">points d'accentuation en bas</string>
+    <string name="clipboard_button">Lire un texte depuis le presse papier</string>
+    <string name="clipboard_empty">Le presse papier est vide</string>
+    <string name="continue_reading">Continuer</string>
+    <string name="list_empty_view">Hey, lisez quelque chose!</string>
+    <string name="file_manager_required">Installez un gestionnaire de fichier s'il vous plait</string>
+    <string name="wrong_ext">Extension incorrecte</string>
+    <string name="text_null">Texte introuvable</string>
+    <string name="cant_fetch">Problème lors de la recuperation du texte</string>
+    <string name="delete">Supprimer</string>
+    <string name="choose_file">Choisissez un fichier</string>
+    <string name="tap_to_start">Touchez pour démarrer</string>
+    <string name="confirmation_dialog_title">Êtes vous sure?</string>
+    <string name="gonna_delete">Vous êtes en train de supprimer cet élément. Cette action ne peut être annulée!</string>
+    <string name="editor_dialog_title">Modifier la lecture</string>
+    <string name="editor_dialog_header_hint">Titre de la lecture (e.g. "The Shining")</string>
+    <string name="editor_dialog_position_hint">Position dans le texte</string>
+    <string name="about">Information Générale</string>
+    <string name="title">Titre</string>
+    <string name="path">Chemin vers un ficher</string>
+    <string name="position">Position dans le texte</string>
+    <string name="sth_left">restant</string>
+    <string name="pause">Pause</string>
+    <string name="reading_is_completed">Toucher pour quitter</string>
+    <string name="speed">Vitesse: </string>
+    <string name="percent_left">Restant: </string>
+    <string name="email_app_not_found">Application d'e-mail introuvable</string>
+    <string name="next">Suivant</string>
+    <string name="finish">Fin</string>
+    <string name="illegal_value">Valeur interdite</string>
+
+    <!-- Preferences.xml -->
+    <string name="preferences_clipboard">Lire un texte depuis le presse papier</string>
+    <string name="preferences_pick_file">Lire un texte depuis un fichier</string>
+    <string name="preferences_pick_file_summary">Choisissez un fichier .txt, .epub or .fb2 à lire</string>
+    <string name="preferences_test">Tester vos paramètres</string>
+    <string name="preferences_basic_settings">Paramètres de base</string>
+    <string name="preferences_set_wpm">Vitesse de lecture</string>
+    <string name="preferences_set_wpm_summary">Nombre de mots par minute</string>
+    <string name="preferences_punctuation_settings">Vitesse et ponctuation</string>
+    <string name="preferences_different_speed_punctuation">Changer la vitesse pour la ponctuation</string>
+    <string name="preferences_different_speed_punctuation_summary">e.g. à la rencontre d'un point ou d'une virgule</string>
+    <string name="preferences_comaOrLong_coeff">Virgule/mot long</string>
+    <string name="preferences_endOfSentence_coeff">Fin de phrase</string>
+    <string name="preferences_dashOrColon_coeff">Tiret ou point(virgule)</string>
+    <string name="preferences_begOfPar_coeff">Début d'un paragraphe</string>
+    <string name="preferences_again">Conserver les lectures terminées</string>
+    <string name="preferences_again_summary">Do not delete readings when you complete them</string>
+    <string name="preferences_advanced">Paramètres avancés</string>
+    <string name="preferences_showContext">Afficher le contexte</string>
+    <string name="preferences_showContext_summary">Mot suivant dans la phrase</string>
+    <string name="preferences_instrucions">Instructions</string>
+    <string name="preferences_swipe">Glisser pour faire défiler</string>
+    <string name="preferences_swipe_summary">Left to next word, right to previous one</string>
+    <string name="preferences_share_feedback">Avis</string>
+    <string name="preferences_send_feedback">Donner votre avis</string>
+    <string name="preferences_send_feedback_summary">Faites moi part de vos idées :)</string>
+    <string name="preference_cache">Sauvegarder les lectures</string>
+    <string name="preference_cache_summary">Mettre en cache les lectures non terminées</string>
+    <string name="preference_font_size">Taille de la police</string>
+    <string name="preference_font_size_summary">Attention : le texte risque de dépasser de la fenêtre</string>
+    <string name="hint_font_size">Entrez une taille et regarder l'exemple ci-dessus</string>
+    <string name="preference_dark_theme">Theme sombre</string>
+    <string name="mail_to_me">mailto:syniuhin@gmail.com</string>
+    <string name="send_email">Envoyez un email</string>
+    <string name="sample_text">Au-dehors, même à travers le carreau de la fenêtre fermée, le monde paraissait froid.
+    	Dans la rue, de petits remous de vent faisaient tourner en spirale la poussière et le papier déchiré.
+    	Bien que le soleil brillât et que le ciel fût d’un bleu dur, tout semblait décoloré,
+    	hormis les affiches collées partout. De tous les carrefours importants,
+    	le visage à la moustache noire vous fixait du regard.
+    	Il y en avait un sur le mur d’en face. BIG BROTHER VOUS REGARDE, répétait la légende,
+    	tandis que le regard des yeux noirs pénétrait les yeux de Winston. Au niveau de la rue, une autre affiche,
+    	dont un angle était déchiré, battait par à-coups dans le vent, couvrant et découvrant alternativement un seul mot :
+    	ANGSOC. Au loin, un hélicoptère glissa entre les toits, plana un moment, telle une mouche bleue,
+    	puis repartit comme une flèche, dans un vol courbe.</string>
+
+    <!-- Instructions -->
+    <string name="instructions_welcome">Bienvennue!</string>
+    <string name="instructions_first_paragraph">Readily est une application de lecture rapide pour android
+    propulsée par la technologie RSVP (Rapid Serial Visual Presentation). 
+    Elle vous permet de lire jusqu'à 1 200 mots par minute au lieu de 220 lors d'une lecture normale.</string>
+    <string name="instructions_source_text">Sources de texte</string>
+    <string name="instructions_second_paragraph">Pour commencer à lire vous pouvez copier un texte dans le presse papier
+    et choisir l'action \"Lire un texte depuis le presse papier\".</string>
+    <string name="instructions_third_paragraph">Vous pouvez aussi utiliser l'action \"Lire un texte depuis un fichier\" 
+    et choisir un fichier (ayant pour extension .txt, .epub ou .fb2) depuis le gestionnaire de fichier du systàme.</string>
+    <string name="instructions_fourth_paragraph">Enfin, vous pouvez partager des données avec Readily
+    depuis votre lecteur favoris (e.g. Flipboard, Instapaper).</string>
+    <string name="instructions_controls_header">Controles</string>
+    <string name="instructions_fifth_paragraph">Pour mettre le lecteur en pause ou le relancer il suffit de toucher sa fenetre.
+   	Selon vos préferences vous pourrez faire glisser le contenu
+   	ou utiliser un bouton pour acceder au mot précédent du texte.\n
+   	Si vous sentez que la lecture est trop lente ou trop rapide vous pouvez changer la vitesse en cours de lecture :
+        	Glisser vers le haut ou vers le bas to modifier la vitesse de 50MPM (Mots par Minutes).</string>
+    <string name="instructions_emphasis_point"> Points d'emphases : en vous concentrant dessus la lecture devient plus rapide.</string>
+    <string name="instructions_notification">Notification : elles n'apparaitront qu'en cas de modifications
+        (e.g. lorsque vous changez la vitesse de lecture).</string>
+    <string name="instructions_previous_word_button">Boutton pour le mot précedent (optionel) : 
+    	une alternative au défilement par glissement droite gauche. Il apparaitra lors de la pause.</string>
+    <string name="instructions_progress_bar">Bar de progression : elle indique votre progression dans le texte.</string>
+    <string name="action_settings">Paramètres</string>
+    <string name="enjoyit">Profitez bien ;)</string>
+
+</resources>
