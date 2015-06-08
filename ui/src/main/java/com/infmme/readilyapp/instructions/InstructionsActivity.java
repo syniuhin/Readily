@@ -18,75 +18,75 @@ import com.infmme.readilyapp.R;
  * created on 7/16/14 by infm. Enjoy ;)
  */
 public class InstructionsActivity extends ActionBarActivity {
-	private static final int NUM_PAGES = 6;
+  private static final int NUM_PAGES = 6;
 
-	private ViewPager pager;
-	private PagerAdapter pagerAdapter;
-	private Button nextButton;
+  private ViewPager pager;
+  private PagerAdapter pagerAdapter;
+  private Button nextButton;
 
-	public static void start(Context context){
-		context.startActivity(new Intent(context, InstructionsActivity.class));
-	}
+  public static void start(Context context) {
+    context.startActivity(new Intent(context, InstructionsActivity.class));
+  }
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState){
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_instructions);
-		ActionBar actionBar = getSupportActionBar();
-		if (actionBar != null)
-			actionBar.hide();
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_instructions);
+    ActionBar actionBar = getSupportActionBar();
+    if (actionBar != null)
+      actionBar.hide();
 
-		pager = (ViewPager) findViewById(R.id.instructions_pager);
-		pagerAdapter = new InstructionsPagerAdapter(getSupportFragmentManager());
-		pager.setAdapter(pagerAdapter);
-		pager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-			@Override
-			public void onPageSelected(int position){
-				supportInvalidateOptionsMenu();
-				updateNextButton();
-			}
-		});
+    pager = (ViewPager) findViewById(R.id.instructions_pager);
+    pagerAdapter = new InstructionsPagerAdapter(getSupportFragmentManager());
+    pager.setAdapter(pagerAdapter);
+    pager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+      @Override
+      public void onPageSelected(int position) {
+        supportInvalidateOptionsMenu();
+        updateNextButton();
+      }
+    });
 
-		nextButton = (Button) findViewById(R.id.nextButton);
-		nextButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v){
-				boolean action = updateNextButton();
-				if (action)
-					pager.setCurrentItem(pager.getCurrentItem() + 1, true);
-				else
-					onStop();
-			}
-		});
-	}
+    nextButton = (Button) findViewById(R.id.nextButton);
+    nextButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        boolean action = updateNextButton();
+        if (action)
+          pager.setCurrentItem(pager.getCurrentItem() + 1, true);
+        else
+          onStop();
+      }
+    });
+  }
 
-	private boolean updateNextButton(){
-		int pageNum = pager.getCurrentItem();
-		if (pageNum < NUM_PAGES - 2){
-			if (pageNum == NUM_PAGES - 3)
-				nextButton.setText(R.string.finish);
-			else
-				nextButton.setText(R.string.next);
-			return true;
-		} else {
-			return false;
-		}
-	}
+  private boolean updateNextButton() {
+    int pageNum = pager.getCurrentItem();
+    if (pageNum < NUM_PAGES - 2) {
+      if (pageNum == NUM_PAGES - 3)
+        nextButton.setText(R.string.finish);
+      else
+        nextButton.setText(R.string.next);
+      return true;
+    } else {
+      return false;
+    }
+  }
 
-	private class InstructionsPagerAdapter extends FragmentStatePagerAdapter {
+  private class InstructionsPagerAdapter extends FragmentStatePagerAdapter {
 
-		public InstructionsPagerAdapter(FragmentManager fm){
-			super(fm);
-		}
+    public InstructionsPagerAdapter(FragmentManager fm) {
+      super(fm);
+    }
 
-		@Override
-		public Fragment getItem(int i){
-			return InstructionsFragment.create(i);
-		}
+    @Override
+    public Fragment getItem(int i) {
+      return InstructionsFragment.create(i);
+    }
 
-		@Override
-		public int getCount(){
-			return NUM_PAGES;
-		}
-	}
+    @Override
+    public int getCount() {
+      return NUM_PAGES;
+    }
+  }
 }
