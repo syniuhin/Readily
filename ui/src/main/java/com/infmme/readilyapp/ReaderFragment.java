@@ -264,8 +264,8 @@ public class ReaderFragment extends Fragment {
 	 */
 	private void initPrevButton(){
 		if (!settingsBundle.isSwipesEnabled()){
-			prevButton.setImageResource(R.drawable.abc_ic_ab_back_holo_light);
-			prevButton.setOnClickListener(new View.OnClickListener() {
+            prevButton.setImageResource(R.drawable.abc_item_background_holo_light);
+            prevButton.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v){
 					reader.moveToPrevious();
@@ -557,8 +557,8 @@ public class ReaderFragment extends Fragment {
 	}
 
 	public interface ReaderListener {
-		public void stop();
-	}
+        void stop();
+    }
 
 	/**
 	 * don't sure that it must be an inner class
@@ -701,8 +701,8 @@ public class ReaderFragment extends Fragment {
 		public ReaderTask(MonitorObject object, Readable storable){
 			this.object = object;
 			currentReadable = storable;
-			parserDeque = new ArrayDeque<TextParser>();
-		}
+            parserDeque = new ArrayDeque<>();
+        }
 
 		@Override
 		public void run(){

@@ -1,23 +1,22 @@
 apply plugin: 'android-library'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion '21.0.2'
+    compileSdkVersion 22
+    buildToolsVersion '21.1.2'
 
     defaultConfig {
-        applicationId "com.ipaulpro.afilechooser"
         minSdkVersion 7
         targetSdkVersion 7
     }
 
     buildTypes {
         release {
-            runProguard false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:20.+'
+    compile 'com.android.support:support-v4:22.2.0'
 }
