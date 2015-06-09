@@ -123,4 +123,5 @@
     <string name="instructions_progress_bar">Індикатор прогресу: показує, скільки Ви вже прочитали.</string>
     <string name="action_settings">Налаштування</string>
     <string name="enjoyit">Насолоджуйтесь ;)</string>
+    <string name="navigate">Змінюйте поточне положення</string>
 </resources>

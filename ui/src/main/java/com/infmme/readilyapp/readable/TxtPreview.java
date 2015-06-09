@@ -14,23 +14,26 @@ public class TxtPreview extends Preview {
 
   private byte[] mInputData = new byte[BUFFER_SIZE];
 
-  public TxtPreview(String path, double part) {
-    super(path, part);
+  public TxtPreview(Context c, String path) {
+    super(c, path);
   }
 
   @Override
   public Preview readFile(Context c) throws IOException {
-    mPath = FileStorable.takePath(c, mPath);
     if (mPath == null)
       return null;
     mFile = new File(mPath);
-    long fileLen = mFile.length();
+    mFileLen = mFile.length();
     FileInputStream encodingHelper = new FileInputStream(mFile);
-    String encoding = FileStorable.guessCharset(encodingHelper);
+    mEncoding = FileStorable.guessCharset(encodingHelper);
     encodingHelper.close();
+    return this;
+  }
 
+  @Override
+  public Preview readAgain() throws IOException {
     fis = new FileInputStream(mFile);
-    long skipping = (long) (fileLen * mPartRead - .5 * BUFFER_SIZE);
+    long skipping = (long) (mFileLen * mPartRead - .5 * BUFFER_SIZE);
     long skipped = 0;
     if (skipping > 0) {
       skipped = fis.skip(skipping);
@@ -39,11 +42,10 @@ public class TxtPreview extends Preview {
     long readLen;
     mPreview = null;
     if ((readLen = fis.read(mInputData)) != - 1) {
-      mPreview = new String(mInputData, encoding);
+      mPreview = new String(mInputData, mEncoding);
       if (readLen < mPreview.length())
         mPreview = mPreview.substring(0, (int) readLen);
     }
-
     return this;
   }
 }

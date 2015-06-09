@@ -114,5 +114,6 @@
     <string name="instructions_progress_bar">Progress bar: shows your progress through a text.</string>
     <string name="action_settings">Settings</string>
     <string name="enjoyit">Enjoy it ;)</string>
+    <string name="navigate">Change current position</string>
 
 </resources>

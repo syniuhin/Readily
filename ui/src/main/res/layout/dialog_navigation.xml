@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/navigation_seek_bar"
+            android:layout_gravity="center_horizontal"/>
+
+    <com.bluejamesbond.text.DocumentView xmlns:ext="http://schemas.android.com/apk/res-auto"
+                                         android:layout_width="fill_parent"
+                                         android:layout_height="220dp"
+                                         android:id="@+id/navigation_dv"
+                                         ext:documentView_antialias="true"
+                                         ext:documentView_cacheConfig="auto_quality"
+                                         ext:documentView_hyphen="-"
+                                         ext:documentView_maxLines="100"
+                                         ext:documentView_offsetX="10dp"
+                                         ext:documentView_offsetY="10dp"
+                                         ext:documentView_insetPadding="10dp"
+                                         ext:documentView_insetPaddingBottom="10dp"
+                                         ext:documentView_insetPaddingLeft="10dp"
+                                         ext:documentView_insetPaddingRight="10dp"
+                                         ext:documentView_insetPaddingTop="10dp"
+                                         ext:documentView_reverse="false"
+                                         ext:documentView_text="Here will appear a preview"
+                                         ext:documentView_textAlignment="justified"
+                                         ext:documentView_textColor="@color/primary"
+                                         ext:documentView_textFormat="plain"
+                                         ext:documentView_textSubPixel="true"
+                                         ext:documentView_textTypefacePath="fonts/Roboto-Regular.ttf"/>
+</LinearLayout>

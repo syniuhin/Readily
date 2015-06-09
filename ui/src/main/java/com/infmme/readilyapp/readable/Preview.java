@@ -11,40 +11,38 @@ import java.io.IOException;
  */
 abstract public class Preview {
 
-  protected String mPath;
-  protected double mPartRead;
+  protected final String mPath;
 
+  protected double mPartRead;
   protected File mFile;
+  protected long mFileLen;
+  protected String mEncoding;
   protected FileInputStream fis;
 
   protected String mPreview = null;
 
-  public Preview(String path, double part) {
-    mPath = path;
-    mPartRead = part;
+  public Preview(Context c, String path) {
+    mPath = FileStorable.takePath(c, path);
   }
 
   abstract public Preview readFile(Context c) throws IOException;
+
+  abstract public Preview readAgain() throws IOException;
 
   public String getPreview() {
     return mPreview;
   }
 
-  ;
-
   public String getPath() {
     return mPath;
-  }
-
-  public void setPath(String mPath) {
-    this.mPath = mPath;
   }
 
   public double getPartRead() {
     return mPartRead;
   }
 
-  public void setPartRead(double mPartRead) {
+  public Preview setPartRead(double mPartRead) {
     this.mPartRead = mPartRead;
+    return this;
   }
 }

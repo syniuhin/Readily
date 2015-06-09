@@ -69,4 +69,5 @@ dependencies {
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.daimajia.androidanimations:library:1.0.5@aar'
     compile 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
+    compile 'com.github.bluejamesbond:textjustify-android:2.1.0'
 }
