@@ -6,9 +6,11 @@ buildscript {
 
     dependencies {
         classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
+        classpath 'me.tatarka:gradle-retrolambda:3.1.0'
     }
 }
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'crashlytics'
 
 repositories {
@@ -18,7 +20,7 @@ repositories {
 
 android {
     compileSdkVersion 22
-    buildToolsVersion '20.0.0'
+    buildToolsVersion '22.0.1'
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 22
@@ -30,6 +32,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     lintOptions {
         // set to true to turn off analysis progress reporting by lint

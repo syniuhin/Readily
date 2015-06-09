@@ -2,12 +2,10 @@ package com.infmme.readilyapp.settings;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.TaskStackBuilder;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Typeface;
@@ -18,15 +16,17 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
+import android.support.v7.widget.*;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.view.Gravity;
-import android.view.MenuItem;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.*;
 import com.infmme.readilyapp.Constants;
 import com.infmme.readilyapp.R;
@@ -35,6 +35,7 @@ import org.jsoup.helper.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class SettingsActivity extends PreferenceActivity {
 
@@ -48,11 +49,67 @@ public class SettingsActivity extends PreferenceActivity {
     WPM = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).
         getString(Constants.Preferences.WPM, Constants.DEFAULT_WPM));
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-      ActionBar actionBar = getActionBar();
-      actionBar.setDisplayHomeAsUpEnabled(true);
-      actionBar.setDisplayShowTitleEnabled(true);
+    Toolbar bar;
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+      LinearLayout root = (LinearLayout) findViewById(android.R.id.list).getParent()
+                                                                        .getParent()
+                                                                        .getParent();
+      bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root, false);
+      root.addView(bar, 0); // insert at top
+    } else {
+      ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
+      ListView content = (ListView) root.getChildAt(0);
+
+      root.removeAllViews();
+
+      bar = (Toolbar) LayoutInflater.from(this).inflate(R.layout.settings_toolbar, root, false);
+
+
+      int height;
+      TypedValue tv = new TypedValue();
+      if (getTheme().resolveAttribute(R.attr.actionBarSize, tv, true)) {
+        height = TypedValue.complexToDimensionPixelSize(tv.data,
+                                                        getResources().getDisplayMetrics());
+      } else {
+        height = bar.getHeight();
+      }
+
+      content.setPadding(0, height, 0, 0);
+
+      root.addView(content);
+      root.addView(bar);
     }
+
+    bar.setNavigationOnClickListener(v -> finish());
+  }
+
+  @Nullable
+  @Override
+  public View onCreateView(String name, Context context, AttributeSet attrs) {
+    final View result = super.onCreateView(name, context, attrs);
+    if (result != null) {
+      return result;
+    }
+
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+      // If we're running pre-L, we need to 'inject' our tint aware Views in place of the
+      // standard framework versions
+      switch (name) {
+        case "EditText":
+          return new AppCompatEditText(this, attrs);
+        case "Spinner":
+          return new AppCompatSpinner(this, attrs);
+        case "CheckBox":
+          return new AppCompatCheckBox(this, attrs);
+        case "RadioButton":
+          return new AppCompatRadioButton(this, attrs);
+        case "CheckedTextView":
+          return new AppCompatCheckedTextView(this, attrs);
+      }
+    }
+
+    return null;
   }
 
   @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -196,30 +253,24 @@ public class SettingsActivity extends PreferenceActivity {
     builder.setTitle(R.string.preference_font_size).
         setView(linearLayout).
                setPositiveButton(android.R.string.ok,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog, int which) {
-                                     String nSize = String.valueOf(editText.getText())
-                                                          .replaceAll("\\s+", "");
-                                     if (changeTextViewSize(sampleText, nSize))
-                                       PreferenceManager.getDefaultSharedPreferences(context)
-                                                        .edit()
-                                                        .putString(Constants.Preferences.FONT_SIZE,
-                                                                   nSize)
-                                                        .commit();
-                                     else
-                                       Toast.makeText(context, R.string.illegal_value,
-                                                      Toast.LENGTH_SHORT)
-                                            .show();
-                                   }
+                                 (dialog, which) -> {
+                                   String nSize = String.valueOf(editText.getText())
+                                                        .replaceAll("\\s+", "");
+                                   if (changeTextViewSize(sampleText, nSize))
+                                     PreferenceManager.getDefaultSharedPreferences(context)
+                                                      .edit()
+                                                      .putString(Constants.Preferences.FONT_SIZE,
+                                                                 nSize)
+                                                      .commit();
+                                   else
+                                     Toast.makeText(context, R.string.illegal_value,
+                                                    Toast.LENGTH_SHORT)
+                                          .show();
                                  }
                ).
                setNegativeButton(android.R.string.cancel,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog, int which) {
-                                     dialog.cancel();
-                                   }
+                                 (dialog, which) -> {
+                                   dialog.cancel();
                                  }
                );
     AlertDialog dialog = builder.create();
@@ -246,34 +297,24 @@ public class SettingsActivity extends PreferenceActivity {
     final TextView sampleText = getIndicatorText(context, currentFontSize);
     linearLayout.addView(sampleText);
     linearLayout.addView(numberPicker);
-    numberPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-      @Override
-      public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-        changeTextViewSize(sampleText, newVal);
-      }
-    });
+    numberPicker.setOnValueChangedListener(
+        (picker, oldVal, newVal) -> changeTextViewSize(sampleText, newVal));
     AlertDialog.Builder builder = new AlertDialog.Builder(context);
     builder.setTitle(R.string.preference_font_size).
         setView(linearLayout).
                setPositiveButton(android.R.string.ok,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog, int which) {
-                                     PreferenceManager.getDefaultSharedPreferences(context)
-                                                      .edit()
-                                                      .putString(Constants.Preferences.FONT_SIZE,
-                                                                 String.valueOf(
-                                                                     numberPicker.getValue()))
-                                                      .commit();
-                                   }
+                                 (dialog, which) -> {
+                                   PreferenceManager.getDefaultSharedPreferences(context)
+                                                    .edit()
+                                                    .putString(Constants.Preferences.FONT_SIZE,
+                                                               String.valueOf(
+                                                                   numberPicker.getValue()))
+                                                    .commit();
                                  }
                ).
                setNegativeButton(android.R.string.cancel,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog, int which) {
-                                     dialog.cancel();
-                                   }
+                                 (dialog, which) -> {
+                                   dialog.cancel();
                                  }
                );
     AlertDialog dialog = builder.create();
@@ -295,31 +336,25 @@ public class SettingsActivity extends PreferenceActivity {
     builder.setTitle(R.string.preferences_set_wpm).
         setView(linearLayout).
                setPositiveButton(android.R.string.ok,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog, int which) {
-                                     int nWPM = 0;
-                                     if (StringUtil.isNumeric(String.valueOf(editText.getText())))
-                                       nWPM = Integer.parseInt(String.valueOf(editText.getText()));
-                                     if (nWPM >= min && nWPM <= max)
-                                       PreferenceManager.getDefaultSharedPreferences(context)
-                                                        .edit()
-                                                        .putString(Constants.Preferences.WPM,
-                                                                   Integer.toString(WPM = nWPM))
-                                                        .commit();
-                                     else
-                                       Toast.makeText(context, R.string.illegal_value,
-                                                      Toast.LENGTH_SHORT).
-                                                show();
-                                   }
+                                 (dialog, which) -> {
+                                   int nWPM = 0;
+                                   if (StringUtil.isNumeric(String.valueOf(editText.getText())))
+                                     nWPM = Integer.parseInt(String.valueOf(editText.getText()));
+                                   if (nWPM >= min && nWPM <= max)
+                                     PreferenceManager.getDefaultSharedPreferences(context)
+                                                      .edit()
+                                                      .putString(Constants.Preferences.WPM,
+                                                                 Integer.toString(WPM = nWPM))
+                                                      .commit();
+                                   else
+                                     Toast.makeText(context, R.string.illegal_value,
+                                                    Toast.LENGTH_SHORT).
+                                              show();
                                  }
                ).
                setNegativeButton(android.R.string.cancel,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog, int which) {
-                                     dialog.cancel();
-                                   }
+                                 (dialog, which) -> {
+                                   dialog.cancel();
                                  }
                );
     AlertDialog dialog = builder.create();
@@ -347,25 +382,19 @@ public class SettingsActivity extends PreferenceActivity {
     builder.setTitle(R.string.preferences_set_wpm).
         setView(numberPicker).
                setPositiveButton(android.R.string.ok,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog, int which) {
-                                     WPM = min + Constants.WPM_STEP_PREFERENCES * (numberPicker
-                                         .getValue() - min);
-                                     PreferenceManager.getDefaultSharedPreferences(context)
-                                                      .edit()
-                                                      .putString(Constants.Preferences.WPM,
-                                                                 Integer.toString(WPM))
-                                                      .commit();
-                                   }
+                                 (dialog, which) -> {
+                                   WPM = min + Constants.WPM_STEP_PREFERENCES * (numberPicker
+                                       .getValue() - min);
+                                   PreferenceManager.getDefaultSharedPreferences(context)
+                                                    .edit()
+                                                    .putString(Constants.Preferences.WPM,
+                                                               Integer.toString(WPM))
+                                                    .commit();
                                  }
                ).
                setNegativeButton(android.R.string.cancel,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog, int which) {
-                                     dialog.cancel();
-                                   }
+                                 (dialog, which) -> {
+                                   dialog.cancel();
                                  }
                );
     AlertDialog dialog = builder.create();
