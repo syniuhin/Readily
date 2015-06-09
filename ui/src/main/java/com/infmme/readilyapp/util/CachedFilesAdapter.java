@@ -9,21 +9,16 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.SeekBar;
-import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
+import android.widget.*;
 import com.bluejamesbond.text.DocumentView;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.infmme.readilyapp.Constants;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.ReceiverActivity;
-import com.infmme.readilyapp.readable.MiniReadable;
-import com.infmme.readilyapp.readable.Preview;
-import com.infmme.readilyapp.readable.Storable;
-import com.infmme.readilyapp.readable.TxtPreview;
+import com.infmme.readilyapp.readable.*;
 import com.infmme.readilyapp.service.LastReadService;
+import com.ipaulpro.afilechooser.utils.FileUtils;
 
 import java.io.IOException;
 
@@ -58,72 +53,61 @@ public class CachedFilesAdapter extends SimpleCursorAdapter {
     textViewFilename.setText(filename);
     textViewPercent.setText(readable.getPercent() + " " + context.getString(R.string.sth_left));
 
-    view.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        if (usedPosition != position || usedView == null) {
-          hideActionView();
+    view.setOnClickListener(vcl -> {
+      if (usedPosition != position || usedView == null) {
+        hideActionView();
 
-          Bundle args = new Bundle();
-          args.putInt(Constants.EXTRA_TYPE, Storable.TYPE_FILE);
-          args.putString(Constants.EXTRA_PATH, path);
-          args.putString(Constants.EXTRA_HEADER, textViewTitle.getText().toString());
-          ReceiverActivity.startReceiverActivity(context, args);
-        }
+        Bundle args = new Bundle();
+        args.putInt(Constants.EXTRA_TYPE, Storable.TYPE_FILE);
+        args.putString(Constants.EXTRA_PATH, path);
+        args.putString(Constants.EXTRA_HEADER, textViewTitle.getText().toString());
+        ReceiverActivity.startReceiverActivity(context, args);
       }
     });
 
-    view.setOnLongClickListener(new View.OnLongClickListener() {
-      @Override
-      public boolean onLongClick(View v) {
-        if (usedPosition != position) {
+    view.setOnLongClickListener(vlcl -> {
+      if (usedPosition != position) {
+        hideActionView();
+        inflateActionMenu(view);
+        usedView = view;
+        usedPosition = position;
+        (view.findViewById(R.id.imageViewDelete)).setOnClickListener(ouqpoiuwe -> {
+          getConfirmation(context, path, position);
           hideActionView();
-          inflateActionMenu(view);
-          usedView = view;
-          usedPosition = position;
-          (view.findViewById(R.id.imageViewDelete)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-              getConfirmation(context, path, position);
+        });
+        (view.findViewById(R.id.imageViewEdit)).setOnClickListener(vqwjhqwe -> {
+          buildEditorDialog(context, readable);
+          hideActionView();
+        });
+        (view.findViewById(R.id.imageViewNavigate)).setOnClickListener(
+            ajhskjhd -> {
+              try {
+                Preview p = null;
+                final String path1 = readable.getPath();
+                final String extension = FileUtils.getExtension(path1);
+                if (extension.contains("txt"))
+                  p = new TxtPreview(context, path1).readFile(context);
+                else if (extension.contains("fb2"))
+                  p = new Fb2Preview(context, path1).readFile(context);
+
+                if (p != null)
+                  buildNavigationDialog(context, readable, p);
+                else
+                  Toast.makeText(context, R.string.ext_not_yet_implemented,
+                                 Toast.LENGTH_SHORT).show();
+              } catch (IOException e) {
+                e.printStackTrace();
+              }
               hideActionView();
-            }
-          });
-          (view.findViewById(R.id.imageViewEdit)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-              buildEditorDialog(context, readable);
-              hideActionView();
-            }
-          });
-          (view.findViewById(R.id.imageViewNavigate)).setOnClickListener(
-              new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                  try {
-                    buildNavigationDialog(context, readable);
-                  } catch (IOException e) {
-                    e.printStackTrace();
-                  }
-                  hideActionView();
-                }
-              });
-          (view.findViewById(R.id.imageViewBack)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-              hideActionView();
-            }
-          });
-          (view.findViewById(R.id.imageViewAbout)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-              buildInfoDialog(context, readable);
-              hideActionView();
-            }
-          });
-          return true;
-        }
-        return false;
+            });
+        (view.findViewById(R.id.imageViewBack)).setOnClickListener(asdasd -> hideActionView());
+        (view.findViewById(R.id.imageViewAbout)).setOnClickListener(qqweq -> {
+          buildInfoDialog(context, readable);
+          hideActionView();
+        });
+        return true;
       }
+      return false;
     });
 
   }
@@ -208,9 +192,8 @@ public class CachedFilesAdapter extends SimpleCursorAdapter {
             show();
   }
 
-  private void buildNavigationDialog(Context context, final MiniReadable readable)
+  private void buildNavigationDialog(Context context, final MiniReadable readable, Preview preview)
       throws IOException {
-    Preview p = new TxtPreview(context, readable.getPath()).readFile(context);
 
     View view = LayoutInflater.from(context).inflate(R.layout.dialog_navigation, null);
     AlertDialog dialog = new AlertDialog.Builder(context).setTitle(R.string.navigate)
@@ -247,14 +230,14 @@ public class CachedFilesAdapter extends SimpleCursorAdapter {
 
       @Override
       public void onStopTrackingTouch(SeekBar seekBar) {
-        p.setPartRead((double) seekBar.getProgress() / 100.0);
+        preview.setPartRead((double) seekBar.getProgress() / 100.0);
         try {
-          p.readAgain();
+          preview.readAgain();
         } catch (IOException e) {
           e.printStackTrace();
         }
         //textView.setText(p.getPreview());
-        String pr = p.getPreview().replaceAll("\\n|\\r", "");
+        String pr = preview.getPreview().replaceAll("\\n|\\r", "");
         dv.setText(pr);
         dv.invalidateCache();
       }

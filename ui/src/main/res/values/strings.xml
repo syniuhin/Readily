@@ -115,5 +115,7 @@
     <string name="action_settings">Settings</string>
     <string name="enjoyit">Enjoy it ;)</string>
     <string name="navigate">Change current position</string>
+    <string name="choose_chapter">Choose a chapter</string>
+    <string name="ext_not_yet_implemented">This extension is not fully supported yet</string>
 
 </resources>

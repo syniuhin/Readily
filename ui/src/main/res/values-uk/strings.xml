@@ -124,4 +124,5 @@
     <string name="action_settings">Налаштування</string>
     <string name="enjoyit">Насолоджуйтесь ;)</string>
     <string name="navigate">Змінюйте поточне положення</string>
+    <string name="ext_not_yet_implemented">Це розширення поки не повністю підтримується</string>
 </resources>

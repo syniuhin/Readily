@@ -123,5 +123,6 @@
     <string name="instructions_progress_bar">Индикатор прогресса: показывает, сколько Вы уже прочитали.</string>
     <string name="enjoyit">Наслаждайтесь ;)</string>
     <string name="navigate">Измените текущее положение</string>
+    <string name="ext_not_yet_implemented">Данное расширение поддерживается пока не полностью</string>
 
 </resources>

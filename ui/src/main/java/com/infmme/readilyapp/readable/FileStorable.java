@@ -28,6 +28,7 @@ abstract public class FileStorable extends Storable {
     extensionsMap.put(Constants.EXTENSION_TXT, Readable.TYPE_TXT);
     extensionsMap.put(Constants.EXTENSION_EPUB, Readable.TYPE_EPUB);
     extensionsMap.put(Constants.EXTENSION_FB2, Readable.TYPE_FB2);
+    extensionsMap.put(Constants.EXTENSION_FB2_ZIP, Readable.TYPE_FB2);
   }
 
   protected FileInputStream fileInputStream;
