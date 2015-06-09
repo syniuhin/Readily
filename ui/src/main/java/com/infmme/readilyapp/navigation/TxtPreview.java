@@ -1,6 +1,7 @@
-package com.infmme.readilyapp.readable;
+package com.infmme.readilyapp.navigation;
 
 import android.content.Context;
+import com.infmme.readilyapp.readable.FileStorable;
 
 import java.io.File;
 import java.io.FileInputStream;

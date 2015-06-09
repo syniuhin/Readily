@@ -1,7 +1,8 @@
-package com.infmme.readilyapp.readable;
+package com.infmme.readilyapp.navigation;
 
 import android.content.Context;
 import android.text.TextUtils;
+import com.infmme.readilyapp.readable.FileStorable;
 import com.infmme.readilyapp.xmlparser.XMLEvent;
 import com.infmme.readilyapp.xmlparser.XMLParser;
 

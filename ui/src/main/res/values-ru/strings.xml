@@ -124,5 +124,6 @@
     <string name="enjoyit">Наслаждайтесь ;)</string>
     <string name="navigate">Измените текущее положение</string>
     <string name="ext_not_yet_implemented">Данное расширение поддерживается пока не полностью</string>
+    <string name="navigate_toc">Выберите часть книги</string>
 
 </resources>

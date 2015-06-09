@@ -16,11 +16,18 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.infmme.readilyapp.Constants;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.ReceiverActivity;
-import com.infmme.readilyapp.readable.*;
+import com.infmme.readilyapp.navigation.EpubPreview;
+import com.infmme.readilyapp.navigation.Fb2Preview;
+import com.infmme.readilyapp.navigation.Preview;
+import com.infmme.readilyapp.navigation.TxtPreview;
+import com.infmme.readilyapp.readable.MiniReadable;
+import com.infmme.readilyapp.readable.Storable;
 import com.infmme.readilyapp.service.LastReadService;
 import com.ipaulpro.afilechooser.utils.FileUtils;
+import nl.siegmann.epublib.domain.TOCReference;
 
 import java.io.IOException;
+import java.util.List;
 
 public class CachedFilesAdapter extends SimpleCursorAdapter {
 
@@ -89,12 +96,18 @@ public class CachedFilesAdapter extends SimpleCursorAdapter {
                   p = new TxtPreview(context, path1).readFile(context);
                 else if (extension.contains("fb2"))
                   p = new Fb2Preview(context, path1).readFile(context);
+                else if (extension.contains("epub"))
+                  p = new EpubPreview(context, path1).readFile(context);
 
-                if (p != null)
-                  buildNavigationDialog(context, readable, p);
-                else
+                if (p != null) {
+                  if (p instanceof EpubPreview)
+                    buildTocTreeDialog(context, (EpubPreview) p);
+                  else
+                    buildNavigationDialog(context, p);
+                } else {
                   Toast.makeText(context, R.string.ext_not_yet_implemented,
                                  Toast.LENGTH_SHORT).show();
+                }
               } catch (IOException e) {
                 e.printStackTrace();
               }
@@ -192,7 +205,7 @@ public class CachedFilesAdapter extends SimpleCursorAdapter {
             show();
   }
 
-  private void buildNavigationDialog(Context context, final MiniReadable readable, Preview preview)
+  private void buildNavigationDialog(Context context, Preview preview)
       throws IOException {
 
     View view = LayoutInflater.from(context).inflate(R.layout.dialog_navigation, null);
@@ -237,7 +250,8 @@ public class CachedFilesAdapter extends SimpleCursorAdapter {
           e.printStackTrace();
         }
         //textView.setText(p.getPreview());
-        String pr = preview.getPreview().replaceAll("\\n|\\r", "");
+        String pr = preview.getPreview();
+                           //.replaceAll("\\n|\\r", "");
         dv.setText(pr);
         dv.invalidateCache();
       }
@@ -262,5 +276,53 @@ public class CachedFilesAdapter extends SimpleCursorAdapter {
     ((TextView) view.findViewById(R.id.textViewPath)).setText(readable.getPath());
     ((TextView) view.findViewById(R.id.textViewPosition)).setText(readable.getPercent());
     return view;
+  }
+
+  private void buildTocTreeDialog(final Context context, EpubPreview preview) {
+    View view = LayoutInflater.from(context).inflate(R.layout.dialog_toc_navigation, null);
+    AlertDialog dialog = new AlertDialog.Builder(context).setTitle(R.string.navigate_toc)
+                                                         .setView(view)
+                                                         .setPositiveButton(android.R.string.ok,
+                                                                            (dialog1, which) -> {})
+                                                         .create();
+
+    final TextView textView = (TextView) view.findViewById(R.id.dialog_toc_text_view);
+    final ListView listView = (ListView) view.findViewById(R.id.dialog_toc_list_view);
+    final List<TOCReference> tocReferences = preview.getTocTree();
+    final List<TOCReference> currentTocReferences = tocReferences;
+
+    final ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout
+        .simple_list_item_1, android.R.id.text1);
+
+    for (TOCReference ref : tocReferences) {
+      adapter.add(ref.getTitle());
+    }
+
+    listView.setAdapter(adapter);
+
+    listView.setOnItemClickListener((parent, view1, position, id) -> {
+      TOCReference ref = currentTocReferences.get(position);
+      List<TOCReference> children = ref.getChildren();
+      if (children != null && !children.isEmpty()) {
+        adapter.clear();
+        currentTocReferences.clear();
+        for (TOCReference r : children) {
+          adapter.add(r.getTitle());
+          currentTocReferences.add(r);
+        }
+        textView.setText(textView.getText() + ref.getTitle() + "/");
+      } else {
+        //Toast.makeText(context, "Chapter has no children", Toast.LENGTH_SHORT).show();
+        if (dialog.isShowing())
+          dialog.dismiss();
+        try {
+          buildNavigationDialog(context, preview.setResource(ref.getResource()));
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    });
+
+    dialog.show();
   }
 }
