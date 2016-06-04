@@ -1,12 +1,17 @@
 package com.infmme.readilyapp;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -23,6 +28,7 @@ import io.fabric.sdk.android.Fabric;
 public class MainActivity extends BaseActivity {
 
   private static final int FILE_SELECT_CODE = 7331;
+  private static final int READ_EXTERNAL_STORAGE_REQUEST = 7878;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +83,17 @@ public class MainActivity extends BaseActivity {
         getFromClipboard();
         break;
       case R.id.action_file:
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          int permissionCheck = ContextCompat.checkSelfPermission(
+              this, Manifest.permission.READ_EXTERNAL_STORAGE);
+          if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                this,
+                new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
+                READ_EXTERNAL_STORAGE_REQUEST);
+            break;
+          }
+        }
         getFromFile();
         break;
       case R.id.action_instructions:
@@ -119,6 +136,23 @@ public class MainActivity extends BaseActivity {
         break;
     }
     super.onActivityResult(requestCode, resultCode, data);
+  }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode,
+                                         @NonNull String[] permissions,
+                                         @NonNull int[] grantResults) {
+    switch (requestCode) {
+      case READ_EXTERNAL_STORAGE_REQUEST: {
+        if (grantResults.length > 0
+            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+          getFromFile();
+        } else {
+          Toast.makeText(this, "This permission is a must here!",
+                         Toast.LENGTH_SHORT).show();
+        }
+      }
+    }
   }
 
   private Intent createCheckerServiceIntent() {
