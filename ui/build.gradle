@@ -5,10 +5,10 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
+        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.16.0'
     }
 }
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 apply plugin: 'crashlytics'
 
 repositories {
@@ -17,17 +17,19 @@ repositories {
 
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion '21.0.2'
+    compileSdkVersion 23
+    buildToolsVersion '23.0.3'
     defaultConfig {
+        applicationId "com.infmme.readilyapp"
         minSdkVersion 9
-        targetSdkVersion 21
-        versionCode 6
-        versionName "1.1"
+        targetSdkVersion 23
+        versionCode 7
+        versionName "2.0"
+        multiDexEnabled true
     }
     buildTypes {
         release {
-            runProguard false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
@@ -49,18 +51,22 @@ android {
         // optional path to report (default will be lint-results.html in the builddir)
         htmlOutput file("lint-report.html")
     }
+    dexOptions {
+        incremental true
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':aFileChooser')
-    compile 'com.android.support:appcompat-v7:21.0.2'
-    compile 'com.android.support:support-v4:21.0.2'
-    compile 'com.google.android.gms:play-services:6.1.71'
-    compile 'com.crashlytics.android:crashlytics:1.+'
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.google.android.gms:play-services:9.0.2'
+    compile 'com.crashlytics.android:crashlytics:1.1.13'
     compile 'org.jsoup:jsoup:1.7.3'
     compile 'org.slf4j:slf4j-android:1.7.7'
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.daimajia.androidanimations:library:1.0.5@aar'
     compile 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
+    compile 'com.android.support:multidex:1.0.1'
 }

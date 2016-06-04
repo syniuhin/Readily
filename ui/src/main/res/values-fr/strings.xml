@@ -10,13 +10,13 @@
     <!-- UI -->
     <string name="just_sample">Example</string>
     <string name="next_words">mots suivants</string>
-    <string name="top_pointer_description">points d'accentuation en haut</string>
-    <string name="bottom_pointer_description">points d'accentuation en bas</string>
+    <string name="top_pointer_description">points d\'accentuation en haut</string>
+    <string name="bottom_pointer_description">points d\'accentuation en bas</string>
     <string name="clipboard_button">Lire un texte depuis le presse papier</string>
     <string name="clipboard_empty">Le presse papier est vide</string>
     <string name="continue_reading">Continuer</string>
     <string name="list_empty_view">Hey, lisez quelque chose!</string>
-    <string name="file_manager_required">Installez un gestionnaire de fichier s'il vous plait</string>
+    <string name="file_manager_required">Installez un gestionnaire de fichier s\'il vous plait</string>
     <string name="wrong_ext">Extension incorrecte</string>
     <string name="text_null">Texte introuvable</string>
     <string name="cant_fetch">Problème lors de la recuperation du texte</string>
@@ -37,7 +37,7 @@
     <string name="reading_is_completed">Toucher pour quitter</string>
     <string name="speed">Vitesse: </string>
     <string name="percent_left">Restant: </string>
-    <string name="email_app_not_found">Application d'e-mail introuvable</string>
+    <string name="email_app_not_found">Application d\'e-mail introuvable</string>
     <string name="next">Suivant</string>
     <string name="finish">Fin</string>
     <string name="illegal_value">Valeur interdite</string>
@@ -52,11 +52,11 @@
     <string name="preferences_set_wpm_summary">Nombre de mots par minute</string>
     <string name="preferences_punctuation_settings">Vitesse et ponctuation</string>
     <string name="preferences_different_speed_punctuation">Changer la vitesse pour la ponctuation</string>
-    <string name="preferences_different_speed_punctuation_summary">e.g. à la rencontre d'un point ou d'une virgule</string>
+    <string name="preferences_different_speed_punctuation_summary">e.g. à la rencontre d\'un point ou d\'une virgule</string>
     <string name="preferences_comaOrLong_coeff">Virgule/mot long</string>
     <string name="preferences_endOfSentence_coeff">Fin de phrase</string>
     <string name="preferences_dashOrColon_coeff">Tiret ou point(virgule)</string>
-    <string name="preferences_begOfPar_coeff">Début d'un paragraphe</string>
+    <string name="preferences_begOfPar_coeff">Début d\'un paragraphe</string>
     <string name="preferences_again">Conserver les lectures terminées</string>
     <string name="preferences_again_summary">Do not delete readings when you complete them</string>
     <string name="preferences_advanced">Paramètres avancés</string>
@@ -72,7 +72,7 @@
     <string name="preference_cache_summary">Mettre en cache les lectures non terminées</string>
     <string name="preference_font_size">Taille de la police</string>
     <string name="preference_font_size_summary">Attention : le texte risque de dépasser de la fenêtre</string>
-    <string name="hint_font_size">Entrez une taille et regarder l'exemple ci-dessus</string>
+    <string name="hint_font_size">Entrez une taille et regarder l\'exemple ci-dessus</string>
     <string name="preference_dark_theme">Theme sombre</string>
     <string name="mail_to_me">mailto:syniuhin@gmail.com</string>
     <string name="send_email">Envoyez un email</string>
@@ -91,11 +91,11 @@
     <string name="instructions_welcome">Bienvennue!</string>
     <string name="instructions_first_paragraph">Readily est une application de lecture rapide pour android
     propulsée par la technologie RSVP (Rapid Serial Visual Presentation). 
-    Elle vous permet de lire jusqu'à 1 200 mots par minute au lieu de 220 lors d'une lecture normale.</string>
+    Elle vous permet de lire jusqu\'à 1 200 mots par minute au lieu de 220 lors d\'une lecture normale.</string>
     <string name="instructions_source_text">Sources de texte</string>
     <string name="instructions_second_paragraph">Pour commencer à lire vous pouvez copier un texte dans le presse papier
-    et choisir l'action \"Lire un texte depuis le presse papier\".</string>
-    <string name="instructions_third_paragraph">Vous pouvez aussi utiliser l'action \"Lire un texte depuis un fichier\" 
+    et choisir l\'action \"Lire un texte depuis le presse papier\".</string>
+    <string name="instructions_third_paragraph">Vous pouvez aussi utiliser l\'action \"Lire un texte depuis un fichier\" 
     et choisir un fichier (ayant pour extension .txt, .epub ou .fb2) depuis le gestionnaire de fichier du systàme.</string>
     <string name="instructions_fourth_paragraph">Enfin, vous pouvez partager des données avec Readily
     depuis votre lecteur favoris (e.g. Flipboard, Instapaper).</string>
@@ -105,8 +105,8 @@
    	ou utiliser un bouton pour acceder au mot précédent du texte.\n
    	Si vous sentez que la lecture est trop lente ou trop rapide vous pouvez changer la vitesse en cours de lecture :
         	Glisser vers le haut ou vers le bas to modifier la vitesse de 50MPM (Mots par Minutes).</string>
-    <string name="instructions_emphasis_point"> Points d'emphases : en vous concentrant dessus la lecture devient plus rapide.</string>
-    <string name="instructions_notification">Notification : elles n'apparaitront qu'en cas de modifications
+    <string name="instructions_emphasis_point"> Points d\'emphases : en vous concentrant dessus la lecture devient plus rapide.</string>
+    <string name="instructions_notification">Notification : elles n\'apparaitront qu\'en cas de modifications
         (e.g. lorsque vous changez la vitesse de lecture).</string>
     <string name="instructions_previous_word_button">Boutton pour le mot précedent (optionel) : 
     	une alternative au défilement par glissement droite gauche. Il apparaitra lors de la pause.</string>
