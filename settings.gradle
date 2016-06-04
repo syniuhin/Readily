@@ -1,2 +1,2 @@
-include ':ui'
+include ':readilyapp'
 include ':aFileChooser'
