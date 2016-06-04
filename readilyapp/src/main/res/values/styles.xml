@@ -6,12 +6,15 @@
         <item name="actionBarStyle">@style/Widget.Styled.ActionBar</item>
     </style>
 
-    <style name="Widget.Styled.ActionBar" parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+    <style name="Widget.Styled.ActionBar"
+           parent="Widget.AppCompat.Light.ActionBar.Solid.Inverse">
         <item name="displayOptions">showHome|useLogo</item>
     </style>
 
     <style name="SelectableItem">
-        <item name="android:background">@android:drawable/list_selector_background</item>
+        <item name="android:background">
+            @android:drawable/list_selector_background
+        </item>
     </style>
 
     <style name="Theme.TransparentActivity" parent="AppTheme">
@@ -19,7 +22,8 @@
         <item name="android:backgroundDimEnabled">true</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation
+        </item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
 
