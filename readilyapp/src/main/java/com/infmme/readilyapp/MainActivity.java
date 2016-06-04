@@ -18,6 +18,7 @@ import com.infmme.readilyapp.service.StorageCheckerService;
 import com.infmme.readilyapp.settings.SettingsActivity;
 import com.infmme.readilyapp.util.BaseActivity;
 import com.ipaulpro.afilechooser.utils.FileUtils;
+import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends BaseActivity {
 
@@ -31,7 +32,7 @@ public class MainActivity extends BaseActivity {
 
     startService(createCheckerServiceIntent());
 
-    Crashlytics.start(this);
+    Fabric.with(this, new Crashlytics());
 
     changeActionBarIcon();
     startFileListFragment();
