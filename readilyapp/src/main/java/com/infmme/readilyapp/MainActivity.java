@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 import com.crashlytics.android.Crashlytics;
 import com.infmme.readilyapp.instructions.InstructionsActivity;
+import com.infmme.readilyapp.readable.EpubFileStorable;
 import com.infmme.readilyapp.readable.FileStorable;
 import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.service.StorageCheckerService;
@@ -28,6 +29,7 @@ import io.fabric.sdk.android.Fabric;
 public class MainActivity extends BaseActivity {
 
   private static final int FILE_SELECT_CODE = 7331;
+  private static final int EPUB_SELECT_CODE = 9871;
   private static final int READ_EXTERNAL_STORAGE_REQUEST = 7878;
 
   @Override
@@ -99,9 +101,24 @@ public class MainActivity extends BaseActivity {
       case R.id.action_instructions:
         InstructionsActivity.start(this);
         break;
+      case R.id.action_bookpartflow:
+        startActivityForResult(
+            Intent.createChooser(FileUtils.createGetContentIntent(),
+                                 getResources().getString(R.string.choose_file)),
+            EPUB_SELECT_CODE);
+        break;
     }
 
     return super.onOptionsItemSelected(item);
+  }
+
+  private void startBookPartListActivity(String relativePath) {
+    EpubFileStorable epubFileStorable = new EpubFileStorable(relativePath);
+    epubFileStorable.process(this);
+
+    Intent i = new Intent(this, BookPartListActivity.class);
+    i.putExtra("TableOfContents", epubFileStorable.getTableOfContents());
+    startActivity(i);
   }
 
   private void getFromClipboard() {
@@ -134,6 +151,18 @@ public class MainActivity extends BaseActivity {
           }
         }
         break;
+      case EPUB_SELECT_CODE:
+        if (resultCode == RESULT_OK) {
+          if (data != null) {
+            String relativePath = FileUtils.getPath(this, data.getData());
+            if (FileUtils.getExtension(relativePath).equals(".epub")) {
+              startBookPartListActivity(relativePath);
+            } else {
+              Toast.makeText(this, R.string.wrong_ext, Toast.LENGTH_SHORT)
+                   .show();
+            }
+          }
+        }
     }
     super.onActivityResult(requestCode, resultCode, data);
   }

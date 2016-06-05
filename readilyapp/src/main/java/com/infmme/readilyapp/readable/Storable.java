@@ -12,7 +12,6 @@ import com.infmme.readilyapp.database.LastReadDBHelper;
 import com.infmme.readilyapp.service.LastReadService;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -67,8 +66,6 @@ abstract public class Storable extends Readable {
           fos.write(text.getBytes());
           fos.close();
         }
-      } catch (FileNotFoundException e) {
-        e.printStackTrace();
       } catch (IOException e) {
         e.printStackTrace();
       }

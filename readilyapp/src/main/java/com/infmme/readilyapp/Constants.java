@@ -24,6 +24,7 @@ public class Constants {
   public static final int DIALOG_PICKER_HEIGHT = 300;
   public static final int MIN_FONT_SIZE = 12;
   public static final int MAX_FONT_SIZE = 30;
+  public static final int WORDS_ENDING_COUNT = 100;
 
   //defines a length, which limits links with description(to reduce working
   // time of regexp)

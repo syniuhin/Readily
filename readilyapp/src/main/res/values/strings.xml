@@ -165,5 +165,15 @@
     <string name="action_settings">Settings</string>
     <string name="enjoyit">Enjoy it ;)</string>
     <string name="choose_chapter">Choose a chapter</string>
+    <string name="title_activity_file_navigation">FileNavigationActivity
+    </string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_text_view_placeholder">Chapter text will appear
+        here
+    </string>
+    <string name="title_bookpart_list">BookParts</string>
+    <string name="title_bookpart_detail">BookPart Detail</string>
 
 </resources>

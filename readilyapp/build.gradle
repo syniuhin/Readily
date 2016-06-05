@@ -51,14 +51,14 @@ android {
         // optional path to report (default will be lint-results.html in the builddir)
         htmlOutput file("lint-report.html")
     }
-    dexOptions {
-        incremental true
-    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':aFileChooser')
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.6@aar') {
+        transitive = true;
+    }
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:support-v4:23.4.0'
     compile 'com.google.android.gms:play-services:9.0.2'
@@ -68,7 +68,8 @@ dependencies {
     compile 'com.daimajia.androidanimations:library:1.0.5@aar'
     compile 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
     compile 'com.android.support:multidex:1.0.1'
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.6@aar') {
-        transitive = true;
-    }
+    compile 'com.android.support:design:23.4.0'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha1'
+    compile 'com.android.support:recyclerview-v7:23.4.0'
+    compile 'com.bignerdranch.android:expandablerecyclerview:2.1.1'
 }

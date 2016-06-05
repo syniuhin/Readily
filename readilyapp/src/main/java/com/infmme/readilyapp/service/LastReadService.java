@@ -28,18 +28,13 @@ public class LastReadService extends IntentService {
 
   private static Intent createIntent(Context context, String path,
                                      int operation) {
-    if (operation == Constants.DB_OPERATION_DELETE)
-      return new Intent(context, LastReadService.class).
-                                                           putExtra(
-                                                               Constants
-                                                                   .EXTRA_PATH,
-                                                               path).
-                                                           putExtra(
-                                                               Constants
-                                                                   .EXTRA_DB_OPERATION,
-                                                               operation);
-    else
+    if (operation == Constants.DB_OPERATION_DELETE) {
+      return new Intent(context, LastReadService.class)
+          .putExtra(Constants.EXTRA_PATH, path)
+          .putExtra(Constants.EXTRA_DB_OPERATION, operation);
+    } else {
       throw new IllegalArgumentException("operation != DELETE");
+    }
   }
 
   public static void start(Context context, String path, int operation) {
@@ -50,14 +45,16 @@ public class LastReadService extends IntentService {
   protected void onHandleIntent(Intent intent) {
     ContentResolver contentResolver = getContentResolver();
     switch (intent.getIntExtra(Constants.EXTRA_DB_OPERATION, -1)) {
-      case Constants.DB_OPERATION_INSERT:
+      case Constants.DB_OPERATION_INSERT: {
         DataBundle dataBundle = DataBundle.createElementFromIntent(intent);
-        insertDataWithoutConflict(contentResolver, dataBundle,
-                                  Storable.getRowData(contentResolver.query(
-                                      LastReadContentProvider.CONTENT_URI,
-                                      null, null, null, null),
-                                                      dataBundle.getPath()));
-        break;
+        insertDataWithoutConflict(
+            contentResolver, dataBundle,
+            Storable.getRowData(
+                contentResolver.query(LastReadContentProvider.CONTENT_URI, null,
+                                      null, null, null),
+                dataBundle.getPath()));
+      }
+      break;
       case Constants.DB_OPERATION_DELETE:
         deleteData(contentResolver, getPaths(intent));
         break;
@@ -74,17 +71,18 @@ public class LastReadService extends IntentService {
       contentResolver.insert(LastReadContentProvider.CONTENT_URI,
                              DataBundle.getInsertContentValues(dataBundle));
     } else {
-      contentResolver.update(ContentUris.withAppendedId(
-          LastReadContentProvider.CONTENT_URI, rowData.getRowId()
-                             ), DataBundle.getUpdateContentValues(dataBundle), null,
-                             null);
+      contentResolver.update(
+          ContentUris.withAppendedId(LastReadContentProvider.CONTENT_URI,
+                                     rowData.getRowId()),
+          DataBundle.getUpdateContentValues(dataBundle), null, null);
     }
   }
 
   private String[] getPaths(Intent intent) {
     String[] paths = intent.getStringArrayExtra(Constants.EXTRA_PATH_ARRAY);
-    if (paths == null)
+    if (paths == null) {
       paths = new String[] { intent.getStringExtra(Constants.EXTRA_PATH) };
+    }
     return paths;
   }
 

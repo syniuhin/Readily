@@ -31,6 +31,10 @@
             android:visible="true"/>
 
     <item
+            android:title="Test book navigation"
+            android:id="@+id/action_bookpartflow"
+            app:showAsAction="never"/>
+    <item
             android:id="@+id/action_settings"
             android:enabled="true"
             android:icon="@drawable/ic_action_settings"

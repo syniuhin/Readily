@@ -625,9 +625,9 @@ public class ReaderFragment extends Fragment {
       int wordListSize = wordList.size();
       if ((position < wordListSize && !readerTask.isChunkAvailable()) ||
           (position < wordListSize - FileStorable.LAST_WORD_PREFIX_SIZE &&
-              readerTask
-              .isChunkAvailable())) {
-        if (wordListSize - position < 100 && monitorObject.isPaused()) {
+              readerTask.isChunkAvailable())) {
+        if (wordListSize - position < Constants.WORDS_ENDING_COUNT &&
+            monitorObject.isPaused()) {
           try {
             monitorObject.resumeTask();
           } catch (InterruptedException e) {

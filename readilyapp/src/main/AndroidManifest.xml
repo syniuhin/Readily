@@ -8,16 +8,16 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
+            android:name="android.support.multidex.MultiDexApplication"
             android:allowBackup="true"
             android:icon="@drawable/ic_launcher"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme"
-            android:name="android.support.multidex.MultiDexApplication">
+            android:theme="@style/AppTheme">
         <activity
                 android:name=".MainActivity"
                 android:configChanges="orientation|screenSize"
-                android:launchMode="singleTop"
-                android:label="@string/title_activity_main">
+                android:label="@string/title_activity_main"
+                android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -92,18 +92,34 @@
                 android:name="com.google.android.gms.version"
                 android:value="@integer/google_play_services_version"/>
 
-        <activity
-                android:name=".instructions.InstructionsActivity">
+        <activity android:name=".instructions.InstructionsActivity">
         </activity>
-
         <activity
                 android:name=".settings.SettingsActivity"
                 android:label="@string/title_activity_settings"
-                android:theme="@style/AppTheme"
-                android:parentActivityName="com.infmme.readilyapp.MainActivity">
+                android:parentActivityName=".MainActivity"
+                android:theme="@style/AppTheme">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.infmme.readilyapp.MainActivity"/>
+        </activity>
+        <activity
+                android:name=".BookPartListActivity"
+                android:label="@string/title_bookpart_list"
+                android:parentActivityName=".MainActivity"
+                android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="com.infmme.readilyapp.MainActivity"/>
+        </activity>
+        <activity
+                android:name=".BookPartDetailActivity"
+                android:label="@string/title_bookpart_detail"
+                android:parentActivityName=".BookPartListActivity"
+                android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="com.infmme.readilyapp.BookPartListActivity"/>
         </activity>
     </application>
 
