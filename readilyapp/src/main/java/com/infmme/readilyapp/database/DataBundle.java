@@ -2,7 +2,7 @@ package com.infmme.readilyapp.database;
 
 import android.content.ContentValues;
 import android.content.Intent;
-import com.infmme.readilyapp.Constants;
+import com.infmme.readilyapp.util.Constants;
 
 import java.io.Serializable;
 

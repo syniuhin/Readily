@@ -1,7 +1,7 @@
 package com.infmme.readilyapp.settings;
 
 import android.content.SharedPreferences;
-import com.infmme.readilyapp.Constants;
+import com.infmme.readilyapp.util.Constants;
 
 import java.util.ArrayList;
 import java.util.List;

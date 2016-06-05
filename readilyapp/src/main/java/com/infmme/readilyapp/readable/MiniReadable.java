@@ -3,7 +3,7 @@ package com.infmme.readilyapp.readable;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import com.infmme.readilyapp.Constants;
+import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.database.LastReadDBHelper;
 import com.infmme.readilyapp.service.LastReadService;
 

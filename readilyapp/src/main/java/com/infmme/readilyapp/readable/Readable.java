@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import com.infmme.readilyapp.Constants;
+import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.database.DataBundle;
 import com.infmme.readilyapp.essential.TextParser;

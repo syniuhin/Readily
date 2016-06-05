@@ -2,7 +2,7 @@ package com.infmme.readilyapp.readable;
 
 import android.content.Context;
 import android.text.TextUtils;
-import com.infmme.readilyapp.Constants;
+import com.infmme.readilyapp.util.Constants;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.TableOfContents;

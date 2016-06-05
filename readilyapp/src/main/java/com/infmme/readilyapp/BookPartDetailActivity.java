@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import com.infmme.readilyapp.util.BaseActivity;
+import com.infmme.readilyapp.util.Constants;
 
 /**
  * An activity representing a single BookPart detail screen. This
@@ -54,9 +55,9 @@ public class BookPartDetailActivity extends BaseActivity {
       // Create the detail fragment and add it to the activity
       // using a fragment transaction.
       Bundle arguments = new Bundle();
-      arguments.putSerializable("TocReference",
+      arguments.putSerializable(Constants.EXTRA_TOC_REFERENCE,
                                 getIntent().getSerializableExtra(
-                                    "TocReference"));
+                                    Constants.EXTRA_TOC_REFERENCE));
       BookPartDetailFragment fragment = new BookPartDetailFragment();
       fragment.setArguments(arguments);
       getSupportFragmentManager().beginTransaction()

@@ -15,7 +15,6 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.infmme.readilyapp.Constants;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.ReceiverActivity;
 import com.infmme.readilyapp.readable.MiniReadable;

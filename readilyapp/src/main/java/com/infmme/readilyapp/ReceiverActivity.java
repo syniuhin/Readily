@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.WindowManager;
 import com.infmme.readilyapp.util.BaseActivity;
+import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.util.OnSwipeTouchListener;
 
 public class ReceiverActivity extends BaseActivity

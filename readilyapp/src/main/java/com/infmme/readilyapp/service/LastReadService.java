@@ -5,7 +5,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
-import com.infmme.readilyapp.Constants;
+import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.database.DataBundle;
 import com.infmme.readilyapp.database.LastReadContentProvider;
 import com.infmme.readilyapp.database.LastReadDBHelper;

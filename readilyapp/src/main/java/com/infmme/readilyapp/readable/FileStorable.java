@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
-import com.infmme.readilyapp.Constants;
+import com.infmme.readilyapp.util.Constants;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 import org.mozilla.universalchardet.UniversalDetector;
 

@@ -24,6 +24,7 @@ import com.infmme.readilyapp.readable.FileStorable;
 import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.readable.Storable;
 import com.infmme.readilyapp.settings.SettingsBundle;
+import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.util.OnSwipeTouchListener;
 
 import java.util.ArrayDeque;

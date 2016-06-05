@@ -28,7 +28,7 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.*;
-import com.infmme.readilyapp.Constants;
+import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.ReceiverActivity;
 import org.jsoup.helper.StringUtil;

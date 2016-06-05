@@ -23,6 +23,7 @@ import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.service.StorageCheckerService;
 import com.infmme.readilyapp.settings.SettingsActivity;
 import com.infmme.readilyapp.util.BaseActivity;
+import com.infmme.readilyapp.util.Constants;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 import io.fabric.sdk.android.Fabric;
 
@@ -104,7 +105,8 @@ public class MainActivity extends BaseActivity {
       case R.id.action_bookpartflow:
         startActivityForResult(
             Intent.createChooser(FileUtils.createGetContentIntent(),
-                                 getResources().getString(R.string.choose_file)),
+                                 getResources().getString(
+                                     R.string.choose_file)),
             EPUB_SELECT_CODE);
         break;
     }
@@ -117,7 +119,8 @@ public class MainActivity extends BaseActivity {
     epubFileStorable.process(this);
 
     Intent i = new Intent(this, BookPartListActivity.class);
-    i.putExtra("TableOfContents", epubFileStorable.getTableOfContents());
+    i.putExtra(Constants.EXTRA_TABLE_OF_CONTENTS,
+               epubFileStorable.getTableOfContents());
     startActivity(i);
   }
 

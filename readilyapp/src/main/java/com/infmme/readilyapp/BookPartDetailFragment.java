@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import com.infmme.readilyapp.util.Constants;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.TOCReference;
 import org.jsoup.Jsoup;
@@ -44,12 +45,12 @@ public class BookPartDetailFragment extends Fragment {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    if (getArguments().containsKey("TocReference")) {
+    if (getArguments().containsKey(Constants.EXTRA_TOC_REFERENCE)) {
       // Load the dummy content specified by the fragment
       // arguments. In a real-world scenario, use a Loader
       // to load content from a content provider.
       mItemReference = (TOCReference) getArguments().getSerializable(
-          "TocReference");
+          Constants.EXTRA_TOC_REFERENCE);
 
       Activity activity = this.getActivity();
       CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout)
