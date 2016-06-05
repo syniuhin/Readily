@@ -23,7 +23,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <FrameLayout
-            android:id="@+id/frameLayout"
+            android:id="@+id/bookpart_frame_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -37,7 +37,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
-            android:src="@android:drawable/ic_dialog_email"/>
+            android:src="@drawable/ic_play_arrow_white_36dp"
+            app:layout_anchor="@+id/bookpart_frame_layout"
+            app:layout_anchorGravity="bottom|end"
+            app:layout_behavior="com.infmme.readilyapp.view.FabOnScrollBehavior"/>
 
 
 </android.support.design.widget.CoordinatorLayout>

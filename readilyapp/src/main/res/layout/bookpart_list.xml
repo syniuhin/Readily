@@ -11,4 +11,4 @@
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
         tools:context="com.infmme.readilyapp.BookPartListActivity"
-        tools:listitem="@layout/bookpart_list_content"/>
+        tools:listitem="@layout/bookpart_item"/>

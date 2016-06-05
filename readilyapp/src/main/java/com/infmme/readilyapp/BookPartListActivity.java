@@ -85,6 +85,8 @@ public class BookPartListActivity extends BaseActivity {
       // If this view is present, then the
       // activity should be in two-pane mode.
       mTwoPane = true;
+    } else {
+      fab.setVisibility(View.GONE);
     }
   }
 
@@ -119,10 +121,12 @@ public class BookPartListActivity extends BaseActivity {
 
   public class ParentPart implements ParentListItem {
 
+    private TOCReference mParentReference;
     private List mReferenceList;
     private String mTitle;
 
     public ParentPart(TOCReference parentReference) {
+      mParentReference = parentReference;
       mReferenceList = parentReference.getChildren();
       mTitle = parentReference.getTitle();
     }
@@ -137,8 +141,16 @@ public class BookPartListActivity extends BaseActivity {
       return false;
     }
 
+    public TOCReference getParentReference() {
+      return mParentReference;
+    }
+
     public String getTitle() {
       return mTitle;
+    }
+
+    public boolean hasChildren() {
+      return mReferenceList != null && !mReferenceList.isEmpty();
     }
   }
 
@@ -227,8 +239,19 @@ public class BookPartListActivity extends BaseActivity {
     public void onBindParentViewHolder(
         ParentPartViewHolder parentViewHolder, int position,
         ParentListItem parentListItem) {
-      ParentPart parentPart = (ParentPart) parentListItem;
+      final ParentPart parentPart = (ParentPart) parentListItem;
       parentViewHolder.bind(parentPart);
+
+      // If it doesn't have any children - it's actually a child
+      if (!parentPart.hasChildren()) {
+        parentViewHolder.mParentTextView.setOnClickListener(
+            new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                onViewHolderClick(v, parentPart.getParentReference());
+              }
+            });
+      }
     }
 
     @Override
@@ -241,97 +264,28 @@ public class BookPartListActivity extends BaseActivity {
           new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              if (mTwoPane) {
-                Bundle arguments = new Bundle();
-                arguments.putSerializable("TocReference", tocReference);
-                BookPartDetailFragment fragment = new BookPartDetailFragment();
-                fragment.setArguments(arguments);
-                getSupportFragmentManager().beginTransaction()
-                                           .replace(
-                                               R.id.bookpart_detail_container,
-                                               fragment)
-                                           .commit();
-              } else {
-                Context context = v.getContext();
-                Intent intent = new Intent(context,
-                                           BookPartDetailActivity.class);
-                intent.putExtra("TocReference", tocReference);
-                intent.putExtra("TableOfContents", mTableOfContents);
-                context.startActivity(intent);
-              }
+              onViewHolderClick(v, tocReference);
             }
           });
     }
 
-/*
-    private final List<DummyContent.DummyItem> mValues;
-
-    public SimpleItemRecyclerViewAdapter(List<DummyContent.DummyItem> items) {
-      mValues = items;
+    private void onViewHolderClick(View v, TOCReference tocReference) {
+      if (mTwoPane) {
+        Bundle arguments = new Bundle();
+        arguments.putSerializable("TocReference", tocReference);
+        BookPartDetailFragment fragment = new BookPartDetailFragment();
+        fragment.setArguments(arguments);
+        getSupportFragmentManager()
+            .beginTransaction()
+            .replace(R.id.bookpart_detail_container, fragment)
+            .commit();
+      } else {
+        Context context = v.getContext();
+        Intent intent = new Intent(
+            context, BookPartDetailActivity.class);
+        intent.putExtra("TocReference", tocReference);
+        context.startActivity(intent);
+      }
     }
-
-    @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-      View view = LayoutInflater.from(parent.getContext())
-                                .inflate(R.layout.bookpart_list_content, parent,
-                                         false);
-      return new ViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
-      holder.mItem = mValues.get(position);
-      holder.mIdView.setText(mValues.get(position).id);
-      holder.mContentView.setText(mValues.get(position).content);
-
-      holder.mView.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          if (mTwoPane) {
-            Bundle arguments = new Bundle();
-            arguments.putString(BookPartDetailFragment.ARG_ITEM_ID,
-                                holder.mItem.id);
-            BookPartDetailFragment fragment = new BookPartDetailFragment();
-            fragment.setArguments(arguments);
-            getSupportFragmentManager().beginTransaction()
-                                       .replace(R.id.bookpart_detail_container,
-                                                fragment)
-                                       .commit();
-          } else {
-            Context context = v.getContext();
-            Intent intent = new Intent(context, BookPartDetailActivity.class);
-            intent.putExtra(BookPartDetailFragment.ARG_ITEM_ID,
-                            holder.mItem.id);
-
-            context.startActivity(intent);
-          }
-        }
-      });
-  }
-
-  @Override
-  public int getItemCount() {
-    return mValues.size();
-  }
-
-  public class ViewHolder extends RecyclerView.ViewHolder {
-    public final View mView;
-    public final TextView mIdView;
-    public final TextView mContentView;
-    public DummyContent.DummyItem mItem;
-
-    public ViewHolder(View view) {
-      super(view);
-      mView = view;
-      mIdView = (TextView) view.findViewById(R.id.id);
-      mContentView = (TextView) view.findViewById(R.id.content);
-    }
-
-    @Override
-    public String toString() {
-      return super.toString() + " '" + mContentView.getText() + "'";
-    }
-  }
-*/
   }
 }
