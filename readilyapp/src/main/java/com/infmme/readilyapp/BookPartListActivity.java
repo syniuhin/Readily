@@ -1,6 +1,7 @@
 package com.infmme.readilyapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -42,6 +43,8 @@ public class BookPartListActivity extends BaseActivity {
    */
   private boolean mTwoPane;
 
+  private TableOfContents mTableOfContents;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -70,11 +73,11 @@ public class BookPartListActivity extends BaseActivity {
     assert recyclerView != null;
 
     Bundle bundle = getIntent().getExtras();
-    TableOfContents toc = (TableOfContents) bundle.getSerializable(
+    mTableOfContents = (TableOfContents) bundle.getSerializable(
         "TableOfContents");
 
-    assert toc != null;
-    setupRecyclerView((RecyclerView) recyclerView, toc);
+    assert mTableOfContents != null;
+    setupRecyclerView((RecyclerView) recyclerView, mTableOfContents);
 
     if (findViewById(R.id.bookpart_detail_container) != null) {
       // The detail container view will be present only in the
@@ -232,8 +235,32 @@ public class BookPartListActivity extends BaseActivity {
     public void onBindChildViewHolder(
         ChildPartViewHolder childViewHolder, int position,
         Object childListItem) {
-      TOCReference tocReference = (TOCReference) childListItem;
+      final TOCReference tocReference = (TOCReference) childListItem;
       childViewHolder.bind(tocReference);
+      childViewHolder.mChildTextView.setOnClickListener(
+          new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+              if (mTwoPane) {
+                Bundle arguments = new Bundle();
+                arguments.putSerializable("TocReference", tocReference);
+                BookPartDetailFragment fragment = new BookPartDetailFragment();
+                fragment.setArguments(arguments);
+                getSupportFragmentManager().beginTransaction()
+                                           .replace(
+                                               R.id.bookpart_detail_container,
+                                               fragment)
+                                           .commit();
+              } else {
+                Context context = v.getContext();
+                Intent intent = new Intent(context,
+                                           BookPartDetailActivity.class);
+                intent.putExtra("TocReference", tocReference);
+                intent.putExtra("TableOfContents", mTableOfContents);
+                context.startActivity(intent);
+              }
+            }
+          });
     }
 
 /*

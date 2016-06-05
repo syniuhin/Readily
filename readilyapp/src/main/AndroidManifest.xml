@@ -107,6 +107,7 @@
                 android:name=".BookPartListActivity"
                 android:label="@string/title_bookpart_list"
                 android:parentActivityName=".MainActivity"
+                android:launchMode="singleTop"
                 android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"

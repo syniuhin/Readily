@@ -1,15 +1,14 @@
 package com.infmme.readilyapp;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import com.infmme.readilyapp.util.BaseActivity;
 
 /**
  * An activity representing a single BookPart detail screen. This
@@ -17,7 +16,7 @@ import android.view.MenuItem;
  * item details are presented side-by-side with a list of items
  * in a {@link BookPartListActivity}.
  */
-public class BookPartDetailActivity extends AppCompatActivity {
+public class BookPartDetailActivity extends BaseActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +54,9 @@ public class BookPartDetailActivity extends AppCompatActivity {
       // Create the detail fragment and add it to the activity
       // using a fragment transaction.
       Bundle arguments = new Bundle();
-      arguments.putString(BookPartDetailFragment.ARG_ITEM_ID,
-                          getIntent().getStringExtra(
-                              BookPartDetailFragment.ARG_ITEM_ID));
+      arguments.putSerializable("TocReference",
+                                getIntent().getSerializableExtra(
+                                    "TocReference"));
       BookPartDetailFragment fragment = new BookPartDetailFragment();
       fragment.setArguments(arguments);
       getSupportFragmentManager().beginTransaction()
@@ -77,7 +76,7 @@ public class BookPartDetailActivity extends AppCompatActivity {
       //
       // http://developer.android.com/design/patterns/navigation.html#up-vs-back
       //
-      NavUtils.navigateUpTo(this, new Intent(this, BookPartListActivity.class));
+      NavUtils.navigateUpFromSameTask(this);
       return true;
     }
     return super.onOptionsItemSelected(item);
