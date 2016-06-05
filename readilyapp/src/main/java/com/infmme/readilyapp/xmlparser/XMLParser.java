@@ -1,64 +1,37 @@
 package com.infmme.readilyapp.xmlparser;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Stack;
+
+import static com.infmme.readilyapp.xmlparser.XMLEventType.TAG_SINGLE;
+import static com.infmme.readilyapp.xmlparser.XMLEventType.TAG_START;
 
 /**
  * created on 8/26/14 by infm. Enjoy ;)
  */
 public class XMLParser {
-  /* Event types */
-  public static final int DOCUMENT_START = 0;
-  public static final int DOCUMENT_CLOSE = 1;
-  public static final int TAG = 665;
-  public static final int TAG_START = 666;
-  public static final int TAG_CLOSE = 667;
-  public static final int TAG_SINGLE = 668;
-  public static final int EMPTINESS = 31415;
-  public static final int CONTENT = 228;
   private InputStreamReader isr;
   private XMLEvent currentEvent;
   private Stack<XMLEvent> tagStack = new Stack<XMLEvent>();
 
-  private int currentInt = -1, nextInt = -1;
+  private int currentInt = -1;
+  private int nextInt = -1;
+
   private long position = 0;
 
-  public static String getTypeName(int type) {
-    switch (type) {
-      case DOCUMENT_START:
-        return "DOCUMENT_START";
-      case DOCUMENT_CLOSE:
-        return "DOCUMENT_CLOSE";
-      case TAG:
-        return "TAG";
-      case TAG_START:
-        return "TAG_START";
-      case TAG_CLOSE:
-        return "TAG_CLOSE";
-      case TAG_SINGLE:
-        return "TAG_SINGLE";
-      case EMPTINESS:
-        return "EMPTINESS";
-      case CONTENT:
-        return "CONTENT";
-      default:
-        return "Illegal argument";
-    }
-  }
-
-  public void setInput(FileInputStream fis, String encoding) {
+  public void setInput(InputStream is, String encoding) {
     try {
-      isr = new InputStreamReader(fis, encoding);
+      isr = new InputStreamReader(is, encoding);
     } catch (UnsupportedEncodingException e) {
       e.printStackTrace();
     }
   }
 
-  public void setInput(FileInputStream fis) {
-    setInput(fis, "UTF-8");
+  public void setInput(InputStream is) {
+    setInput(is, "UTF-8");
   }
 
   public long getPosition() {
@@ -78,7 +51,7 @@ public class XMLParser {
   }
 
   private void processEvent() throws IOException {
-    int type;
+    XMLEventType type;
     if (currentInt == -1) {
       currentInt = isr.read();
       nextInt = isr.read();
@@ -90,16 +63,24 @@ public class XMLParser {
       readNext();
     if (currentInt == '<') {
       if (nextInt == '/') {
-        currentEvent = new XMLEvent(type = TAG_CLOSE);
+        currentEvent = new XMLEvent(type = XMLEventType.TAG_CLOSE);
         readNext();
       } else if (nextInt == '?') {
-        currentEvent = new XMLEvent(type = DOCUMENT_START);
+        currentEvent = new XMLEvent(type = XMLEventType.DOCUMENT_START);
         readNext();
+      } else if (nextInt == '!') {
+        currentEvent = new XMLEvent(type = XMLEventType.TAG_COMMENT);
       } else {
-        currentEvent = new XMLEvent(type = TAG);
+        currentEvent = new XMLEvent(type = XMLEventType.TAG);
       }
-    } else { //consider random position as pointing to content of text;
-      currentEvent = new XMLEvent(type = CONTENT);
+    } else if (currentInt != -1) { //consider random position as pointing to
+      // content of text;
+      currentEvent = new XMLEvent(type = XMLEventType.CONTENT);
+    } else {
+      currentEvent = new XMLEvent(type = XMLEventType.DOCUMENT_CLOSE);
+      currentEvent.setStartPosition(position);
+      currentEvent.setEndPosition(position);
+      return;
     }
     currentEvent.setStartPosition(position);
     do {
@@ -108,21 +89,11 @@ public class XMLParser {
       type = currentEvent.getType();
       switch (type) {
         case DOCUMENT_START:
-          currentEvent.appendTagName((char) currentInt);
-          break;
-        case DOCUMENT_CLOSE:
-          currentEvent.appendTagName((char) currentInt);
-          break;
         case TAG:
-          currentEvent.appendTagName((char) currentInt);
-          break;
         case TAG_START:
-          currentEvent.appendTagName((char) currentInt);
-          break;
         case TAG_CLOSE:
-          currentEvent.appendTagName((char) currentInt);
-          break;
         case TAG_SINGLE:
+        case TAG_COMMENT:
           currentEvent.appendTagName((char) currentInt);
           break;
         case CONTENT:
@@ -131,7 +102,8 @@ public class XMLParser {
         case EMPTINESS:
           break;
         default:
-          throw new IllegalArgumentException("type doesn't exist");
+          throw new IllegalArgumentException(
+              "Illegal type in iterative block.");
       }
     } while (!breakClause(type, currentInt, nextInt));
 
@@ -164,12 +136,6 @@ public class XMLParser {
         readNext();
         readNext();
         break;
-      case DOCUMENT_CLOSE:
-        if (!tagStack.empty() && tagStack.lastElement()
-                                         .getTagName()
-                                         .equals(currentEvent.getTagName()))
-          tagStack.pop();
-        break;
       case DOCUMENT_START:
         currentEvent.cutLastTagChar();
         tagStack.push(currentEvent);
@@ -181,16 +147,14 @@ public class XMLParser {
     currentEvent.setEndPosition(position);
   }
 
-  private boolean breakClause(int type, int currentInt, int nextInt) {
+  private boolean breakClause(XMLEventType type, int currentInt, int nextInt) {
     switch (type) {
       case CONTENT:
-        return currentInt == '<' || nextInt == '<';
       case EMPTINESS:
         return currentInt == '<' || nextInt == '<';
       case TAG:
-        return nextInt == '>';
+      case TAG_COMMENT:
       case TAG_START:
-        return nextInt == '>';
       case TAG_CLOSE:
         return nextInt == '>';
       case TAG_SINGLE:
@@ -200,14 +164,14 @@ public class XMLParser {
       case DOCUMENT_CLOSE:
         return nextInt == '>';
       default:
-        throw new IllegalArgumentException("type doesn't exist");
+        throw new IllegalArgumentException("Type doesn't exist");
     }
   }
 
-  private void updateType(int type, int currentInt, int nextInt) {
+  private void updateType(XMLEventType type, int currentInt, int nextInt) {
     switch (type) {
       case TAG:
-        if (nextInt == '>' && currentInt == '/')
+        if (currentInt == '/' && nextInt == '>')
           currentEvent.clarifyTagType(TAG_SINGLE);
         break;
     }

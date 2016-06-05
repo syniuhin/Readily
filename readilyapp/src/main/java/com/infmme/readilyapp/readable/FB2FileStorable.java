@@ -3,6 +3,7 @@ package com.infmme.readilyapp.readable;
 import android.content.Context;
 import android.text.TextUtils;
 import com.infmme.readilyapp.xmlparser.XMLEvent;
+import com.infmme.readilyapp.xmlparser.XMLEventType;
 import com.infmme.readilyapp.xmlparser.XMLParser;
 
 import java.io.File;
@@ -66,12 +67,12 @@ public class FB2FileStorable extends FileStorable {
     try {
       if (parser == null) { return; }
       XMLEvent event = parser.next();
-      int eventType = event.getType();
+      XMLEventType eventType = event.getType();
       boolean needTitle = TextUtils.isEmpty(title);
 
-      while (eventType != XMLParser.DOCUMENT_CLOSE && text.length() <
+      while (eventType != XMLEventType.DOCUMENT_CLOSE && text.length() <
           BUFFER_SIZE) {
-        if (eventType == XMLParser.CONTENT) {
+        if (eventType == XMLEventType.CONTENT) {
           String contentType = event.getContentType();
           if (!TextUtils.isEmpty(contentType)) {
             if (needTitle && contentType.equals("book-title"))

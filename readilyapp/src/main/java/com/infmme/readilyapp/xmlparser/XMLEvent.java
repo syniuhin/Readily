@@ -7,8 +7,8 @@ import android.util.Pair;
  */
 public class XMLEvent {
   private Pair<Long, Long> domain;
-  private int type;
-  private int closeType;
+  private XMLEventType type;
+  private XMLEventType closeType;
 
   private String content;
   private String contentType;
@@ -16,10 +16,10 @@ public class XMLEvent {
 
   private boolean tagNameReady;
 
-  public XMLEvent(int type) {
+  public XMLEvent(XMLEventType type) {
     content = "";
     tagName = "";
-    domain = new Pair<Long, Long>(-1L, -1L);
+    domain = new Pair<>(-1L, -1L);
     this.type = type;
     generateCloseType();
   }
@@ -29,14 +29,14 @@ public class XMLEvent {
   }
 
   public void setEndPosition(long endPosition) {
-    domain = new Pair<Long, Long>(domain.first, endPosition);
+    domain = new Pair<>(domain.first, endPosition);
   }
 
   public void setStartPosition(long startPosition) {
-    domain = new Pair<Long, Long>(startPosition, domain.first);
+    domain = new Pair<>(startPosition, domain.first);
   }
 
-  public int getType() {
+  public XMLEventType getType() {
     return type;
   }
 
@@ -56,8 +56,8 @@ public class XMLEvent {
     this.contentType = contentType;
   }
 
-  public void clarifyTagType(int tagType) {
-    if (type == XMLParser.TAG) {
+  public void clarifyTagType(XMLEventType tagType) {
+    if (type == XMLEventType.TAG) {
       type = tagType;
       generateCloseType();
     }
@@ -81,31 +81,35 @@ public class XMLEvent {
   @Override
   public String toString() {
     return "domain: from " + domain.first + " to " + domain.second +
-        "; type: " + XMLParser.getTypeName(type) +
-        "; close type: " + XMLParser.getTypeName(closeType) +
+        "; type: " + type.toString() +
+        "; close type: " + closeType.toString() +
         "; content: " + content +
         "; tag name: " + tagName;
   }
 
-  private void generateCloseType() {
+  private void generateCloseType() throws IllegalStateException {
     switch (type) {
-      case XMLParser.DOCUMENT_START:
-        closeType = XMLParser.DOCUMENT_CLOSE;
+      case DOCUMENT_START:
+        closeType = XMLEventType.DOCUMENT_CLOSE;
         break;
-      case XMLParser.TAG_START:
-        closeType = XMLParser.TAG_CLOSE;
+      case TAG_START:
+        closeType = XMLEventType.TAG_CLOSE;
         break;
-      case XMLParser.CONTENT:
-        closeType = XMLParser.TAG;
+      case CONTENT:
+        closeType = XMLEventType.TAG;
         break;
-      case XMLParser.EMPTINESS:
-        closeType = XMLParser.TAG_START;
+      case EMPTINESS:
+        closeType = XMLEventType.TAG_START;
         break;
-      case XMLParser.TAG_SINGLE:
+      case TAG:
+      case TAG_SINGLE:
+      case TAG_COMMENT:
+      case TAG_CLOSE:
+      case DOCUMENT_CLOSE:
         closeType = type;
         break;
       default:
-        closeType = -1;
+        throw new IllegalStateException("Illegal opening type");
     }
   }
 }
