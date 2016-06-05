@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 
 /**
  * Created with love, by infm dated on 6/5/16.
@@ -26,6 +27,42 @@ public class XMLParserTest {
           "<string name=\"title_activity_settings\">Settings</string>" +
           "</resources>";
 
+  private static final List<XMLEventType> SMALL_XML_EXPECTED_EVENTS;
+  private static final List<String> SMALL_XML_EXPECTED_TAGNAMES;
+
+  static {
+    SMALL_XML_EXPECTED_EVENTS = new ArrayList<>();
+    SMALL_XML_EXPECTED_EVENTS.add(XMLEventType.DOCUMENT_START);
+    SMALL_XML_EXPECTED_EVENTS.add(XMLEventType.TAG_START);
+    SMALL_XML_EXPECTED_EVENTS.add(XMLEventType.TAG_COMMENT);
+    SMALL_XML_EXPECTED_EVENTS.add(XMLEventType.TAG_START);
+    SMALL_XML_EXPECTED_EVENTS.add(XMLEventType.CONTENT);
+    SMALL_XML_EXPECTED_EVENTS.add(XMLEventType.TAG_CLOSE);
+    SMALL_XML_EXPECTED_EVENTS.add(XMLEventType.TAG_START);
+    SMALL_XML_EXPECTED_EVENTS.add(XMLEventType.CONTENT);
+    SMALL_XML_EXPECTED_EVENTS.add(XMLEventType.TAG_CLOSE);
+    SMALL_XML_EXPECTED_EVENTS.add(XMLEventType.TAG_START);
+    SMALL_XML_EXPECTED_EVENTS.add(XMLEventType.CONTENT);
+    SMALL_XML_EXPECTED_EVENTS.add(XMLEventType.TAG_CLOSE);
+    SMALL_XML_EXPECTED_EVENTS.add(XMLEventType.TAG_START);
+    SMALL_XML_EXPECTED_EVENTS.add(XMLEventType.CONTENT);
+    SMALL_XML_EXPECTED_EVENTS.add(XMLEventType.TAG_CLOSE);
+    SMALL_XML_EXPECTED_EVENTS.add(XMLEventType.TAG_CLOSE);
+    SMALL_XML_EXPECTED_EVENTS.add(XMLEventType.DOCUMENT_CLOSE);
+
+    SMALL_XML_EXPECTED_TAGNAMES = new ArrayList<>();
+    SMALL_XML_EXPECTED_TAGNAMES.add("resources");
+    SMALL_XML_EXPECTED_TAGNAMES.add("string");
+    SMALL_XML_EXPECTED_TAGNAMES.add("string");
+    SMALL_XML_EXPECTED_TAGNAMES.add("string");
+    SMALL_XML_EXPECTED_TAGNAMES.add("string");
+    SMALL_XML_EXPECTED_TAGNAMES.add("string");
+    SMALL_XML_EXPECTED_TAGNAMES.add("string");
+    SMALL_XML_EXPECTED_TAGNAMES.add("string");
+    SMALL_XML_EXPECTED_TAGNAMES.add("string");
+    SMALL_XML_EXPECTED_TAGNAMES.add("resources");
+  }
+
   @Before
   public void setUp() throws Exception {
 
@@ -36,32 +73,44 @@ public class XMLParserTest {
     XMLParser parser = new XMLParser();
     parser.setInput(new ByteArrayInputStream(SMALL_XML.getBytes()));
 
-    final List<XMLEventType> expectedEvents = new ArrayList<>();
-    expectedEvents.add(XMLEventType.DOCUMENT_START);
-    expectedEvents.add(XMLEventType.TAG_START);
-    expectedEvents.add(XMLEventType.TAG_COMMENT);
-    expectedEvents.add(XMLEventType.TAG_START);
-    expectedEvents.add(XMLEventType.CONTENT);
-    expectedEvents.add(XMLEventType.TAG_CLOSE);
-    expectedEvents.add(XMLEventType.TAG_START);
-    expectedEvents.add(XMLEventType.CONTENT);
-    expectedEvents.add(XMLEventType.TAG_CLOSE);
-    expectedEvents.add(XMLEventType.TAG_START);
-    expectedEvents.add(XMLEventType.CONTENT);
-    expectedEvents.add(XMLEventType.TAG_CLOSE);
-    expectedEvents.add(XMLEventType.TAG_START);
-    expectedEvents.add(XMLEventType.CONTENT);
-    expectedEvents.add(XMLEventType.TAG_CLOSE);
-    expectedEvents.add(XMLEventType.TAG_CLOSE);
-    expectedEvents.add(XMLEventType.DOCUMENT_CLOSE);
-
     XMLEvent event = parser.next();
     XMLEventType eventType = event.getType();
 
-    for (XMLEventType expected: expectedEvents) {
+    for (XMLEventType expected : SMALL_XML_EXPECTED_EVENTS) {
       assertEquals(expected, eventType);
       event = parser.next();
       eventType = event.getType();
+    }
+  }
+
+  @Test
+  public void testSmallXmlTagNames() throws Exception {
+    XMLParser parser = new XMLParser();
+    parser.setInput(new ByteArrayInputStream(SMALL_XML.getBytes()));
+
+    XMLEvent event;
+    XMLEventType eventType;
+    do {
+      event = parser.next();
+      eventType = event.getType();
+    } while (eventType != XMLEventType.TAG &&
+        eventType != XMLEventType.TAG_START &&
+        eventType != XMLEventType.TAG_CLOSE &&
+        eventType != XMLEventType.TAG_SINGLE &&
+        eventType != XMLEventType.DOCUMENT_CLOSE);
+
+    assertFalse(XMLEventType.DOCUMENT_CLOSE == eventType);
+
+    for (String expected : SMALL_XML_EXPECTED_TAGNAMES) {
+      assertEquals(expected, event.getTagName());
+      do {
+        event = parser.next();
+        eventType = event.getType();
+      } while (eventType != XMLEventType.TAG &&
+          eventType != XMLEventType.TAG_START &&
+          eventType != XMLEventType.TAG_CLOSE &&
+          eventType != XMLEventType.TAG_SINGLE &&
+          eventType != XMLEventType.DOCUMENT_CLOSE);
     }
   }
 }
