@@ -15,7 +15,6 @@ import android.support.v4.content.ContextCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-import com.crashlytics.android.Crashlytics;
 import com.infmme.readilyapp.instructions.InstructionsActivity;
 import com.infmme.readilyapp.readable.EpubFileStorable;
 import com.infmme.readilyapp.readable.FileStorable;
@@ -25,7 +24,6 @@ import com.infmme.readilyapp.settings.SettingsActivity;
 import com.infmme.readilyapp.util.BaseActivity;
 import com.infmme.readilyapp.util.Constants;
 import com.ipaulpro.afilechooser.utils.FileUtils;
-import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends BaseActivity {
 
@@ -40,8 +38,6 @@ public class MainActivity extends BaseActivity {
     isAnybodyOutThere(this);
 
     startService(createCheckerServiceIntent());
-
-    Fabric.with(this, new Crashlytics());
 
     changeActionBarIcon();
     startFileListFragment();

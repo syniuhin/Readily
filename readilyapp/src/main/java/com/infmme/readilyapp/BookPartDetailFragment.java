@@ -3,6 +3,7 @@ package com.infmme.readilyapp;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,11 @@ import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.domain.TOCReference;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 import java.io.IOException;
 
@@ -57,19 +63,40 @@ public class BookPartDetailFragment extends Fragment implements
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
-    View rootView = inflater.inflate(R.layout.bookpart_detail, container,
-                                     false);
+    final View rootView = inflater.inflate(R.layout.bookpart_detail, container,
+                                           false);
     mTextView = ((TextView) rootView.findViewById(R.id.bookpart_detail));
     if (mItemReference != null) {
-      Resource resource = mItemReference.getResource();
-      try {
-        // Blocking. TODO: make it asynchronous.
-        Document doc = Jsoup.parse(new String(resource.getData()));
-        String parsed = doc.select("p").text();
-        mTextView.setText(parsed);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      Observable<String> o = Observable.create(
+          new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> subscriber) {
+              Resource resource = mItemReference.getResource();
+              try {
+                Document doc = Jsoup.parse(new String(resource.getData()));
+                String parsed = doc.select("p").text();
+                subscriber.onNext(parsed);
+                subscriber.onCompleted();
+              } catch (IOException e) {
+                subscriber.onError(e);
+              }
+            }
+          });
+      o.subscribeOn(Schedulers.newThread())
+       .observeOn(AndroidSchedulers.mainThread())
+       .subscribe(new Action1<String>() {
+         @Override
+         public void call(String s) {
+           mTextView.setText(s);
+         }
+       }, new Action1<Throwable>() {
+         @Override
+         public void call(Throwable throwable) {
+           throwable.printStackTrace();
+           Snackbar.make(rootView, "Error occurred", Snackbar.LENGTH_SHORT)
+                   .show();
+         }
+       });
     }
 
     return rootView;

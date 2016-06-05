@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
@@ -13,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import com.infmme.readilyapp.util.BaseActivity;
 import com.infmme.readilyapp.util.Constants;
+import com.infmme.readilyapp.view.FabOnScrollBehavior;
 import com.infmme.readilyapp.view.adapter.BookNavigationAdapter;
 import nl.siegmann.epublib.domain.TOCReference;
 import nl.siegmann.epublib.domain.TableOfContents;
@@ -89,8 +91,18 @@ public class BookPartListActivity extends BaseActivity implements
       }
     });
     if (mTwoPane) {
+      CoordinatorLayout.LayoutParams p =
+          (CoordinatorLayout.LayoutParams) mFab.getLayoutParams();
+      p.setAnchorId(R.id.bookpart_frame_layout);
+      p.setBehavior(new FabOnScrollBehavior(null, null));
+      mFab.setLayoutParams(p);
       mFab.setVisibility(View.VISIBLE);
     } else {
+      CoordinatorLayout.LayoutParams p =
+          (CoordinatorLayout.LayoutParams) mFab.getLayoutParams();
+      p.setAnchorId(View.NO_ID);
+      p.setBehavior(null);
+      mFab.setLayoutParams(p);
       mFab.setVisibility(View.GONE);
     }
 

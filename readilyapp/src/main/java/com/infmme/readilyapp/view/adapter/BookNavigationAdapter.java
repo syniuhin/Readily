@@ -1,13 +1,15 @@
 package com.infmme.readilyapp.view.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
-import com.bignerdranch.expandablerecyclerview.Adapter
-    .ExpandableRecyclerAdapter;
+import com.bignerdranch.expandablerecyclerview.Adapter.ExpandableRecyclerAdapter;
 import com.bignerdranch.expandablerecyclerview.Model.ParentListItem;
 import com.bignerdranch.expandablerecyclerview.ViewHolder.ChildViewHolder;
 import com.bignerdranch.expandablerecyclerview.ViewHolder.ParentViewHolder;
@@ -54,7 +56,7 @@ public class BookNavigationAdapter
   public ParentPartViewHolder onCreateParentViewHolder(
       ViewGroup parentViewGroup) {
     View parentPartView = mInflater.inflate(
-        R.layout.bookpart_item, parentViewGroup, false);
+        R.layout.bookpart_item_parent, parentViewGroup, false);
     return new ParentPartViewHolder(parentPartView);
   }
 
@@ -62,7 +64,7 @@ public class BookNavigationAdapter
   public ChildPartViewHolder onCreateChildViewHolder(
       ViewGroup childViewGroup) {
     View childPartView = mInflater.inflate(
-        R.layout.bookpart_item, childViewGroup, false);
+        R.layout.bookpart_item_child, childViewGroup, false);
     return new ChildPartViewHolder(childPartView);
   }
 
@@ -75,7 +77,7 @@ public class BookNavigationAdapter
 
     // If it doesn't have any children - it's actually a child
     if (!parentPart.hasChildren()) {
-      parentViewHolder.mParentTextView.setOnClickListener(
+      parentViewHolder.mContainerView.setOnClickListener(
           new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,6 +85,8 @@ public class BookNavigationAdapter
                   .onBookPartClicked(v, parentPart.getParentReference());
             }
           });
+    } else {
+      parentViewHolder.setDefaultOnClickListener();
     }
   }
 
@@ -92,7 +96,8 @@ public class BookNavigationAdapter
       Object childListItem) {
     final TOCReference tocReference = (TOCReference) childListItem;
     childViewHolder.bind(tocReference);
-    childViewHolder.mChildTextView.setOnClickListener(
+    childViewHolder.mContainerView.setClickable(true);
+    childViewHolder.mContainerView.setOnClickListener(
         new View.OnClickListener() {
           @Override
           public void onClick(View v) {
@@ -138,7 +143,9 @@ public class BookNavigationAdapter
 
   public class ParentPartViewHolder extends ParentViewHolder {
 
+    private View mContainerView;
     private TextView mParentTextView;
+    private ImageButton mImageButton;
 
     /**
      * Default constructor.
@@ -147,17 +154,52 @@ public class BookNavigationAdapter
      */
     public ParentPartViewHolder(View itemView) {
       super(itemView);
+      mContainerView = itemView;
       mParentTextView = (TextView) itemView.findViewById(
-          R.id.bookpart_item_text_view);
+          R.id.bookpart_parent_item_text_view);
+      mImageButton = (ImageButton) itemView.findViewById(
+          R.id.bookpart_parent_item_image_button);
+      setDefaultOnClickListener();
     }
 
     public void bind(ParentPart parentPart) {
       mParentTextView.setText(parentPart.getTitle());
+      if (parentPart.hasChildren()) {
+        mImageButton.setVisibility(View.VISIBLE);
+      } else {
+        mImageButton.setVisibility(View.GONE);
+      }
+    }
+
+    public void setDefaultOnClickListener() {
+      mContainerView.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          Context c = v.getContext();
+          Drawable d;
+          if (isExpanded()) {
+            collapseView();
+            d = ContextCompat
+                .getDrawable(c, R.drawable.ic_expand_more_black_36dp);
+          } else {
+            expandView();
+            d = ContextCompat
+                .getDrawable(c, R.drawable.ic_expand_less_black_36dp);
+          }
+          mImageButton.setImageDrawable(d);
+        }
+      });
+    }
+
+    @Override
+    public boolean shouldItemViewClickToggleExpansion() {
+      return false;
     }
   }
 
   public class ChildPartViewHolder extends ChildViewHolder {
 
+    private View mContainerView;
     private TextView mChildTextView;
 
     /**
@@ -167,8 +209,9 @@ public class BookNavigationAdapter
      */
     public ChildPartViewHolder(View itemView) {
       super(itemView);
+      mContainerView = itemView;
       mChildTextView = (TextView) itemView.findViewById(
-          R.id.bookpart_item_text_view);
+          R.id.bookpart_child_item_text_view);
     }
 
     public void bind(TOCReference tocReference) {
