@@ -17,18 +17,29 @@ import android.view.MenuItem;
 import android.widget.Toast;
 import com.infmme.readilyapp.instructions.InstructionsActivity;
 import com.infmme.readilyapp.readable.EpubFileStorable;
+import com.infmme.readilyapp.readable.FB2FileStorable;
 import com.infmme.readilyapp.readable.FileStorable;
 import com.infmme.readilyapp.readable.Readable;
+import com.infmme.readilyapp.readable.fb2.FB2Part;
 import com.infmme.readilyapp.service.StorageCheckerService;
 import com.infmme.readilyapp.settings.SettingsActivity;
 import com.infmme.readilyapp.util.BaseActivity;
 import com.infmme.readilyapp.util.Constants;
 import com.ipaulpro.afilechooser.utils.FileUtils;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
+
+import java.io.IOException;
+import java.util.List;
 
 public class MainActivity extends BaseActivity {
 
   private static final int FILE_SELECT_CODE = 7331;
   private static final int EPUB_SELECT_CODE = 9871;
+  private static final int FB2_SELECT_CODE = 1982;
   private static final int READ_EXTERNAL_STORAGE_REQUEST = 7878;
 
   @Override
@@ -98,12 +109,18 @@ public class MainActivity extends BaseActivity {
       case R.id.action_instructions:
         InstructionsActivity.start(this);
         break;
-      case R.id.action_bookpartflow:
+      case R.id.action_epub_bookpartflow:
         startActivityForResult(
             Intent.createChooser(FileUtils.createGetContentIntent(),
                                  getResources().getString(
                                      R.string.choose_file)),
             EPUB_SELECT_CODE);
+      case R.id.action_fb2_bookpartflow:
+        startActivityForResult(
+            Intent.createChooser(FileUtils.createGetContentIntent(),
+                                 getResources().getString(
+                                     R.string.choose_file)),
+            FB2_SELECT_CODE);
         break;
     }
 
@@ -162,6 +179,51 @@ public class MainActivity extends BaseActivity {
             }
           }
         }
+        break;
+      case FB2_SELECT_CODE:
+        if (resultCode == RESULT_OK) {
+          if (data != null) {
+            String relativePath = FileUtils.getPath(this, data.getData());
+            if (FileUtils.getExtension(relativePath).equals(".fb2")) {
+              final FB2FileStorable fb2FileStorable = new FB2FileStorable(
+                  relativePath);
+              fb2FileStorable.process(this);
+
+              Observable<List<FB2Part>> o = Observable.create(
+                  new Observable.OnSubscribe<List<FB2Part>>() {
+                    @Override
+                    public void call(
+                        Subscriber<? super List<FB2Part>> subscriber) {
+                      try {
+                        List<FB2Part> toc = fb2FileStorable
+                            .getTableOfContents();
+                        subscriber.onNext(toc);
+                        subscriber.onCompleted();
+                      } catch (IOException e) {
+                        subscriber.onError(e);
+                      }
+                    }
+                  });
+              o.subscribeOn(Schedulers.newThread())
+               .observeOn(AndroidSchedulers.mainThread())
+               .subscribe(new Action1<List<FB2Part>>() {
+                 @Override
+                 public void call(List<FB2Part> fb2Parts) {
+                   int x = 10;
+                 }
+               }, new Action1<Throwable>() {
+                 @Override
+                 public void call(Throwable throwable) {
+                   throwable.printStackTrace();
+                 }
+               });
+            } else {
+              Toast.makeText(this, R.string.wrong_ext, Toast.LENGTH_SHORT)
+                   .show();
+            }
+          }
+        }
+        break;
     }
     super.onActivityResult(requestCode, resultCode, data);
   }

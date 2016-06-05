@@ -31,9 +31,15 @@
             android:visible="true"/>
 
     <item
-            android:title="Test book navigation"
-            android:id="@+id/action_bookpartflow"
+            android:title="Test epub navigation"
+            android:id="@+id/action_epub_bookpartflow"
             app:showAsAction="never"/>
+
+    <item
+            android:title="Test fb2 navigation"
+            android:id="@+id/action_fb2_bookpartflow"
+            app:showAsAction="never"/>
+
     <item
             android:id="@+id/action_settings"
             android:enabled="true"

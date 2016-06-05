@@ -70,6 +70,48 @@ public class XMLParserTest {
     SMALL_XML_EXPECTED_CONTENT.add("Settings");
   }
 
+  // TODO: Add tests for it.
+  private static final String HIERARCHICAL_XML =
+      "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+          "<section>" +
+
+          "<title>" +
+          "<p>Part 1</p>" +
+          "<empty-line/>" +
+          "<p>Part description</p>" +
+          "</title>" +
+
+            "<section>" +
+            "<title>" +
+            "<p>Chapter 1</p>" +
+            "<empty-line/>" +
+            "<p>Chapter 1 description</p>" +
+            "</title>" +
+            "<p>Chapter 1 contents</p>" +
+            "</section>" +
+            "<section>" +
+
+            "<title>" +
+            "<p>Chapter 2</p>" +
+            "<empty-line/>" +
+            "<p>Chapter 2 description</p>" +
+            "</title>" +
+            "<p>Chapter 2 contents</p>" +
+            "</section>" +
+
+          "</section>" +
+
+          "<section>" +
+
+          "<title>" +
+          "<p>Part 2</p>" +
+          "<empty-line/>" +
+          "<p>Part description</p>" +
+          "</title>" +
+          "<p>Part 3 contents</p>" +
+
+          "</section>";
+
   @Before
   public void setUp() throws Exception {
 

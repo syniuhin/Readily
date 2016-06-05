@@ -78,6 +78,30 @@ public class XMLEvent {
     tagName = tagName.substring(0, tagName.length() - 1);
   }
 
+  public boolean enteringSection() {
+    return getType() == XMLEventType.TAG_START &&
+        getTagName() != null &&
+        getTagName().equals(FB2Tags.SECTION);
+  }
+
+  public boolean exitingSection() {
+    return getType() == XMLEventType.TAG_CLOSE &&
+        getTagName() != null &&
+        getTagName().equals(FB2Tags.SECTION);
+  }
+
+  public boolean enteringTitle() {
+    return getType() == XMLEventType.TAG_START &&
+        getTagName() != null &&
+        getTagName().equals(FB2Tags.TITLE);
+  }
+
+  public boolean exitingTitle() {
+    return getType() == XMLEventType.TAG_CLOSE &&
+        getTagName() != null &&
+        getTagName().equals(FB2Tags.TITLE);
+  }
+
   @Override
   public String toString() {
     return "domain: from " + domain.first + " to " + domain.second +

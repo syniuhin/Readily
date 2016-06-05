@@ -15,7 +15,7 @@ import static com.infmme.readilyapp.xmlparser.XMLEventType.TAG_START;
 public class XMLParser {
   private InputStreamReader isr;
   private XMLEvent currentEvent;
-  private Stack<XMLEvent> tagStack = new Stack<XMLEvent>();
+  private Stack<XMLEvent> eventStack = new Stack<XMLEvent>();
 
   private int currentInt = -1;
   private int nextInt = -1;
@@ -111,8 +111,8 @@ public class XMLParser {
       case CONTENT:
         if (currentEvent.getContent().length() > 1) {
           readNext();
-          if (!tagStack.isEmpty())
-            currentEvent.setContentType(tagStack.lastElement().getTagName());
+          if (!eventStack.isEmpty())
+            currentEvent.setContentType(eventStack.lastElement().getTagName());
         } else {
           currentEvent = null;
           processEvent();
@@ -120,25 +120,25 @@ public class XMLParser {
         break;
       case TAG:
         currentEvent.clarifyTagType(TAG_START);
-        tagStack.push(currentEvent);
+        eventStack.push(currentEvent);
         readNext();
         break;
       case TAG_CLOSE:
-        if (!tagStack.empty() && tagStack.lastElement()
-                                         .getTagName()
-                                         .equals(currentEvent.getTagName()))
-          tagStack.pop();
+        if (!eventStack.empty() && eventStack.lastElement()
+                                             .getTagName()
+                                             .equals(currentEvent.getTagName()))
+          eventStack.pop();
         readNext();
         readNext();
         break;
       case TAG_START:
-        tagStack.push(currentEvent);
+        eventStack.push(currentEvent);
         readNext();
         readNext();
         break;
       case DOCUMENT_START:
         currentEvent.cutLastTagChar();
-        tagStack.push(currentEvent);
+        eventStack.push(currentEvent);
         readNext();
         readNext();
         break;
