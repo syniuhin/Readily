@@ -9,12 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import com.bignerdranch.expandablerecyclerview.Adapter.ExpandableRecyclerAdapter;
+import com.bignerdranch.expandablerecyclerview.Adapter
+    .ExpandableRecyclerAdapter;
 import com.bignerdranch.expandablerecyclerview.Model.ParentListItem;
 import com.bignerdranch.expandablerecyclerview.ViewHolder.ChildViewHolder;
 import com.bignerdranch.expandablerecyclerview.ViewHolder.ParentViewHolder;
 import com.infmme.readilyapp.R;
-import nl.siegmann.epublib.domain.TOCReference;
+import com.infmme.readilyapp.readable.storable.AbstractTocReference;
 
 import java.util.List;
 
@@ -94,7 +95,8 @@ public class BookNavigationAdapter
   public void onBindChildViewHolder(
       ChildPartViewHolder childViewHolder, int position,
       Object childListItem) {
-    final TOCReference tocReference = (TOCReference) childListItem;
+    final AbstractTocReference tocReference = (AbstractTocReference)
+        childListItem;
     childViewHolder.bind(tocReference);
     childViewHolder.mContainerView.setClickable(true);
     childViewHolder.mContainerView.setOnClickListener(
@@ -108,11 +110,11 @@ public class BookNavigationAdapter
 
   public static class ParentPart implements ParentListItem {
 
-    private TOCReference mParentReference;
+    private AbstractTocReference mParentReference;
     private List mReferenceList;
     private String mTitle;
 
-    public ParentPart(TOCReference parentReference) {
+    public ParentPart(AbstractTocReference parentReference) {
       mParentReference = parentReference;
       mReferenceList = parentReference.getChildren();
       mTitle = parentReference.getTitle();
@@ -128,7 +130,7 @@ public class BookNavigationAdapter
       return false;
     }
 
-    public TOCReference getParentReference() {
+    public AbstractTocReference getParentReference() {
       return mParentReference;
     }
 
@@ -214,12 +216,12 @@ public class BookNavigationAdapter
           R.id.bookpart_child_item_text_view);
     }
 
-    public void bind(TOCReference tocReference) {
+    public void bind(AbstractTocReference tocReference) {
       mChildTextView.setText(tocReference.getTitle());
     }
   }
 
   public interface OnItemClickListener {
-    void onBookPartClicked(View v, TOCReference tocReference);
+    void onBookPartClicked(View v, AbstractTocReference tocReference);
   }
 }

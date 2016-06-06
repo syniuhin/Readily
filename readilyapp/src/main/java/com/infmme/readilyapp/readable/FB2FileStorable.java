@@ -140,6 +140,7 @@ public class FB2FileStorable extends FileStorable {
         if (currentPart == null) {
           throw new IllegalStateException("Can't exit non-existing part");
         }
+        currentPart.setId("section" + String.valueOf(parser.getPosition()));
         if (stack.isEmpty()) {
           toc.add(currentPart);
           currentPart = null;

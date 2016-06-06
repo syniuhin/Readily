@@ -20,6 +20,7 @@ import com.infmme.readilyapp.readable.EpubFileStorable;
 import com.infmme.readilyapp.readable.FB2FileStorable;
 import com.infmme.readilyapp.readable.FileStorable;
 import com.infmme.readilyapp.readable.Readable;
+import com.infmme.readilyapp.readable.epub.EpubPart;
 import com.infmme.readilyapp.readable.fb2.FB2Part;
 import com.infmme.readilyapp.service.StorageCheckerService;
 import com.infmme.readilyapp.settings.SettingsActivity;
@@ -115,6 +116,7 @@ public class MainActivity extends BaseActivity {
                                  getResources().getString(
                                      R.string.choose_file)),
             EPUB_SELECT_CODE);
+        break;
       case R.id.action_fb2_bookpartflow:
         startActivityForResult(
             Intent.createChooser(FileUtils.createGetContentIntent(),
@@ -132,8 +134,12 @@ public class MainActivity extends BaseActivity {
     epubFileStorable.process(this);
 
     Intent i = new Intent(this, BookPartListActivity.class);
-    i.putExtra(Constants.EXTRA_TABLE_OF_CONTENTS,
-               epubFileStorable.getTableOfContents());
+    Bundle args = new Bundle();
+    args.putSerializable(
+        Constants.EXTRA_TOC_REFERENCE_LIST,
+        EpubPart.adaptList(
+            epubFileStorable.getTableOfContents().getTocReferences()));
+    i.putExtras(args);
     startActivity(i);
   }
 

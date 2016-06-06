@@ -13,7 +13,7 @@ public class Constants {
   public static final String EXTRA_HEADER = "header";
   public static final String EXTRA_PERCENT = "percent_left";
   public static final String EXTRA_DB_OPERATION = "db_operation";
-  public static final String EXTRA_TABLE_OF_CONTENTS = "TableOfContents";
+  public static final String EXTRA_TOC_REFERENCE_LIST = "TocReferenceList";
   public static final String EXTRA_TOC_REFERENCE = "TocReference";
 
   public static final String DEFAULT_WPM = "250";

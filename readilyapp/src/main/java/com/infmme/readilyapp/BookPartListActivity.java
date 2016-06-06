@@ -12,12 +12,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import com.infmme.readilyapp.readable.storable.AbstractTocReference;
 import com.infmme.readilyapp.util.BaseActivity;
 import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.view.FabOnScrollBehavior;
 import com.infmme.readilyapp.view.adapter.BookNavigationAdapter;
-import nl.siegmann.epublib.domain.TOCReference;
-import nl.siegmann.epublib.domain.TableOfContents;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +33,7 @@ public class BookPartListActivity extends BaseActivity implements
    */
   private boolean mTwoPane;
 
-  private TableOfContents mTableOfContents;
+  private ArrayList<AbstractTocReference> mTocReferenceList;
 
   private Toolbar mToolbar;
   private FloatingActionButton mFab;
@@ -57,8 +56,8 @@ public class BookPartListActivity extends BaseActivity implements
     mTwoPane = isTwoPane();
 
     Bundle bundle = getIntent().getExtras();
-    mTableOfContents = (TableOfContents) bundle.getSerializable(
-        Constants.EXTRA_TABLE_OF_CONTENTS);
+    mTocReferenceList = (ArrayList<AbstractTocReference>) bundle
+        .getSerializable(Constants.EXTRA_TOC_REFERENCE_LIST);
 
     setupViews();
   }
@@ -106,27 +105,24 @@ public class BookPartListActivity extends BaseActivity implements
       mFab.setVisibility(View.GONE);
     }
 
-    setupRecyclerView(mRecyclerView, mTableOfContents);
+    setupRecyclerView(mRecyclerView);
   }
 
   private boolean isTwoPane() {
     return findViewById(R.id.bookpart_detail_container) != null;
   }
 
-  private void setupRecyclerView(@NonNull RecyclerView recyclerView,
-                                 TableOfContents toc) {
-    final List<TOCReference> tocReferences = toc.getTocReferences();
-
+  private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
     List<BookNavigationAdapter.ParentPart> parentParts = new ArrayList<>();
-    for (int i = 0; i < tocReferences.size(); i++) {
+    for (int i = 0; i < mTocReferenceList.size(); i++) {
       parentParts.add(
-          new BookNavigationAdapter.ParentPart(tocReferences.get(i)));
+          new BookNavigationAdapter.ParentPart(mTocReferenceList.get(i)));
     }
     recyclerView.setAdapter(new BookNavigationAdapter(this, this, parentParts));
   }
 
   @Override
-  public void onBookPartClicked(View v, TOCReference tocReference) {
+  public void onBookPartClicked(View v, AbstractTocReference tocReference) {
     if (mTwoPane) {
       Bundle arguments = new Bundle();
       arguments.putSerializable(Constants.EXTRA_TOC_REFERENCE, tocReference);

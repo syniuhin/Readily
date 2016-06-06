@@ -10,9 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import com.infmme.readilyapp.readable.storable.AbstractTocReference;
 import com.infmme.readilyapp.util.Constants;
-import nl.siegmann.epublib.domain.Resource;
-import nl.siegmann.epublib.domain.TOCReference;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import rx.Observable;
@@ -32,7 +31,7 @@ import java.io.IOException;
 public class BookPartDetailFragment extends Fragment implements
     BookPartDetailActivity.BookDetailOnFabClicked {
 
-  private TOCReference mItemReference;
+  private AbstractTocReference mItemReference;
 
   private TextView mTextView;
 
@@ -48,7 +47,7 @@ public class BookPartDetailFragment extends Fragment implements
     super.onCreate(savedInstanceState);
 
     if (getArguments().containsKey(Constants.EXTRA_TOC_REFERENCE)) {
-      mItemReference = (TOCReference) getArguments().getSerializable(
+      mItemReference = (AbstractTocReference) getArguments().getSerializable(
           Constants.EXTRA_TOC_REFERENCE);
 
       Activity activity = this.getActivity();
@@ -71,9 +70,8 @@ public class BookPartDetailFragment extends Fragment implements
           new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
-              Resource resource = mItemReference.getResource();
               try {
-                Document doc = Jsoup.parse(new String(resource.getData()));
+                Document doc = Jsoup.parse(mItemReference.getPreview());
                 String parsed = doc.select("p").text();
                 subscriber.onNext(parsed);
                 subscriber.onCompleted();
@@ -112,6 +110,6 @@ public class BookPartDetailFragment extends Fragment implements
     }
     Log.d(this.getClass().getName(),
           String.format("Res id: %s, selection start: %d",
-                        mItemReference.getResourceId(), selectionStart));
+                        mItemReference.getId(), selectionStart));
   }
 }

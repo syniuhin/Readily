@@ -4,17 +4,22 @@ package com.infmme.readilyapp.readable.storable;
  * Created with love, by infm dated on 6/6/16.
  */
 
-import java.util.List;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Defines abstraction for a reference to table of contents of a book.
  */
-public interface AbstractTocReference {
+public interface AbstractTocReference extends Serializable {
+  String getId();
+
   String getTitle();
 
-  String getPreview();
+  String getPreview() throws IOException;
 
   double getPercentile();
 
-  List<? extends AbstractTocReference> getChildren();
+  // Specifies List implementation in order to pass between activities
+  ArrayList<? extends AbstractTocReference> getChildren();
 }

@@ -2,7 +2,6 @@ package com.infmme.readilyapp.readable.fb2;
 
 import com.infmme.readilyapp.readable.storable.AbstractTocReference;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,12 +9,22 @@ import java.util.List;
  * Created with love, by infm dated on 6/5/16.
  */
 
-public class FB2Part implements Serializable, AbstractTocReference {
+public class FB2Part implements AbstractTocReference {
+  private String id = "";
   private String title = "";
   private StringBuilder text = new StringBuilder();
   private double percentile;
 
   private List<FB2Part> children = new ArrayList<>();
+
+  @Override
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
 
   @Override
   public String getTitle() {
@@ -45,8 +54,8 @@ public class FB2Part implements Serializable, AbstractTocReference {
   }
 
   @Override
-  public List<FB2Part> getChildren() {
-    return children;
+  public ArrayList<FB2Part> getChildren() {
+    return new ArrayList<>(children);
   }
 
   public void addChild(FB2Part child) {
