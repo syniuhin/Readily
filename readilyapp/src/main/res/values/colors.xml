@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="primary" type="color">#FF484848</item>
+    <item name="primary_dark" type="color">#FF262626</item>
+    <item name="accent" type="color">#AA55CBAE</item>
+
+    <item name="mellow_background" type="color">#FFFAFAEF</item>
+    <item name="image_button_background" type="color" >#53EDEDED</item>
+</resources>

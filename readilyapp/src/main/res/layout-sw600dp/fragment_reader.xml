@@ -73,7 +73,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:layout_margin="3dp"
-                android:background="#53ededed"
+                android:background="@color/image_button_background"
                 android:contentDescription="@string/top_pointer_description"
                 android:src="@android:drawable/ic_media_previous"
                 android:visibility="invisible"/>
@@ -135,7 +135,7 @@
             android:layout_marginRight="20dp"
             android:id="@+id/reader_info_layout"
             android:visibility="invisible"
-            android:background="#FF484848">
+            android:background="@color/primary">
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

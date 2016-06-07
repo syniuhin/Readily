@@ -7,7 +7,7 @@
     <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#FFFAFAEF"
+            android:background="@color/mellow_background"
             android:id="@+id/content_layout"
             android:layout_above="@+id/ad_space"/>
 
