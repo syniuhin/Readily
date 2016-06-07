@@ -1,4 +1,4 @@
-package com.infmme.readilyapp;
+package com.infmme.readilyapp.fragment;
 
 import android.app.Activity;
 import android.content.Context;
@@ -19,13 +19,14 @@ import android.view.ViewGroup;
 import android.widget.*;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.essential.TextParser;
 import com.infmme.readilyapp.readable.FileStorable;
 import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.readable.Storable;
 import com.infmme.readilyapp.settings.SettingsBundle;
 import com.infmme.readilyapp.util.Constants;
-import com.infmme.readilyapp.util.OnSwipeTouchListener;
+import com.infmme.readilyapp.view.OnSwipeTouchListener;
 
 import java.util.ArrayDeque;
 import java.util.List;

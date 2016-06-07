@@ -1,4 +1,4 @@
-package com.infmme.readilyapp.instructions;
+package com.infmme.readilyapp;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +12,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.Button;
-import com.infmme.readilyapp.R;
+import com.infmme.readilyapp.fragment.InstructionsFragment;
 
 /**
  * created on 7/16/14 by infm. Enjoy ;)

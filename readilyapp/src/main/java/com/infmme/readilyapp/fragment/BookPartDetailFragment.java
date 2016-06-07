@@ -1,4 +1,4 @@
-package com.infmme.readilyapp;
+package com.infmme.readilyapp.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -10,6 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import com.infmme.readilyapp.BookPartDetailActivity;
+import com.infmme.readilyapp.BookPartListActivity;
+import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.readable.storable.AbstractTocReference;
 import com.infmme.readilyapp.util.Constants;
 import rx.Observable;

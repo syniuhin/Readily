@@ -1,4 +1,4 @@
-package com.infmme.readilyapp;
+package com.infmme.readilyapp.fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,8 +14,9 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.TextView;
+import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.database.LastReadContentProvider;
-import com.infmme.readilyapp.util.CachedFilesAdapter;
+import com.infmme.readilyapp.view.adapter.CachedFilesAdapter;
 
 public class FileListFragment extends Fragment
     implements LoaderManager.LoaderCallbacks<Cursor> {

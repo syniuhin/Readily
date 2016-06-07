@@ -7,7 +7,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import com.infmme.readilyapp.util.BaseActivity;
+import com.infmme.readilyapp.fragment.BookPartDetailFragment;
 import com.infmme.readilyapp.util.Constants;
 
 import static com.infmme.readilyapp.R.id.fab;

@@ -1,4 +1,4 @@
-package com.infmme.readilyapp.util;
+package com.infmme.readilyapp;
 
 import android.support.v7.app.AppCompatActivity;
 

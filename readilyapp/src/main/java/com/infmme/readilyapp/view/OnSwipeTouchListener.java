@@ -1,4 +1,4 @@
-package com.infmme.readilyapp.util;
+package com.infmme.readilyapp.view;
 
 import android.content.Context;
 import android.view.GestureDetector;

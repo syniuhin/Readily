@@ -1,4 +1,4 @@
-package com.infmme.readilyapp.util;
+package com.infmme.readilyapp.view.adapter;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -20,6 +20,7 @@ import com.infmme.readilyapp.ReceiverActivity;
 import com.infmme.readilyapp.readable.MiniReadable;
 import com.infmme.readilyapp.readable.Storable;
 import com.infmme.readilyapp.service.LastReadService;
+import com.infmme.readilyapp.util.Constants;
 
 public class CachedFilesAdapter extends SimpleCursorAdapter {
 
