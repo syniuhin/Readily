@@ -3,6 +3,8 @@ package com.infmme.readilyapp.readable.epub;
 import android.support.annotation.NonNull;
 import com.infmme.readilyapp.readable.storable.AbstractTocReference;
 import nl.siegmann.epublib.domain.TOCReference;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -45,7 +47,8 @@ public class EpubPart implements AbstractTocReference, Serializable {
 
   @Override
   public String getPreview() throws IOException {
-    return new String(mAdaptee.getResource().getData());
+    Document doc = Jsoup.parse(new String(mAdaptee.getResource().getData()));
+    return doc.select("p").text();
   }
 
   @Override

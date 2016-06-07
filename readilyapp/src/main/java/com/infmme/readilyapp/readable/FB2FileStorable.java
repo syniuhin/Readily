@@ -3,7 +3,6 @@ package com.infmme.readilyapp.readable;
 import android.content.Context;
 import android.text.TextUtils;
 import com.infmme.readilyapp.readable.fb2.FB2Part;
-import com.infmme.readilyapp.xmlparser.FB2Tags;
 import com.infmme.readilyapp.xmlparser.XMLEvent;
 import com.infmme.readilyapp.xmlparser.XMLEventType;
 import com.infmme.readilyapp.xmlparser.XMLParser;
@@ -13,7 +12,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Stack;
 
 /**
@@ -112,11 +110,11 @@ public class FB2FileStorable extends FileStorable {
     }
   }
 
-  public List<FB2Part> getTableOfContents() throws IOException {
+  public ArrayList<FB2Part> getTableOfContents() throws IOException {
     if (!processed) {
       return null;
     }
-    List<FB2Part> toc = new ArrayList<>();
+    ArrayList<FB2Part> toc = new ArrayList<>();
     Stack<FB2Part> stack = new Stack<>();
     FB2Part currentPart = null;
 
@@ -128,9 +126,9 @@ public class FB2FileStorable extends FileStorable {
     while (eventType != XMLEventType.DOCUMENT_CLOSE) {
       if (event.enteringSection()) {
         if (currentPart == null) {
-          currentPart = new FB2Part();
+          currentPart = new FB2Part(parser.getPosition(), path);
         } else {
-          FB2Part childPart = new FB2Part();
+          FB2Part childPart = new FB2Part(parser.getPosition(), path);
           currentPart.addChild(childPart);
           stack.add(currentPart);
           currentPart = childPart;
@@ -141,6 +139,7 @@ public class FB2FileStorable extends FileStorable {
           throw new IllegalStateException("Can't exit non-existing part");
         }
         currentPart.setId("section" + String.valueOf(parser.getPosition()));
+        currentPart.setStreamByteEndLocation(parser.getPosition());
         if (stack.isEmpty()) {
           toc.add(currentPart);
           currentPart = null;
@@ -159,14 +158,14 @@ public class FB2FileStorable extends FileStorable {
         if (insideTitle && currentPart != null) {
           currentPart.setTitle(
               currentPart.getTitle() + " " + event.getContent());
-        } else if (currentPart != null) {
+        }/* else if (currentPart != null) {
           String contentType = event.getContentType();
           if (!TextUtils.isEmpty(contentType) && contentType.equals(
               FB2Tags.PLAIN_TEXT)) {
             currentPart.appendText(event.getContent());
             currentPart.appendText(" ");
           }
-        }
+        }*/
       }
       event = parser.next();
       eventType = event.getType();

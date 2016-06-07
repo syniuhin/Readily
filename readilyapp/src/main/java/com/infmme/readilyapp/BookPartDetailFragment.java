@@ -12,8 +12,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.infmme.readilyapp.readable.storable.AbstractTocReference;
 import com.infmme.readilyapp.util.Constants;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -71,9 +69,7 @@ public class BookPartDetailFragment extends Fragment implements
             @Override
             public void call(Subscriber<? super String> subscriber) {
               try {
-                Document doc = Jsoup.parse(mItemReference.getPreview());
-                String parsed = doc.select("p").text();
-                subscriber.onNext(parsed);
+                subscriber.onNext(mItemReference.getPreview());
                 subscriber.onCompleted();
               } catch (IOException e) {
                 subscriber.onError(e);

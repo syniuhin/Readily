@@ -34,7 +34,7 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
 
 public class MainActivity extends BaseActivity {
 
@@ -143,6 +143,45 @@ public class MainActivity extends BaseActivity {
     startActivity(i);
   }
 
+  private void startBookPartFb2ListActivity(String relativePath) {
+    final FB2FileStorable fb2FileStorable = new FB2FileStorable(
+        relativePath);
+    fb2FileStorable.process(this);
+
+    Observable<ArrayList<FB2Part>> o = Observable.create(
+        new Observable.OnSubscribe<ArrayList<FB2Part>>() {
+          @Override
+          public void call(
+              Subscriber<? super ArrayList<FB2Part>> subscriber) {
+            try {
+              ArrayList<FB2Part> toc = fb2FileStorable.getTableOfContents();
+              subscriber.onNext(toc);
+              subscriber.onCompleted();
+            } catch (IOException e) {
+              subscriber.onError(e);
+            }
+          }
+        });
+    o.subscribeOn(Schedulers.newThread())
+     .observeOn(AndroidSchedulers.mainThread())
+     .subscribe(new Action1<ArrayList<FB2Part>>() {
+       @Override
+       public void call(ArrayList<FB2Part> fb2Parts) {
+         Intent i = new Intent(MainActivity.this, BookPartListActivity.class);
+         Bundle args = new Bundle();
+         args.putSerializable(
+             Constants.EXTRA_TOC_REFERENCE_LIST, fb2Parts);
+         i.putExtras(args);
+         startActivity(i);
+       }
+     }, new Action1<Throwable>() {
+       @Override
+       public void call(Throwable throwable) {
+         throwable.printStackTrace();
+       }
+     });
+  }
+
   private void getFromClipboard() {
     ReceiverActivity.startReceiverActivity(this, Readable.TYPE_CLIPBOARD, "");
   }
@@ -191,38 +230,7 @@ public class MainActivity extends BaseActivity {
           if (data != null) {
             String relativePath = FileUtils.getPath(this, data.getData());
             if (FileUtils.getExtension(relativePath).equals(".fb2")) {
-              final FB2FileStorable fb2FileStorable = new FB2FileStorable(
-                  relativePath);
-              fb2FileStorable.process(this);
-
-              Observable<List<FB2Part>> o = Observable.create(
-                  new Observable.OnSubscribe<List<FB2Part>>() {
-                    @Override
-                    public void call(
-                        Subscriber<? super List<FB2Part>> subscriber) {
-                      try {
-                        List<FB2Part> toc = fb2FileStorable
-                            .getTableOfContents();
-                        subscriber.onNext(toc);
-                        subscriber.onCompleted();
-                      } catch (IOException e) {
-                        subscriber.onError(e);
-                      }
-                    }
-                  });
-              o.subscribeOn(Schedulers.newThread())
-               .observeOn(AndroidSchedulers.mainThread())
-               .subscribe(new Action1<List<FB2Part>>() {
-                 @Override
-                 public void call(List<FB2Part> fb2Parts) {
-                   int x = 10;
-                 }
-               }, new Action1<Throwable>() {
-                 @Override
-                 public void call(Throwable throwable) {
-                   throwable.printStackTrace();
-                 }
-               });
+              startBookPartFb2ListActivity(relativePath);
             } else {
               Toast.makeText(this, R.string.wrong_ext, Toast.LENGTH_SHORT)
                    .show();

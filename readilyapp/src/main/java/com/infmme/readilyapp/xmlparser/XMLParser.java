@@ -51,6 +51,7 @@ public class XMLParser {
   }
 
   private void processEvent() throws IOException {
+    final long startPosition = position;
     XMLEventType type;
     if (currentInt == -1) {
       currentInt = isr.read();
@@ -78,11 +79,11 @@ public class XMLParser {
       currentEvent = new XMLEvent(type = XMLEventType.CONTENT);
     } else {
       currentEvent = new XMLEvent(type = XMLEventType.DOCUMENT_CLOSE);
-      currentEvent.setStartPosition(position);
+      currentEvent.setStartPosition(startPosition);
       currentEvent.setEndPosition(position);
       return;
     }
-    currentEvent.setStartPosition(position);
+    currentEvent.setStartPosition(startPosition);
     do {
       readNext();
       updateType(type, currentInt, nextInt);

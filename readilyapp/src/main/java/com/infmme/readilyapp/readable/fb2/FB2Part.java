@@ -1,9 +1,18 @@
 package com.infmme.readilyapp.readable.fb2;
 
+import android.text.TextUtils;
 import com.infmme.readilyapp.readable.storable.AbstractTocReference;
+import com.infmme.readilyapp.xmlparser.XMLEvent;
+import com.infmme.readilyapp.xmlparser.XMLEventType;
+import com.infmme.readilyapp.xmlparser.XMLParser;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.infmme.readilyapp.readable.FileStorable.guessCharset;
 
 /**
  * Created with love, by infm dated on 6/5/16.
@@ -12,10 +21,21 @@ import java.util.List;
 public class FB2Part implements AbstractTocReference {
   private String id = "";
   private String title = "";
-  private StringBuilder text = new StringBuilder();
   private double percentile;
+  private long streamByteStartLocation;
+  private long streamByteEndLocation;
+  private String filePath;
+
+  private boolean isCachingPreview = true;
+  private String cachedPreview = null;
 
   private List<FB2Part> children = new ArrayList<>();
+
+  public FB2Part(long streamByteStartLocation, String filePath) {
+    this.streamByteStartLocation = streamByteStartLocation;
+    this.streamByteEndLocation = this.streamByteStartLocation;
+    this.filePath = filePath;
+  }
 
   @Override
   public String getId() {
@@ -36,12 +56,43 @@ public class FB2Part implements AbstractTocReference {
   }
 
   @Override
-  public String getPreview() {
-    return text.toString();
-  }
+  public String getPreview() throws IOException {
+    if (cachedPreview == null || !isCachingPreview) {
+      File file = new File(filePath);
+      FileInputStream encodingHelper = new FileInputStream(file);
+      String encoding = guessCharset(encodingHelper);
+      encodingHelper.close();
 
-  public void appendText(String part) {
-    this.text.append(" ").append(part);
+      FileInputStream fileInputStream = new FileInputStream(file);
+      fileInputStream.skip(streamByteStartLocation);
+
+      XMLParser parser = new XMLParser();
+      parser.setInput(fileInputStream, encoding);
+      XMLEvent event = parser.next();
+      XMLEventType eventType = event.getType();
+
+      StringBuilder text = new StringBuilder();
+      long currentByteLocation = streamByteStartLocation;
+      while (eventType != XMLEventType.DOCUMENT_CLOSE &&
+          currentByteLocation <= streamByteEndLocation) {
+        if (eventType == XMLEventType.CONTENT) {
+          String contentType = event.getContentType();
+          if (!TextUtils.isEmpty(contentType)) {
+            if (contentType.equals("p"))
+              text.append(event.getContent());
+          }
+          text.append(" ");
+        }
+        currentByteLocation += event.getDomain().second -
+            event.getDomain().first;
+        event = parser.next();
+        eventType = event.getType();
+      }
+      if (!isCachingPreview)
+        return text.toString();
+      cachedPreview = text.toString();
+    }
+    return cachedPreview;
   }
 
   @Override
@@ -51,6 +102,18 @@ public class FB2Part implements AbstractTocReference {
 
   public void setPercentile(double percentile) {
     this.percentile = percentile;
+  }
+
+  public long getStreamByteStartLocation() {
+    return streamByteStartLocation;
+  }
+
+  public long getStreamByteEndLocation() {
+    return streamByteEndLocation;
+  }
+
+  public void setStreamByteEndLocation(long streamByteEndLocation) {
+    this.streamByteEndLocation = streamByteEndLocation;
   }
 
   @Override

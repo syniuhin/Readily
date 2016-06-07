@@ -16,6 +16,7 @@ public interface AbstractTocReference extends Serializable {
 
   String getTitle();
 
+  // It's a blocking action, use it carefully!
   String getPreview() throws IOException;
 
   double getPercentile();
