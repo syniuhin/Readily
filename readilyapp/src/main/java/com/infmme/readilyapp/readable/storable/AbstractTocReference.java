@@ -19,6 +19,8 @@ public interface AbstractTocReference extends Serializable {
   // It's a blocking action, use it carefully!
   String getPreview() throws IOException;
 
+  String getCachedPreview();
+
   double getPercentile();
 
   // Specifies List implementation in order to pass between activities

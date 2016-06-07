@@ -34,7 +34,10 @@ public class BookPartDetailFragment extends Fragment implements
 
   private AbstractTocReference mItemReference;
 
-  private TextView mTextView;
+  private TextView mTitleTextView;
+  private TextView mBodyTextView;
+
+  private boolean mTwoPane = false;
 
   /**
    * Mandatory empty constructor for the fragment manager to instantiate the
@@ -47,16 +50,20 @@ public class BookPartDetailFragment extends Fragment implements
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    if (getArguments().containsKey(Constants.EXTRA_TOC_REFERENCE)) {
-      mItemReference = (AbstractTocReference) getArguments().getSerializable(
-          Constants.EXTRA_TOC_REFERENCE);
+    Bundle bundle = getArguments();
+    if (bundle != null) {
+      if (bundle.containsKey(Constants.EXTRA_TOC_REFERENCE)) {
+        mItemReference = (AbstractTocReference) bundle.getSerializable(
+            Constants.EXTRA_TOC_REFERENCE);
 
-      Activity activity = this.getActivity();
-      CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout)
-          activity.findViewById(R.id.toolbar_layout);
-      if (appBarLayout != null) {
-        appBarLayout.setTitle(mItemReference.getTitle());
+        Activity activity = this.getActivity();
+        CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout)
+            activity.findViewById(R.id.toolbar_layout);
+        if (appBarLayout != null) {
+          appBarLayout.setTitle(mItemReference.getTitle());
+        }
       }
+      mTwoPane = bundle.getBoolean(Constants.EXTRA_TWO_PANE, false);
     }
   }
 
@@ -65,14 +72,24 @@ public class BookPartDetailFragment extends Fragment implements
                            Bundle savedInstanceState) {
     final View rootView = inflater.inflate(R.layout.bookpart_detail, container,
                                            false);
-    mTextView = ((TextView) rootView.findViewById(R.id.bookpart_detail));
+    mTitleTextView = (TextView) rootView.findViewById(
+        R.id.bookpart_detail_title);
+    if (mTwoPane) {
+      mTitleTextView.setVisibility(View.VISIBLE);
+    } else {
+      mTitleTextView.setVisibility(View.GONE);
+    }
+    mBodyTextView = (TextView) rootView.findViewById(R.id.bookpart_detail_body);
+
     if (mItemReference != null) {
-      Observable<String> o = Observable.create(
-          new Observable.OnSubscribe<String>() {
+      Observable<AbstractTocReference> o = Observable.create(
+          new Observable.OnSubscribe<AbstractTocReference>() {
             @Override
-            public void call(Subscriber<? super String> subscriber) {
+            public void call(Subscriber<? super AbstractTocReference> subscriber) {
               try {
-                subscriber.onNext(mItemReference.getPreview());
+                // Load and cache preview
+                mItemReference.getPreview();
+                subscriber.onNext(mItemReference);
                 subscriber.onCompleted();
               } catch (IOException e) {
                 subscriber.onError(e);
@@ -81,10 +98,13 @@ public class BookPartDetailFragment extends Fragment implements
           });
       o.subscribeOn(Schedulers.newThread())
        .observeOn(AndroidSchedulers.mainThread())
-       .subscribe(new Action1<String>() {
+       .subscribe(new Action1<AbstractTocReference>() {
          @Override
-         public void call(String s) {
-           mTextView.setText(s);
+         public void call(AbstractTocReference reference) {
+           if (mTwoPane) {
+             mTitleTextView.setText(reference.getTitle());
+           }
+           mBodyTextView.setText(reference.getCachedPreview());
          }
        }, new Action1<Throwable>() {
          @Override
@@ -102,8 +122,8 @@ public class BookPartDetailFragment extends Fragment implements
   @Override
   public void onFabClicked() {
     int selectionStart;
-    if (mTextView.hasSelection()) {
-      selectionStart = mTextView.getSelectionStart();
+    if (mBodyTextView.hasSelection()) {
+      selectionStart = mBodyTextView.getSelectionStart();
     } else {
       selectionStart = 0;
     }

@@ -26,7 +26,6 @@ public class FB2Part implements AbstractTocReference {
   private long streamByteEndLocation;
   private String filePath;
 
-  private boolean isCachingPreview = true;
   private String cachedPreview = null;
 
   private List<FB2Part> children = new ArrayList<>();
@@ -57,7 +56,7 @@ public class FB2Part implements AbstractTocReference {
 
   @Override
   public String getPreview() throws IOException {
-    if (cachedPreview == null || !isCachingPreview) {
+    if (cachedPreview == null) {
       File file = new File(filePath);
       FileInputStream encodingHelper = new FileInputStream(file);
       String encoding = guessCharset(encodingHelper);
@@ -88,10 +87,12 @@ public class FB2Part implements AbstractTocReference {
         event = parser.next();
         eventType = event.getType();
       }
-      if (!isCachingPreview)
-        return text.toString();
       cachedPreview = text.toString();
     }
+    return cachedPreview;
+  }
+
+  public String getCachedPreview() {
     return cachedPreview;
   }
 

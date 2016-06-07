@@ -7,7 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.bignerdranch.expandablerecyclerview.Adapter
     .ExpandableRecyclerAdapter;
@@ -147,7 +147,7 @@ public class BookNavigationAdapter
 
     private View mContainerView;
     private TextView mParentTextView;
-    private ImageButton mImageButton;
+    private ImageView mImageView;
 
     /**
      * Default constructor.
@@ -159,7 +159,7 @@ public class BookNavigationAdapter
       mContainerView = itemView;
       mParentTextView = (TextView) itemView.findViewById(
           R.id.bookpart_parent_item_text_view);
-      mImageButton = (ImageButton) itemView.findViewById(
+      mImageView = (ImageView) itemView.findViewById(
           R.id.bookpart_parent_item_image_button);
       setDefaultOnClickListener();
     }
@@ -167,9 +167,9 @@ public class BookNavigationAdapter
     public void bind(ParentPart parentPart) {
       mParentTextView.setText(parentPart.getTitle());
       if (parentPart.hasChildren()) {
-        mImageButton.setVisibility(View.VISIBLE);
+        mImageView.setVisibility(View.VISIBLE);
       } else {
-        mImageButton.setVisibility(View.GONE);
+        mImageView.setVisibility(View.GONE);
       }
     }
 
@@ -188,7 +188,7 @@ public class BookNavigationAdapter
             d = ContextCompat
                 .getDrawable(c, R.drawable.ic_expand_less_black_36dp);
           }
-          mImageButton.setImageDrawable(d);
+          mImageView.setImageDrawable(d);
         }
       });
     }

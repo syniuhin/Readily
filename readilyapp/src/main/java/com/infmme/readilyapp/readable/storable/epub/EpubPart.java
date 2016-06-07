@@ -22,8 +22,10 @@ public class EpubPart implements AbstractTocReference, Serializable {
 
   private TOCReference mAdaptee;
   private ArrayList<EpubPart> mChildren = null;
+  private String mCachedPreview = null;
 
-  public static ArrayList<EpubPart> adaptList(@NonNull List<TOCReference> list) {
+  public static ArrayList<EpubPart> adaptList(
+      @NonNull List<TOCReference> list) {
     ArrayList<EpubPart> result = new ArrayList<>();
     for (TOCReference tocReference : list) {
       result.add(new EpubPart(tocReference));
@@ -47,8 +49,15 @@ public class EpubPart implements AbstractTocReference, Serializable {
 
   @Override
   public String getPreview() throws IOException {
-    Document doc = Jsoup.parse(new String(mAdaptee.getResource().getData()));
-    return doc.select("p").text();
+    if (mCachedPreview == null) {
+      Document doc = Jsoup.parse(new String(mAdaptee.getResource().getData()));
+      mCachedPreview = doc.select("p").text();
+    }
+    return mCachedPreview;
+  }
+
+  public String getCachedPreview() {
+    return mCachedPreview;
   }
 
   @Override

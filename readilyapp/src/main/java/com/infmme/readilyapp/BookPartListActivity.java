@@ -46,6 +46,8 @@ public class BookPartListActivity extends BaseActivity implements
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_bookpart_list);
 
+    mTwoPane = isTwoPane();
+
     findViews();
     setSupportActionBar(mToolbar);
     // Show the Up button in the action bar.
@@ -53,7 +55,6 @@ public class BookPartListActivity extends BaseActivity implements
     if (actionBar != null) {
       actionBar.setDisplayHomeAsUpEnabled(true);
     }
-    mTwoPane = isTwoPane();
 
     Bundle bundle = getIntent().getExtras();
     mTocReferenceList = (ArrayList<AbstractTocReference>) bundle
@@ -109,7 +110,7 @@ public class BookPartListActivity extends BaseActivity implements
   }
 
   private boolean isTwoPane() {
-    return findViewById(R.id.bookpart_detail_container) != null;
+    return getResources().getBoolean(R.bool.has_two_panes);
   }
 
   private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
@@ -126,6 +127,7 @@ public class BookPartListActivity extends BaseActivity implements
     if (mTwoPane) {
       Bundle arguments = new Bundle();
       arguments.putSerializable(Constants.EXTRA_TOC_REFERENCE, tocReference);
+      arguments.putBoolean(Constants.EXTRA_TWO_PANE, mTwoPane);
       BookPartDetailFragment fragment = new BookPartDetailFragment();
       fragment.setArguments(arguments);
       getSupportFragmentManager()
@@ -138,6 +140,7 @@ public class BookPartListActivity extends BaseActivity implements
       Intent intent = new Intent(
           context, BookPartDetailActivity.class);
       intent.putExtra(Constants.EXTRA_TOC_REFERENCE, tocReference);
+      intent.putExtra(Constants.EXTRA_TWO_PANE, mTwoPane);
       context.startActivity(intent);
     }
   }

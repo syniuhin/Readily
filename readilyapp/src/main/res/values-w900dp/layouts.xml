@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="layout" name="bookpart_list">@layout/bookpart_list_twopane
+    </item>
+    <bool name="has_two_panes">true</bool>
+</resources>
