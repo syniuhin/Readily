@@ -1,4 +1,4 @@
-package com.infmme.readilyapp.readable.fb2;
+package com.infmme.readilyapp.readable.storable.fb2;
 
 import android.text.TextUtils;
 import com.infmme.readilyapp.readable.storable.AbstractTocReference;

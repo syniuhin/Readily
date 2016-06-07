@@ -20,8 +20,8 @@ import com.infmme.readilyapp.readable.EpubFileStorable;
 import com.infmme.readilyapp.readable.FB2FileStorable;
 import com.infmme.readilyapp.readable.FileStorable;
 import com.infmme.readilyapp.readable.Readable;
-import com.infmme.readilyapp.readable.epub.EpubPart;
-import com.infmme.readilyapp.readable.fb2.FB2Part;
+import com.infmme.readilyapp.readable.storable.epub.EpubPart;
+import com.infmme.readilyapp.readable.storable.fb2.FB2Part;
 import com.infmme.readilyapp.service.StorageCheckerService;
 import com.infmme.readilyapp.settings.SettingsActivity;
 import com.infmme.readilyapp.util.BaseActivity;
@@ -187,6 +187,12 @@ public class MainActivity extends BaseActivity {
   }
 
   private void getFromFile() {
+    // Implicitly allow the user to select a particular kind of data
+    final Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+    // The MIME data type filter
+    intent.setType("*/*");
+    // Only return URIs that can be opened with ContentResolver
+    intent.addCategory(Intent.CATEGORY_OPENABLE);
     startActivityForResult(
         Intent.createChooser(FileUtils.createGetContentIntent(),
                              getResources().getString(R.string.choose_file)),

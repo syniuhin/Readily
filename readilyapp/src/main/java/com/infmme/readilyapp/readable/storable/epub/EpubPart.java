@@ -1,4 +1,4 @@
-package com.infmme.readilyapp.readable.epub;
+package com.infmme.readilyapp.readable.storable.epub;
 
 import android.support.annotation.NonNull;
 import com.infmme.readilyapp.readable.storable.AbstractTocReference;
