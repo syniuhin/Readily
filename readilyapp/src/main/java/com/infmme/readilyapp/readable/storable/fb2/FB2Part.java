@@ -24,9 +24,9 @@ public class FB2Part implements AbstractTocReference {
   private double percentile;
   private long streamByteStartLocation;
   private long streamByteEndLocation;
-  private String filePath;
 
-  private String cachedPreview = null;
+  private transient String filePath;
+  private transient String cachedPreview = null;
 
   private List<FB2Part> children = new ArrayList<>();
 

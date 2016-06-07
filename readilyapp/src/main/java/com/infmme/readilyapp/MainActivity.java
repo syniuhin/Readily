@@ -153,7 +153,14 @@ public class MainActivity extends BaseActivity {
           public void call(
               Subscriber<? super ArrayList<FB2Part>> subscriber) {
             try {
-              ArrayList<FB2Part> toc = fb2FileStorable.getTableOfContents();
+              ArrayList<FB2Part> toc;
+              final Context c = MainActivity.this;
+              if (fb2FileStorable.isTocCached(c)) {
+                toc = fb2FileStorable.readSavedToc(c);
+              } else {
+                toc = fb2FileStorable.getTableOfContents();
+                fb2FileStorable.saveToc(c, toc);
+              }
               subscriber.onNext(toc);
               subscriber.onCompleted();
             } catch (IOException e) {
