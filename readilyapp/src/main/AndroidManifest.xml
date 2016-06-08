@@ -43,23 +43,6 @@
             </intent-filter>
         </activity>
 
-        <provider
-                android:name=".database.LastReadContentProvider"
-                android:authorities="com.infmme.readilyapp.provider"
-                android:enabled="true"
-                android:exported="false"/>
-
-        <meta-data
-                android:name="com.crashlytics.ApiKey"
-                android:value="0db4f67b016e755d7cc9ec045205dcab746e7c46"/>
-
-        <service
-                android:name=".service.LastReadService"
-                android:exported="false"/>
-        <service
-                android:name=".service.StorageCheckerService"
-                android:exported="false"/>
-
         <activity
                 android:name="com.ipaulpro.afilechooser.FileChooserActivity"
                 android:enabled="@bool/use_activity"
@@ -122,6 +105,18 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.infmme.readilyapp.BookPartListActivity"/>
         </activity>
+
+        <service
+                android:name=".service.LastReadService"
+                android:exported="false"/>
+        <service
+                android:name=".service.StorageCheckerService"
+                android:exported="false"/>
+
+        <provider
+                android:name="com.infmme.readilyapp.provider.ReadilyProvider"
+                android:authorities="com.infmme.readilyapp.provider"
+                android:exported="false" />
     </application>
 
 </manifest>
