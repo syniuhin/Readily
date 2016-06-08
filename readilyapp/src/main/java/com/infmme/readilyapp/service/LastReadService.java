@@ -9,7 +9,7 @@ import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.database.DataBundle;
 import com.infmme.readilyapp.database.LastReadContentProvider;
 import com.infmme.readilyapp.database.LastReadDBHelper;
-import com.infmme.readilyapp.readable.Storable;
+import com.infmme.readilyapp.readable.old.Storable;
 
 public class LastReadService extends IntentService {
 

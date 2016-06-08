@@ -1,8 +1,8 @@
-package com.infmme.readilyapp.essential;
+package com.infmme.readilyapp.essential.old;
 
 import android.text.TextUtils;
 import android.util.Pair;
-import com.infmme.readilyapp.readable.Readable;
+import com.infmme.readilyapp.readable.old.Readable;
 import com.infmme.readilyapp.settings.SettingsBundle;
 
 import java.io.Serializable;

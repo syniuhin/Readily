@@ -1,4 +1,4 @@
-package com.infmme.readilyapp.readable;
+package com.infmme.readilyapp.readable.old;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

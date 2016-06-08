@@ -1,10 +1,11 @@
-package com.infmme.readilyapp.readable;
+package com.infmme.readilyapp.readable.old;
 
 import android.content.Context;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.*;
 
 /**
  * Created by infm on 7/2/14. Enjoy ;)
@@ -25,7 +26,7 @@ public class TxtFileStorable extends FileStorable {
 
   public void process(Context context) {
     try {
-      path = FileStorable.takePath(context, path);
+      path = takePath(context, path);
       if (path == null) {
         return;
       }

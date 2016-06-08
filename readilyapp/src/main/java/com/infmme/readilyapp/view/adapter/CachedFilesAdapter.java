@@ -17,8 +17,8 @@ import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.ReceiverActivity;
-import com.infmme.readilyapp.readable.MiniReadable;
-import com.infmme.readilyapp.readable.Storable;
+import com.infmme.readilyapp.readable.old.MiniReadable;
+import com.infmme.readilyapp.readable.old.Storable;
 import com.infmme.readilyapp.service.LastReadService;
 import com.infmme.readilyapp.util.Constants;
 

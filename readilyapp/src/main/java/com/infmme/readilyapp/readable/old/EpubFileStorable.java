@@ -1,4 +1,4 @@
-package com.infmme.readilyapp.readable;
+package com.infmme.readilyapp.readable.old;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -64,7 +64,6 @@ public class EpubFileStorable extends FileStorable {
       encoding = Constants.DEFAULT_ENCODING;
 
       book = (new EpubReader()).readEpubLazy(path, encoding);
-/*
       resources = book.getContents();
 
       // WRONG EXTENSIONS!? WTF!??!
@@ -81,7 +80,6 @@ public class EpubFileStorable extends FileStorable {
         while (index < resources.size() && passed < bytePosition)
           passed += resources.get(index++).getSize();
       }
-*/
       processed = true;
     } catch (IOException e) {
       e.printStackTrace();

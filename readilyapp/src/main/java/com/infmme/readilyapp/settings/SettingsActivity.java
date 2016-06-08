@@ -28,6 +28,7 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.*;
+import com.infmme.readilyapp.readable.old.Readable;
 import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.ReceiverActivity;
@@ -87,8 +88,7 @@ public class SettingsActivity extends PreferenceActivity {
       }
       if (key.equals(Constants.Preferences.TEST)) {
         ReceiverActivity.startReceiverActivity(this,
-                                               com.infmme.readilyapp.readable
-                                                   .Readable.TYPE_RAW,
+                                               Readable.TYPE_RAW,
                                                getResources().getString(
                                                    R.string.sample_text));
         return true;

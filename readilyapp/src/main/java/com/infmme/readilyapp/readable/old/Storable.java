@@ -1,4 +1,4 @@
-package com.infmme.readilyapp.readable;
+package com.infmme.readilyapp.readable.old;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +14,7 @@ import com.infmme.readilyapp.service.LastReadService;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.*;
 
 /**
  * Created by infm on 6/30/14. Enjoy ;)
