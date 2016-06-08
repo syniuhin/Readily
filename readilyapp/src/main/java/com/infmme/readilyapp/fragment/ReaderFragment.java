@@ -20,7 +20,7 @@ import android.widget.*;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.infmme.readilyapp.R;
-import com.infmme.readilyapp.essential.TextParser;
+import com.infmme.readilyapp.essential.old.TextParser;
 import com.infmme.readilyapp.readable.old.FileStorable;
 import com.infmme.readilyapp.readable.old.Readable;
 import com.infmme.readilyapp.readable.old.Storable;
