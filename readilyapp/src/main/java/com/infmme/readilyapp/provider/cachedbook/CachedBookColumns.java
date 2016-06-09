@@ -20,10 +20,22 @@ public class CachedBookColumns implements BaseColumns {
    */
   public static final String _ID = BaseColumns._ID;
 
+  public static final String TITLE = "title";
+
+  /**
+   * Path in a storage to read from.
+   */
+  public static final String PATH = "path";
+
+  /**
+   * Amount of book that is already read, percent.
+   */
+  public static final String PERCENTILE = "percentile";
+
   /**
    * Last open time, joda standard datetime format.
    */
-  public static final String TIME_OPENED = "cached_book__time_opened";
+  public static final String TIME_OPENED = "time_opened";
 
   /**
    * Optional link to epub_book.
@@ -46,6 +58,9 @@ public class CachedBookColumns implements BaseColumns {
   // @formatter:off
   public static final String[] ALL_COLUMNS = new String[] {
       _ID,
+      TITLE,
+      PATH,
+      PERCENTILE,
       TIME_OPENED,
       EPUB_BOOK_ID,
       FB2_BOOK_ID,
@@ -62,6 +77,9 @@ public class CachedBookColumns implements BaseColumns {
   public static boolean hasColumns(String[] projection) {
     if (projection == null) return true;
     for (String c : projection) {
+      if (c.equals(TITLE) || c.contains("." + TITLE)) return true;
+      if (c.equals(PATH) || c.contains("." + PATH)) return true;
+      if (c.equals(PERCENTILE) || c.contains("." + PERCENTILE)) return true;
       if (c.equals(TIME_OPENED) || c.contains("." + TIME_OPENED)) return true;
       if (c.equals(EPUB_BOOK_ID) || c.contains("." + EPUB_BOOK_ID)) return true;
       if (c.equals(FB2_BOOK_ID) || c.contains("." + FB2_BOOK_ID)) return true;

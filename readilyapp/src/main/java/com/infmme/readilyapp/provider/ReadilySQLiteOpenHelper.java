@@ -21,6 +21,9 @@ public class ReadilySQLiteOpenHelper extends SQLiteOpenHelper {
       "NOT EXISTS "
       + CachedBookColumns.TABLE_NAME + " ( "
       + CachedBookColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+      + CachedBookColumns.TITLE + " TEXT NOT NULL, "
+      + CachedBookColumns.PATH + " TEXT NOT NULL, "
+      + CachedBookColumns.PERCENTILE + " REAL NOT NULL, "
       + CachedBookColumns.TIME_OPENED + " TEXT NOT NULL, "
       + CachedBookColumns.EPUB_BOOK_ID + " INTEGER, "
       + CachedBookColumns.FB2_BOOK_ID + " INTEGER, "
@@ -31,6 +34,7 @@ public class ReadilySQLiteOpenHelper extends SQLiteOpenHelper {
       .FB2_BOOK_ID + ") REFERENCES fb2_book (_id) ON DELETE CASCADE"
       + ", CONSTRAINT fk_txt_book_id FOREIGN KEY (" + CachedBookColumns
       .TXT_BOOK_ID + ") REFERENCES txt_book (_id) ON DELETE CASCADE"
+      + ", CONSTRAINT unique_path UNIQUE path"
       + ", CONSTRAINT unique_epub_book UNIQUE epub_book_id"
       + ", CONSTRAINT unique_fb2_book UNIQUE fb2_book_id"
       + ", CONSTRAINT unique_txt_book UNIQUE txt_book_id"
@@ -39,34 +43,25 @@ public class ReadilySQLiteOpenHelper extends SQLiteOpenHelper {
       "NOT EXISTS "
       + EpubBookColumns.TABLE_NAME + " ( "
       + EpubBookColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-      + EpubBookColumns.TITLE + " TEXT NOT NULL, "
-      + EpubBookColumns.PATH + " TEXT NOT NULL, "
       + EpubBookColumns.CURRENT_RESOURCE_ID + " TEXT NOT NULL, "
-      + EpubBookColumns.TEXT_POSITION + " INTEGER NOT NULL, "
-      + EpubBookColumns.PERCENTILE + " REAL NOT NULL, "
-      + EpubBookColumns.TIME_OPENED + " TEXT NOT NULL "
+      + EpubBookColumns.TEXT_POSITION + " INTEGER NOT NULL "
+      + ", CONSTRAINT unique_path UNIQUE path"
       + " );";
   public static final String SQL_CREATE_TABLE_FB2_BOOK = "CREATE TABLE IF NOT" +
       " EXISTS "
       + Fb2BookColumns.TABLE_NAME + " ( "
       + Fb2BookColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-      + Fb2BookColumns.TITLE + " TEXT NOT NULL, "
-      + Fb2BookColumns.PATH + " TEXT NOT NULL, "
       + Fb2BookColumns.CURRENT_PART_ID + " TEXT NOT NULL, "
       + Fb2BookColumns.TEXT_POSITION + " INTEGER NOT NULL, "
-      + Fb2BookColumns.PERCENTILE + " REAL NOT NULL, "
-      + Fb2BookColumns.PATH_TOC + " TEXT, "
-      + Fb2BookColumns.TIME_OPENED + " TEXT NOT NULL "
+      + Fb2BookColumns.PATH_TOC + " TEXT "
+      + ", CONSTRAINT unique_path UNIQUE path"
       + " );";
   public static final String SQL_CREATE_TABLE_TXT_BOOK = "CREATE TABLE IF NOT" +
       " EXISTS "
       + TxtBookColumns.TABLE_NAME + " ( "
       + TxtBookColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-      + TxtBookColumns.TITLE + " TEXT NOT NULL, "
-      + TxtBookColumns.PATH + " TEXT NOT NULL, "
-      + TxtBookColumns.TEXT_POSITION + " INTEGER NOT NULL, "
-      + TxtBookColumns.PERCENTILE + " REAL NOT NULL, "
-      + TxtBookColumns.TIME_OPENED + " TEXT NOT NULL "
+      + TxtBookColumns.TEXT_POSITION + " INTEGER NOT NULL "
+      + ", CONSTRAINT unique_path UNIQUE path"
       + " );";
   private static final String TAG = ReadilySQLiteOpenHelper.class
       .getSimpleName();

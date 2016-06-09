@@ -43,25 +43,6 @@ public class EpubBookContentValues extends AbstractContentValues {
                           where == null ? null : where.args());
   }
 
-  public EpubBookContentValues putTitle(@NonNull String value) {
-    if (value == null)
-      throw new IllegalArgumentException("title must not be null");
-    mContentValues.put(EpubBookColumns.TITLE, value);
-    return this;
-  }
-
-
-  /**
-   * Path in a storage to read from.
-   */
-  public EpubBookContentValues putPath(@NonNull String value) {
-    if (value == null)
-      throw new IllegalArgumentException("path must not be null");
-    mContentValues.put(EpubBookColumns.PATH, value);
-    return this;
-  }
-
-
   /**
    * Id of a resource, from which last read was made.
    */
@@ -78,26 +59,6 @@ public class EpubBookContentValues extends AbstractContentValues {
    */
   public EpubBookContentValues putTextPosition(int value) {
     mContentValues.put(EpubBookColumns.TEXT_POSITION, value);
-    return this;
-  }
-
-
-  /**
-   * Amount of book that is already read, percent.
-   */
-  public EpubBookContentValues putPercentile(double value) {
-    mContentValues.put(EpubBookColumns.PERCENTILE, value);
-    return this;
-  }
-
-
-  /**
-   * Last open time, joda standard datetime format.
-   */
-  public EpubBookContentValues putTimeOpened(@NonNull String value) {
-    if (value == null)
-      throw new IllegalArgumentException("timeOpened must not be null");
-    mContentValues.put(EpubBookColumns.TIME_OPENED, value);
     return this;
   }
 

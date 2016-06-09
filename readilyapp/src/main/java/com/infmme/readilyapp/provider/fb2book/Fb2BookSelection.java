@@ -82,86 +82,6 @@ public class Fb2BookSelection extends AbstractSelection<Fb2BookSelection> {
     return orderById(false);
   }
 
-  public Fb2BookSelection title(String... value) {
-    addEquals(Fb2BookColumns.TITLE, value);
-    return this;
-  }
-
-  public Fb2BookSelection titleNot(String... value) {
-    addNotEquals(Fb2BookColumns.TITLE, value);
-    return this;
-  }
-
-  public Fb2BookSelection titleLike(String... value) {
-    addLike(Fb2BookColumns.TITLE, value);
-    return this;
-  }
-
-  public Fb2BookSelection titleContains(String... value) {
-    addContains(Fb2BookColumns.TITLE, value);
-    return this;
-  }
-
-  public Fb2BookSelection titleStartsWith(String... value) {
-    addStartsWith(Fb2BookColumns.TITLE, value);
-    return this;
-  }
-
-  public Fb2BookSelection titleEndsWith(String... value) {
-    addEndsWith(Fb2BookColumns.TITLE, value);
-    return this;
-  }
-
-  public Fb2BookSelection orderByTitle(boolean desc) {
-    orderBy(Fb2BookColumns.TITLE, desc);
-    return this;
-  }
-
-  public Fb2BookSelection orderByTitle() {
-    orderBy(Fb2BookColumns.TITLE, false);
-    return this;
-  }
-
-  public Fb2BookSelection path(String... value) {
-    addEquals(Fb2BookColumns.PATH, value);
-    return this;
-  }
-
-  public Fb2BookSelection pathNot(String... value) {
-    addNotEquals(Fb2BookColumns.PATH, value);
-    return this;
-  }
-
-  public Fb2BookSelection pathLike(String... value) {
-    addLike(Fb2BookColumns.PATH, value);
-    return this;
-  }
-
-  public Fb2BookSelection pathContains(String... value) {
-    addContains(Fb2BookColumns.PATH, value);
-    return this;
-  }
-
-  public Fb2BookSelection pathStartsWith(String... value) {
-    addStartsWith(Fb2BookColumns.PATH, value);
-    return this;
-  }
-
-  public Fb2BookSelection pathEndsWith(String... value) {
-    addEndsWith(Fb2BookColumns.PATH, value);
-    return this;
-  }
-
-  public Fb2BookSelection orderByPath(boolean desc) {
-    orderBy(Fb2BookColumns.PATH, desc);
-    return this;
-  }
-
-  public Fb2BookSelection orderByPath() {
-    orderBy(Fb2BookColumns.PATH, false);
-    return this;
-  }
-
   public Fb2BookSelection currentPartId(String... value) {
     addEquals(Fb2BookColumns.CURRENT_PART_ID, value);
     return this;
@@ -242,46 +162,6 @@ public class Fb2BookSelection extends AbstractSelection<Fb2BookSelection> {
     return this;
   }
 
-  public Fb2BookSelection percentile(double... value) {
-    addEquals(Fb2BookColumns.PERCENTILE, toObjectArray(value));
-    return this;
-  }
-
-  public Fb2BookSelection percentileNot(double... value) {
-    addNotEquals(Fb2BookColumns.PERCENTILE, toObjectArray(value));
-    return this;
-  }
-
-  public Fb2BookSelection percentileGt(double value) {
-    addGreaterThan(Fb2BookColumns.PERCENTILE, value);
-    return this;
-  }
-
-  public Fb2BookSelection percentileGtEq(double value) {
-    addGreaterThanOrEquals(Fb2BookColumns.PERCENTILE, value);
-    return this;
-  }
-
-  public Fb2BookSelection percentileLt(double value) {
-    addLessThan(Fb2BookColumns.PERCENTILE, value);
-    return this;
-  }
-
-  public Fb2BookSelection percentileLtEq(double value) {
-    addLessThanOrEquals(Fb2BookColumns.PERCENTILE, value);
-    return this;
-  }
-
-  public Fb2BookSelection orderByPercentile(boolean desc) {
-    orderBy(Fb2BookColumns.PERCENTILE, desc);
-    return this;
-  }
-
-  public Fb2BookSelection orderByPercentile() {
-    orderBy(Fb2BookColumns.PERCENTILE, false);
-    return this;
-  }
-
   public Fb2BookSelection pathToc(String... value) {
     addEquals(Fb2BookColumns.PATH_TOC, value);
     return this;
@@ -319,46 +199,6 @@ public class Fb2BookSelection extends AbstractSelection<Fb2BookSelection> {
 
   public Fb2BookSelection orderByPathToc() {
     orderBy(Fb2BookColumns.PATH_TOC, false);
-    return this;
-  }
-
-  public Fb2BookSelection timeOpened(String... value) {
-    addEquals(Fb2BookColumns.TIME_OPENED, value);
-    return this;
-  }
-
-  public Fb2BookSelection timeOpenedNot(String... value) {
-    addNotEquals(Fb2BookColumns.TIME_OPENED, value);
-    return this;
-  }
-
-  public Fb2BookSelection timeOpenedLike(String... value) {
-    addLike(Fb2BookColumns.TIME_OPENED, value);
-    return this;
-  }
-
-  public Fb2BookSelection timeOpenedContains(String... value) {
-    addContains(Fb2BookColumns.TIME_OPENED, value);
-    return this;
-  }
-
-  public Fb2BookSelection timeOpenedStartsWith(String... value) {
-    addStartsWith(Fb2BookColumns.TIME_OPENED, value);
-    return this;
-  }
-
-  public Fb2BookSelection timeOpenedEndsWith(String... value) {
-    addEndsWith(Fb2BookColumns.TIME_OPENED, value);
-    return this;
-  }
-
-  public Fb2BookSelection orderByTimeOpened(boolean desc) {
-    orderBy(Fb2BookColumns.TIME_OPENED, desc);
-    return this;
-  }
-
-  public Fb2BookSelection orderByTimeOpened() {
-    orderBy(Fb2BookColumns.TIME_OPENED, false);
     return this;
   }
 }

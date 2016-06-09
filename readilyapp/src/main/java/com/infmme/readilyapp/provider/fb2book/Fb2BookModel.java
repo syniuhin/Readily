@@ -10,20 +10,6 @@ import com.infmme.readilyapp.provider.base.BaseModel;
 public interface Fb2BookModel extends BaseModel {
 
   /**
-   * Get the {@code title} value.
-   * Cannot be {@code null}.
-   */
-  @NonNull
-  String getTitle();
-
-  /**
-   * Path in a storage to read from.
-   * Cannot be {@code null}.
-   */
-  @NonNull
-  String getPath();
-
-  /**
    * Id of a fb2part, from which last read was made.
    * Cannot be {@code null}.
    */
@@ -36,21 +22,9 @@ public interface Fb2BookModel extends BaseModel {
   int getTextPosition();
 
   /**
-   * Amount of book that is already read, percent.
-   */
-  double getPercentile();
-
-  /**
    * Path to .json cache of a table of contents.
    * Can be {@code null}.
    */
   @Nullable
   String getPathToc();
-
-  /**
-   * Last open time, joda standard datetime format.
-   * Cannot be {@code null}.
-   */
-  @NonNull
-  String getTimeOpened();
 }

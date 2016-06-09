@@ -10,6 +10,25 @@ import com.infmme.readilyapp.provider.base.BaseModel;
 public interface CachedBookModel extends BaseModel {
 
   /**
+   * Get the {@code title} value.
+   * Cannot be {@code null}.
+   */
+  @NonNull
+  String getTitle();
+
+  /**
+   * Path in a storage to read from.
+   * Cannot be {@code null}.
+   */
+  @NonNull
+  String getPath();
+
+  /**
+   * Amount of book that is already read, percent.
+   */
+  double getPercentile();
+
+  /**
    * Last open time, joda standard datetime format.
    * Cannot be {@code null}.
    */

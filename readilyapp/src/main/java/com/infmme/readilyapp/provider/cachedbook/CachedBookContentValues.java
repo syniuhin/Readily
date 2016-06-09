@@ -43,6 +43,34 @@ public class CachedBookContentValues extends AbstractContentValues {
                           where == null ? null : where.args());
   }
 
+  public CachedBookContentValues putTitle(@NonNull String value) {
+    if (value == null)
+      throw new IllegalArgumentException("title must not be null");
+    mContentValues.put(CachedBookColumns.TITLE, value);
+    return this;
+  }
+
+
+  /**
+   * Path in a storage to read from.
+   */
+  public CachedBookContentValues putPath(@NonNull String value) {
+    if (value == null)
+      throw new IllegalArgumentException("path must not be null");
+    mContentValues.put(CachedBookColumns.PATH, value);
+    return this;
+  }
+
+
+  /**
+   * Amount of book that is already read, percent.
+   */
+  public CachedBookContentValues putPercentile(double value) {
+    mContentValues.put(CachedBookColumns.PERCENTILE, value);
+    return this;
+  }
+
+
   /**
    * Last open time, joda standard datetime format.
    */

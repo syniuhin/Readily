@@ -43,25 +43,6 @@ public class Fb2BookContentValues extends AbstractContentValues {
                           where == null ? null : where.args());
   }
 
-  public Fb2BookContentValues putTitle(@NonNull String value) {
-    if (value == null)
-      throw new IllegalArgumentException("title must not be null");
-    mContentValues.put(Fb2BookColumns.TITLE, value);
-    return this;
-  }
-
-
-  /**
-   * Path in a storage to read from.
-   */
-  public Fb2BookContentValues putPath(@NonNull String value) {
-    if (value == null)
-      throw new IllegalArgumentException("path must not be null");
-    mContentValues.put(Fb2BookColumns.PATH, value);
-    return this;
-  }
-
-
   /**
    * Id of a fb2part, from which last read was made.
    */
@@ -83,15 +64,6 @@ public class Fb2BookContentValues extends AbstractContentValues {
 
 
   /**
-   * Amount of book that is already read, percent.
-   */
-  public Fb2BookContentValues putPercentile(double value) {
-    mContentValues.put(Fb2BookColumns.PERCENTILE, value);
-    return this;
-  }
-
-
-  /**
    * Path to .json cache of a table of contents.
    */
   public Fb2BookContentValues putPathToc(@Nullable String value) {
@@ -103,15 +75,4 @@ public class Fb2BookContentValues extends AbstractContentValues {
     mContentValues.putNull(Fb2BookColumns.PATH_TOC);
     return this;
   }
-
-  /**
-   * Last open time, joda standard datetime format.
-   */
-  public Fb2BookContentValues putTimeOpened(@NonNull String value) {
-    if (value == null)
-      throw new IllegalArgumentException("timeOpened must not be null");
-    mContentValues.put(Fb2BookColumns.TIME_OPENED, value);
-    return this;
-  }
-
 }

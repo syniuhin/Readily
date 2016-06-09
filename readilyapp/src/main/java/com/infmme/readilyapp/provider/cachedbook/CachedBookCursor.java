@@ -30,6 +30,46 @@ public class CachedBookCursor extends AbstractCursor
   }
 
   /**
+   * Get the {@code title} value.
+   * Cannot be {@code null}.
+   */
+  @NonNull
+  public String getTitle() {
+    String res = getStringOrNull(CachedBookColumns.TITLE);
+    if (res == null)
+      throw new NullPointerException(
+          "The value of 'title' in the database was null, which is not " +
+              "allowed according to the model definition");
+    return res;
+  }
+
+  /**
+   * Path in a storage to read from.
+   * Cannot be {@code null}.
+   */
+  @NonNull
+  public String getPath() {
+    String res = getStringOrNull(CachedBookColumns.PATH);
+    if (res == null)
+      throw new NullPointerException(
+          "The value of 'path' in the database was null, which is not allowed" +
+              " according to the model definition");
+    return res;
+  }
+
+  /**
+   * Amount of book that is already read, percent.
+   */
+  public double getPercentile() {
+    Double res = getDoubleOrNull(CachedBookColumns.PERCENTILE);
+    if (res == null)
+      throw new NullPointerException(
+          "The value of 'percentile' in the database was null, which is not " +
+              "allowed according to the model definition");
+    return res;
+  }
+
+  /**
    * Last open time, joda standard datetime format.
    * Cannot be {@code null}.
    */
@@ -54,26 +94,6 @@ public class CachedBookCursor extends AbstractCursor
   }
 
   /**
-   * Get the {@code title} value.
-   * Can be {@code null}.
-   */
-  @Nullable
-  public String getEpubBookTitle() {
-    String res = getStringOrNull(EpubBookColumns.TITLE);
-    return res;
-  }
-
-  /**
-   * Path in a storage to read from.
-   * Can be {@code null}.
-   */
-  @Nullable
-  public String getEpubBookPath() {
-    String res = getStringOrNull(EpubBookColumns.PATH);
-    return res;
-  }
-
-  /**
    * Id of a resource, from which last read was made.
    * Can be {@code null}.
    */
@@ -94,52 +114,12 @@ public class CachedBookCursor extends AbstractCursor
   }
 
   /**
-   * Amount of book that is already read, percent.
-   * Can be {@code null}.
-   */
-  @Nullable
-  public Double getEpubBookPercentile() {
-    Double res = getDoubleOrNull(EpubBookColumns.PERCENTILE);
-    return res;
-  }
-
-  /**
-   * Last open time, joda standard datetime format.
-   * Can be {@code null}.
-   */
-  @Nullable
-  public String getEpubBookTimeOpened() {
-    String res = getStringOrNull(EpubBookColumns.TIME_OPENED);
-    return res;
-  }
-
-  /**
    * Optional link to fb2_book.
    * Can be {@code null}.
    */
   @Nullable
   public Long getFb2BookId() {
     Long res = getLongOrNull(CachedBookColumns.FB2_BOOK_ID);
-    return res;
-  }
-
-  /**
-   * Get the {@code title} value.
-   * Can be {@code null}.
-   */
-  @Nullable
-  public String getFb2BookTitle() {
-    String res = getStringOrNull(Fb2BookColumns.TITLE);
-    return res;
-  }
-
-  /**
-   * Path in a storage to read from.
-   * Can be {@code null}.
-   */
-  @Nullable
-  public String getFb2BookPath() {
-    String res = getStringOrNull(Fb2BookColumns.PATH);
     return res;
   }
 
@@ -164,32 +144,12 @@ public class CachedBookCursor extends AbstractCursor
   }
 
   /**
-   * Amount of book that is already read, percent.
-   * Can be {@code null}.
-   */
-  @Nullable
-  public Double getFb2BookPercentile() {
-    Double res = getDoubleOrNull(Fb2BookColumns.PERCENTILE);
-    return res;
-  }
-
-  /**
    * Path to .json cache of a table of contents.
    * Can be {@code null}.
    */
   @Nullable
   public String getFb2BookPathToc() {
     String res = getStringOrNull(Fb2BookColumns.PATH_TOC);
-    return res;
-  }
-
-  /**
-   * Last open time, joda standard datetime format.
-   * Can be {@code null}.
-   */
-  @Nullable
-  public String getFb2BookTimeOpened() {
-    String res = getStringOrNull(Fb2BookColumns.TIME_OPENED);
     return res;
   }
 
@@ -204,52 +164,12 @@ public class CachedBookCursor extends AbstractCursor
   }
 
   /**
-   * Get the {@code title} value.
-   * Can be {@code null}.
-   */
-  @Nullable
-  public String getTxtBookTitle() {
-    String res = getStringOrNull(TxtBookColumns.TITLE);
-    return res;
-  }
-
-  /**
-   * Path in a storage to read from.
-   * Can be {@code null}.
-   */
-  @Nullable
-  public String getTxtBookPath() {
-    String res = getStringOrNull(TxtBookColumns.PATH);
-    return res;
-  }
-
-  /**
    * Position in a parsed string, on which read was finished.
    * Can be {@code null}.
    */
   @Nullable
   public Integer getTxtBookTextPosition() {
     Integer res = getIntegerOrNull(TxtBookColumns.TEXT_POSITION);
-    return res;
-  }
-
-  /**
-   * Amount of book that is already read, percent.
-   * Can be {@code null}.
-   */
-  @Nullable
-  public Double getTxtBookPercentile() {
-    Double res = getDoubleOrNull(TxtBookColumns.PERCENTILE);
-    return res;
-  }
-
-  /**
-   * Last open time, joda standard datetime format.
-   * Can be {@code null}.
-   */
-  @Nullable
-  public String getTxtBookTimeOpened() {
-    String res = getStringOrNull(TxtBookColumns.TIME_OPENED);
     return res;
   }
 }
