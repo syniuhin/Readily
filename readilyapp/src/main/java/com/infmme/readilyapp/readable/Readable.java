@@ -1,44 +1,43 @@
 package com.infmme.readilyapp.readable;
 
-import com.infmme.readilyapp.readable.interfaces.AbstractReadable;
 import com.infmme.readilyapp.readable.interfaces.Reading;
 
-import java.io.InputStream;
 import java.util.List;
 
 /**
  * Created with love, by infm dated on 6/8/16.
  */
 
-public class PlainReadable implements AbstractReadable, Reading {
+public class Readable implements Reading {
   private String mText;
-  private String mPath;
+  private StringBuilder mTextBuilder;
 
   private List<String> mWordList = null;
   private List<Integer> mEmphasisList = null;
   private List<Integer> mDelayList = null;
 
   @Override
-  public AbstractReadable setText(String text) {
-    this.mText = text;
-    return this;
-  }
-
-  @Override
-  public AbstractReadable setInputStream(InputStream is) {
-    throw new IllegalStateException(
-        "PlainReadable doesn't support reading from InputStream.");
-  }
-
-  @Override
-  public AbstractReadable setPath(String path) {
-    this.mPath = path;
-    return this;
-  }
-
-  @Override
   public String getText() {
     return mText;
+  }
+
+  @Override
+  public void setText(String text) {
+    mText = text;
+  }
+
+  public void appendText(String text) {
+    if (mTextBuilder == null) {
+      mTextBuilder = new StringBuilder();
+    }
+    mTextBuilder.append(text).append(" ");
+  }
+
+  public void finishAppendingText() {
+    if (mTextBuilder != null) {
+      mText = mTextBuilder.toString();
+      mTextBuilder = null;
+    }
   }
 
   @Override
@@ -57,7 +56,17 @@ public class PlainReadable implements AbstractReadable, Reading {
   }
 
   @Override
+  public void setEmphasisList(List<Integer> emphasisList) {
+    mEmphasisList = emphasisList;
+  }
+
+  @Override
   public List<Integer> getDelayList() {
     return mDelayList;
+  }
+
+  @Override
+  public void setDelayList(List<Integer> delayList) {
+    mDelayList = delayList;
   }
 }

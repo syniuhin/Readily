@@ -1,10 +1,19 @@
 package com.infmme.readilyapp.readable.interfaces;
 
+import java.io.IOException;
+
 /**
  * Created with love, by infm dated on 6/8/16.
  */
 
 public interface Storable {
+  boolean isStoredInDb();
+
+  /**
+   * Reads currently cached metadata, last saved position etc.
+   */
+  void readFromDb();
+
   /**
    * Stores (creates or updates) current state to database.
    */
@@ -18,5 +27,9 @@ public interface Storable {
   /**
    * Reads from filesystem.
    */
-  Storable readFromFile();
+  Storable readFromFile() throws IOException;
+
+  String getPath();
+
+  void setPath(String path);
 }

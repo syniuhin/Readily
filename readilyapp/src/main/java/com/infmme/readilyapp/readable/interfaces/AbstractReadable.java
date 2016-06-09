@@ -7,7 +7,7 @@ import java.io.InputStream;
  */
 
 public interface AbstractReadable {
-  AbstractReadable setText(String text);
+  AbstractReadable setRawText(String text);
 
   AbstractReadable setInputStream(InputStream is);
 
