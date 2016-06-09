@@ -34,10 +34,13 @@ public class ReadilySQLiteOpenHelper extends SQLiteOpenHelper {
       .FB2_BOOK_ID + ") REFERENCES fb2_book (_id) ON DELETE CASCADE"
       + ", CONSTRAINT fk_txt_book_id FOREIGN KEY (" + CachedBookColumns
       .TXT_BOOK_ID + ") REFERENCES txt_book (_id) ON DELETE CASCADE"
-      + ", CONSTRAINT unique_path UNIQUE path"
-      + ", CONSTRAINT unique_epub_book UNIQUE epub_book_id"
-      + ", CONSTRAINT unique_fb2_book UNIQUE fb2_book_id"
-      + ", CONSTRAINT unique_txt_book UNIQUE txt_book_id"
+      + ", CONSTRAINT unique_path UNIQUE (" + CachedBookColumns.PATH + ")"
+      + ", CONSTRAINT unique_epub_book UNIQUE (" + CachedBookColumns
+      .EPUB_BOOK_ID + ")"
+      + ", CONSTRAINT unique_fb2_book UNIQUE (" + CachedBookColumns
+      .FB2_BOOK_ID + ")"
+      + ", CONSTRAINT unique_txt_book UNIQUE (" + CachedBookColumns
+      .TXT_BOOK_ID + ")"
       + " );";
   public static final String SQL_CREATE_TABLE_EPUB_BOOK = "CREATE TABLE IF " +
       "NOT EXISTS "
@@ -45,7 +48,6 @@ public class ReadilySQLiteOpenHelper extends SQLiteOpenHelper {
       + EpubBookColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
       + EpubBookColumns.CURRENT_RESOURCE_ID + " TEXT NOT NULL, "
       + EpubBookColumns.TEXT_POSITION + " INTEGER NOT NULL "
-      + ", CONSTRAINT unique_path UNIQUE path"
       + " );";
   public static final String SQL_CREATE_TABLE_FB2_BOOK = "CREATE TABLE IF NOT" +
       " EXISTS "
@@ -54,14 +56,12 @@ public class ReadilySQLiteOpenHelper extends SQLiteOpenHelper {
       + Fb2BookColumns.CURRENT_PART_ID + " TEXT NOT NULL, "
       + Fb2BookColumns.TEXT_POSITION + " INTEGER NOT NULL, "
       + Fb2BookColumns.PATH_TOC + " TEXT "
-      + ", CONSTRAINT unique_path UNIQUE path"
       + " );";
   public static final String SQL_CREATE_TABLE_TXT_BOOK = "CREATE TABLE IF NOT" +
       " EXISTS "
       + TxtBookColumns.TABLE_NAME + " ( "
       + TxtBookColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
       + TxtBookColumns.TEXT_POSITION + " INTEGER NOT NULL "
-      + ", CONSTRAINT unique_path UNIQUE path"
       + " );";
   private static final String TAG = ReadilySQLiteOpenHelper.class
       .getSimpleName();
