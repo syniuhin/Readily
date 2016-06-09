@@ -2,6 +2,7 @@ package com.infmme.readilyapp.readable.storable.epub;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookContentValues;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
@@ -20,8 +21,11 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Metadata;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubReader;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,9 +46,12 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
   private transient Book mBook;
   private Metadata mMetadata;
   private List<Resource> mContents;
+  private List<Integer> mLastReadsLengths;
 
   private transient String mCurrentResourceId;
   private int mCurrentResourceIndex = -1;
+  private transient int mLastResourceIndex = -1;
+
   private int mCurrentTextPosition;
 
   private boolean mProcessed;
@@ -60,25 +67,34 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
   @Override
   public Reading readNext() throws IOException {
     Readable readable = new Readable();
-    if (mCurrentResourceIndex == -1) {
+    mLastReadsLengths = new ArrayList<>();
+    if (mLastResourceIndex == -1) {
       for (int i = 0; i < mContents.size() &&
-          mCurrentResourceIndex == -1; ++i) {
+          mLastResourceIndex == -1; ++i) {
         if (mCurrentResourceId.equals(mContents.get(i).getId())) {
-          mCurrentResourceIndex = i;
+          mLastResourceIndex = i;
         }
       }
     }
     long bytesProcessed = 0;
+    mCurrentResourceIndex = mLastResourceIndex;
     while (bytesProcessed < BUFFER_SIZE) {
-      Resource currentResource = mContents.get(mCurrentResourceIndex);
-      mCurrentResourceId = currentResource.getId();
+      Resource lastResource = mContents.get(mLastResourceIndex);
 
-      readable.appendText(new String(currentResource.getData()));
-      bytesProcessed += currentResource.getSize();
-      mCurrentResourceIndex++;
+      String parsed = parseRawText(new String(lastResource.getData()));
+      mLastReadsLengths.add(parsed.length());
+      readable.appendText(parsed);
+
+      bytesProcessed += lastResource.getSize();
+      mLastResourceIndex++;
     }
     readable.finishAppendingText();
     return readable;
+  }
+
+  private String parseRawText(String rawText) {
+    Document doc = Jsoup.parse(rawText);
+    return doc.select("p, title").text();
   }
 
   @Override
@@ -111,7 +127,7 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
                          .query(CachedBookColumns.CONTENT_URI,
                                 EpubBookColumns.ALL_COLUMNS,
                                 where.sel(), where.args(), null);
-      if (c != null) {
+      if (c != null && c.moveToFirst()) {
         EpubBookCursor book = new EpubBookCursor(c);
         mCurrentTextPosition = book.getTextPosition();
         mCurrentResourceId = book.getCurrentResourceId();
@@ -129,6 +145,8 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
     values.putPath(mPath);
     values.putTimeOpened(mTimeCreated);
     values.putTitle(mMetadata.getFirstTitle());
+    // TODO: Solve this
+    values.putPercentile(0);
 
     EpubBookContentValues epubValues = new EpubBookContentValues();
     epubValues.putCurrentResourceId(mCurrentResourceId);
@@ -138,27 +156,39 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
       CachedBookSelection cachedWhere = new CachedBookSelection();
       cachedWhere.path(mPath);
       EpubBookSelection epubWhere = new EpubBookSelection();
-      epubWhere.id(getEpubBookId());
+      epubWhere.id(getFkEpubBookId());
       epubValues.update(mContext, epubWhere);
       values.update(mContext, cachedWhere);
     } else {
-      epubValues.insert(mContext.getContentResolver());
-      values.putEpubBookId(getEpubBookId());
+      Uri uri = epubValues.insert(mContext.getContentResolver());
+      long epubId = Long.parseLong(uri.getLastPathSegment());
+      values.putEpubBookId(epubId);
       values.insert(mContext.getContentResolver());
     }
   }
 
-  /**
-   * Uses uniqueness of a path to get epub_book_id from a cached_book table.
-   * @return epub_book_id for an mPath.
-   */
   private Long getEpubBookId() {
     CachedBookSelection cachedWhere = new CachedBookSelection();
     cachedWhere.path(mPath);
     CachedBookCursor cachedBookCursor =
         new CachedBookCursor(mContext.getContentResolver().query(
             CachedBookColumns.CONTENT_URI,
-            new String[] { EpubBookColumns._ID },
+            new String[] { CachedBookColumns.EPUB_BOOK_ID },
+            cachedWhere.sel(), cachedWhere.args(), null));
+    return cachedBookCursor.getEpubBookId();
+  }
+  /**
+   * Uses uniqueness of a path to get epub_book_id from a cached_book table.
+   *
+   * @return epub_book_id for an mPath.
+   */
+  private Long getFkEpubBookId() {
+    CachedBookSelection cachedWhere = new CachedBookSelection();
+    cachedWhere.path(mPath);
+    CachedBookCursor cachedBookCursor =
+        new CachedBookCursor(mContext.getContentResolver().query(
+            CachedBookColumns.CONTENT_URI,
+            new String[] { CachedBookColumns.EPUB_BOOK_ID },
             cachedWhere.sel(), cachedWhere.args(), null));
     return cachedBookCursor.getEpubBookId();
   }
@@ -174,6 +204,8 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
     if (mPath != null) {
       mBook = (new EpubReader()).readEpubLazy(
           mPath, Constants.DEFAULT_ENCODING);
+    } else {
+      throw new IllegalStateException("No path to read file from.");
     }
     return this;
   }
@@ -206,12 +238,24 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
     this.mContext = mContext;
   }
 
+  public void setTextPosition(final int textPosition) {
+    int localTextPosition = textPosition;
+    for (int i = 0;
+         i < mLastReadsLengths.size() - 1 && localTextPosition >
+             mLastReadsLengths.get(i); ++i) {
+      localTextPosition -= mLastReadsLengths.get(i);
+      ++mCurrentResourceIndex;
+    }
+    mCurrentResourceId = mContents.get(mCurrentResourceIndex).getId();
+  }
+
   @Override
   public void process() {
     try {
       if (mBook == null) {
         readFromFile();
       }
+      mContents = mBook.getContents();
       if (isStoredInDb()) {
         readFromDb();
       } else {
@@ -219,7 +263,6 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
         mCurrentTextPosition = 0;
         mCurrentResourceId = mContents.get(0).getId();
       }
-      mContents = mBook.getContents();
       mProcessed = true;
     } catch (IOException e) {
       e.printStackTrace();

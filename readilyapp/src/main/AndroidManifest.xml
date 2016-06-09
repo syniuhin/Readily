@@ -43,22 +43,9 @@
             </intent-filter>
         </activity>
 
-        <provider
-                android:name=".database.LastReadContentProvider"
-                android:authorities="com.infmme.readilyapp.provider"
-                android:enabled="true"
-                android:exported="false"/>
-
         <meta-data
                 android:name="com.crashlytics.ApiKey"
                 android:value="0db4f67b016e755d7cc9ec045205dcab746e7c46"/>
-
-        <service
-                android:name=".service.LastReadService"
-                android:exported="false"/>
-        <service
-                android:name=".service.StorageCheckerService"
-                android:exported="false"/>
 
         <activity
                 android:name="com.ipaulpro.afilechooser.FileChooserActivity"
@@ -106,8 +93,8 @@
         <activity
                 android:name=".BookPartListActivity"
                 android:label="@string/title_bookpart_list"
-                android:parentActivityName=".MainActivity"
                 android:launchMode="singleTop"
+                android:parentActivityName=".MainActivity"
                 android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
@@ -122,6 +109,20 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.infmme.readilyapp.BookPartListActivity"/>
         </activity>
+        <activity android:name=".TestEpubActivity">
+        </activity>
+
+        <service
+                android:name=".service.LastReadService"
+                android:exported="false"/>
+        <service
+                android:name=".service.StorageCheckerService"
+                android:exported="false"/>
+
+        <provider
+                android:name="com.infmme.readilyapp.provider.ReadilyProvider"
+                android:authorities="com.infmme.readilyapp.provider"
+                android:exported="false" />
     </application>
 
 </manifest>
