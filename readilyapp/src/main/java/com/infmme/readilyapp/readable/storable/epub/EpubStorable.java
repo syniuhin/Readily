@@ -142,9 +142,7 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
   @Override
   public void storeToDb() {
     CachedBookContentValues values = new CachedBookContentValues();
-    values.putPath(mPath);
     values.putTimeOpened(mTimeCreated);
-    values.putTitle(mMetadata.getFirstTitle());
     // TODO: Solve this
     values.putPercentile(0);
 
@@ -160,6 +158,9 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
       epubValues.update(mContext, epubWhere);
       values.update(mContext, cachedWhere);
     } else {
+      values.putPath(mPath);
+      values.putTitle(mMetadata.getFirstTitle());
+
       Uri uri = epubValues.insert(mContext.getContentResolver());
       long epubId = Long.parseLong(uri.getLastPathSegment());
       values.putEpubBookId(epubId);
@@ -167,16 +168,6 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
     }
   }
 
-  private Long getEpubBookId() {
-    CachedBookSelection cachedWhere = new CachedBookSelection();
-    cachedWhere.path(mPath);
-    CachedBookCursor cachedBookCursor =
-        new CachedBookCursor(mContext.getContentResolver().query(
-            CachedBookColumns.CONTENT_URI,
-            new String[] { CachedBookColumns.EPUB_BOOK_ID },
-            cachedWhere.sel(), cachedWhere.args(), null));
-    return cachedBookCursor.getEpubBookId();
-  }
   /**
    * Uses uniqueness of a path to get epub_book_id from a cached_book table.
    *
@@ -256,10 +247,10 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
         readFromFile();
       }
       mContents = mBook.getContents();
+      mMetadata = mBook.getMetadata();
       if (isStoredInDb()) {
         readFromDb();
       } else {
-        mMetadata = mBook.getMetadata();
         mCurrentTextPosition = 0;
         mCurrentResourceId = mContents.get(0).getId();
       }
