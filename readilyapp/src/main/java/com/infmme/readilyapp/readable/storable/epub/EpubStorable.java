@@ -181,7 +181,10 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
             CachedBookColumns.CONTENT_URI,
             new String[] { CachedBookColumns.EPUB_BOOK_ID },
             cachedWhere.sel(), cachedWhere.args(), null));
-    return cachedBookCursor.getEpubBookId();
+    if (cachedBookCursor.moveToFirst()) {
+      return cachedBookCursor.getEpubBookId();
+    }
+    return null;
   }
 
   @Override

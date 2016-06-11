@@ -14,6 +14,7 @@ public interface Storable {
    */
   void readFromDb();
 
+  // void prepareForStoring(Reader reader);
   /**
    * Stores (creates or updates) current state to database.
    */

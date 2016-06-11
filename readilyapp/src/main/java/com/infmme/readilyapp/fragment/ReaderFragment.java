@@ -2,6 +2,7 @@ package com.infmme.readilyapp.fragment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -20,27 +21,43 @@ import android.widget.*;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.infmme.readilyapp.R;
-import com.infmme.readilyapp.essential.old.TextParser;
-import com.infmme.readilyapp.readable.old.FileStorable;
-import com.infmme.readilyapp.readable.old.Readable;
-import com.infmme.readilyapp.readable.old.Storable;
+import com.infmme.readilyapp.essential.TextParser;
+import com.infmme.readilyapp.readable.NetReadable;
+import com.infmme.readilyapp.readable.Readable;
+import com.infmme.readilyapp.readable.interfaces.Chunked;
+import com.infmme.readilyapp.readable.interfaces.Reading;
+import com.infmme.readilyapp.readable.interfaces.Storable;
+import com.infmme.readilyapp.readable.storable.epub.EpubStorable;
+import com.infmme.readilyapp.readable.type.ReadableType;
+import com.infmme.readilyapp.readable.type.ReadingSource;
+import com.infmme.readilyapp.reader.MonitorObject;
+import com.infmme.readilyapp.reader.Reader;
+import com.infmme.readilyapp.reader.ReaderTask;
 import com.infmme.readilyapp.settings.SettingsBundle;
 import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.view.OnSwipeTouchListener;
+import org.joda.time.LocalDateTime;
 
-import java.util.ArrayDeque;
+import java.io.IOException;
 import java.util.List;
 
 /**
  * infm : 16/05/14. Enjoy it ;)
  */
-public class ReaderFragment extends Fragment {
+public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
+    ReaderTask.ReaderTaskCallbacks {
 
   private static final int NOTIF_APPEARING_DURATION = 300;
-  private static final int NOTIF_SHOWING_LENGTH = 1500; //time in ms for
-  // which notification becomes visible
-  private static final int READER_PULSE_DURATION = 400; //ms duration of
-  // 'Bounce' animation on reader window
+  /**
+   * Time in ms for which mNotificationTextView becomes visible.
+   */
+  private static final int NOTIF_SHOWING_LENGTH = 1500;
+
+  /**
+   * ms duration of 'Bounce' animation on mReader window
+   */
+  public static final int READER_PULSE_DURATION = 400;
+
   private static final float POINTER_LEFT_PADDING_COEFFICIENT = 5f / 18f;
   //some magic number
   private static final String[] LIGHT_COLOR_SET = new String[] { "#0A0A0A",
@@ -49,58 +66,50 @@ public class ReaderFragment extends Fragment {
       "#999999", "#FF282828" };
   private static final String EMPHASIS_CHAR_COLOR = "#FA2828";
 
-  private ReaderListener callback;
   //initialized in onCreate()
-  private Handler handler;
-  private long localTime = 0;
-  private boolean notificationHided = true;
-  private boolean infoHided = true;
-  private Bundle args;
-  //initialized in onCreateView()
-  private RelativeLayout readerLayout;
-  private RelativeLayout infoLayout;
-  private TextView wpmTextView;
-  private TextView positionTextView;
-  private TextView currentTextView;
-  private TextView leftTextView;
-  private TextView rightTextView;
-  private TextView notification;
-  private ProgressBar progressBar;
-  private ProgressBar parsingProgressBar;
-  private ImageButton prevButton;
-  private View upLogo;
-  //initialized in onActivityCreated()
-  private Reader reader;
-  private Readable readable;
-  private List<String> wordList;
-  private List<Integer> emphasisList;
-  private List<Integer> delayList;
-  private SettingsBundle settingsBundle;
-  private Thread parserThread;
-  private ReaderTask readerTask;
-  private MonitorObject monitorObject;
-  //receiving status
-  private boolean parserReceived = false;
-  private String primaryTextColor = LIGHT_COLOR_SET[0];
-  private String secondaryTextColor = LIGHT_COLOR_SET[1];
-  private boolean isFileStorable;
-  private int progress;
+  private Handler mHandler;
+  private long mLocalTime = 0;
+  private boolean mNotificationHided = true;
+  private boolean mInfoHided = true;
+  private Bundle mArgs;
 
-  @Override
-  public void onAttach(Activity activity) {
-    super.onAttach(activity);
-    try {
-      callback = (ReaderListener) activity;
-    } catch (ClassCastException e) {
-      e.printStackTrace();
-    }
-  }
+  //initialized in onCreateView()
+  private RelativeLayout mReaderLayout;
+  private RelativeLayout mInfoLayout;
+  private TextView mWpmTextView;
+  private TextView mPositionTextView;
+  private TextView mCurrentTextView;
+  private TextView mLeftTextView;
+  private TextView mRightTextView;
+  private TextView mNotificationTextView;
+  private ProgressBar mProgressBar;
+  private ProgressBar mParsingProgressBar;
+  private ImageButton mPrevButton;
+  private View mUpLogo;
+
+  //initialized in onActivityCreated()
+  private Reader mReader;
+  private ReaderTask mReaderTask;
+  private MonitorObject mMutex;
+
+  private Reading mReading;
+  private Chunked mChunked = null;
+  private Storable mStorable = null;
+
+  private SettingsBundle mSettingsBundle;
+  private Thread mParserThread;
+
+  //receiving status
+  private boolean mParserReceived = false;
+  private String mPrimaryTextColor = LIGHT_COLOR_SET[0];
+  private String mSecondaryTextColor = LIGHT_COLOR_SET[1];
+  private int mProgress;
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    args = getArguments();
-    handler = new Handler();
+    mArgs = getArguments();
+    mHandler = new Handler();
   }
 
   @Override
@@ -118,18 +127,14 @@ public class ReaderFragment extends Fragment {
 
     Activity activity = getActivity();
     setReaderLayoutListener(activity);
-    settingsBundle = new SettingsBundle(
+    mSettingsBundle = new SettingsBundle(
         PreferenceManager.getDefaultSharedPreferences(activity));
 
     setReaderBackground();
     initPrevButton();
     setReaderFontSize();
 
-    readable = Readable.createReadable(activity, args);
-    monitorObject = new MonitorObject();
-    readerTask = new ReaderTask(monitorObject, readable);
-    parserThread = new Thread(readerTask);
-    parserThread.start();
+    handleArgs(mArgs);
   }
 
   public void onSwipeTop() {
@@ -141,60 +146,56 @@ public class ReaderFragment extends Fragment {
   }
 
   private void setCurrentTime(long localTime) {
-    this.localTime = localTime;
+    this.mLocalTime = localTime;
   }
 
   /**
    * Generates formatted text before emphasis point
    *
-   * @param pos : position in wordList
+   * @param word     Word to show
+   * @param emphasis Word emphasis position
    * @return Spanned object to draw
    */
-  private Spanned getFormattedLeft(int pos) {
-    if (TextUtils.isEmpty(wordList.get(pos)))
+  private Spanned getFormattedLeft(String word, int emphasis) {
+    if (TextUtils.isEmpty(word))
       return Html.fromHtml("");
-    int emphasisPosition = emphasisList.get(pos);
-    return Html.fromHtml("<font color='" + primaryTextColor + "'>" +
-                             wordList.get(pos)
-                                     .substring(0,
-                                                emphasisPosition) + "</font>");
+    return Html.fromHtml("<font color='" + mPrimaryTextColor + "'>" +
+                             word.substring(0, emphasis) + "</font>");
   }
 
   /**
    * Generates formatted emphasis character
    *
-   * @param pos : position in wordList
+   * @param word     Word to show
+   * @param emphasis Word emphasis position
    * @return Spanned object to draw
    */
-  private Spanned getFormattedEmphasis(int pos) {
-    if (TextUtils.isEmpty(wordList.get(pos)))
+  private Spanned getFormattedEmphasis(String word, int emphasis) {
+    if (TextUtils.isEmpty(word))
       return Html.fromHtml("");
-    int emphasisPosition = emphasisList.get(pos);
     return Html.fromHtml("<font color='" + EMPHASIS_CHAR_COLOR + "'>" +
-                             wordList.get(pos)
-                                     .substring(emphasisPosition,
-                                                emphasisPosition + 1) +
-                             "</font>");
+                             word.substring(emphasis,
+                                            emphasis + 1) + "</font>");
   }
 
   /**
    * Generates formatted text after emphasis character
    * (part of current word, if exists and next ones, if option is enabled)
    *
-   * @param pos : position in wordList
+   * @param word     Word to show
+   * @param emphasis Word emphasis position
    * @return Spanned object to draw
    */
-  private Spanned getFormattedRight(int pos) {
-    if (TextUtils.isEmpty(wordList.get(pos)))
+  private Spanned getFormattedRight(String word, List<String> nextWords,
+                                    int emphasis) {
+    if (TextUtils.isEmpty(word))
       return Html.fromHtml("");
-    int emphasisPosition = emphasisList.get(pos);
     StringBuilder format = new StringBuilder(
-        "<font><font color='" + primaryTextColor + "'>" +
-            wordList.get(pos)
-                    .substring(emphasisPosition + 1,
-                               wordList.get(pos).length()) + "</font>");
-    if (settingsBundle.isShowingContextEnabled())
-      format.append(getNextWordsFormat(pos));
+        "<font><font color='" + mPrimaryTextColor + "'>" +
+            word.substring(emphasis + 1,
+                           word.length()) + "</font>");
+    if (mSettingsBundle.isShowingContextEnabled())
+      format.append(getNextWordsFormat(nextWords));
     format.append("</font>");
     return Html.fromHtml(format.toString());
   }
@@ -203,16 +204,16 @@ public class ReaderFragment extends Fragment {
    * Generates Html formatted String of next words in text (called if
    * 'context' option is enabled)
    *
-   * @param pos : position in wordList
+   * @param nextWords A couple of next words to show in a reader view
    * @return Html format String
    */
-  private String getNextWordsFormat(int pos) {
+  private String getNextWordsFormat(List<String> nextWords) {
     int charLen = 0;
-    int wordListIndex = pos;
+    int wordListIndex = 0;
     StringBuilder format = new StringBuilder(
-        "&nbsp;<font color='" + secondaryTextColor + "'>");
-    while (charLen < 40 && wordListIndex < wordList.size() - 1) {
-      String word = wordList.get(++wordListIndex);
+        "&nbsp;<font color='" + mSecondaryTextColor + "'>");
+    while (charLen < 40 && wordListIndex < nextWords.size() - 1) {
+      String word = nextWords.get(++wordListIndex);
       if (!TextUtils.isEmpty(word)) {
         charLen += word.length() + 1;
         format.append(word).append(" ");
@@ -228,23 +229,23 @@ public class ReaderFragment extends Fragment {
    * @param v ViewGroup in which views are found
    */
   private void findViews(ViewGroup v) {
-    readerLayout = (RelativeLayout) v.findViewById(R.id.reader_layout);
-    parsingProgressBar = (ProgressBar) v.findViewById(R.id.parsingProgressBar);
-    currentTextView = (TextView) v.findViewById(R.id.currentWordTextView);
-    leftTextView = (TextView) v.findViewById(R.id.leftWordTextView);
-    rightTextView = (TextView) v.findViewById(R.id.rightWordTextView);
-    progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
-    notification = (TextView) v.findViewById(R.id.reader_notification);
-    prevButton = (ImageButton) v.findViewById(R.id.previousWordImageButton);
-    upLogo = v.findViewById(R.id.logo_up);
-    infoLayout = (RelativeLayout) v.findViewById(R.id.reader_info_layout);
-    wpmTextView = (TextView) v.findViewById(R.id.text_view_info_speed_value);
-    positionTextView = (TextView) v.findViewById(
+    mReaderLayout = (RelativeLayout) v.findViewById(R.id.reader_layout);
+    mParsingProgressBar = (ProgressBar) v.findViewById(R.id.parsingProgressBar);
+    mCurrentTextView = (TextView) v.findViewById(R.id.currentWordTextView);
+    mLeftTextView = (TextView) v.findViewById(R.id.leftWordTextView);
+    mRightTextView = (TextView) v.findViewById(R.id.rightWordTextView);
+    mProgressBar = (ProgressBar) v.findViewById(R.id.progressBar);
+    mNotificationTextView = (TextView) v.findViewById(R.id.reader_notification);
+    mPrevButton = (ImageButton) v.findViewById(R.id.previousWordImageButton);
+    mUpLogo = v.findViewById(R.id.logo_up);
+    mInfoLayout = (RelativeLayout) v.findViewById(R.id.reader_info_layout);
+    mWpmTextView = (TextView) v.findViewById(R.id.text_view_info_speed_value);
+    mPositionTextView = (TextView) v.findViewById(
         R.id.text_view_info_position_value);
   }
 
   private void setReaderLayoutListener(Context context) {
-    readerLayout.setOnTouchListener(new OnSwipeTouchListener(context) {
+    mReaderLayout.setOnTouchListener(new OnSwipeTouchListener(context) {
       @Override
       public void onSwipeTop() {
         ReaderFragment.this.onSwipeTop();
@@ -257,30 +258,30 @@ public class ReaderFragment extends Fragment {
 
       @Override
       public void onSwipeRight() {
-        if (settingsBundle.isSwipesEnabled()) {
-          if (!reader.isPaused())
-            reader.performPause();
+        if (mSettingsBundle.isSwipesEnabled()) {
+          if (!mReader.isPaused())
+            mReader.performPause();
           else
-            reader.moveToPrevious();
+            mReader.moveToPrevious();
         }
       }
 
       @Override
       public void onSwipeLeft() {
-        if (settingsBundle.isSwipesEnabled()) {
-          if (!reader.isPaused())
-            reader.performPause();
+        if (mSettingsBundle.isSwipesEnabled()) {
+          if (!mReader.isPaused())
+            mReader.performPause();
           else
-            reader.moveToNext();
+            mReader.moveToNext();
         }
       }
 
       @Override
       public void onClick() {
-        if (reader.isCompleted())
+        if (mReader.isCompleted())
           onStop();
         else
-          reader.incCancelled();
+          mReader.incCancelled();
       }
     });
   }
@@ -289,16 +290,16 @@ public class ReaderFragment extends Fragment {
    * Initializes previous word button
    */
   private void initPrevButton() {
-    if (!settingsBundle.isSwipesEnabled()) {
-      prevButton.setImageResource(android.R.drawable.ic_media_previous);
-      prevButton.setOnClickListener(new View.OnClickListener() {
+    if (!mSettingsBundle.isSwipesEnabled()) {
+      mPrevButton.setImageResource(android.R.drawable.ic_media_previous);
+      mPrevButton.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          reader.moveToPrevious();
+          mReader.moveToPrevious();
         }
       });
-      prevButton.setVisibility(View.INVISIBLE);
-    } else { prevButton.setVisibility(View.INVISIBLE); }
+      mPrevButton.setVisibility(View.INVISIBLE);
+    } else { mPrevButton.setVisibility(View.INVISIBLE); }
   }
 
   private float spToPixels(Context context, float sp) {
@@ -308,11 +309,12 @@ public class ReaderFragment extends Fragment {
   }
 
   private void setReaderFontSize() {
-    View pointerTop = readerLayout.findViewById(R.id.pointerTopImageView);
-    View pointerBottom = readerLayout.findViewById(R.id.pointerBottomImageView);
+    View pointerTop = mReaderLayout.findViewById(R.id.pointerTopImageView);
+    View pointerBottom = mReaderLayout.findViewById(
+        R.id.pointerBottomImageView);
 
     float fontSizePx = spToPixels(getActivity(),
-                                  (float) settingsBundle.getFontSize());
+                                  (float) mSettingsBundle.getFontSize());
     pointerTop.setPadding(
         (int) (fontSizePx * POINTER_LEFT_PADDING_COEFFICIENT + .5f),
         pointerTop.getPaddingTop(),
@@ -322,117 +324,164 @@ public class ReaderFragment extends Fragment {
         pointerBottom.getPaddingTop(),
         pointerBottom.getPaddingRight(), pointerBottom.getPaddingBottom());
 
-    currentTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,
-                                settingsBundle.getFontSize());
-    leftTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,
-                             settingsBundle.getFontSize());
-    rightTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,
-                              settingsBundle.getFontSize());
+    mCurrentTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,
+                                 mSettingsBundle.getFontSize());
+    mLeftTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,
+                              mSettingsBundle.getFontSize());
+    mRightTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,
+                               mSettingsBundle.getFontSize());
   }
 
   private void setReaderBackground() {
-    if (settingsBundle.isDarkTheme()) {
-      ((View) readerLayout.getParent()).setBackgroundColor(
+    if (mSettingsBundle.isDarkTheme()) {
+      ((View) mReaderLayout.getParent()).setBackgroundColor(
           Color.parseColor(DARK_COLOR_SET[2]));
-      primaryTextColor = DARK_COLOR_SET[0];
-      secondaryTextColor = DARK_COLOR_SET[1];
-      ((ImageView) readerLayout.findViewById(R.id.pointerTopImageView)).
-                                                                           setImageResource(
-                                                                               R.drawable.word_pointer_dark);
-      ((ImageView) readerLayout.findViewById(R.id.pointerBottomImageView)).
-                                                                              setImageResource(
-                                                                                  R.drawable.word_pointer_dark);
+      mPrimaryTextColor = DARK_COLOR_SET[0];
+      mSecondaryTextColor = DARK_COLOR_SET[1];
+      ((ImageView) mReaderLayout.findViewById(R.id.pointerTopImageView))
+          .setImageResource(R.drawable.word_pointer_dark);
+      ((ImageView) mReaderLayout.findViewById(R.id.pointerBottomImageView))
+          .setImageResource(R.drawable.word_pointer_dark);
     }
   }
 
   private void showNotification(String text) {
     if (!TextUtils.isEmpty(text)) {
-      notification.setText(text);
+      mNotificationTextView.setText(text);
       setCurrentTime(System.currentTimeMillis());
 
-      if (notificationHided) {
-        YoYo.with(Techniques.SlideInDown).
-            duration(NOTIF_APPEARING_DURATION).
-                playOn(notification);
-        notification.postDelayed(new Runnable() {
+      if (mNotificationHided) {
+        YoYo.with(Techniques.SlideInDown)
+            .duration(NOTIF_APPEARING_DURATION)
+            .playOn(mNotificationTextView);
+        mNotificationTextView.postDelayed(new Runnable() {
           @Override
           public void run() {
-            notification.setVisibility(View.VISIBLE);
+            mNotificationTextView.setVisibility(View.VISIBLE);
           }
         }, NOTIF_APPEARING_DURATION);
 
-        YoYo.with(Techniques.FadeOut).
-            duration(NOTIF_APPEARING_DURATION).
-                playOn(upLogo);
-        notificationHided = false;
+        YoYo.with(Techniques.FadeOut)
+            .duration(NOTIF_APPEARING_DURATION)
+            .playOn(mUpLogo);
+        mNotificationHided = false;
       }
     }
   }
 
-  private void showNotification(int resourceId) {
+  @Override
+  public void animatePlay() {
+    YoYo.with(Techniques.Pulse)
+        .duration(READER_PULSE_DURATION)
+        .playOn(mReaderLayout);
+    if (!mSettingsBundle.isSwipesEnabled()) {
+      mPrevButton.setVisibility(View.INVISIBLE);
+    }
+  }
+
+  @Override
+  public void animatePause() {
+    YoYo.with(Techniques.Pulse)
+        .duration(READER_PULSE_DURATION)
+        .playOn(mReaderLayout);
+    if (!mSettingsBundle.isSwipesEnabled()) {
+      mPrevButton.setVisibility(View.VISIBLE);
+    }
+  }
+
+  @Override
+  public void updateReaderView(String word, List<String> nextWords,
+                               int emphasis) {
+    mCurrentTextView.setText(getFormattedEmphasis(word, emphasis));
+    mLeftTextView.setText(getFormattedLeft(word, emphasis));
+    mRightTextView.setText(getFormattedRight(word, nextWords, emphasis));
+    mProgressBar.setProgress(mProgress);
+    hideNotification(false);
+  }
+
+  @Override
+  public void showNotification(int resourceId) {
     if (isAdded())
       showNotification(getResources().getString(resourceId));
   }
 
-  private boolean hideNotification(boolean force) {
-    if (!notificationHided) {
-      if (force || System.currentTimeMillis() - localTime >
+  @Override
+  public boolean hideNotification(boolean force) {
+    if (!mNotificationHided) {
+      if (force || System.currentTimeMillis() - mLocalTime >
           NOTIF_SHOWING_LENGTH) {
-        YoYo.with(Techniques.SlideOutUp).
-            duration(NOTIF_APPEARING_DURATION).
-                playOn(notification);
-        notification.postDelayed(new Runnable() {
+        YoYo.with(Techniques.SlideOutUp)
+            .duration(NOTIF_APPEARING_DURATION)
+            .playOn(mNotificationTextView);
+        mNotificationTextView.postDelayed(new Runnable() {
           @Override
           public void run() {
-            notification.setVisibility(View.INVISIBLE);
+            mNotificationTextView.setVisibility(View.INVISIBLE);
           }
         }, NOTIF_APPEARING_DURATION);
 
-        YoYo.with(Techniques.FadeIn).
-            duration(NOTIF_APPEARING_DURATION).
-                playOn(upLogo);
-        notificationHided = true;
+        YoYo.with(Techniques.FadeIn)
+            .duration(NOTIF_APPEARING_DURATION)
+            .playOn(mUpLogo);
+        mNotificationHided = true;
       }
     }
-    return notificationHided;
+    return mNotificationHided;
   }
 
-  private void showInfo(Reader reader) {
-    if (reader != null && settingsBundle != null)
-      showInfo(settingsBundle.getWPM(), (100 - progress) + "%");
+  @Override
+  public void showInfo(Reader reader) {
+    if (reader != null && mSettingsBundle != null)
+      showInfo(mSettingsBundle.getWPM(), (100 - mProgress) + "%");
   }
 
   private void showInfo(int wpm, String percentLeft) {
-    wpmTextView.setText(wpm + " WPM");
-    positionTextView.setText(percentLeft);
+    mWpmTextView.setText(wpm + " WPM");
+    mPositionTextView.setText(percentLeft);
 
-    if (infoHided) {
-      YoYo.with(Techniques.FadeIn).
-          duration(NOTIF_APPEARING_DURATION * 2).
-              playOn(infoLayout);
-      infoLayout.postDelayed(new Runnable() {
+    if (mInfoHided) {
+      YoYo.with(Techniques.FadeIn)
+          .duration(NOTIF_APPEARING_DURATION * 2)
+          .playOn(mInfoLayout);
+      mInfoLayout.postDelayed(new Runnable() {
         @Override
         public void run() {
-          infoLayout.setVisibility(View.VISIBLE);
+          mInfoLayout.setVisibility(View.VISIBLE);
         }
       }, NOTIF_APPEARING_DURATION);
-      infoHided = false;
+      mInfoHided = false;
     }
   }
 
-  private void hideInfo() {
-    if (!infoHided) {
-      YoYo.with(Techniques.FadeOut).
-          duration(NOTIF_APPEARING_DURATION).
-              playOn(infoLayout);
-      infoLayout.postDelayed(new Runnable() {
+  @Override
+  public void hideInfo() {
+    if (!mInfoHided) {
+      YoYo.with(Techniques.FadeOut)
+          .duration(NOTIF_APPEARING_DURATION)
+          .playOn(mInfoLayout);
+      mInfoLayout.postDelayed(new Runnable() {
         @Override
         public void run() {
-          infoLayout.setVisibility(View.INVISIBLE);
+          mInfoLayout.setVisibility(View.INVISIBLE);
         }
       }, NOTIF_APPEARING_DURATION);
-      infoHided = true;
+      mInfoHided = true;
     }
+  }
+
+  @Override
+  public Integer getWordsPerMinute() {
+    return mSettingsBundle.getWPM();
+  }
+
+  @Override
+  public boolean hasNextParser() {
+    return mReaderTask.hasNextParser();
+  }
+
+  @Override
+  public TextParser nextParser() throws IOException {
+    return mReaderTask.nextParser();
   }
 
   /**
@@ -441,54 +490,61 @@ public class ReaderFragment extends Fragment {
    * @param delta : delta itself. Default value: 50
    */
   private void changeWPM(int delta) {
-    if (settingsBundle != null) {
-      int wpm = settingsBundle.getWPM();
+    if (mSettingsBundle != null) {
+      int wpm = mSettingsBundle.getWPM();
       int wpmNew = Math.min(Constants.MAX_WPM,
                             Math.max(wpm + delta, Constants.MIN_WPM));
 
       if (wpm != wpmNew) {
-        settingsBundle.setWPM(wpmNew);
+        mSettingsBundle.setWPM(wpmNew);
         showNotification(wpmNew + " WPM");
-        wpmTextView.setText(wpmNew + " WPM");
+        mWpmTextView.setText(wpmNew + " WPM");
       }
     }
   }
 
-  private void startReader(final TextParser parser) {
-    changeParser(parser);
-    final int resultCode = parser.getResultCode();
-    if (resultCode == TextParser.RESULT_CODE_OK) {
-      final int initialPosition = Math.max(
-          readable.getPosition() - Constants.READER_START_OFFSET, 0);
-      reader = new Reader(handler, initialPosition);
-      Activity activity = getActivity();
-      if (activity != null) {
-        activity.runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            parsingProgressBar.clearAnimation();
-            parsingProgressBar.setVisibility(View.GONE);
-            readerLayout.setVisibility(View.VISIBLE);
-            if (initialPosition < wordList.size()) {
-              showNotification(R.string.tap_to_start);
-              progress = readable.calcProgress(initialPosition, 0);
-              reader.updateView(initialPosition);
-              showInfo(reader);
-            } else {
-              showNotification(R.string.reading_is_completed);
-              reader.setCompleted(true);
-            }
-            YoYo.with(Techniques.FadeIn).
-                duration(READER_PULSE_DURATION).
-                    playOn(readerLayout);
+  @Override
+  public Reader startReader(TextParser parser) {
+    mReader.changeParser(parser);
+    final int initialPosition = Math.max(
+        mReading.getPosition() - Constants.READER_START_OFFSET, 0);
+    Activity activity = getActivity();
+    if (activity != null) {
+      activity.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          mParsingProgressBar.clearAnimation();
+          mParsingProgressBar.setVisibility(View.GONE);
+          mReaderLayout.setVisibility(View.VISIBLE);
+          if (true /*initialPosition < wordList.size()*/) {
+            showNotification(R.string.tap_to_start);
+            // mProgress = mReading.calcProgress(initialPosition, 0);
+            mReader.setPosition(initialPosition);
+            showInfo(mReader);
+          } else {
+            showNotification(R.string.reading_is_completed);
+            mReader.setCompleted(true);
           }
-        });
-      }
-    } else {
-      notifyBadParser(resultCode);
+          YoYo.with(Techniques.FadeIn)
+              .duration(READER_PULSE_DURATION)
+              .playOn(mReaderLayout);
+        }
+      });
     }
+    return mReader;
   }
 
+  @Override
+  public List<Integer> getDelayCoefficients() {
+    return mSettingsBundle.getDelayCoefficients();
+  }
+
+  @Override
+  public boolean shouldContinue() {
+    return mReader == null || !mReader.isCompleted();
+  }
+
+/*
   private void notifyBadParser(final int resultCode) {
     final Activity a = getActivity();
     if (a != null) {
@@ -517,58 +573,61 @@ public class ReaderFragment extends Fragment {
     }
   }
 
-  private void changeParser(final TextParser parser) {
-    parserReceived = true;
-
-    readable = parser.getReadable();
-    wordList = readable.getWordList();
-    emphasisList = readable.getEmphasisList();
-    delayList = readable.getDelayList();
-  }
-
-  private boolean canBeSaved(Readable readable) {
-    return parserReceived &&
+  private boolean canBeSaved(
+      com.infmme.readilyapp.readable.old.Readable readable) {
+    return mParserReceived &&
         readable != null &&
-        settingsBundle != null &&
+        mSettingsBundle != null &&
         !TextUtils.isEmpty(readable.getPath()) &&
         isStorable(readable);
   }
 
-  private boolean isStorable(Readable readable) {
-    return (readable.getType() == Readable.TYPE_FILE ||
-        readable.getType() == Readable.TYPE_TXT ||
-        readable.getType() == Readable.TYPE_FB2 ||
-        readable.getType() == Readable.TYPE_EPUB ||
-        readable.getType() == Readable.TYPE_NET ||
-        readable.getType() == Readable.TYPE_RAW);
+  private boolean isStorable(
+      com.infmme.readilyapp.readable.old.Readable readable) {
+    return (readable.getType() == com.infmme.readilyapp.readable.old.Readable
+        .TYPE_FILE ||
+        readable.getType() == com.infmme.readilyapp.readable.old.Readable
+            .TYPE_TXT ||
+        readable.getType() == com.infmme.readilyapp.readable.old.Readable
+            .TYPE_FB2 ||
+        readable.getType() == com.infmme.readilyapp.readable.old.Readable
+            .TYPE_EPUB ||
+        readable.getType() == com.infmme.readilyapp.readable.old.Readable
+            .TYPE_NET ||
+        readable.getType() == com.infmme.readilyapp.readable.old.Readable
+            .TYPE_RAW);
   }
 
-  private boolean isFileStorable(Readable readable) {
+  private boolean isFileStorable(
+      com.infmme.readilyapp.readable.old.Readable readable) {
     return isStorable(readable) &&
-        readable.getType() != Readable.TYPE_NET &&
-        readable.getType() != Readable.TYPE_RAW;
+        readable.getType() != com.infmme.readilyapp.readable.old.Readable
+            .TYPE_NET &&
+        readable.getType() != com.infmme.readilyapp.readable.old.Readable
+            .TYPE_RAW;
   }
+*/
 
   @Override
   public void onStop() {
-    if (reader != null && !reader.isPaused())
-      reader.performPause();
-    if (canBeSaved(readable) && reader != null) {
-      Storable storable = (Storable) readable;
-      storable.setPosition(reader.getPosition());
-      storable.setApproxCharCount(reader.getApproxCharCount());
-      storable.onClose(getActivity(), reader.isCompleted(),
-                       settingsBundle.isStoringComplete());
+    if (mReader != null && !mReader.isPaused())
+      mReader.performPause();
+    if (mStorable != null && mReader != null) {
+      new Thread(new Runnable() {
+        @Override
+        public void run() {
+          mStorable.storeToDb();
+        }
+      }).start();
     }
 
-    settingsBundle.updatePreferences();
+    mSettingsBundle.updatePreferences();
 
-    if (reader != null) {
-      reader.setCompleted(true);
-    } else if (parserThread != null && parserThread.isAlive()) {
-      parserThread.interrupt();
+    if (mReader != null) {
+      mReader.setCompleted(true);
+    } else if (mParserThread != null && mParserThread.isAlive()) {
+      mParserThread.interrupt();
     }
-    callback.stop();
     super.onStop();
   }
 
@@ -576,7 +635,7 @@ public class ReaderFragment extends Fragment {
   @Override
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
-    if (parserReceived && reader != null) { reader.performPause(); }
+    if (mParserReceived && mReader != null) { mReader.performPause(); }
     View view = getView();
     FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view
         .getLayoutParams();
@@ -600,238 +659,83 @@ public class ReaderFragment extends Fragment {
     view.setLayoutParams(params);
   }
 
-  public interface ReaderListener {
-    public void stop();
-  }
-
-  /**
-   * don't sure that it must be an inner class
-   */
-  private class Reader implements Runnable {
-
-    private Handler readerHandler;
-    private int paused;
-    private int position;
-    private boolean completed;
-    private int approxCharCount;
-
-    public Reader(Handler readerHandler, int position) {
-      this.readerHandler = readerHandler;
-      this.position = position;
-      paused = 1;
-      approxCharCount = 0;
-    }
-
-    @Override
-    public void run() {
-      int wordListSize = wordList.size();
-      if ((position < wordListSize && !readerTask.isChunkAvailable()) ||
-          (position < wordListSize - FileStorable.LAST_WORD_PREFIX_SIZE &&
-              readerTask.isChunkAvailable())) {
-        if (wordListSize - position < Constants.WORDS_ENDING_COUNT &&
-            monitorObject.isPaused()) {
-          try {
-            monitorObject.resumeTask();
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          }
-        }
-        completed = false;
-        if (!isPaused()) {
-          approxCharCount += wordList.get(position).length() + 1;
-          progress = readable.calcProgress(position, approxCharCount);
-          updateView(position);
-          readerHandler.postDelayed(this, calcDelay());
-          position++;
-        }
-      } else if (readerTask.isChunkAvailable()) {
-        changeParser(readerTask.removeDequeHead());
-        position = 0;
-        readerHandler.postDelayed(this, calcDelay());
-      } else {
-        showNotification(R.string.reading_is_completed);
-        completed = true;
-        paused = 1;
-      }
-    }
-
-    public int getPosition() {
-      return position;
-    }
-
-    public void setPosition(int position) {
-      if (wordList != null && emphasisList != null && delayList != null &&
-          position < wordList.size() && position >= 0) {
-        this.position = position;
-        updateView(position);
-        showInfo(this);
-      }
-    }
-
-    public void moveToPrevious() {
-      setPosition(position - 1);
-    }
-
-    public void moveToNext() {
-      setPosition(position + 1);
-    }
-
-    public boolean isCompleted() {
-      return completed;
-    }
-
-    public void setCompleted(boolean completed) {
-      this.completed = completed;
-    }
-
-    public boolean isPaused() {
-      return paused % 2 == 1;
-    }
-
-    public int getApproxCharCount() {
-      return approxCharCount;
-    }
-
-    public void incCancelled() {
-      if (!isPaused()) { performPause(); } else { performPlay(); }
-    }
-
-    public void performPause() {
-      if (!isPaused()) {
-        paused++;
-        YoYo.with(Techniques.Pulse).
-            duration(READER_PULSE_DURATION).
-                playOn(readerLayout);
-        if (!settingsBundle.isSwipesEnabled()) {
-          prevButton.setVisibility(View.VISIBLE);
-        }
-        showNotification(R.string.pause);
-        showInfo(this);
-      }
-    }
-
-    public void performPlay() {
-      if (isPaused()) {
-        paused++;
-        YoYo.with(Techniques.Pulse).
-            duration(READER_PULSE_DURATION).
-                playOn(readerLayout);
-        if (!settingsBundle.isSwipesEnabled()) {
-          prevButton.setVisibility(View.INVISIBLE);
-        }
-        hideNotification(true);
-        hideInfo();
-        readerHandler.postDelayed(this, READER_PULSE_DURATION + 100);
-      }
-    }
-
-    private int calcDelay() {
-      return (delayList.isEmpty())
-          ? 10 * Math.round(100 * 60 * 1f / settingsBundle.getWPM())
-          : delayList.get(position) * Math.round(
-          100 * 60 * 1f / settingsBundle.getWPM());
-    }
-
-    private void updateView(int pos) {
-      if (pos >= wordList.size())
-        return;
-      currentTextView.setText(getFormattedEmphasis(pos));
-      leftTextView.setText(getFormattedLeft(pos));
-      rightTextView.setText(getFormattedRight(pos));
-      progressBar.setProgress(progress);
-      hideNotification(false);
+  private void handleArgs(Bundle args) {
+    ReadingSource sourceType = ReadingSource.valueOf(
+        args.getString(Constants.EXTRA_READING_SOURCE));
+    switch (sourceType) {
+      case SHARE:
+        handleShareSource(args);
+        break;
+      case CACHE:
+        handleCacheSource(args);
+        break;
     }
   }
 
-  private class ReaderTask implements Runnable {
-    private static final int DEQUE_SIZE_LIMIT = 3;
-    private final ArrayDeque<TextParser> parserDeque;
-    private MonitorObject object = new MonitorObject();
-    private Readable currentReadable;
-
-    public ReaderTask(MonitorObject object, Readable storable) {
-      this.object = object;
-      currentReadable = storable;
-      parserDeque = new ArrayDeque<TextParser>();
+  private void handleShareSource(Bundle args) {
+    String intentText;
+    if (args.containsKey(Intent.EXTRA_TEXT)) {
+      intentText = args.getString(Intent.EXTRA_TEXT);
+    } else {
+      intentText = getActivity().getResources()
+                                .getString(R.string.sample_text);
     }
+    String link;
+    if (!TextUtils.isEmpty(intentText) &&
+        intentText.length() < Constants.NON_LINK_LENGTH &&
+        !TextUtils.isEmpty(
+            link = TextParser.findLink(TextParser.compilePattern(),
+                                       intentText))) {
+      mReading = new NetReadable(link);
+    } else {
+      mReading = new Readable(); //neutral value
+      mReading.setText(intentText);
+    }
+  }
 
-    @Override
-    public void run() {
-      while (reader == null || !reader.isCompleted()) {
-        try {
-          synchronized (parserDeque) {
-            if (!currentReadable.isProcessed()) {
-              currentReadable.process(getActivity());
-              isFileStorable = isFileStorable(readable);
-              currentReadable.readData();
-              TextParser toAdd = TextParser.newInstance(currentReadable,
-                                                        settingsBundle);
-              toAdd.process();
-              parserDeque.add(toAdd);
+  private void handleCacheSource(Bundle args) {
+    String stringType = args.getString(Constants.EXTRA_TYPE);
+    if (stringType != null) {
+      switch (ReadableType.valueOf(stringType)) {
+        case EPUB:
+          final EpubStorable epubStorable =
+              new EpubStorable(getActivity(), LocalDateTime.now().toString());
+          epubStorable.setPath(args.getString(Constants.EXTRA_PATH));
+          // TODO: Think about handling location params
+          // epubStorable.setTextPosition(args.getInt(Constants.EXTRA_POSITION));
+          new Thread(new Runnable() {
+            @Override
+            public void run() {
+              epubStorable.process();
+              if (epubStorable.isProcessed()) {
+                mChunked = epubStorable;
+                mStorable = epubStorable;
+                try {
+                  mReading = epubStorable.readNext();
+                  start();
+                } catch (IOException e) {
+                  e.printStackTrace();
+                }
+              }
             }
-            while (parserDeque.size() < DEQUE_SIZE_LIMIT &&
-                parserDeque.size() > 0 &&
-                !TextUtils.isEmpty(
-                    parserDeque.getLast().getReadable().getText())) {
-              parserDeque.addLast(getNextParser(parserDeque.getLast()));
-            }
-          }
-          if (reader == null)
-            startReader(removeDequeHead());
-          if (reader != null)
-            object.pauseTask();
-          else
-            break;
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        }
+          }).start();
+          break;
+        case FB2:
+          break;
+        case TXT:
+          break;
       }
-    }
-
-    public TextParser removeDequeHead() {
-      synchronized (parserDeque) {
-        return parserDeque.pollFirst();
-      }
-    }
-
-    public synchronized boolean isChunkAvailable() {
-      return parserDeque.size() > 1;
-    }
-
-    private TextParser getNextParser(TextParser current) {
-      Readable currentReadable = current.getReadable();
-      TextParser result = TextParser.newInstance(currentReadable.getNext(),
-                                                 settingsBundle);
-      result.process();
-      if (isFileStorable) //looks strangely, may be better I think
-        ((FileStorable) currentReadable).copyListPrefix(result.getReadable());
-      return result;
+    } else {
+      throw new IllegalStateException(
+          "Cache source can't be processed without an explicitly set type!");
     }
   }
 
-  /**
-   * Class to preserve lock of task
-   */
-  private class MonitorObject {
-
-    private boolean paused;
-
-    public synchronized boolean isPaused() {
-      return paused;
-    }
-
-    public synchronized void pauseTask() throws InterruptedException {
-      if (!isPaused()) {
-        paused = true;
-        wait();
-      }
-    }
-
-    public synchronized void resumeTask() throws InterruptedException {
-      if (isPaused()) {
-        paused = false;
-        notify();
-      }
-    }
+  private void start() {
+    mMutex = new MonitorObject();
+    mReader = new Reader(mHandler, mReading, mMutex, this);
+    mReaderTask = new ReaderTask(mMutex, mChunked, this);
+    mParserThread = new Thread(mReaderTask);
+    mParserThread.start();
   }
 }

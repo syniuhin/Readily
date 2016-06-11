@@ -12,6 +12,8 @@ public class Readable implements Reading {
   private String mText;
   private StringBuilder mTextBuilder;
 
+  private int mPosition;
+
   private List<String> mWordList = null;
   private List<Integer> mEmphasisList = null;
   private List<Integer> mDelayList = null;
@@ -68,5 +70,15 @@ public class Readable implements Reading {
   @Override
   public void setDelayList(List<Integer> delayList) {
     mDelayList = delayList;
+  }
+
+  @Override
+  public int getPosition() {
+    return mPosition;
+  }
+
+  @Override
+  public void setPosition(int position) {
+    mPosition = position;
   }
 }

@@ -3,7 +3,6 @@ package com.infmme.readilyapp.essential;
 import android.text.TextUtils;
 import android.util.Pair;
 import com.infmme.readilyapp.readable.interfaces.Reading;
-import com.infmme.readilyapp.settings.SettingsBundle;
 
 import java.io.Serializable;
 import java.util.*;
@@ -77,13 +76,13 @@ public class TextParser implements Serializable, Callable<TextParser> {
    * Need it to get rid of Context, which isn't Serializable
    *
    * @param reading        : Reading instance to process
-   * @param settingsBundle : settingsBundle to get some settings.
+   * @param delayCoefficients : Delay coefficients to use in this parser.
    * @return TextParser instance
    */
   public static TextParser newInstance(
-      Reading reading, SettingsBundle settingsBundle) {
+      Reading reading, List<Integer> delayCoefficients) {
     TextParser textParser = new TextParser(reading);
-    textParser.setDelayCoefficients(settingsBundle.getDelayCoefficients());
+    textParser.setDelayCoefficients(delayCoefficients);
     return textParser;
   }
 

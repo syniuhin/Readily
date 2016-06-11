@@ -34,4 +34,8 @@ public interface Reading {
   List<Integer> getDelayList();
 
   void setDelayList(List<Integer> delayList);
+
+  int getPosition();
+
+  void setPosition(int position);
 }

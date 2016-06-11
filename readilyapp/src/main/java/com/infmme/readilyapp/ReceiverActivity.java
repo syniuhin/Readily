@@ -7,22 +7,24 @@ import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.WindowManager;
 import com.infmme.readilyapp.fragment.ReaderFragment;
+import com.infmme.readilyapp.readable.type.ReadableType;
 import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.view.OnSwipeTouchListener;
 
 public class ReceiverActivity extends BaseActivity
-    implements /*FlurryAdListener,*/ ReaderFragment.ReaderListener {
+    /*implements ReaderFragment.ReaderListener*/ {
 
   private static final String READER_FRAGMENT_TAG =
       "ReaSq!d99erFra{{1239gm..1ent1923";
   private View contentView;
 
-  public static void startReceiverActivity(Context context, Integer intentType,
+  public static void startReceiverActivity(Context context,
+                                           ReadableType intentType,
                                            String intentPath) {
     Intent intent = new Intent(context, ReceiverActivity.class);
 
     Bundle bundle = new Bundle();
-    bundle.putInt(Constants.EXTRA_TYPE, intentType);
+    bundle.putString(Constants.EXTRA_TYPE, intentType.name());
     bundle.putString(Constants.EXTRA_PATH, intentPath);
     intent.putExtras(bundle);
 
@@ -45,6 +47,12 @@ public class ReceiverActivity extends BaseActivity
     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
     startReaderFragment(bundleReceivedData());
+  }
+
+  @Override
+  protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    setIntent(intent);
   }
 
   private void setOnSwipeListener(final ReaderFragment readerFragment) {
@@ -71,8 +79,7 @@ public class ReceiverActivity extends BaseActivity
   private void startReaderFragment(Bundle bundle) {
     FragmentManager fragmentManager = getSupportFragmentManager();
     ReaderFragment readerFragment = (ReaderFragment) fragmentManager
-        .findFragmentByTag(
-        READER_FRAGMENT_TAG);
+        .findFragmentByTag(READER_FRAGMENT_TAG);
     if (readerFragment == null) {
       readerFragment = new ReaderFragment();
       if (bundle != null) {
@@ -86,8 +93,10 @@ public class ReceiverActivity extends BaseActivity
     }
   }
 
+/*
   @Override
   public void stop() {
     finish();
   }
+*/
 }

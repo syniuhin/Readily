@@ -19,9 +19,10 @@ import com.infmme.readilyapp.fragment.FileListFragment;
 import com.infmme.readilyapp.readable.old.EpubFileStorable;
 import com.infmme.readilyapp.readable.old.FB2FileStorable;
 import com.infmme.readilyapp.readable.old.FileStorable;
-import com.infmme.readilyapp.readable.old.Readable;
 import com.infmme.readilyapp.readable.storable.epub.EpubPart;
 import com.infmme.readilyapp.readable.storable.fb2.FB2Part;
+import com.infmme.readilyapp.readable.type.ReadableType;
+import com.infmme.readilyapp.readable.type.ReadingSource;
 import com.infmme.readilyapp.service.StorageCheckerService;
 import com.infmme.readilyapp.settings.SettingsActivity;
 import com.infmme.readilyapp.util.Constants;
@@ -48,10 +49,10 @@ public class MainActivity extends BaseActivity {
     setContentView(R.layout.activity_main);
     isAnybodyOutThere(this);
 
-    startService(createCheckerServiceIntent());
+    // startService(createCheckerServiceIntent());
 
     changeActionBarIcon();
-    startFileListFragment();
+    //startFileListFragment();
   }
 
   @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -123,6 +124,9 @@ public class MainActivity extends BaseActivity {
                                      R.string.choose_file)),
             FB2_SELECT_CODE);
         break;
+      case R.id.action_epub_chunking:
+        startActivity(new Intent(this, TestEpubActivity.class));
+        break;
     }
 
     return super.onOptionsItemSelected(item);
@@ -189,7 +193,7 @@ public class MainActivity extends BaseActivity {
   }
 
   private void getFromClipboard() {
-    ReceiverActivity.startReceiverActivity(this, Readable.TYPE_CLIPBOARD, "");
+    ReceiverActivity.startReceiverActivity(this, ReadableType.CLIPBOARD, "");
   }
 
   private void getFromFile() {
@@ -215,8 +219,21 @@ public class MainActivity extends BaseActivity {
             String relativePath = FileUtils.getPath(this, data.getData());
             if (FileStorable.isExtensionValid(
                 FileUtils.getExtension(relativePath))) {
-              ReceiverActivity.startReceiverActivity(this, Readable.TYPE_FILE,
-                                                     relativePath);
+              String extension = FileUtils.getExtension(relativePath);
+              ReadableType type;
+              if (extension.equals(".epub")) {
+                type = ReadableType.EPUB;
+              } else if (extension.equals(".fb2")) {
+                type = ReadableType.FB2;
+              } else {
+                type = ReadableType.TXT;
+              }
+              Intent intent = new Intent(this, ReceiverActivity.class);
+              intent.putExtra(Constants.EXTRA_TYPE, type.name());
+              intent.putExtra(Constants.EXTRA_PATH, relativePath);
+              intent.putExtra(Constants.EXTRA_READING_SOURCE,
+                              ReadingSource.CACHE.toString());
+              startActivity(intent);
             } else {
               Toast.makeText(this, R.string.wrong_ext, Toast.LENGTH_SHORT)
                    .show();

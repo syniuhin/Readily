@@ -28,10 +28,10 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.*;
-import com.infmme.readilyapp.readable.old.Readable;
-import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.ReceiverActivity;
+import com.infmme.readilyapp.readable.type.ReadableType;
+import com.infmme.readilyapp.util.Constants;
 import org.jsoup.helper.StringUtil;
 
 import java.util.ArrayList;
@@ -88,7 +88,7 @@ public class SettingsActivity extends PreferenceActivity {
       }
       if (key.equals(Constants.Preferences.TEST)) {
         ReceiverActivity.startReceiverActivity(this,
-                                               Readable.TYPE_RAW,
+                                               ReadableType.RAW,
                                                getResources().getString(
                                                    R.string.sample_text));
         return true;

@@ -98,7 +98,7 @@ public class SettingsBundle {
                       punctuationSpeedDiffers);
     editor.putBoolean(Constants.Preferences.STORE_COMPLETE, storingComplete);
     editor.putBoolean(Constants.Preferences.DARK_THEME, darkTheme);
-    editor.apply(); //advised by IDE, lol
+    editor.apply();
   }
 
   /**
