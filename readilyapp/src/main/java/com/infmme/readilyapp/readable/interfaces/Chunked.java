@@ -8,4 +8,8 @@ import java.io.IOException;
 
 public interface Chunked {
   Reading readNext() throws IOException;
+
+  boolean hasNextReading();
+
+  void skipLast();
 }

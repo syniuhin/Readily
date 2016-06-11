@@ -49,9 +49,9 @@ public class Reader implements Runnable {
   @Override
   public void run() {
     int wordListSize = mWordList.size();
-    if ((mPosition < wordListSize && !mCallback.hasNextReading()) ||
+    if ((mPosition < wordListSize && !mCallback.isNextLoaded()) ||
         (mPosition < wordListSize - LAST_WORD_PREFIX_SIZE &&
-            mCallback.hasNextReading())) {
+            mCallback.isNextLoaded())) {
       synchronized (mMutex) {
         if (wordListSize - mPosition < Constants.WORDS_ENDING_COUNT &&
             mMutex.isPaused()) {
@@ -66,12 +66,11 @@ public class Reader implements Runnable {
       if (!isPaused()) {
         // mApproxCharCount += mWordList.get(mPosition).length() + 1;
         // progress = reading.calcProgress(mPosition, mApproxCharCount);
-        setPosition(mPosition);
-        updateReaderView(mPosition);
+        updateReaderView();
         mReaderHandler.postDelayed(this, calcDelay());
         mPosition++;
       }
-    } else if (mCallback.hasNextReading()) {
+    } else if (mCallback.isNextLoaded()) {
       try {
         // Set next Reading to this object.
         changeReading(mCallback.nextReading());
@@ -195,7 +194,8 @@ public class Reader implements Runnable {
 
     Integer getWordsPerMinute();
 
-    boolean hasNextReading();
+    // TODO: Change for real hasNext()
+    boolean isNextLoaded();
 
     /**
      * Requests next reading from ReaderTask deque.

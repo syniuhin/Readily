@@ -86,6 +86,16 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
     return readable;
   }
 
+  @Override
+  public boolean hasNextReading() {
+    return mContents != null && mLastResourceIndex < mContents.size();
+  }
+
+  @Override
+  public void skipLast() {
+    mLoadedChunks.removeLast();
+  }
+
   private String parseRawText(String rawText) {
     Document doc = Jsoup.parse(rawText);
     return doc.select("p").text();

@@ -485,8 +485,8 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
   }
 
   @Override
-  public boolean hasNextReading() {
-    return mReaderTask.hasNextReading();
+  public boolean isNextLoaded() {
+    return mReaderTask.isNextLoaded();
   }
 
   @Override
@@ -494,6 +494,7 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
     if (BuildConfig.DEBUG) {
       Log.d(getClass().getName(), "Next reading requested.");
     }
+    mStorable.onReaderNext();
     return mReaderTask.removeDequeHead();
   }
 

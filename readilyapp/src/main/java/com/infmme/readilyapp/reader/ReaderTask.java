@@ -42,9 +42,19 @@ public class ReaderTask implements Runnable {
           }
           Reading currentReading = mReadingDeque.getLast();
           while (mReadingDeque.size() < DEQUE_SIZE_LIMIT &&
-              mReadingDeque.size() > 0 &&
-              !TextUtils.isEmpty(currentReading.getText())) {
-            Reading nextReading = nextReading();
+              mReadingDeque.size() > 0/* &&
+              !TextUtils.isEmpty(currentReading.getText())*/) {
+
+            Reading nextReading = null;
+            do {
+              // Therefore we're here for the first time.
+              if (nextReading != null) {
+                mChunked.skipLast();
+              }
+              nextReading = nextReading();
+            } while (TextUtils.isEmpty(
+                nextReading.getText()) && mChunked.hasNextReading());
+
             copyListPrefixes(currentReading, nextReading);
             mReadingDeque.addLast(nextReading);
 
@@ -70,7 +80,7 @@ public class ReaderTask implements Runnable {
     }
   }
 
-  public synchronized boolean hasNextReading() {
+  public synchronized boolean isNextLoaded() {
     return mReadingDeque.size() > 1;
   }
 
