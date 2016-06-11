@@ -1,5 +1,7 @@
 package com.infmme.readilyapp.readable.interfaces;
 
+import com.infmme.readilyapp.reader.Reader;
+
 import java.io.IOException;
 
 /**
@@ -14,7 +16,7 @@ public interface Storable {
    */
   void readFromDb();
 
-  // void prepareForStoring(Reader reader);
+  void prepareForStoring(Reader reader);
   /**
    * Stores (creates or updates) current state to database.
    */
@@ -33,4 +35,9 @@ public interface Storable {
   String getPath();
 
   void setPath(String path);
+
+  /**
+   * Called when Reader object starts showing next Reading.
+   */
+  void onReaderNext();
 }

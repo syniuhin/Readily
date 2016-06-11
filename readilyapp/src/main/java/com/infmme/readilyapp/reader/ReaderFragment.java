@@ -13,11 +13,13 @@ import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+import com.daimajia.androidanimations.library.BuildConfig;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.infmme.readilyapp.R;
@@ -484,12 +486,15 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
 
   @Override
   public boolean hasNextReading() {
-    return mReaderTask.hasNextParser();
+    return mReaderTask.hasNextReading();
   }
 
   @Override
   public Reading nextReading() throws IOException {
-    return mReaderTask.nextReading();
+    if (BuildConfig.DEBUG) {
+      Log.d(getClass().getName(), "Next reading requested.");
+    }
+    return mReaderTask.removeDequeHead();
   }
 
   /**
@@ -513,9 +518,9 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
 
   @Override
   public void startReader(Reading reading) {
+    mReading = reading;
+
     mReader.changeReading(reading);
-    final int initialPosition = Math.max(
-        mReading.getPosition() - Constants.READER_START_OFFSET, 0);
     Activity activity = getActivity();
     if (activity != null) {
       activity.runOnUiThread(new Runnable() {
@@ -527,7 +532,9 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
           if (true /*initialPosition < wordList.size()*/) {
             showNotification(R.string.tap_to_start);
             // mProgress = mReading.calcProgress(initialPosition, 0);
-            mReader.setPosition(initialPosition);
+            mReader.setPosition(
+                mReader.getPosition() - Constants.READER_START_OFFSET);
+            mReader.updateReaderView();
             showInfo(mReader);
           } else {
             showNotification(R.string.reading_is_completed);
@@ -560,6 +567,7 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
       new Thread(new Runnable() {
         @Override
         public void run() {
+          mStorable.prepareForStoring(mReader);
           mStorable.storeToDb();
         }
       }).start();
@@ -659,12 +667,8 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
               if (epubStorable.isProcessed()) {
                 mChunked = epubStorable;
                 mStorable = epubStorable;
-                try {
-                  mReading = epubStorable.readNext();
-                  start();
-                } catch (IOException e) {
-                  e.printStackTrace();
-                }
+                // mReading = epubStorable.readNext();
+                start(epubStorable.getTextPosition());
               }
             }
           }).start();
@@ -680,9 +684,10 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
     }
   }
 
-  private void start() {
+  private void start(final int initialPosition) {
     mMutex = new MonitorObject();
-    mReader = new Reader(mHandler, mReading, mMutex, this);
+    mReader = new Reader(mHandler, mMutex, this);
+    mReader.setPosition(initialPosition);
     mReaderTask = new ReaderTask(mMutex, mChunked, this);
     mReadingThread = new Thread(mReaderTask);
     mReadingThread.start();

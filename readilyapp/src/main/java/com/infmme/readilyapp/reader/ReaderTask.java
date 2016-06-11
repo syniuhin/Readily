@@ -70,11 +70,11 @@ public class ReaderTask implements Runnable {
     }
   }
 
-  public synchronized boolean hasNextParser() {
+  public synchronized boolean hasNextReading() {
     return mReadingDeque.size() > 1;
   }
 
-  public Reading nextReading() throws IOException {
+  private Reading nextReading() throws IOException {
     Reading nextReading = mChunked.readNext();
     TextParser result =
         TextParser.newInstance(nextReading, mCallback.getDelayCoefficients());

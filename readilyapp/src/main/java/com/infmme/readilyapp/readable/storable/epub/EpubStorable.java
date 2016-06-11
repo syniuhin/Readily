@@ -16,6 +16,7 @@ import com.infmme.readilyapp.readable.interfaces.Chunked;
 import com.infmme.readilyapp.readable.interfaces.Reading;
 import com.infmme.readilyapp.readable.interfaces.Storable;
 import com.infmme.readilyapp.readable.interfaces.Unprocessed;
+import com.infmme.readilyapp.reader.Reader;
 import com.infmme.readilyapp.util.Constants;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Metadata;
@@ -25,7 +26,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 
 /**
@@ -33,8 +35,6 @@ import java.util.List;
  */
 
 public class EpubStorable implements Storable, Chunked, Unprocessed {
-  public static final int BUFFER_SIZE = 1024;
-
   private String mPath;
 
   /**
@@ -46,7 +46,7 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
   private transient Book mBook;
   private Metadata mMetadata;
   private List<Resource> mContents;
-  private List<Integer> mLastReadsLengths;
+  private Deque<ChunkInfo> mLoadedChunks = new ArrayDeque<>();
 
   private transient String mCurrentResourceId;
   private int mCurrentResourceIndex = -1;
@@ -67,7 +67,6 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
   @Override
   public Reading readNext() throws IOException {
     Readable readable = new Readable();
-    mLastReadsLengths = new ArrayList<>();
     if (mLastResourceIndex == -1) {
       for (int i = 0; i < mContents.size() &&
           mLastResourceIndex == -1; ++i) {
@@ -76,25 +75,20 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
         }
       }
     }
-    long bytesProcessed = 0;
     mCurrentResourceIndex = mLastResourceIndex;
-    while (bytesProcessed < BUFFER_SIZE) {
-      Resource lastResource = mContents.get(mLastResourceIndex);
 
-      String parsed = parseRawText(new String(lastResource.getData()));
-      mLastReadsLengths.add(parsed.length());
-      readable.appendText(parsed);
+    String parsed = parseRawText(
+        new String(mContents.get(mLastResourceIndex).getData()));
+    readable.setText(parsed);
 
-      bytesProcessed += lastResource.getSize();
-      mLastResourceIndex++;
-    }
-    readable.finishAppendingText();
+    mLoadedChunks.addLast(new ChunkInfo(mCurrentResourceIndex));
+    mLastResourceIndex++;
     return readable;
   }
 
   private String parseRawText(String rawText) {
     Document doc = Jsoup.parse(rawText);
-    return doc.select("p, title").text();
+    return doc.select("p").text();
   }
 
   @Override
@@ -142,6 +136,13 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
     } else {
       throw new IllegalStateException("Not stored in a db yet!");
     }
+  }
+
+  @Override
+  public void prepareForStoring(Reader reader) {
+    mCurrentResourceIndex = mLoadedChunks.getFirst().mResourceIndex;
+    mCurrentResourceId = mContents.get(mCurrentResourceIndex).getId();
+    setTextPosition(reader.getPosition());
   }
 
   @Override
@@ -223,6 +224,11 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
   }
 
   @Override
+  public void onReaderNext() {
+    mLoadedChunks.removeFirst();
+  }
+
+  @Override
   public boolean isProcessed() {
     return mProcessed;
   }
@@ -241,14 +247,11 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
   }
 
   public void setTextPosition(final int textPosition) {
-    int localTextPosition = textPosition;
-    for (int i = 0;
-         i < mLastReadsLengths.size() - 1 && localTextPosition >
-             mLastReadsLengths.get(i); ++i) {
-      localTextPosition -= mLastReadsLengths.get(i);
-      ++mCurrentResourceIndex;
-    }
-    mCurrentResourceId = mContents.get(mCurrentResourceIndex).getId();
+    mCurrentTextPosition = textPosition;
+  }
+
+  public int getTextPosition() {
+    return mCurrentTextPosition;
   }
 
   @Override
@@ -269,6 +272,14 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
     } catch (IOException e) {
       e.printStackTrace();
       mProcessed = false;
+    }
+  }
+
+  private class ChunkInfo {
+    public int mResourceIndex;
+
+    public ChunkInfo(int resourceIndex) {
+      this.mResourceIndex = resourceIndex;
     }
   }
 }

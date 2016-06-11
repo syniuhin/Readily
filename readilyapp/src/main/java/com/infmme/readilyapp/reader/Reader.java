@@ -25,6 +25,8 @@ public class Reader implements Runnable {
   private boolean mCompleted;
   private int mApproxCharCount;
 
+  private Integer mReadingLoadedCount = 0;
+
   private List<String> mWordList;
   private List<Integer> mEmphasisList;
   private List<Integer> mDelayList;
@@ -33,14 +35,10 @@ public class Reader implements Runnable {
 
   private ReaderCallbacks mCallback;
 
-  public Reader(Handler readerHandler, Reading reading,
-                MonitorObject mutex, ReaderCallbacks callback) {
+  public Reader(Handler readerHandler, MonitorObject mutex,
+                ReaderCallbacks callback) {
     this.mReaderHandler = readerHandler;
 
-    this.mPosition = reading.getPosition();
-    this.mWordList = reading.getWordList();
-    this.mEmphasisList = reading.getEmphasisList();
-    this.mDelayList = reading.getDelayList();
     this.mMutex = mutex;
     this.mCallback = callback;
 
@@ -69,12 +67,14 @@ public class Reader implements Runnable {
         // mApproxCharCount += mWordList.get(mPosition).length() + 1;
         // progress = reading.calcProgress(mPosition, mApproxCharCount);
         setPosition(mPosition);
+        updateReaderView(mPosition);
         mReaderHandler.postDelayed(this, calcDelay());
         mPosition++;
       }
     } else if (mCallback.hasNextReading()) {
       try {
-        changeReading(mCallback.nextReading()); // ???
+        // Set next Reading to this object.
+        changeReading(mCallback.nextReading());
         mPosition = 0;
         mReaderHandler.postDelayed(this, calcDelay());
       } catch (IOException e) {
@@ -92,24 +92,18 @@ public class Reader implements Runnable {
   }
 
   public void setPosition(int position) {
-    if (mWordList != null && mEmphasisList != null && mDelayList != null &&
-        position < mWordList.size() && position >= 0) {
-      this.mPosition = position;
-      List<String> nextWords =
-          mWordList.subList(position, Math.min(position + NEXT_WORDS_LENGTH,
-                                               mWordList.size()));
-      mCallback.updateReaderView(mWordList.get(position), nextWords,
-                                 mEmphasisList.get(position));
-    }
+    this.mPosition = position;
   }
 
   public void moveToPrevious() {
     setPosition(mPosition - 1);
+    updateReaderView(mPosition - 1);
     mCallback.showInfo(this);
   }
 
   public void moveToNext() {
     setPosition(mPosition + 1);
+    updateReaderView(mPosition + 1);
     mCallback.showInfo(this);
   }
 
@@ -165,6 +159,21 @@ public class Reader implements Runnable {
         100 * 60 * 1f / mCallback.getWordsPerMinute());
   }
 
+  public void updateReaderView() {
+    updateReaderView(mPosition);
+  }
+
+  private void updateReaderView(int position) {
+    if (mWordList != null && mEmphasisList != null && mDelayList != null &&
+        position < mWordList.size() && position >= 0) {
+      List<String> nextWords =
+          mWordList.subList(position, Math.min(position + NEXT_WORDS_LENGTH,
+                                               mWordList.size()));
+      mCallback.updateReaderView(mWordList.get(position), nextWords,
+                                 mEmphasisList.get(position));
+    }
+  }
+
   /**
    * Needed to decouple fragment and this class's code. Therefore, most likely
    * to be implemented by ReaderFragment.
@@ -188,6 +197,12 @@ public class Reader implements Runnable {
 
     boolean hasNextReading();
 
+    /**
+     * Requests next reading from ReaderTask deque.
+     *
+     * @return Reading  to load into reader window
+     * @throws IOException from Chunked.nextReading()
+     */
     Reading nextReading() throws IOException;
   }
 }
