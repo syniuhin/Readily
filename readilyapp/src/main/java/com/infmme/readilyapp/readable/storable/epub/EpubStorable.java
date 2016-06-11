@@ -128,9 +128,14 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
                                 EpubBookColumns.ALL_COLUMNS,
                                 where.sel(), where.args(), null);
       if (c != null && c.moveToFirst()) {
-        EpubBookCursor book = new EpubBookCursor(c);
-        mCurrentTextPosition = book.getTextPosition();
-        mCurrentResourceId = book.getCurrentResourceId();
+        if (c.moveToFirst()) {
+          EpubBookCursor book = new EpubBookCursor(c);
+          mCurrentTextPosition = book.getTextPosition();
+          mCurrentResourceId = book.getCurrentResourceId();
+          book.close();
+        } else {
+          c.close();
+        }
       } else {
         throw new RuntimeException("Unexpected cursor fail.");
       }
@@ -174,6 +179,8 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
    * @return epub_book_id for an mPath.
    */
   private Long getFkEpubBookId() {
+    Long id = null;
+
     CachedBookSelection cachedWhere = new CachedBookSelection();
     cachedWhere.path(mPath);
     CachedBookCursor cachedBookCursor =
@@ -182,9 +189,10 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
             new String[] { CachedBookColumns.EPUB_BOOK_ID },
             cachedWhere.sel(), cachedWhere.args(), null));
     if (cachedBookCursor.moveToFirst()) {
-      return cachedBookCursor.getEpubBookId();
+      id = cachedBookCursor.getEpubBookId();
     }
-    return null;
+    cachedBookCursor.close();
+    return id;
   }
 
   @Override

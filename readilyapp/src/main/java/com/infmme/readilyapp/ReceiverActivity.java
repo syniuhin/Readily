@@ -12,7 +12,7 @@ import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.view.OnSwipeTouchListener;
 
 public class ReceiverActivity extends BaseActivity
-    /*implements ReaderFragment.ReaderListener*/ {
+    implements ReaderFragment.ReaderFragmentCallback {
 
   private static final String READER_FRAGMENT_TAG =
       "ReaSq!d99erFra{{1239gm..1ent1923";
@@ -93,10 +93,8 @@ public class ReceiverActivity extends BaseActivity
     }
   }
 
-/*
   @Override
   public void stop() {
     finish();
   }
-*/
 }

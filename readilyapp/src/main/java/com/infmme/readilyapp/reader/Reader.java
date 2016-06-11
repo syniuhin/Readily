@@ -3,22 +3,20 @@ package com.infmme.readilyapp.reader;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import com.infmme.readilyapp.R;
-import com.infmme.readilyapp.essential.TextParser;
 import com.infmme.readilyapp.readable.interfaces.Reading;
-import com.infmme.readilyapp.readable.old.FileStorable;
 import com.infmme.readilyapp.util.Constants;
 
 import java.io.IOException;
 import java.util.List;
 
-import static com.infmme.readilyapp.fragment.ReaderFragment
-    .READER_PULSE_DURATION;
+import static com.infmme.readilyapp.fragment.ReaderFragment.READER_PULSE_DURATION;
 
 /**
  * Created with love, by infm dated on 6/10/16.
  */
 public class Reader implements Runnable {
 
+  public static final int LAST_WORD_PREFIX_SIZE = 10;
   private static final int NEXT_WORDS_LENGTH = 10;
 
   private Handler mReaderHandler;
@@ -31,7 +29,7 @@ public class Reader implements Runnable {
   private List<Integer> mEmphasisList;
   private List<Integer> mDelayList;
 
-  private MonitorObject mMutex;
+  private final MonitorObject mMutex;
 
   private ReaderCallbacks mCallback;
 
@@ -53,15 +51,17 @@ public class Reader implements Runnable {
   @Override
   public void run() {
     int wordListSize = mWordList.size();
-    if ((mPosition < wordListSize && !mCallback.hasNextParser()) ||
-        (mPosition < wordListSize - FileStorable.LAST_WORD_PREFIX_SIZE &&
-            mCallback.hasNextParser())) {
-      if (wordListSize - mPosition < Constants.WORDS_ENDING_COUNT &&
-          mMutex.isPaused()) {
-        try {
-          mMutex.resumeTask();
-        } catch (InterruptedException e) {
-          e.printStackTrace();
+    if ((mPosition < wordListSize && !mCallback.hasNextReading()) ||
+        (mPosition < wordListSize - LAST_WORD_PREFIX_SIZE &&
+            mCallback.hasNextReading())) {
+      synchronized (mMutex) {
+        if (wordListSize - mPosition < Constants.WORDS_ENDING_COUNT &&
+            mMutex.isPaused()) {
+          try {
+            mMutex.resumeTask();
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
         }
       }
       mCompleted = false;
@@ -72,9 +72,9 @@ public class Reader implements Runnable {
         mReaderHandler.postDelayed(this, calcDelay());
         mPosition++;
       }
-    } else if (mCallback.hasNextParser()) {
+    } else if (mCallback.hasNextReading()) {
       try {
-        changeParser(mCallback.nextParser()); // ???
+        changeReading(mCallback.nextReading()); // ???
         mPosition = 0;
         mReaderHandler.postDelayed(this, calcDelay());
       } catch (IOException e) {
@@ -152,10 +152,7 @@ public class Reader implements Runnable {
     }
   }
 
-  public void changeParser(@NonNull final TextParser parser) {
-    // parserReceived = true;
-
-    Reading reading = parser.getReading();
+  public void changeReading(@NonNull final Reading reading) {
     mWordList = reading.getWordList();
     mEmphasisList = reading.getEmphasisList();
     mDelayList = reading.getDelayList();
@@ -189,8 +186,8 @@ public class Reader implements Runnable {
 
     Integer getWordsPerMinute();
 
-    boolean hasNextParser();
+    boolean hasNextReading();
 
-    TextParser nextParser() throws IOException;
+    Reading nextReading() throws IOException;
   }
 }

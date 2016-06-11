@@ -105,6 +105,18 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
   private String mSecondaryTextColor = LIGHT_COLOR_SET[1];
   private int mProgress;
 
+  private ReaderFragmentCallback mCallback;
+
+  @Override
+  public void onAttach(Context context) {
+    super.onAttach(context);
+    try {
+      mCallback = (ReaderFragmentCallback) context;
+    } catch (ClassCastException e) {
+      e.printStackTrace();
+    }
+  }
+
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -475,13 +487,13 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
   }
 
   @Override
-  public boolean hasNextParser() {
+  public boolean hasNextReading() {
     return mReaderTask.hasNextParser();
   }
 
   @Override
-  public TextParser nextParser() throws IOException {
-    return mReaderTask.nextParser();
+  public Reading nextReading() throws IOException {
+    return mReaderTask.nextReading();
   }
 
   /**
@@ -504,8 +516,8 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
   }
 
   @Override
-  public Reader startReader(TextParser parser) {
-    mReader.changeParser(parser);
+  public void startReader(Reading reading) {
+    mReader.changeReading(reading);
     final int initialPosition = Math.max(
         mReading.getPosition() - Constants.READER_START_OFFSET, 0);
     Activity activity = getActivity();
@@ -531,7 +543,6 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
         }
       });
     }
-    return mReader;
   }
 
   @Override
@@ -544,74 +555,11 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
     return mReader == null || !mReader.isCompleted();
   }
 
-/*
-  private void notifyBadParser(final int resultCode) {
-    final Activity a = getActivity();
-    if (a != null) {
-      a.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          int stringId;
-          switch (resultCode) {
-            case TextParser.RESULT_CODE_WRONG_EXT:
-              stringId = R.string.wrong_ext;
-              break;
-            case TextParser.RESULT_CODE_EMPTY_CLIPBOARD:
-              stringId = R.string.clipboard_empty;
-              break;
-            case TextParser.RESULT_CODE_CANT_FETCH:
-              stringId = R.string.cant_fetch;
-              break;
-            default:
-              stringId = R.string.text_null;
-              break;
-          }
-          Toast.makeText(a, stringId, Toast.LENGTH_SHORT).show();
-          onStop();
-        }
-      });
-    }
-  }
-
-  private boolean canBeSaved(
-      com.infmme.readilyapp.readable.old.Readable readable) {
-    return mParserReceived &&
-        readable != null &&
-        mSettingsBundle != null &&
-        !TextUtils.isEmpty(readable.getPath()) &&
-        isStorable(readable);
-  }
-
-  private boolean isStorable(
-      com.infmme.readilyapp.readable.old.Readable readable) {
-    return (readable.getType() == com.infmme.readilyapp.readable.old.Readable
-        .TYPE_FILE ||
-        readable.getType() == com.infmme.readilyapp.readable.old.Readable
-            .TYPE_TXT ||
-        readable.getType() == com.infmme.readilyapp.readable.old.Readable
-            .TYPE_FB2 ||
-        readable.getType() == com.infmme.readilyapp.readable.old.Readable
-            .TYPE_EPUB ||
-        readable.getType() == com.infmme.readilyapp.readable.old.Readable
-            .TYPE_NET ||
-        readable.getType() == com.infmme.readilyapp.readable.old.Readable
-            .TYPE_RAW);
-  }
-
-  private boolean isFileStorable(
-      com.infmme.readilyapp.readable.old.Readable readable) {
-    return isStorable(readable) &&
-        readable.getType() != com.infmme.readilyapp.readable.old.Readable
-            .TYPE_NET &&
-        readable.getType() != com.infmme.readilyapp.readable.old.Readable
-            .TYPE_RAW;
-  }
-*/
-
   @Override
   public void onStop() {
-    if (mReader != null && !mReader.isPaused())
+    if (mReader != null && !mReader.isPaused()) {
       mReader.performPause();
+    }
     if (mStorable != null && mReader != null) {
       new Thread(new Runnable() {
         @Override
@@ -627,6 +575,9 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
       mReader.setCompleted(true);
     } else if (mParserThread != null && mParserThread.isAlive()) {
       mParserThread.interrupt();
+    }
+    if (mCallback != null) {
+      mCallback.stop();
     }
     super.onStop();
   }
@@ -737,5 +688,9 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
     mReaderTask = new ReaderTask(mMutex, mChunked, this);
     mParserThread = new Thread(mReaderTask);
     mParserThread.start();
+  }
+
+  public interface ReaderFragmentCallback {
+    void stop();
   }
 }
