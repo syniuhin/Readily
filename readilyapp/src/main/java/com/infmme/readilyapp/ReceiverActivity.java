@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.WindowManager;
-import com.infmme.readilyapp.fragment.ReaderFragment;
+import com.infmme.readilyapp.reader.ReaderFragment;
 import com.infmme.readilyapp.readable.type.ReadableType;
 import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.view.OnSwipeTouchListener;

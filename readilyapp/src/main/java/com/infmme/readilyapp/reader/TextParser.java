@@ -1,4 +1,4 @@
-package com.infmme.readilyapp.essential;
+package com.infmme.readilyapp.reader;
 
 import android.text.TextUtils;
 import android.util.Pair;

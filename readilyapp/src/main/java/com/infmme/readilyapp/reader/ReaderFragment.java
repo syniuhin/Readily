@@ -1,4 +1,4 @@
-package com.infmme.readilyapp.fragment;
+package com.infmme.readilyapp.reader;
 
 import android.app.Activity;
 import android.content.Context;
@@ -21,7 +21,6 @@ import android.widget.*;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.infmme.readilyapp.R;
-import com.infmme.readilyapp.essential.TextParser;
 import com.infmme.readilyapp.readable.NetReadable;
 import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.readable.interfaces.Chunked;
@@ -30,9 +29,6 @@ import com.infmme.readilyapp.readable.interfaces.Storable;
 import com.infmme.readilyapp.readable.storable.epub.EpubStorable;
 import com.infmme.readilyapp.readable.type.ReadableType;
 import com.infmme.readilyapp.readable.type.ReadingSource;
-import com.infmme.readilyapp.reader.MonitorObject;
-import com.infmme.readilyapp.reader.Reader;
-import com.infmme.readilyapp.reader.ReaderTask;
 import com.infmme.readilyapp.settings.SettingsBundle;
 import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.view.OnSwipeTouchListener;
@@ -92,12 +88,12 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
   private ReaderTask mReaderTask;
   private MonitorObject mMutex;
 
-  private Reading mReading;
+  private Reading mReading = null;
   private Chunked mChunked = null;
   private Storable mStorable = null;
 
   private SettingsBundle mSettingsBundle;
-  private Thread mParserThread;
+  private Thread mReadingThread;
 
   //receiving status
   private boolean mParserReceived = false;
@@ -573,8 +569,9 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
 
     if (mReader != null) {
       mReader.setCompleted(true);
-    } else if (mParserThread != null && mParserThread.isAlive()) {
-      mParserThread.interrupt();
+    } else if (mReadingThread != null && mReadingThread.isAlive()) {
+      // We fail to initialize mReader, so at least stop reading thread.
+      mReadingThread.interrupt();
     }
     if (mCallback != null) {
       mCallback.stop();
@@ -588,8 +585,8 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
     super.onConfigurationChanged(newConfig);
     if (mParserReceived && mReader != null) { mReader.performPause(); }
     View view = getView();
-    FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view
-        .getLayoutParams();
+    FrameLayout.LayoutParams params =
+        (FrameLayout.LayoutParams) view.getLayoutParams();
     int currentMargin = params.leftMargin;
 
     Resources resources = getResources();
@@ -653,7 +650,8 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
               new EpubStorable(getActivity(), LocalDateTime.now().toString());
           epubStorable.setPath(args.getString(Constants.EXTRA_PATH));
           // TODO: Think about handling location params
-          // epubStorable.setTextPosition(args.getInt(Constants.EXTRA_POSITION));
+          // epubStorable.setTextPosition(args.getInt(Constants
+          // .EXTRA_POSITION));
           new Thread(new Runnable() {
             @Override
             public void run() {
@@ -686,8 +684,8 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
     mMutex = new MonitorObject();
     mReader = new Reader(mHandler, mReading, mMutex, this);
     mReaderTask = new ReaderTask(mMutex, mChunked, this);
-    mParserThread = new Thread(mReaderTask);
-    mParserThread.start();
+    mReadingThread = new Thread(mReaderTask);
+    mReadingThread.start();
   }
 
   public interface ReaderFragmentCallback {

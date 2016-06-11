@@ -1,7 +1,6 @@
 package com.infmme.readilyapp.reader;
 
 import android.text.TextUtils;
-import com.infmme.readilyapp.essential.TextParser;
 import com.infmme.readilyapp.readable.interfaces.Chunked;
 import com.infmme.readilyapp.readable.interfaces.Reading;
 

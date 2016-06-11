@@ -8,7 +8,7 @@ import android.text.TextUtils;
 import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.database.DataBundle;
-import com.infmme.readilyapp.essential.TextParser;
+import com.infmme.readilyapp.reader.TextParser;
 
 import java.io.Serializable;
 import java.util.ArrayList;

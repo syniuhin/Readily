@@ -9,7 +9,7 @@ import com.infmme.readilyapp.util.Constants;
 import java.io.IOException;
 import java.util.List;
 
-import static com.infmme.readilyapp.fragment.ReaderFragment.READER_PULSE_DURATION;
+import static com.infmme.readilyapp.reader.ReaderFragment.READER_PULSE_DURATION;
 
 /**
  * Created with love, by infm dated on 6/10/16.
