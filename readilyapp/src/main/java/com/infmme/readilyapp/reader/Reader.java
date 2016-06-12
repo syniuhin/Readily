@@ -25,21 +25,19 @@ public class Reader implements Runnable {
   private boolean mCompleted;
   private int mApproxCharCount;
 
-  private Integer mReadingLoadedCount = 0;
-
   private List<String> mWordList;
   private List<Integer> mEmphasisList;
   private List<Integer> mDelayList;
 
-  private final MonitorObject mMutex;
+  private final MonitorObject mTaskMonitor;
 
   private ReaderCallbacks mCallback;
 
-  public Reader(Handler readerHandler, MonitorObject mutex,
+  public Reader(Handler readerHandler, MonitorObject monitorObject,
                 ReaderCallbacks callback) {
     this.mReaderHandler = readerHandler;
 
-    this.mMutex = mutex;
+    this.mTaskMonitor = monitorObject;
     this.mCallback = callback;
 
     mPaused = 1;
@@ -52,11 +50,11 @@ public class Reader implements Runnable {
     if ((mPosition < wordListSize && !mCallback.isNextLoaded()) ||
         (mPosition < wordListSize - LAST_WORD_PREFIX_SIZE &&
             mCallback.isNextLoaded())) {
-      synchronized (mMutex) {
+      synchronized (mTaskMonitor) {
         if (wordListSize - mPosition < Constants.WORDS_ENDING_COUNT &&
-            mMutex.isPaused()) {
+            mTaskMonitor.isPaused()) {
           try {
-            mMutex.resumeTask();
+            mTaskMonitor.resumeTask();
           } catch (InterruptedException e) {
             e.printStackTrace();
           }

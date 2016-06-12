@@ -16,7 +16,7 @@ public class ReaderTask implements Runnable {
   private static final int DEQUE_SIZE_LIMIT = 3;
   private final ArrayDeque<Reading> mReadingDeque = new ArrayDeque<>();
 
-  private final MonitorObject mMutex;
+  private final MonitorObject mMonitor;
 
   private Chunked mChunked;
 
@@ -26,7 +26,7 @@ public class ReaderTask implements Runnable {
 
   public ReaderTask(MonitorObject object, Chunked chunked,
                     ReaderTaskCallbacks callback) {
-    this.mMutex = object;
+    this.mMonitor = object;
     this.mChunked = chunked;
     this.mCallback = callback;
   }
@@ -65,8 +65,8 @@ public class ReaderTask implements Runnable {
           mCallback.startReader(removeDequeHead());
           mOnceStarted = true;
         }
-        synchronized (mMutex) {
-          mMutex.pauseTask();
+        synchronized (mMonitor) {
+          mMonitor.pauseTask();
         }
       } catch (InterruptedException | IOException e) {
         e.printStackTrace();

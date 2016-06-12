@@ -88,7 +88,7 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
   //initialized in onActivityCreated()
   private Reader mReader;
   private ReaderTask mReaderTask;
-  private MonitorObject mMutex;
+  private MonitorObject mTaskMonitor;
 
   private Reading mReading = null;
   private Chunked mChunked = null;
@@ -533,8 +533,8 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
           if (true /*initialPosition < wordList.size()*/) {
             showNotification(R.string.tap_to_start);
             // mProgress = mReading.calcProgress(initialPosition, 0);
-            mReader.setPosition(
-                mReader.getPosition() - Constants.READER_START_OFFSET);
+            mReader.setPosition(Math.max(
+                0, mReader.getPosition() - Constants.READER_START_OFFSET));
             mReader.updateReaderView();
             showInfo(mReader);
           } else {
@@ -669,7 +669,13 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
                 mChunked = epubStorable;
                 mStorable = epubStorable;
                 // mReading = epubStorable.readNext();
-                start(epubStorable.getTextPosition());
+                getActivity().runOnUiThread(
+                    new Runnable() {
+                      @Override
+                      public void run() {
+                        startReadingFlow(epubStorable.getTextPosition());
+                      }
+                    });
               }
             }
           }).start();
@@ -685,11 +691,11 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
     }
   }
 
-  private void start(final int initialPosition) {
-    mMutex = new MonitorObject();
-    mReader = new Reader(mHandler, mMutex, this);
+  private void startReadingFlow(final int initialPosition) {
+    mTaskMonitor = new MonitorObject();
+    mReader = new Reader(mHandler, mTaskMonitor, this);
     mReader.setPosition(initialPosition);
-    mReaderTask = new ReaderTask(mMutex, mChunked, this);
+    mReaderTask = new ReaderTask(mTaskMonitor, mChunked, this);
     mReadingThread = new Thread(mReaderTask);
     mReadingThread.start();
   }
