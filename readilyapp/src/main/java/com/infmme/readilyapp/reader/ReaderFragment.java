@@ -57,21 +57,19 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
   public static final int READER_PULSE_DURATION = 400;
 
   private static final float POINTER_LEFT_PADDING_COEFFICIENT = 5f / 18f;
-  //some magic number
+
   private static final String[] LIGHT_COLOR_SET = new String[] { "#0A0A0A",
       "#AAAAAA" };
   private static final String[] DARK_COLOR_SET = new String[] { "#FFFFFF",
       "#999999", "#FF282828" };
   private static final String EMPHASIS_CHAR_COLOR = "#FA2828";
 
-  //initialized in onCreate()
   private Handler mHandler;
   private long mLocalTime = 0;
   private boolean mNotificationHided = true;
   private boolean mInfoHided = true;
   private Bundle mArgs;
 
-  //initialized in onCreateView()
   private RelativeLayout mReaderLayout;
   private RelativeLayout mInfoLayout;
   private TextView mWpmTextView;
@@ -85,7 +83,6 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
   private ImageButton mPrevButton;
   private View mUpLogo;
 
-  //initialized in onActivityCreated()
   private Reader mReader;
   private ReaderTask mReaderTask;
   private MonitorObject mTaskMonitor;
@@ -97,8 +94,7 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
   private SettingsBundle mSettingsBundle;
   private Thread mReadingThread;
 
-  //receiving status
-  private boolean mParserReceived = false;
+  private boolean mHasReaderStarted = false;
   private String mPrimaryTextColor = LIGHT_COLOR_SET[0];
   private String mSecondaryTextColor = LIGHT_COLOR_SET[1];
   private int mProgress;
@@ -272,7 +268,7 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
           if (!mReader.isPaused())
             mReader.performPause();
           else
-            mReader.moveToPrevious();
+            mReader.moveToPreviousPosition();
         }
       }
 
@@ -282,7 +278,7 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
           if (!mReader.isPaused())
             mReader.performPause();
           else
-            mReader.moveToNext();
+            mReader.moveToNextPosition();
         }
       }
 
@@ -291,7 +287,7 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
         if (mReader.isCompleted())
           onStop();
         else
-          mReader.incCancelled();
+          mReader.toggleCancelled();
       }
     });
   }
@@ -305,7 +301,7 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
       mPrevButton.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          mReader.moveToPrevious();
+          mReader.moveToPreviousPosition();
         }
       });
       mPrevButton.setVisibility(View.INVISIBLE);
@@ -547,6 +543,7 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
         }
       });
     }
+    mHasReaderStarted = true;
   }
 
   @Override
@@ -592,28 +589,32 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
   @Override
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
-    if (mParserReceived && mReader != null) { mReader.performPause(); }
-    View view = getView();
-    FrameLayout.LayoutParams params =
-        (FrameLayout.LayoutParams) view.getLayoutParams();
-    int currentMargin = params.leftMargin;
-
-    Resources resources = getResources();
-    int portMargin,
-        landMargin = (int) resources.getDimension(R.dimen.land_margin_left);
-    if (currentMargin <= landMargin) {
-      portMargin = (int) resources.getDimension(R.dimen.port_margin_left);
-    } else {
-      portMargin = (int) resources.getDimension(
-          R.dimen.port_tablet_margin_left);
-      landMargin = (int) resources.getDimension(
-          R.dimen.land_tablet_margin_left);
+    if (mHasReaderStarted && mReader != null) {
+      mReader.performPause();
     }
-    int newMargin = (currentMargin == portMargin)
-        ? landMargin
-        : portMargin;
-    params.setMargins(newMargin, 0, newMargin, 0);
-    view.setLayoutParams(params);
+    View view = getView();
+    if (view != null) {
+      FrameLayout.LayoutParams params =
+          (FrameLayout.LayoutParams) view.getLayoutParams();
+      int currentMargin = params.leftMargin;
+
+      Resources resources = getResources();
+      int portMargin,
+          landMargin = (int) resources.getDimension(R.dimen.land_margin_left);
+      if (currentMargin <= landMargin) {
+        portMargin = (int) resources.getDimension(R.dimen.port_margin_left);
+      } else {
+        portMargin = (int) resources.getDimension(
+            R.dimen.port_tablet_margin_left);
+        landMargin = (int) resources.getDimension(
+            R.dimen.land_tablet_margin_left);
+      }
+      int newMargin = (currentMargin == portMargin)
+          ? landMargin
+          : portMargin;
+      params.setMargins(newMargin, 0, newMargin, 0);
+      view.setLayoutParams(params);
+    }
   }
 
   private void handleArgs(Bundle args) {

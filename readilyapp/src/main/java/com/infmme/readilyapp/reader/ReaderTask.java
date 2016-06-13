@@ -9,9 +9,11 @@ import java.util.ArrayDeque;
 import java.util.List;
 
 /**
+ * Producer Runnable to load Chunked reading from the filesystem and feed it
+ * into displaying logic.
+ *
  * Created with love, by infm dated on 6/10/16.
  */
-
 public class ReaderTask implements Runnable {
   private static final int DEQUE_SIZE_LIMIT = 3;
   private final ArrayDeque<Reading> mReadingDeque = new ArrayDeque<>();
@@ -37,17 +39,17 @@ public class ReaderTask implements Runnable {
       try {
         synchronized (mReadingDeque) {
           // TODO: Ensure that reading is processed now.
+          // Sort of initialization for a deque.
           if (!mOnceStarted) {
             mReadingDeque.add(nextReading());
           }
           Reading currentReading = mReadingDeque.getLast();
           while (mReadingDeque.size() < DEQUE_SIZE_LIMIT &&
-              mReadingDeque.size() > 0/* &&
-              !TextUtils.isEmpty(currentReading.getText())*/) {
-
+              mReadingDeque.size() > 0) {
             Reading nextReading = null;
+            // Finds non-empty consecutive reading.
             do {
-              // Therefore we're here for the first time.
+              // Therefore we're here not for the first time.
               if (nextReading != null) {
                 mChunked.skipLast();
               }
@@ -55,12 +57,15 @@ public class ReaderTask implements Runnable {
             } while (TextUtils.isEmpty(
                 nextReading.getText()) && mChunked.hasNextReading());
 
-            copyListPrefixes(currentReading, nextReading);
+            // Duplicates adjacent reading data to transit smoothly between
+            // them.
+            duplicateAdjacentData(currentReading, nextReading);
             mReadingDeque.addLast(nextReading);
 
             currentReading = nextReading;
           }
         }
+        // If we haven't started Reader flow yet, we have to do it now.
         if (!mOnceStarted) {
           mCallback.startReader(removeDequeHead());
           mOnceStarted = true;
@@ -74,6 +79,11 @@ public class ReaderTask implements Runnable {
     }
   }
 
+  /**
+   * Polls head of a deque. Called for start of an entire flow and from Reader
+   * when it changes a Reading instance.
+   * @return Loaded Reading from a chunk.
+   */
   public Reading removeDequeHead() {
     synchronized (mReadingDeque) {
       return mReadingDeque.pollFirst();
@@ -92,7 +102,8 @@ public class ReaderTask implements Runnable {
     return result.getReading();
   }
 
-  private void copyListPrefixes(Reading currentReading, Reading nextReading) {
+  private void duplicateAdjacentData(Reading currentReading,
+                                     Reading nextReading) {
     List<String> wordList = currentReading.getWordList();
     wordList.addAll(
         nextReading.getWordList()

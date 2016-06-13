@@ -20,7 +20,7 @@ public class Constants {
 
   public static final String DEFAULT_WPM = "250";
   public static final String DEFAULT_FONT_SIZE = "18";
-  public static final int MAX_WPM = 1200;
+  public static final int MAX_WPM = 2000;
   public static final int MIN_WPM = 50;
   public static final int WPM_STEP_PREFERENCES = 10;
   public static final int WPM_STEP_READER = 50;
@@ -28,7 +28,6 @@ public class Constants {
   public static final int DIALOG_PICKER_HEIGHT = 300;
   public static final int MIN_FONT_SIZE = 12;
   public static final int MAX_FONT_SIZE = 30;
-  public static final int WORDS_ENDING_COUNT = 100;
 
   //defines a length, which limits links with description(to reduce working
   // time of regexp)
