@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Producer Runnable to load Chunked reading from the filesystem and feed it
  * into displaying logic.
- *
+ * <p>
  * Created with love, by infm dated on 6/10/16.
  */
 public class ReaderTask implements Runnable {
@@ -20,16 +20,32 @@ public class ReaderTask implements Runnable {
 
   private final MonitorObject mMonitor;
 
-  private Chunked mChunked;
+  private Chunked mChunked = null;
+  private Reading mSingleReading = null;
 
   private ReaderTaskCallbacks mCallback;
 
   private boolean mOnceStarted = false;
 
-  public ReaderTask(MonitorObject object, Chunked chunked,
+  /**
+   * Constructs ReaderTask for chunked reading source.
+   *
+   * @param monitorObject Monitor which manages this thread.
+   * @param chunked       Chunked instance to load Readings.
+   * @param callback      Callback to communicate with UI thread and another
+   *                      parts of an app.
+   */
+  public ReaderTask(MonitorObject monitorObject, Chunked chunked,
+                    ReaderTaskCallbacks callback) {
+    this.mMonitor = monitorObject;
+    this.mChunked = chunked;
+    this.mCallback = callback;
+  }
+
+  public ReaderTask(MonitorObject object, Reading singleReading,
                     ReaderTaskCallbacks callback) {
     this.mMonitor = object;
-    this.mChunked = chunked;
+    this.mSingleReading = singleReading;
     this.mCallback = callback;
   }
 
@@ -43,26 +59,31 @@ public class ReaderTask implements Runnable {
           if (!mOnceStarted) {
             mReadingDeque.add(nextReading());
           }
-          Reading currentReading = mReadingDeque.getLast();
-          while (mReadingDeque.size() < DEQUE_SIZE_LIMIT &&
-              mReadingDeque.size() > 0) {
-            Reading nextReading = null;
-            // Finds non-empty consecutive reading.
-            do {
-              // Therefore we're here not for the first time.
-              if (nextReading != null) {
-                mChunked.skipLast();
+          // Checks if we have more data to produce.
+          if (mChunked != null && mReadingDeque.size() > 0) {
+            Reading currentReading = mReadingDeque.getLast();
+            while (mReadingDeque.size() < DEQUE_SIZE_LIMIT) {
+              Reading nextReading = null;
+              if (mChunked.hasNextReading()) {
+                // Finds non-empty consecutive reading.
+                do {
+                  // Therefore we're here not for the first time.
+                  if (nextReading != null) {
+                    mChunked.skipLast();
+                  }
+                  nextReading = nextReading();
+                } while (TextUtils.isEmpty(
+                    nextReading.getText()) && mChunked.hasNextReading());
               }
-              nextReading = nextReading();
-            } while (TextUtils.isEmpty(
-                nextReading.getText()) && mChunked.hasNextReading());
-
-            // Duplicates adjacent reading data to transit smoothly between
-            // them.
-            duplicateAdjacentData(currentReading, nextReading);
-            mReadingDeque.addLast(nextReading);
-
-            currentReading = nextReading;
+              if (nextReading != null && !TextUtils.isEmpty(
+                  nextReading.getText())) {
+                // Duplicates adjacent reading data to transit smoothly between
+                // them.
+                duplicateAdjacentData(currentReading, nextReading);
+                mReadingDeque.addLast(nextReading);
+              }
+              currentReading = nextReading;
+            }
           }
         }
         // If we haven't started Reader flow yet, we have to do it now.
@@ -82,6 +103,7 @@ public class ReaderTask implements Runnable {
   /**
    * Polls head of a deque. Called for start of an entire flow and from Reader
    * when it changes a Reading instance.
+   *
    * @return Loaded Reading from a chunk.
    */
   public Reading removeDequeHead() {
@@ -95,7 +117,13 @@ public class ReaderTask implements Runnable {
   }
 
   private Reading nextReading() throws IOException {
-    Reading nextReading = mChunked.readNext();
+    Reading nextReading;
+    if (mChunked == null) {
+      nextReading = mSingleReading;
+      mSingleReading = null;
+    } else {
+      nextReading = mChunked.readNext();
+    }
     TextParser result =
         TextParser.newInstance(nextReading, mCallback.getDelayCoefficients());
     result.process();

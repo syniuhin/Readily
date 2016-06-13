@@ -45,6 +45,8 @@ public class Constants {
   public static final String DEFAULT_ENCODING = "UTF-8";
   public static final int ENCODING_HELPER_BUFFER_SIZE = 1024;
 
+  public static final int NET_READABLE_TIMEOUT = 10000;
+
   public static class Preferences {
     public static final String NEWCOMER = "is_anybody_out_there?";
 

@@ -6,8 +6,9 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.WindowManager;
-import com.infmme.readilyapp.reader.ReaderFragment;
 import com.infmme.readilyapp.readable.type.ReadableType;
+import com.infmme.readilyapp.readable.type.ReadingSource;
+import com.infmme.readilyapp.reader.ReaderFragment;
 import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.view.OnSwipeTouchListener;
 
@@ -20,11 +21,13 @@ public class ReceiverActivity extends BaseActivity
 
   public static void startReceiverActivity(Context context,
                                            ReadableType intentType,
+                                           ReadingSource intentSource,
                                            String intentPath) {
     Intent intent = new Intent(context, ReceiverActivity.class);
 
     Bundle bundle = new Bundle();
     bundle.putString(Constants.EXTRA_TYPE, intentType.name());
+    bundle.putString(Constants.EXTRA_READING_SOURCE, intentSource.name());
     bundle.putString(Constants.EXTRA_PATH, intentPath);
     intent.putExtras(bundle);
 

@@ -31,6 +31,7 @@ import android.widget.*;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.ReceiverActivity;
 import com.infmme.readilyapp.readable.type.ReadableType;
+import com.infmme.readilyapp.readable.type.ReadingSource;
 import com.infmme.readilyapp.util.Constants;
 import org.jsoup.helper.StringUtil;
 
@@ -87,10 +88,9 @@ public class SettingsActivity extends PreferenceActivity {
         return true;
       }
       if (key.equals(Constants.Preferences.TEST)) {
-        ReceiverActivity.startReceiverActivity(this,
-                                               ReadableType.RAW,
-                                               getResources().getString(
-                                                   R.string.sample_text));
+        ReceiverActivity.startReceiverActivity(
+            this, ReadableType.RAW, ReadingSource.SHARE,
+            getResources().getString(R.string.sample_text));
         return true;
       }
       if (key.equals(Constants.Preferences.FEEDBACK)) {
@@ -222,14 +222,14 @@ public class SettingsActivity extends PreferenceActivity {
                                      if (changeTextViewSize(sampleText, nSize))
                                        PreferenceManager
                                            .getDefaultSharedPreferences(
-                                           context)
-                                                        .edit()
-                                                        .putString(
-                                                            Constants
-                                                                .Preferences
-                                                                .FONT_SIZE,
-                                                            nSize)
-                                                        .commit();
+                                               context)
+                                           .edit()
+                                           .putString(
+                                               Constants
+                                                   .Preferences
+                                                   .FONT_SIZE,
+                                               nSize)
+                                           .commit();
                                      else
                                        Toast.makeText(context,
                                                       R.string.illegal_value,
@@ -294,16 +294,16 @@ public class SettingsActivity extends PreferenceActivity {
                                                        int which) {
                                      PreferenceManager
                                          .getDefaultSharedPreferences(
-                                         context)
-                                                      .edit()
-                                                      .putString(
-                                                          Constants
-                                                              .Preferences
-                                                              .FONT_SIZE,
-                                                          String.valueOf(
-                                                              numberPicker
-                                                                  .getValue()))
-                                                      .commit();
+                                             context)
+                                         .edit()
+                                         .putString(
+                                             Constants
+                                                 .Preferences
+                                                 .FONT_SIZE,
+                                             String.valueOf(
+                                                 numberPicker
+                                                     .getValue()))
+                                         .commit();
                                    }
                                  }
                ).
@@ -349,14 +349,17 @@ public class SettingsActivity extends PreferenceActivity {
                                        nWPM = Integer.parseInt(
                                            String.valueOf(editText.getText()));
                                      if (nWPM >= min && nWPM <= max)
-                                       PreferenceManager.getDefaultSharedPreferences(
-                                           context)
-                                                        .edit()
-                                                        .putString(
-                                                            Constants.Preferences.WPM,
-                                                            Integer.toString(
-                                                                WPM = nWPM))
-                                                        .commit();
+                                       PreferenceManager
+                                           .getDefaultSharedPreferences(
+                                               context)
+                                           .edit()
+                                           .putString(
+                                               Constants
+                                                   .Preferences
+                                                   .WPM,
+                                               Integer.toString(
+                                                   WPM = nWPM))
+                                           .commit();
                                      else
                                        Toast.makeText(context,
                                                       R.string.illegal_value,
@@ -405,15 +408,18 @@ public class SettingsActivity extends PreferenceActivity {
                                    @Override
                                    public void onClick(DialogInterface dialog,
                                                        int which) {
-                                     WPM = min + Constants.WPM_STEP_PREFERENCES * (numberPicker
+                                     WPM = min + Constants
+                                         .WPM_STEP_PREFERENCES * (numberPicker
                                          .getValue() - min);
-                                     PreferenceManager.getDefaultSharedPreferences(
-                                         context)
-                                                      .edit()
-                                                      .putString(
-                                                          Constants.Preferences.WPM,
-                                                          Integer.toString(WPM))
-                                                      .commit();
+                                     PreferenceManager
+                                         .getDefaultSharedPreferences(
+                                             context)
+                                         .edit()
+                                         .putString(
+                                             Constants
+                                                 .Preferences.WPM,
+                                             Integer.toString(WPM))
+                                         .commit();
                                    }
                                  }
                ).

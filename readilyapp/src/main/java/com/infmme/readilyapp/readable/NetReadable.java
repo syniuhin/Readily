@@ -1,6 +1,7 @@
 package com.infmme.readilyapp.readable;
 
 import com.infmme.readilyapp.readable.interfaces.Unprocessed;
+import com.infmme.readilyapp.util.Constants;
 import de.jetwick.snacktory.HtmlFetcher;
 import de.jetwick.snacktory.JResult;
 
@@ -42,7 +43,7 @@ public class NetReadable extends Readable implements Unprocessed {
     HtmlFetcher fetcher = new HtmlFetcher();
     JResult res;
     // I don't know what it means, need to read docs/source
-    res = fetcher.fetchAndExtract(url, 10000, true);
+    res = fetcher.fetchAndExtract(url, Constants.NET_READABLE_TIMEOUT, true);
     mTitle = res.getTitle();
     return mTitle + " | " + res.getText();
   }

@@ -523,20 +523,13 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
       activity.runOnUiThread(new Runnable() {
         @Override
         public void run() {
-          mParsingProgressBar.clearAnimation();
-          mParsingProgressBar.setVisibility(View.GONE);
-          mReaderLayout.setVisibility(View.VISIBLE);
-          if (true /*initialPosition < wordList.size()*/) {
-            showNotification(R.string.tap_to_start);
-            // mProgress = mReading.calcProgress(initialPosition, 0);
-            mReader.setPosition(Math.max(
-                0, mReader.getPosition() - Constants.READER_START_OFFSET));
-            mReader.updateReaderView();
-            showInfo(mReader);
-          } else {
-            showNotification(R.string.reading_is_completed);
-            mReader.setCompleted(true);
-          }
+          stopShowingProgress();
+          showNotification(R.string.tap_to_start);
+          // mProgress = mReading.calcProgress(initialPosition, 0);
+          mReader.setPosition(Math.max(
+              0, mReader.getPosition() - Constants.READER_START_OFFSET));
+          mReader.updateReaderView();
+          showInfo(mReader);
           YoYo.with(Techniques.FadeIn)
               .duration(READER_PULSE_DURATION)
               .playOn(mReaderLayout);
@@ -544,6 +537,12 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
       });
     }
     mHasReaderStarted = true;
+  }
+
+  private void stopShowingProgress() {
+    mParsingProgressBar.clearAnimation();
+    mParsingProgressBar.setVisibility(View.GONE);
+    mReaderLayout.setVisibility(View.VISIBLE);
   }
 
   @Override
@@ -618,36 +617,56 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
   }
 
   private void handleArgs(Bundle args) {
-    ReadingSource sourceType = ReadingSource.valueOf(
-        args.getString(Constants.EXTRA_READING_SOURCE));
-    switch (sourceType) {
-      case SHARE:
-        handleShareSource(args);
-        break;
-      case CACHE:
-        handleCacheSource(args);
-        break;
+    if (args.containsKey(Intent.EXTRA_TEXT)) {
+      handleShareSource(args.getString(Intent.EXTRA_TEXT));
+    } else {
+      ReadingSource sourceType = ReadingSource.valueOf(
+          args.getString(Constants.EXTRA_READING_SOURCE));
+      switch (sourceType) {
+        case CACHE:
+          handleCacheSource(args);
+          break;
+      }
     }
   }
 
-  private void handleShareSource(Bundle args) {
-    String intentText;
-    if (args.containsKey(Intent.EXTRA_TEXT)) {
-      intentText = args.getString(Intent.EXTRA_TEXT);
-    } else {
-      intentText = getActivity().getResources()
-                                .getString(R.string.sample_text);
-    }
+  private void handleShareSource(String intentText) {
     String link;
+    // Checks if intentText contains link to parse article from.
     if (!TextUtils.isEmpty(intentText) &&
         intentText.length() < Constants.NON_LINK_LENGTH &&
         !TextUtils.isEmpty(
             link = TextParser.findLink(TextParser.compilePattern(),
                                        intentText))) {
-      mReading = new NetReadable(link);
+      final NetReadable netReadable = new NetReadable(link);
+      new Thread(new Runnable() {
+        @Override
+        public void run() {
+          netReadable.process();
+          if (netReadable.isProcessed()) {
+            mReading = netReadable;
+            getActivity().runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+                startSingleReadingFlow();
+              }
+            });
+          } else {
+            getActivity().runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+                stopShowingProgress();
+                showNotification("Error occurred");
+                mReader.setCompleted(true);
+              }
+            });
+          }
+        }
+      }).start();
     } else {
       mReading = new Readable(); //neutral value
       mReading.setText(intentText);
+      startSingleReadingFlow();
     }
   }
 
@@ -669,12 +688,11 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
               if (epubStorable.isProcessed()) {
                 mChunked = epubStorable;
                 mStorable = epubStorable;
-                // mReading = epubStorable.readNext();
                 getActivity().runOnUiThread(
                     new Runnable() {
                       @Override
                       public void run() {
-                        startReadingFlow(epubStorable.getTextPosition());
+                        startChunkedReadingFlow(epubStorable.getTextPosition());
                       }
                     });
               }
@@ -692,7 +710,24 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
     }
   }
 
-  private void startReadingFlow(final int initialPosition) {
+  /**
+   * Method for initializing reading flow using single Reading instance.
+   */
+  private void startSingleReadingFlow() {
+    mTaskMonitor = new MonitorObject();
+    mReader = new Reader(mHandler, mTaskMonitor, this);
+    mReaderTask = new ReaderTask(mTaskMonitor, mReading, this);
+    mReadingThread = new Thread(mReaderTask);
+    mReadingThread.start();
+  }
+
+  /**
+   * Method for initializing reading flow using chunked instance, which may
+   * produce several Reading ones.
+   *
+   * @param initialPosition Initial position of a reading.
+   */
+  private void startChunkedReadingFlow(final int initialPosition) {
     mTaskMonitor = new MonitorObject();
     mReader = new Reader(mHandler, mTaskMonitor, this);
     mReader.setPosition(initialPosition);

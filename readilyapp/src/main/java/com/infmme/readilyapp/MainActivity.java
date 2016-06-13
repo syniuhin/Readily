@@ -193,7 +193,8 @@ public class MainActivity extends BaseActivity {
   }
 
   private void getFromClipboard() {
-    ReceiverActivity.startReceiverActivity(this, ReadableType.CLIPBOARD, "");
+    ReceiverActivity.startReceiverActivity(this, ReadableType.CLIPBOARD,
+                                           ReadingSource.SHARE, null);
   }
 
   private void getFromFile() {
@@ -228,12 +229,8 @@ public class MainActivity extends BaseActivity {
               } else {
                 type = ReadableType.TXT;
               }
-              Intent intent = new Intent(this, ReceiverActivity.class);
-              intent.putExtra(Constants.EXTRA_TYPE, type.name());
-              intent.putExtra(Constants.EXTRA_PATH, relativePath);
-              intent.putExtra(Constants.EXTRA_READING_SOURCE,
-                              ReadingSource.CACHE.toString());
-              startActivity(intent);
+              ReceiverActivity.startReceiverActivity(
+                  this, type, ReadingSource.CACHE, relativePath);
             } else {
               Toast.makeText(this, R.string.wrong_ext, Toast.LENGTH_SHORT)
                    .show();
