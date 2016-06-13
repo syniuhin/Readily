@@ -14,5 +14,5 @@
     <dimen name="app_bar_height">200dp</dimen>
     <dimen name="item_width">200dp</dimen>
     <dimen name="text_margin">16dp</dimen>
-
+    <dimen name="file_list_card_view_image_height">180dp</dimen>
 </resources>

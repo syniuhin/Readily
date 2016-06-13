@@ -8,23 +8,22 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.ListView;
 import android.widget.TextView;
 import com.infmme.readilyapp.R;
-import com.infmme.readilyapp.database.LastReadContentProvider;
-import com.infmme.readilyapp.view.adapter.CachedFilesAdapter;
+import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
+import com.infmme.readilyapp.view.adapter.CachedBooksAdapter;
 
 public class FileListFragment extends Fragment
     implements LoaderManager.LoaderCallbacks<Cursor> {
 
-  private CachedFilesAdapter adapter;
+  private CachedBooksAdapter mAdapter;
 
-  private TextView textViewEmpty;
-  private ListView listView;
+  private TextView mTextViewEmpty;
+  private RecyclerView mRecyclerView;
 
   public FileListFragment() {}
 
@@ -44,17 +43,19 @@ public class FileListFragment extends Fragment
   }
 
   private void findViews(ViewGroup v) {
-    listView = (ListView) v.findViewById(R.id.fileListView);
-    textViewEmpty = (TextView) v.findViewById(R.id.text_view_empty);
+    // listView = (ListView) v.findViewById(R.id.fileListView);
+    mRecyclerView = (RecyclerView) v.findViewById(R.id.file_recycler_view);
+    mTextViewEmpty = (TextView) v.findViewById(R.id.text_view_empty);
   }
 
   private void initViews(final Context context) {
-    adapter = new CachedFilesAdapter(context);
-    listView.setAdapter(adapter);
+    mAdapter = new CachedBooksAdapter(null);
+    mRecyclerView.setAdapter(mAdapter);
+/*
     listView.setOnScrollListener(new AbsListView.OnScrollListener() {
       @Override
       public void onScrollStateChanged(AbsListView view, int scrollState) {
-        adapter.hideActionView();
+        mAdapter.hideActionView();
       }
 
       @Override
@@ -62,23 +63,24 @@ public class FileListFragment extends Fragment
                            int visibleItemCount, int totalItemCount) {}
     });
 
-    listView.setEmptyView(textViewEmpty);
+    listView.setEmptyView(mTextViewEmpty);
+*/
   }
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-    return new CursorLoader(getActivity(), LastReadContentProvider.CONTENT_URI,
+    return new CursorLoader(getActivity(), CachedBookColumns.CONTENT_URI,
                             null, null, null, null);
   }
 
   @Override
   public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-    adapter.changeCursor(data);
+    mAdapter.swapCursor(data);
   }
 
   @Override
   public void onLoaderReset(Loader loader) {
-    adapter.changeCursor(null);
+    mAdapter.swapCursor(null);
   }
 
   @Override

@@ -52,7 +52,7 @@ public class MainActivity extends BaseActivity {
     // startService(createCheckerServiceIntent());
 
     changeActionBarIcon();
-    //startFileListFragment();
+    startFileListFragment();
   }
 
   @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
