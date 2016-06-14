@@ -1,4 +1,4 @@
-package com.infmme.readilyapp.readable.storable.epub;
+package com.infmme.readilyapp.readable.structure.epub;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -12,10 +12,8 @@ import com.infmme.readilyapp.provider.epubbook.EpubBookContentValues;
 import com.infmme.readilyapp.provider.epubbook.EpubBookCursor;
 import com.infmme.readilyapp.provider.epubbook.EpubBookSelection;
 import com.infmme.readilyapp.readable.Readable;
-import com.infmme.readilyapp.readable.interfaces.Chunked;
-import com.infmme.readilyapp.readable.interfaces.Reading;
-import com.infmme.readilyapp.readable.interfaces.Storable;
-import com.infmme.readilyapp.readable.interfaces.Unprocessed;
+import com.infmme.readilyapp.readable.interfaces.*;
+import com.infmme.readilyapp.readable.structure.AbstractTocReference;
 import com.infmme.readilyapp.reader.Reader;
 import com.infmme.readilyapp.util.Constants;
 import nl.siegmann.epublib.domain.Book;
@@ -34,7 +32,8 @@ import java.util.List;
  * Created with love, by infm dated on 6/8/16.
  */
 
-public class EpubStorable implements Storable, Chunked, Unprocessed {
+public class EpubStorable implements Storable, Chunked, Unprocessed,
+    Structured {
   private String mPath;
 
   /**
@@ -47,6 +46,7 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
   private Metadata mMetadata;
   private List<Resource> mContents;
   private Deque<ChunkInfo> mLoadedChunks = new ArrayDeque<>();
+  private List<? extends AbstractTocReference> mTableOfContents = null;
 
   private transient String mCurrentResourceId;
   private int mCurrentResourceIndex = -1;
@@ -58,6 +58,10 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
 
   // Again, can be leaking.
   private transient Context mContext = null;
+
+  public EpubStorable(Context context) {
+    mContext = context;
+  }
 
   public EpubStorable(Context context, String timeCreated) {
     mContext = context;
@@ -283,6 +287,33 @@ public class EpubStorable implements Storable, Chunked, Unprocessed {
       e.printStackTrace();
       mProcessed = false;
     }
+  }
+
+  @Override
+  public List<? extends AbstractTocReference> getTableOfContents() {
+    if (mTableOfContents == null && mProcessed) {
+      mTableOfContents = EpubPart.adaptList(
+          mBook.getTableOfContents().getTocReferences());
+    }
+    return mTableOfContents;
+  }
+
+  @Override
+  public int getCurrentIndex() {
+    int index = -1;
+    if (mTableOfContents != null) {
+      for (int i = 0; i < mTableOfContents.size() && index == -1; ++i) {
+        if (mTableOfContents.get(i).getId().equals(mCurrentResourceId)) {
+          index = i;
+        }
+      }
+    }
+    return index;
+  }
+
+  @Override
+  public int getCurrentPosition() {
+    return mCurrentTextPosition;
   }
 
   private class ChunkInfo {

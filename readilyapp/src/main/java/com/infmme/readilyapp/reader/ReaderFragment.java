@@ -28,7 +28,7 @@ import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.readable.interfaces.Chunked;
 import com.infmme.readilyapp.readable.interfaces.Reading;
 import com.infmme.readilyapp.readable.interfaces.Storable;
-import com.infmme.readilyapp.readable.storable.epub.EpubStorable;
+import com.infmme.readilyapp.readable.structure.epub.EpubStorable;
 import com.infmme.readilyapp.readable.type.ReadableType;
 import com.infmme.readilyapp.readable.type.ReadingSource;
 import com.infmme.readilyapp.settings.SettingsBundle;

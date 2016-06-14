@@ -1,7 +1,7 @@
-package com.infmme.readilyapp.readable.storable.epub;
+package com.infmme.readilyapp.readable.structure.epub;
 
 import android.support.annotation.NonNull;
-import com.infmme.readilyapp.readable.storable.AbstractTocReference;
+import com.infmme.readilyapp.readable.structure.AbstractTocReference;
 import nl.siegmann.epublib.domain.TOCReference;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -21,12 +21,12 @@ import java.util.List;
 public class EpubPart implements AbstractTocReference, Serializable {
 
   private TOCReference mAdaptee;
-  private ArrayList<EpubPart> mChildren = null;
+  private List<EpubPart> mChildren = null;
   private String mCachedPreview = null;
 
-  public static ArrayList<EpubPart> adaptList(
+  public static List<EpubPart> adaptList(
       @NonNull List<TOCReference> list) {
-    ArrayList<EpubPart> result = new ArrayList<>();
+    List<EpubPart> result = new ArrayList<>();
     for (TOCReference tocReference : list) {
       result.add(new EpubPart(tocReference));
     }
@@ -66,7 +66,7 @@ public class EpubPart implements AbstractTocReference, Serializable {
   }
 
   @Override
-  public ArrayList<EpubPart> getChildren() {
+  public List<? extends AbstractTocReference> getChildren() {
     if (mChildren == null && mAdaptee.getChildren() != null) {
       mChildren = adaptList(mAdaptee.getChildren());
     }

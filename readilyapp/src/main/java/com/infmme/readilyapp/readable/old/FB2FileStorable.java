@@ -4,7 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.infmme.readilyapp.readable.storable.fb2.FB2Part;
+import com.infmme.readilyapp.readable.structure.fb2.FB2Part;
 import com.infmme.readilyapp.xmlparser.XMLEvent;
 import com.infmme.readilyapp.xmlparser.XMLEventType;
 import com.infmme.readilyapp.xmlparser.XMLParser;

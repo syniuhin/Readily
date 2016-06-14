@@ -15,7 +15,7 @@ import com.bignerdranch.expandablerecyclerview.Model.ParentListItem;
 import com.bignerdranch.expandablerecyclerview.ViewHolder.ChildViewHolder;
 import com.bignerdranch.expandablerecyclerview.ViewHolder.ParentViewHolder;
 import com.infmme.readilyapp.R;
-import com.infmme.readilyapp.readable.storable.AbstractTocReference;
+import com.infmme.readilyapp.readable.structure.AbstractTocReference;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
-package com.infmme.readilyapp.readable.storable.fb2;
+package com.infmme.readilyapp.readable.structure.fb2;
 
 import android.text.TextUtils;
-import com.infmme.readilyapp.readable.storable.AbstractTocReference;
+import com.infmme.readilyapp.readable.structure.AbstractTocReference;
 import com.infmme.readilyapp.xmlparser.XMLEvent;
 import com.infmme.readilyapp.xmlparser.XMLEventType;
 import com.infmme.readilyapp.xmlparser.XMLParser;
@@ -118,7 +118,7 @@ public class FB2Part implements AbstractTocReference {
   }
 
   @Override
-  public ArrayList<FB2Part> getChildren() {
+  public List<? extends AbstractTocReference> getChildren() {
     return new ArrayList<>(children);
   }
 

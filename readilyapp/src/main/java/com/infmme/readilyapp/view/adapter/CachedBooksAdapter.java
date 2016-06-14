@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -61,6 +62,8 @@ public class CachedBooksAdapter
     TextView mTitleView;
     TextView mTimeOpenedView;
     ProgressBar mProgressView;
+    Button mNavigateButton;
+    // TODO: Add master-detail flow for 'About' button
 
     long mId;
     ItemClickCallback mCallback;
@@ -73,6 +76,8 @@ public class CachedBooksAdapter
           R.id.file_list_card_time_opened);
       mProgressView = (ProgressBar) v.findViewById(
           R.id.file_list_card_progress);
+      mNavigateButton = (Button) v.findViewById(R.id.file_list_card_button_toc);
+      setupButtons();
 
       mId = id;
       mCallback = callback;
@@ -83,8 +88,19 @@ public class CachedBooksAdapter
       mCallback.onItem(mId);
     }
 
+    private void setupButtons() {
+      mNavigateButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          mCallback.onNavigateButton(mId);
+        }
+      });
+    }
+
     public interface ItemClickCallback {
       void onItem(long id);
+
+      void onNavigateButton(long id);
     }
   }
 }

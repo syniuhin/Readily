@@ -13,10 +13,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import com.infmme.readilyapp.fragment.BookPartDetailFragment;
-import com.infmme.readilyapp.readable.storable.AbstractTocReference;
+import com.infmme.readilyapp.readable.interfaces.Storable;
+import com.infmme.readilyapp.readable.structure.AbstractTocReference;
+import com.infmme.readilyapp.readable.structure.epub.EpubStorable;
+import com.infmme.readilyapp.readable.type.ReadableType;
 import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.view.FabOnScrollBehavior;
 import com.infmme.readilyapp.view.adapter.BookNavigationAdapter;
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +41,8 @@ public class BookPartListActivity extends BaseActivity implements
    */
   private boolean mTwoPane;
 
-  private ArrayList<AbstractTocReference> mTocReferenceList;
+  private Storable mStorable;
+  private List<? extends AbstractTocReference> mTocReferenceList;
 
   private Toolbar mToolbar;
   private FloatingActionButton mFab;
@@ -57,10 +66,7 @@ public class BookPartListActivity extends BaseActivity implements
     }
 
     Bundle bundle = getIntent().getExtras();
-    mTocReferenceList = (ArrayList<AbstractTocReference>) bundle
-        .getSerializable(Constants.EXTRA_TOC_REFERENCE_LIST);
-
-    setupViews();
+    loadStorable(bundle);
   }
 
   @Override
@@ -120,6 +126,46 @@ public class BookPartListActivity extends BaseActivity implements
           new BookNavigationAdapter.ParentPart(mTocReferenceList.get(i)));
     }
     recyclerView.setAdapter(new BookNavigationAdapter(this, this, parentParts));
+  }
+
+  private void loadStorable(Bundle args) {
+    final String path = args.getString(Constants.EXTRA_PATH);
+    final ReadableType type = ReadableType.valueOf(
+        args.getString(Constants.EXTRA_TYPE));
+    Observable<List<? extends AbstractTocReference>> o = Observable.create(
+        new Observable.OnSubscribe<List<? extends AbstractTocReference>>() {
+          @Override
+          public void call(
+              Subscriber<? super List<? extends AbstractTocReference>>
+                  subscriber) {
+            switch (type) {
+              case EPUB: {
+                EpubStorable epubStorable = new EpubStorable(
+                    BookPartListActivity.this);
+                epubStorable.setPath(path);
+                epubStorable.process();
+                mStorable = epubStorable;
+                subscriber.onNext(epubStorable.getTableOfContents());
+              }
+              break;
+              case FB2: {
+
+              }
+              break;
+            }
+          }
+        });
+    o.subscribeOn(Schedulers.newThread())
+     .observeOn(AndroidSchedulers.mainThread())
+     .subscribe(
+         new Action1<List<? extends AbstractTocReference>>() {
+           @Override
+           public void call(
+               List<? extends AbstractTocReference> abstractTocReferences) {
+             mTocReferenceList = abstractTocReferences;
+             setupViews();
+           }
+         });
   }
 
   @Override

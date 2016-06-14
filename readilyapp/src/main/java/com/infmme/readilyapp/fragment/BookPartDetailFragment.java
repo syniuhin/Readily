@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.infmme.readilyapp.BookPartDetailActivity;
 import com.infmme.readilyapp.BookPartListActivity;
 import com.infmme.readilyapp.R;
-import com.infmme.readilyapp.readable.storable.AbstractTocReference;
+import com.infmme.readilyapp.readable.structure.AbstractTocReference;
 import com.infmme.readilyapp.util.Constants;
 import rx.Observable;
 import rx.Subscriber;

@@ -16,11 +16,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.infmme.readilyapp.fragment.FileListFragment;
-import com.infmme.readilyapp.readable.old.EpubFileStorable;
 import com.infmme.readilyapp.readable.old.FB2FileStorable;
 import com.infmme.readilyapp.readable.old.FileStorable;
-import com.infmme.readilyapp.readable.storable.epub.EpubPart;
-import com.infmme.readilyapp.readable.storable.fb2.FB2Part;
+import com.infmme.readilyapp.readable.structure.fb2.FB2Part;
 import com.infmme.readilyapp.readable.type.ReadableType;
 import com.infmme.readilyapp.readable.type.ReadingSource;
 import com.infmme.readilyapp.service.StorageCheckerService;
@@ -132,6 +130,7 @@ public class MainActivity extends BaseActivity {
     return super.onOptionsItemSelected(item);
   }
 
+/*
   private void startBookPartListActivity(String relativePath) {
     EpubFileStorable epubFileStorable = new EpubFileStorable(relativePath);
     epubFileStorable.process(this);
@@ -145,6 +144,7 @@ public class MainActivity extends BaseActivity {
     i.putExtras(args);
     startActivity(i);
   }
+*/
 
   private void startBookPartFb2ListActivity(String relativePath) {
     final FB2FileStorable fb2FileStorable = new FB2FileStorable(
@@ -238,6 +238,7 @@ public class MainActivity extends BaseActivity {
           }
         }
         break;
+/*
       case EPUB_SELECT_CODE:
         if (resultCode == RESULT_OK) {
           if (data != null) {
@@ -251,6 +252,7 @@ public class MainActivity extends BaseActivity {
           }
         }
         break;
+*/
       case FB2_SELECT_CODE:
         if (resultCode == RESULT_OK) {
           if (data != null) {

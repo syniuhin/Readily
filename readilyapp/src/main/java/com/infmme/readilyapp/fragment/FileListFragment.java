@@ -1,6 +1,7 @@
 package com.infmme.readilyapp.fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import com.infmme.readilyapp.BookPartListActivity;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.ReceiverActivity;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
@@ -19,6 +21,7 @@ import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookSelection;
 import com.infmme.readilyapp.readable.type.ReadableType;
 import com.infmme.readilyapp.readable.type.ReadingSource;
+import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.view.adapter.CachedBooksAdapter;
 
 public class FileListFragment extends Fragment
@@ -85,13 +88,7 @@ public class FileListFragment extends Fragment
       new Thread(new Runnable() {
         @Override
         public void run() {
-          CachedBookSelection where = new CachedBookSelection();
-          where.id(id);
-          Cursor c = activity.getContentResolver().query(
-              CachedBookColumns.CONTENT_URI, CachedBookColumns.ALL_COLUMNS,
-              where.sel(), where.args(), null);
-          CachedBookCursor bookCursor = new CachedBookCursor(c);
-
+          CachedBookCursor bookCursor = findCachedBook(activity, id);
           if (bookCursor.moveToFirst()) {
             final String path = bookCursor.getPath();
             final ReadableType type = inferReadableType(bookCursor);
@@ -108,6 +105,43 @@ public class FileListFragment extends Fragment
         }
       }).start();
     }
+  }
+
+  @Override
+  public void onNavigateButton(final long id) {
+    final Activity activity = getActivity();
+    if (activity != null) {
+      new Thread(new Runnable() {
+        @Override
+        public void run() {
+          CachedBookCursor bookCursor = findCachedBook(activity, id);
+          if (bookCursor.moveToFirst()) {
+            final String path = bookCursor.getPath();
+            final ReadableType type = inferReadableType(bookCursor);
+            activity.runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+                Intent i = new Intent(activity, BookPartListActivity.class);
+                i.putExtra(Constants.EXTRA_PATH, path);
+                i.putExtra(Constants.EXTRA_TYPE, type.name());
+                startActivity(i);
+              }
+            });
+          }
+
+          bookCursor.close();
+        }
+      }).start();
+    }
+  }
+
+  private CachedBookCursor findCachedBook(final Context context, long id) {
+    CachedBookSelection where = new CachedBookSelection();
+    where.id(id);
+    Cursor c = context.getContentResolver().query(
+        CachedBookColumns.CONTENT_URI, CachedBookColumns.ALL_COLUMNS,
+        where.sel(), where.args(), null);
+    return new CachedBookCursor(c);
   }
 
   private ReadableType inferReadableType(final CachedBookCursor bookCursor) {
