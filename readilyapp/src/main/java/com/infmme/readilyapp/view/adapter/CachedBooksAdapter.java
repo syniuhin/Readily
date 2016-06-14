@@ -20,8 +20,12 @@ import org.joda.time.format.DateTimeFormat;
 public class CachedBooksAdapter
     extends CursorRecyclerAdapter<CachedBooksAdapter.CachedBookHolder> {
 
-  public CachedBooksAdapter(Cursor cursor) {
+  private CachedBookHolder.ItemClickCallback mCallback;
+
+  public CachedBooksAdapter(Cursor cursor,
+                            CachedBookHolder.ItemClickCallback callback) {
     super(cursor);
+    mCallback = callback;
   }
 
   @Override
@@ -36,6 +40,8 @@ public class CachedBooksAdapter
     holder.mTimeOpenedView.setText(strTimeOpened);
     // TODO: Replace with a real value
     holder.mProgressView.setProgress(50);
+
+    holder.mId = bookCursor.getId();
   }
 
   @Override
@@ -44,17 +50,22 @@ public class CachedBooksAdapter
     View v = LayoutInflater.from(parent.getContext())
                            .inflate(R.layout.file_list_card_image, parent,
                                     false);
-    CachedBookHolder holder = new CachedBookHolder(v);
+    CachedBookHolder holder = new CachedBookHolder(v, 0, mCallback);
+    holder.mImageView.setOnClickListener(holder);
     return holder;
   }
 
-  public static class CachedBookHolder extends RecyclerView.ViewHolder {
+  public static class CachedBookHolder extends RecyclerView.ViewHolder
+      implements View.OnClickListener {
     ImageView mImageView;
     TextView mTitleView;
     TextView mTimeOpenedView;
     ProgressBar mProgressView;
 
-    public CachedBookHolder(View v) {
+    long mId;
+    ItemClickCallback mCallback;
+
+    public CachedBookHolder(View v, long id, ItemClickCallback callback) {
       super(v);
       mImageView = (ImageView) v.findViewById(R.id.file_list_card_image);
       mTitleView = (TextView) v.findViewById(R.id.file_list_card_title);
@@ -62,6 +73,18 @@ public class CachedBooksAdapter
           R.id.file_list_card_time_opened);
       mProgressView = (ProgressBar) v.findViewById(
           R.id.file_list_card_progress);
+
+      mId = id;
+      mCallback = callback;
+    }
+
+    @Override
+    public void onClick(View v) {
+      mCallback.onItem(mId);
+    }
+
+    public interface ItemClickCallback {
+      void onItem(long id);
     }
   }
 }

@@ -1,6 +1,6 @@
 package com.infmme.readilyapp.fragment;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -13,11 +13,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.infmme.readilyapp.R;
+import com.infmme.readilyapp.ReceiverActivity;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
+import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
+import com.infmme.readilyapp.provider.cachedbook.CachedBookSelection;
+import com.infmme.readilyapp.readable.type.ReadableType;
+import com.infmme.readilyapp.readable.type.ReadingSource;
 import com.infmme.readilyapp.view.adapter.CachedBooksAdapter;
 
 public class FileListFragment extends Fragment
-    implements LoaderManager.LoaderCallbacks<Cursor> {
+    implements LoaderManager.LoaderCallbacks<Cursor>,
+    CachedBooksAdapter.CachedBookHolder.ItemClickCallback {
 
   private CachedBooksAdapter mAdapter;
 
@@ -37,7 +43,7 @@ public class FileListFragment extends Fragment
   @Override
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
-    initViews(getActivity());
+    initViews();
     getLoaderManager().initLoader(0, null, this);
   }
 
@@ -46,15 +52,15 @@ public class FileListFragment extends Fragment
     // mTextViewEmpty = (TextView) v.findViewById(R.id.text_view_empty);
   }
 
-  private void initViews(final Context context) {
-    mAdapter = new CachedBooksAdapter(null);
+  private void initViews() {
+    mAdapter = new CachedBooksAdapter(null, this);
     mRecyclerView.setAdapter(mAdapter);
   }
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
     return new CursorLoader(getActivity(), CachedBookColumns.CONTENT_URI,
-                            null, null, null, null);
+                            CachedBookColumns.ALL_COLUMNS, null, null, null);
   }
 
   @Override
@@ -70,5 +76,49 @@ public class FileListFragment extends Fragment
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
+  }
+
+  @Override
+  public void onItem(final long id) {
+    final Activity activity = getActivity();
+    if (activity != null) {
+      new Thread(new Runnable() {
+        @Override
+        public void run() {
+          CachedBookSelection where = new CachedBookSelection();
+          where.id(id);
+          Cursor c = activity.getContentResolver().query(
+              CachedBookColumns.CONTENT_URI, CachedBookColumns.ALL_COLUMNS,
+              where.sel(), where.args(), null);
+          CachedBookCursor bookCursor = new CachedBookCursor(c);
+
+          if (bookCursor.moveToFirst()) {
+            final String path = bookCursor.getPath();
+            final ReadableType type = inferReadableType(bookCursor);
+            activity.runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+                ReceiverActivity.startReceiverActivity(
+                    activity, type, ReadingSource.CACHE, path);
+              }
+            });
+          }
+
+          bookCursor.close();
+        }
+      }).start();
+    }
+  }
+
+  private ReadableType inferReadableType(final CachedBookCursor bookCursor) {
+    if (bookCursor.getEpubBookId() != null) {
+      return ReadableType.EPUB;
+    } else if (bookCursor.getFb2BookId() != null) {
+      return ReadableType.FB2;
+    } else if (bookCursor.getTxtBookId() != null) {
+      return ReadableType.TXT;
+    }
+    throw new IllegalStateException(
+        "Integrity violation: can't infer ReadableType.");
   }
 }
