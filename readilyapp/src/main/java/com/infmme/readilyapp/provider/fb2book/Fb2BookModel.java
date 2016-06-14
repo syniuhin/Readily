@@ -10,6 +10,12 @@ import com.infmme.readilyapp.provider.base.BaseModel;
 public interface Fb2BookModel extends BaseModel {
 
   /**
+   * Byte position of block in a file, either FB2Part or simple chunk read
+   * continuously.
+   */
+  int getBytePosition();
+
+  /**
    * Id of a fb2part, from which last read was made.
    * Cannot be {@code null}.
    */

@@ -18,6 +18,7 @@ import com.infmme.readilyapp.readable.interfaces.Storable;
 import com.infmme.readilyapp.readable.interfaces.Structured;
 import com.infmme.readilyapp.readable.structure.AbstractTocReference;
 import com.infmme.readilyapp.readable.structure.epub.EpubStorable;
+import com.infmme.readilyapp.readable.structure.fb2.FB2Storable;
 import com.infmme.readilyapp.readable.type.ReadableType;
 import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.view.FabOnScrollBehavior;
@@ -52,6 +53,8 @@ public class BookPartListActivity extends BaseActivity implements
    */
   private Storable mStorable;
   private Structured mStructured;
+
+  private String mFilePath = null;
 
   private List<? extends AbstractTocReference> mTocReferenceList;
 
@@ -176,7 +179,14 @@ public class BookPartListActivity extends BaseActivity implements
               }
               break;
               case FB2: {
-
+                FB2Storable fb2Storable = new FB2Storable(
+                    BookPartListActivity.this);
+                fb2Storable.setPath(path);
+                mFilePath = path;
+                fb2Storable.process();
+                mStorable = fb2Storable;
+                mStructured = fb2Storable;
+                subscriber.onNext(fb2Storable.getTableOfContents());
               }
               break;
             }
@@ -201,6 +211,9 @@ public class BookPartListActivity extends BaseActivity implements
       Bundle arguments = new Bundle();
       arguments.putSerializable(Constants.EXTRA_TOC_REFERENCE, tocReference);
       arguments.putBoolean(Constants.EXTRA_TWO_PANE, mTwoPane);
+      if (mFilePath != null) {
+        arguments.putString(Constants.EXTRA_PATH, mFilePath);
+      }
       BookPartDetailFragment fragment = new BookPartDetailFragment();
       fragment.setArguments(arguments);
       getSupportFragmentManager()
@@ -213,6 +226,9 @@ public class BookPartListActivity extends BaseActivity implements
           BookPartListActivity.this, BookPartDetailActivity.class);
       intent.putExtra(Constants.EXTRA_TOC_REFERENCE, tocReference);
       intent.putExtra(Constants.EXTRA_TWO_PANE, mTwoPane);
+      if (mFilePath != null) {
+        intent.putExtra(Constants.EXTRA_PATH, mFilePath);
+      }
       startActivityForResult(intent, DETAIL_ACTIVITY);
     }
   }

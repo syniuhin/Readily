@@ -124,6 +124,17 @@ public class CachedBookCursor extends AbstractCursor
   }
 
   /**
+   * Byte position of block in a file, either FB2Part or simple chunk read
+   * continuously.
+   * Can be {@code null}.
+   */
+  @Nullable
+  public Integer getFb2BookBytePosition() {
+    Integer res = getIntegerOrNull(Fb2BookColumns.BYTE_POSITION);
+    return res;
+  }
+
+  /**
    * Id of a fb2part, from which last read was made.
    * Can be {@code null}.
    */

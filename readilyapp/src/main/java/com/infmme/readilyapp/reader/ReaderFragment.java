@@ -29,6 +29,7 @@ import com.infmme.readilyapp.readable.interfaces.Chunked;
 import com.infmme.readilyapp.readable.interfaces.Reading;
 import com.infmme.readilyapp.readable.interfaces.Storable;
 import com.infmme.readilyapp.readable.structure.epub.EpubStorable;
+import com.infmme.readilyapp.readable.structure.fb2.FB2Storable;
 import com.infmme.readilyapp.readable.type.ReadableType;
 import com.infmme.readilyapp.readable.type.ReadingSource;
 import com.infmme.readilyapp.settings.SettingsBundle;
@@ -678,9 +679,6 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
           final EpubStorable epubStorable =
               new EpubStorable(getActivity(), LocalDateTime.now().toString());
           epubStorable.setPath(args.getString(Constants.EXTRA_PATH));
-          // TODO: Think about handling location params
-          // epubStorable.setTextPosition(args.getInt(Constants
-          // .EXTRA_POSITION));
           // TODO: Terminate this and other threads according to lifecycle.
           // TODO: Probably switch to RxAndroid's observables.
           new Thread(new Runnable() {
@@ -703,6 +701,29 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
           }).start();
           break;
         case FB2:
+          final FB2Storable fb2Storable =
+              new FB2Storable(getActivity(), LocalDateTime.now().toString());
+          fb2Storable.setPath(args.getString(Constants.EXTRA_PATH));
+          // TODO: Terminate this and other threads according to lifecycle.
+          // TODO: Probably switch to RxAndroid's observables.
+          new Thread(new Runnable() {
+            @Override
+            public void run() {
+              fb2Storable.process();
+              if (fb2Storable.isProcessed()) {
+                mChunked = fb2Storable;
+                mStorable = fb2Storable;
+                getActivity().runOnUiThread(
+                    new Runnable() {
+                      @Override
+                      public void run() {
+                        startChunkedReadingFlow(
+                            fb2Storable.getCurrentPosition());
+                      }
+                    });
+              }
+            }
+          }).start();
           break;
         case TXT:
           break;

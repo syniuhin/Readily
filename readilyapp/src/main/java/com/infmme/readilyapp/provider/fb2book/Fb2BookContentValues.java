@@ -44,6 +44,16 @@ public class Fb2BookContentValues extends AbstractContentValues {
   }
 
   /**
+   * Byte position of block in a file, either FB2Part or simple chunk read
+   * continuously.
+   */
+  public Fb2BookContentValues putBytePosition(int value) {
+    mContentValues.put(Fb2BookColumns.BYTE_POSITION, value);
+    return this;
+  }
+
+
+  /**
    * Id of a fb2part, from which last read was made.
    */
   public Fb2BookContentValues putCurrentPartId(@NonNull String value) {

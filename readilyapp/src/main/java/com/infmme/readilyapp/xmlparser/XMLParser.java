@@ -44,6 +44,10 @@ public class XMLParser {
     return currentEvent;
   }
 
+  public long skip(long bytes) throws IOException {
+    return isr.skip(bytes);
+  }
+
   private void readNext() throws IOException {
     currentInt = nextInt;
     nextInt = isr.read();

@@ -54,6 +54,10 @@ public class FB2Part implements AbstractTocReference {
     this.title = title;
   }
 
+  public void setPath(String path) {
+    filePath = path;
+  }
+
   @Override
   public String getPreview() throws IOException {
     if (cachedPreview == null) {

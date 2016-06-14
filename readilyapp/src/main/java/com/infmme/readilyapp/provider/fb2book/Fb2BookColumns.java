@@ -18,6 +18,12 @@ public class Fb2BookColumns implements BaseColumns {
   public static final String _ID = BaseColumns._ID;
 
   /**
+   * Byte position of block in a file, either FB2Part or simple chunk read
+   * continuously.
+   */
+  public static final String BYTE_POSITION = "byte_position";
+
+  /**
    * Id of a fb2part, from which last read was made.
    */
   public static final String CURRENT_PART_ID = "current_part_id";
@@ -38,6 +44,7 @@ public class Fb2BookColumns implements BaseColumns {
   // @formatter:off
   public static final String[] ALL_COLUMNS = new String[] {
       _ID,
+      BYTE_POSITION,
       CURRENT_PART_ID,
       TEXT_POSITION,
       PATH_TOC
@@ -47,6 +54,8 @@ public class Fb2BookColumns implements BaseColumns {
   public static boolean hasColumns(String[] projection) {
     if (projection == null) return true;
     for (String c : projection) {
+      if (c.equals(BYTE_POSITION) || c.contains("." + BYTE_POSITION))
+        return true;
       if (c.equals(CURRENT_PART_ID) || c.contains("." + CURRENT_PART_ID))
         return true;
       if (c.equals(TEXT_POSITION) || c.contains("." + TEXT_POSITION))

@@ -17,6 +17,7 @@ import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.readable.interfaces.Reading;
 import com.infmme.readilyapp.readable.structure.AbstractTocReference;
+import com.infmme.readilyapp.readable.structure.fb2.FB2Part;
 import com.infmme.readilyapp.reader.TextParser;
 import com.infmme.readilyapp.settings.SettingsBundle;
 import com.infmme.readilyapp.util.Constants;
@@ -38,6 +39,7 @@ public class BookPartDetailFragment extends Fragment implements
     OnFabClickListener {
 
   private AbstractTocReference mItemReference;
+  private String mFilePath = null;
 
   private TextView mTitleTextView;
   private TextView mBodyTextView;
@@ -86,6 +88,9 @@ public class BookPartDetailFragment extends Fragment implements
           appBarLayout.setTitle(mItemReference.getTitle());
         }
       }
+      if (bundle.containsKey(Constants.EXTRA_PATH)) {
+        mFilePath = bundle.getString(Constants.EXTRA_PATH);
+      }
       mTwoPane = bundle.getBoolean(Constants.EXTRA_TWO_PANE, false);
     }
   }
@@ -113,8 +118,11 @@ public class BookPartDetailFragment extends Fragment implements
             @Override
             public void call(Subscriber<? super ProcessedItem> subscriber) {
               try {
-                // Load and cache preview
+                // Loads and caches preview
                 Reading r = new Readable();
+                if (mFilePath != null && mItemReference instanceof FB2Part) {
+                  ((FB2Part) mItemReference).setPath(mFilePath);
+                }
                 r.setText(mItemReference.getPreview());
                 mTextParser = TextParser.newInstance(r, new SettingsBundle(
                     PreferenceManager.getDefaultSharedPreferences(

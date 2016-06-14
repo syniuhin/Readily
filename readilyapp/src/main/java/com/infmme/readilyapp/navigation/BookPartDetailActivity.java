@@ -47,6 +47,8 @@ public class BookPartDetailActivity extends BaseActivity implements
       arguments.putSerializable(Constants.EXTRA_TOC_REFERENCE,
                                 getIntent().getSerializableExtra(
                                     Constants.EXTRA_TOC_REFERENCE));
+      arguments.putString(Constants.EXTRA_PATH,
+                          getIntent().getStringExtra(Constants.EXTRA_PATH));
       BookPartDetailFragment fragment = new BookPartDetailFragment();
       fragment.setArguments(arguments);
       getSupportFragmentManager().beginTransaction()

@@ -409,6 +409,46 @@ public class CachedBookSelection
     return this;
   }
 
+  public CachedBookSelection fb2BookBytePosition(Integer... value) {
+    addEquals(Fb2BookColumns.BYTE_POSITION, value);
+    return this;
+  }
+
+  public CachedBookSelection fb2BookBytePositionNot(Integer... value) {
+    addNotEquals(Fb2BookColumns.BYTE_POSITION, value);
+    return this;
+  }
+
+  public CachedBookSelection fb2BookBytePositionGt(int value) {
+    addGreaterThan(Fb2BookColumns.BYTE_POSITION, value);
+    return this;
+  }
+
+  public CachedBookSelection fb2BookBytePositionGtEq(int value) {
+    addGreaterThanOrEquals(Fb2BookColumns.BYTE_POSITION, value);
+    return this;
+  }
+
+  public CachedBookSelection fb2BookBytePositionLt(int value) {
+    addLessThan(Fb2BookColumns.BYTE_POSITION, value);
+    return this;
+  }
+
+  public CachedBookSelection fb2BookBytePositionLtEq(int value) {
+    addLessThanOrEquals(Fb2BookColumns.BYTE_POSITION, value);
+    return this;
+  }
+
+  public CachedBookSelection orderByFb2BookBytePosition(boolean desc) {
+    orderBy(Fb2BookColumns.BYTE_POSITION, desc);
+    return this;
+  }
+
+  public CachedBookSelection orderByFb2BookBytePosition() {
+    orderBy(Fb2BookColumns.BYTE_POSITION, false);
+    return this;
+  }
+
   public CachedBookSelection fb2BookCurrentPartId(String... value) {
     addEquals(Fb2BookColumns.CURRENT_PART_ID, value);
     return this;

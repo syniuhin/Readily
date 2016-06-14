@@ -82,6 +82,46 @@ public class Fb2BookSelection extends AbstractSelection<Fb2BookSelection> {
     return orderById(false);
   }
 
+  public Fb2BookSelection bytePosition(int... value) {
+    addEquals(Fb2BookColumns.BYTE_POSITION, toObjectArray(value));
+    return this;
+  }
+
+  public Fb2BookSelection bytePositionNot(int... value) {
+    addNotEquals(Fb2BookColumns.BYTE_POSITION, toObjectArray(value));
+    return this;
+  }
+
+  public Fb2BookSelection bytePositionGt(int value) {
+    addGreaterThan(Fb2BookColumns.BYTE_POSITION, value);
+    return this;
+  }
+
+  public Fb2BookSelection bytePositionGtEq(int value) {
+    addGreaterThanOrEquals(Fb2BookColumns.BYTE_POSITION, value);
+    return this;
+  }
+
+  public Fb2BookSelection bytePositionLt(int value) {
+    addLessThan(Fb2BookColumns.BYTE_POSITION, value);
+    return this;
+  }
+
+  public Fb2BookSelection bytePositionLtEq(int value) {
+    addLessThanOrEquals(Fb2BookColumns.BYTE_POSITION, value);
+    return this;
+  }
+
+  public Fb2BookSelection orderByBytePosition(boolean desc) {
+    orderBy(Fb2BookColumns.BYTE_POSITION, desc);
+    return this;
+  }
+
+  public Fb2BookSelection orderByBytePosition() {
+    orderBy(Fb2BookColumns.BYTE_POSITION, false);
+    return this;
+  }
+
   public Fb2BookSelection currentPartId(String... value) {
     addEquals(Fb2BookColumns.CURRENT_PART_ID, value);
     return this;

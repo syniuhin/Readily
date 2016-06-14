@@ -26,6 +26,19 @@ public class Fb2BookCursor extends AbstractCursor implements Fb2BookModel {
   }
 
   /**
+   * Byte position of block in a file, either FB2Part or simple chunk read
+   * continuously.
+   */
+  public int getBytePosition() {
+    Integer res = getIntegerOrNull(Fb2BookColumns.BYTE_POSITION);
+    if (res == null)
+      throw new NullPointerException(
+          "The value of 'byte_position' in the database was null, which is " +
+              "not allowed according to the model definition");
+    return res;
+  }
+
+  /**
    * Id of a fb2part, from which last read was made.
    * Cannot be {@code null}.
    */

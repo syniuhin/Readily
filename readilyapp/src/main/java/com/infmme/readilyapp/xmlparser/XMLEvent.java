@@ -102,6 +102,18 @@ public class XMLEvent {
         getTagName().equals(FB2Tags.TITLE);
   }
 
+  public boolean enteringBookTitle() {
+    return getType() == XMLEventType.TAG_START &&
+        getTagName() != null &&
+        getTagName().equals(FB2Tags.BOOK_TITLE);
+  }
+
+  public boolean exitingBookTitle() {
+    return getType() == XMLEventType.TAG_CLOSE &&
+        getTagName() != null &&
+        getTagName().equals(FB2Tags.BOOK_TITLE);
+  }
+
   @Override
   public String toString() {
     return "domain: from " + domain.first + " to " + domain.second +

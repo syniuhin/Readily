@@ -34,13 +34,10 @@ public class ReadilySQLiteOpenHelper extends SQLiteOpenHelper {
       .FB2_BOOK_ID + ") REFERENCES fb2_book (_id) ON DELETE CASCADE"
       + ", CONSTRAINT fk_txt_book_id FOREIGN KEY (" + CachedBookColumns
       .TXT_BOOK_ID + ") REFERENCES txt_book (_id) ON DELETE CASCADE"
-      + ", CONSTRAINT unique_path UNIQUE (" + CachedBookColumns.PATH + ")"
-      + ", CONSTRAINT unique_epub_book UNIQUE (" + CachedBookColumns
-      .EPUB_BOOK_ID + ")"
-      + ", CONSTRAINT unique_fb2_book UNIQUE (" + CachedBookColumns
-      .FB2_BOOK_ID + ")"
-      + ", CONSTRAINT unique_txt_book UNIQUE (" + CachedBookColumns
-      .TXT_BOOK_ID + ")"
+      + ", CONSTRAINT unique_path UNIQUE (path)"
+      + ", CONSTRAINT unique_epub_book UNIQUE (epub_book_id)"
+      + ", CONSTRAINT unique_fb2_book UNIQUE (fb2_book_id)"
+      + ", CONSTRAINT unique_txt_book UNIQUE (txt_book_id)"
       + " );";
   public static final String SQL_CREATE_TABLE_EPUB_BOOK = "CREATE TABLE IF " +
       "NOT EXISTS "
@@ -53,6 +50,7 @@ public class ReadilySQLiteOpenHelper extends SQLiteOpenHelper {
       " EXISTS "
       + Fb2BookColumns.TABLE_NAME + " ( "
       + Fb2BookColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+      + Fb2BookColumns.BYTE_POSITION + " INTEGER NOT NULL, "
       + Fb2BookColumns.CURRENT_PART_ID + " TEXT NOT NULL, "
       + Fb2BookColumns.TEXT_POSITION + " INTEGER NOT NULL, "
       + Fb2BookColumns.PATH_TOC + " TEXT "
