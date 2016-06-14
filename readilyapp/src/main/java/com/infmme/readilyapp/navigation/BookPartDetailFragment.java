@@ -1,16 +1,16 @@
 package com.infmme.readilyapp.navigation;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.TextView;
 import com.daimajia.androidanimations.library.BuildConfig;
 import com.infmme.readilyapp.R;
@@ -103,6 +103,9 @@ public class BookPartDetailFragment extends Fragment implements
       mTitleTextView.setVisibility(View.GONE);
     }
     mBodyTextView = (TextView) rootView.findViewById(R.id.bookpart_detail_body);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+      mBodyTextView.setCustomSelectionActionModeCallback(new StartFromHereCallback());
+    }
 
     if (mItemReference != null) {
       Observable<ProcessedItem> o = Observable.create(
@@ -156,6 +159,10 @@ public class BookPartDetailFragment extends Fragment implements
     } else {
       selectionStart = 0;
     }
+    startFromPosition(selectionStart);
+  }
+
+  private void startFromPosition(int selectionStart) {
     String text = mBodyTextView.getText().toString()
                                .substring(0, selectionStart + 1);
     int spacesCount = text.length() - text.replaceAll(" ", "").length();
@@ -174,6 +181,37 @@ public class BookPartDetailFragment extends Fragment implements
     public ProcessedItem(String title, String text) {
       this.title = title;
       this.text = text;
+    }
+  }
+
+  @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+  private class StartFromHereCallback implements ActionMode.Callback {
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+      MenuInflater inflater = mode.getMenuInflater();
+      inflater.inflate(R.menu.bookpart_detail_text, menu);
+      menu.removeItem(android.R.id.selectAll);
+      return true;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+      return false;
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+      switch (item.getItemId()) {
+        case R.id.bookpart_detail_start_from_here:
+          int selectionStart = mBodyTextView.getSelectionStart();
+          startFromPosition(selectionStart);
+          return true;
+      }
+      return false;
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
     }
   }
 }

@@ -184,6 +184,7 @@
     </string>
     <string name="title_bookpart_list">BookParts</string>
     <string name="title_bookpart_detail">BookPart Detail</string>
+    <string name="bookpart_detail_start_from_here">Start from here</string>
 
     <string name="book_card_more">More</string>
     <string name="book_card_navigate">Navigate</string>
