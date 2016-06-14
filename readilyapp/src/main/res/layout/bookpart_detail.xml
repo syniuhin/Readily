@@ -5,7 +5,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp"
-        tools:context="com.infmme.readilyapp.fragment.BookPartDetailFragment">
+        tools:context="com.infmme.readilyapp.navigation.BookPartDetailFragment">
     <LinearLayout android:layout_width="match_parent"
                   android:layout_height="match_parent"
                   android:orientation="vertical">

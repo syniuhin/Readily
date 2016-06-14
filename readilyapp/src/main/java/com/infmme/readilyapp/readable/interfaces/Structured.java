@@ -11,7 +11,11 @@ import java.util.List;
 public interface Structured {
   List<? extends AbstractTocReference> getTableOfContents();
 
-  int getCurrentIndex();
+  String getCurrentId();
+
+  void setCurrentId(String id);
 
   int getCurrentPosition();
+
+  void setCurrentPosition(int position);
 }

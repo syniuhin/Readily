@@ -85,7 +85,7 @@
                     android:value="com.infmme.readilyapp.MainActivity"/>
         </activity>
         <activity
-                android:name=".BookPartListActivity"
+                android:name=".navigation.BookPartListActivity"
                 android:label="@string/title_bookpart_list"
                 android:launchMode="singleTop"
                 android:parentActivityName=".MainActivity"
@@ -95,13 +95,13 @@
                     android:value="com.infmme.readilyapp.MainActivity"/>
         </activity>
         <activity
-                android:name=".BookPartDetailActivity"
+                android:name=".navigation.BookPartDetailActivity"
                 android:label="@string/title_bookpart_detail"
-                android:parentActivityName=".BookPartListActivity"
+                android:parentActivityName=".navigation.BookPartListActivity"
                 android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.infmme.readilyapp.BookPartListActivity"/>
+                    android:value="com.infmme.readilyapp.navigation.BookPartListActivity"/>
         </activity>
         <activity android:name=".TestEpubActivity">
         </activity>

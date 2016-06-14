@@ -13,7 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.infmme.readilyapp.BookPartListActivity;
+import com.infmme.readilyapp.navigation.BookPartListActivity;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.ReceiverActivity;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;

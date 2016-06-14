@@ -9,7 +9,7 @@
               android:divider="?android:attr/dividerHorizontal"
               android:orientation="horizontal"
               android:showDividers="middle"
-              tools:context="com.infmme.readilyapp.BookPartListActivity">
+              tools:context="com.infmme.readilyapp.navigation.BookPartListActivity">
 
     <!--
     This layout is a two-pane layout for the BookParts
@@ -33,7 +33,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             app:layoutManager="LinearLayoutManager"
-            tools:context="com.infmme.readilyapp.BookPartListActivity"
+            tools:context="com.infmme.readilyapp.navigation.BookPartListActivity"
             tools:listitem="@layout/bookpart_item_parent"/>
 
     <FrameLayout

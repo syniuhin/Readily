@@ -1,6 +1,6 @@
-package com.infmme.readilyapp;
+package com.infmme.readilyapp.navigation;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,8 +12,10 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import com.infmme.readilyapp.fragment.BookPartDetailFragment;
+import com.infmme.readilyapp.BaseActivity;
+import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.readable.interfaces.Storable;
+import com.infmme.readilyapp.readable.interfaces.Structured;
 import com.infmme.readilyapp.readable.structure.AbstractTocReference;
 import com.infmme.readilyapp.readable.structure.epub.EpubStorable;
 import com.infmme.readilyapp.readable.type.ReadableType;
@@ -33,7 +35,10 @@ import static com.infmme.readilyapp.R.id.fab;
 import static com.infmme.readilyapp.R.id.toolbar;
 
 public class BookPartListActivity extends BaseActivity implements
-    BookNavigationAdapter.OnItemClickListener {
+    BookNavigationAdapter.OnItemClickListener,
+    OnChooseListener {
+
+  private static final int DETAIL_ACTIVITY = 1232;
 
   /**
    * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -41,14 +46,20 @@ public class BookPartListActivity extends BaseActivity implements
    */
   private boolean mTwoPane;
 
+  /**
+   * Supported storable types implements both of interfaces, therefore instances
+   * below will point to the same object.
+   */
   private Storable mStorable;
+  private Structured mStructured;
+
   private List<? extends AbstractTocReference> mTocReferenceList;
 
   private Toolbar mToolbar;
   private FloatingActionButton mFab;
   private RecyclerView mRecyclerView;
 
-  private BookPartDetailActivity.BookDetailOnFabClicked mCallback = null;
+  private OnFabClickListener mCallback = null;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +103,7 @@ public class BookPartListActivity extends BaseActivity implements
       @Override
       public void onClick(View view) {
         if (mCallback != null) {
-          mCallback.onFabClicked();
+          mCallback.onClick();
         }
       }
     });
@@ -113,6 +124,21 @@ public class BookPartListActivity extends BaseActivity implements
     }
 
     setupRecyclerView(mRecyclerView);
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode,
+                                  Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    switch (requestCode) {
+      case DETAIL_ACTIVITY: {
+        if (resultCode == Activity.RESULT_OK) {
+          chooseItem(data.getStringExtra(Constants.EXTRA_ITEM_ID),
+                     data.getIntExtra(Constants.EXTRA_POSITION, 0));
+        }
+      }
+      break;
+    }
   }
 
   private boolean isTwoPane() {
@@ -145,6 +171,7 @@ public class BookPartListActivity extends BaseActivity implements
                 epubStorable.setPath(path);
                 epubStorable.process();
                 mStorable = epubStorable;
+                mStructured = epubStorable;
                 subscriber.onNext(epubStorable.getTableOfContents());
               }
               break;
@@ -182,12 +209,31 @@ public class BookPartListActivity extends BaseActivity implements
           .commit();
       mCallback = fragment;
     } else {
-      Context context = v.getContext();
+      // Context context = v.getContext();
       Intent intent = new Intent(
-          context, BookPartDetailActivity.class);
+          BookPartListActivity.this, BookPartDetailActivity.class);
       intent.putExtra(Constants.EXTRA_TOC_REFERENCE, tocReference);
       intent.putExtra(Constants.EXTRA_TWO_PANE, mTwoPane);
-      context.startActivity(intent);
+      startActivityForResult(intent, DETAIL_ACTIVITY);
     }
+  }
+
+  @Override
+  public void chooseItem(String itemId, int textPosition) {
+    mStructured.setCurrentId(itemId);
+    mStructured.setCurrentPosition(textPosition);
+    final Activity activity = this;
+    new Thread(new Runnable() {
+      @Override
+      public void run() {
+        mStorable.storeToDb();
+        activity.runOnUiThread(new Runnable() {
+          @Override
+          public void run() {
+            finish();
+          }
+        });
+      }
+    }).start();
   }
 }

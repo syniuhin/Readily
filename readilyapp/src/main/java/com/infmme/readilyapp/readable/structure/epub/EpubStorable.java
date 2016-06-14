@@ -162,7 +162,6 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
   @Override
   public void storeToDb() {
     CachedBookContentValues values = new CachedBookContentValues();
-    values.putTimeOpened(mTimeCreated);
     // TODO: Solve this
     values.putPercentile(0);
 
@@ -178,6 +177,7 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
       epubValues.update(mContext, epubWhere);
       values.update(mContext, cachedWhere);
     } else {
+      values.putTimeOpened(mTimeCreated);
       values.putPath(mPath);
       values.putTitle(mMetadata.getFirstTitle());
 
@@ -299,21 +299,23 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
   }
 
   @Override
-  public int getCurrentIndex() {
-    int index = -1;
-    if (mTableOfContents != null) {
-      for (int i = 0; i < mTableOfContents.size() && index == -1; ++i) {
-        if (mTableOfContents.get(i).getId().equals(mCurrentResourceId)) {
-          index = i;
-        }
-      }
-    }
-    return index;
+  public String getCurrentId() {
+    return mCurrentResourceId;
+  }
+
+  @Override
+  public void setCurrentId(String id) {
+    mCurrentResourceId = id;
   }
 
   @Override
   public int getCurrentPosition() {
     return mCurrentTextPosition;
+  }
+
+  @Override
+  public void setCurrentPosition(int position) {
+    mCurrentTextPosition = position;
   }
 
   private class ChunkInfo {

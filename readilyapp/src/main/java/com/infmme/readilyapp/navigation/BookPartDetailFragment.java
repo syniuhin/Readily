@@ -1,6 +1,7 @@
-package com.infmme.readilyapp.fragment;
+package com.infmme.readilyapp.navigation;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
@@ -10,8 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.infmme.readilyapp.BookPartDetailActivity;
-import com.infmme.readilyapp.BookPartListActivity;
+import com.daimajia.androidanimations.library.BuildConfig;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.readable.structure.AbstractTocReference;
 import com.infmme.readilyapp.util.Constants;
@@ -30,7 +30,7 @@ import java.io.IOException;
  * on handsets.
  */
 public class BookPartDetailFragment extends Fragment implements
-    BookPartDetailActivity.BookDetailOnFabClicked {
+    OnFabClickListener {
 
   private AbstractTocReference mItemReference;
 
@@ -39,11 +39,27 @@ public class BookPartDetailFragment extends Fragment implements
 
   private boolean mTwoPane = false;
 
+  private OnChooseListener mCallback;
+
   /**
    * Mandatory empty constructor for the fragment manager to instantiate the
    * fragment (e.g. upon screen orientation changes).
    */
   public BookPartDetailFragment() {
+  }
+
+  @Override
+  public void onAttach(Context context) {
+    super.onAttach(context);
+    try {
+      if (context instanceof BookPartDetailActivity) {
+        mCallback = (BookPartDetailActivity) context;
+      } else {
+        mCallback = (BookPartListActivity) context;
+      }
+    } catch (ClassCastException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override
@@ -120,15 +136,18 @@ public class BookPartDetailFragment extends Fragment implements
   }
 
   @Override
-  public void onFabClicked() {
+  public void onClick() {
     int selectionStart;
     if (mBodyTextView.hasSelection()) {
       selectionStart = mBodyTextView.getSelectionStart();
     } else {
       selectionStart = 0;
     }
-    Log.d(this.getClass().getName(),
-          String.format("Res id: %s, selection start: %d",
-                        mItemReference.getId(), selectionStart));
+    if (BuildConfig.DEBUG) {
+      Log.d(this.getClass().getName(),
+            String.format("Res id: %s, selection start: %d",
+                          mItemReference.getId(), selectionStart));
+    }
+    mCallback.chooseItem(mItemReference.getId(), selectionStart);
   }
 }

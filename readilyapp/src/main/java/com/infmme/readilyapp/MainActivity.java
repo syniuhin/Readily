@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.infmme.readilyapp.fragment.FileListFragment;
+import com.infmme.readilyapp.navigation.BookPartListActivity;
 import com.infmme.readilyapp.readable.old.FB2FileStorable;
 import com.infmme.readilyapp.readable.old.FileStorable;
 import com.infmme.readilyapp.readable.structure.fb2.FB2Part;
