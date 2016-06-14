@@ -209,7 +209,6 @@ public class BookPartListActivity extends BaseActivity implements
           .commit();
       mCallback = fragment;
     } else {
-      // Context context = v.getContext();
       Intent intent = new Intent(
           BookPartListActivity.this, BookPartDetailActivity.class);
       intent.putExtra(Constants.EXTRA_TOC_REFERENCE, tocReference);

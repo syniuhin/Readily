@@ -681,6 +681,8 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
           // TODO: Think about handling location params
           // epubStorable.setTextPosition(args.getInt(Constants
           // .EXTRA_POSITION));
+          // TODO: Terminate this and other threads according to lifecycle.
+          // TODO: Probably switch to RxAndroid's observables.
           new Thread(new Runnable() {
             @Override
             public void run() {
@@ -692,7 +694,8 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
                     new Runnable() {
                       @Override
                       public void run() {
-                        startChunkedReadingFlow(epubStorable.getTextPosition());
+                        startChunkedReadingFlow(
+                            epubStorable.getCurrentPosition());
                       }
                     });
               }

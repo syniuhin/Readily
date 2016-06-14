@@ -154,9 +154,11 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
 
   @Override
   public void prepareForStoring(Reader reader) {
-    mCurrentResourceIndex = mLoadedChunks.getFirst().mResourceIndex;
-    mCurrentResourceId = mContents.get(mCurrentResourceIndex).getId();
-    setTextPosition(reader.getPosition());
+    if (mLoadedChunks != null && !mLoadedChunks.isEmpty()) {
+      mCurrentResourceIndex = mLoadedChunks.getFirst().mResourceIndex;
+      mCurrentResourceId = mContents.get(mCurrentResourceIndex).getId();
+      setCurrentPosition(reader.getPosition());
+    }
   }
 
   @Override
@@ -258,14 +260,6 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
 
   public void setContext(Context mContext) {
     this.mContext = mContext;
-  }
-
-  public void setTextPosition(final int textPosition) {
-    mCurrentTextPosition = textPosition;
-  }
-
-  public int getTextPosition() {
-    return mCurrentTextPosition;
   }
 
   @Override

@@ -103,8 +103,6 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.infmme.readilyapp.navigation.BookPartListActivity"/>
         </activity>
-        <activity android:name=".TestEpubActivity">
-        </activity>
 
         <service
                 android:name=".service.LastReadService"

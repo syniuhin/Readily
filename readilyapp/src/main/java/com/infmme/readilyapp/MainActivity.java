@@ -123,9 +123,11 @@ public class MainActivity extends BaseActivity {
                                      R.string.choose_file)),
             FB2_SELECT_CODE);
         break;
+/*
       case R.id.action_epub_chunking:
         startActivity(new Intent(this, TestEpubActivity.class));
         break;
+*/
     }
 
     return super.onOptionsItemSelected(item);

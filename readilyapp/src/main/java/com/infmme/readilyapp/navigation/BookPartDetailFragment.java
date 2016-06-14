@@ -3,6 +3,7 @@ package com.infmme.readilyapp.navigation;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -13,7 +14,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.daimajia.androidanimations.library.BuildConfig;
 import com.infmme.readilyapp.R;
+import com.infmme.readilyapp.readable.Readable;
+import com.infmme.readilyapp.readable.interfaces.Reading;
 import com.infmme.readilyapp.readable.structure.AbstractTocReference;
+import com.infmme.readilyapp.reader.TextParser;
+import com.infmme.readilyapp.settings.SettingsBundle;
 import com.infmme.readilyapp.util.Constants;
 import rx.Observable;
 import rx.Subscriber;
@@ -40,6 +45,8 @@ public class BookPartDetailFragment extends Fragment implements
   private boolean mTwoPane = false;
 
   private OnChooseListener mCallback;
+
+  private TextParser mTextParser;
 
   /**
    * Mandatory empty constructor for the fragment manager to instantiate the
@@ -98,14 +105,20 @@ public class BookPartDetailFragment extends Fragment implements
     mBodyTextView = (TextView) rootView.findViewById(R.id.bookpart_detail_body);
 
     if (mItemReference != null) {
-      Observable<AbstractTocReference> o = Observable.create(
-          new Observable.OnSubscribe<AbstractTocReference>() {
+      Observable<ProcessedItem> o = Observable.create(
+          new Observable.OnSubscribe<ProcessedItem>() {
             @Override
-            public void call(Subscriber<? super AbstractTocReference> subscriber) {
+            public void call(Subscriber<? super ProcessedItem> subscriber) {
               try {
                 // Load and cache preview
-                mItemReference.getPreview();
-                subscriber.onNext(mItemReference);
+                Reading r = new Readable();
+                r.setText(mItemReference.getPreview());
+                mTextParser = TextParser.newInstance(r, new SettingsBundle(
+                    PreferenceManager.getDefaultSharedPreferences(
+                        getActivity())).getDelayCoefficients());
+                mTextParser.process();
+                subscriber.onNext(
+                    new ProcessedItem(mItemReference.getTitle(), r.getText()));
                 subscriber.onCompleted();
               } catch (IOException e) {
                 subscriber.onError(e);
@@ -114,13 +127,13 @@ public class BookPartDetailFragment extends Fragment implements
           });
       o.subscribeOn(Schedulers.newThread())
        .observeOn(AndroidSchedulers.mainThread())
-       .subscribe(new Action1<AbstractTocReference>() {
+       .subscribe(new Action1<ProcessedItem>() {
          @Override
-         public void call(AbstractTocReference reference) {
+         public void call(ProcessedItem item) {
            if (mTwoPane) {
-             mTitleTextView.setText(reference.getTitle());
+             mTitleTextView.setText(item.title);
            }
-           mBodyTextView.setText(reference.getCachedPreview());
+           mBodyTextView.setText(item.text);
          }
        }, new Action1<Throwable>() {
          @Override
@@ -143,11 +156,24 @@ public class BookPartDetailFragment extends Fragment implements
     } else {
       selectionStart = 0;
     }
+    String text = mBodyTextView.getText().toString()
+                               .substring(0, selectionStart + 1);
+    int spacesCount = text.length() - text.replaceAll(" ", "").length();
     if (BuildConfig.DEBUG) {
       Log.d(this.getClass().getName(),
-            String.format("Res id: %s, selection start: %d",
-                          mItemReference.getId(), selectionStart));
+            String.format("Res id: %s, word position: %d",
+                          mItemReference.getId(), spacesCount));
     }
-    mCallback.chooseItem(mItemReference.getId(), selectionStart);
+    mCallback.chooseItem(mItemReference.getId(), spacesCount);
+  }
+
+  private class ProcessedItem {
+    String title;
+    String text;
+
+    public ProcessedItem(String title, String text) {
+      this.title = title;
+      this.text = text;
+    }
   }
 }
