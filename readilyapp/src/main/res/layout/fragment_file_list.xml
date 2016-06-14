@@ -11,6 +11,7 @@
             android:layout_height="match_parent"
             app:layoutManager="LinearLayoutManager"/>
 
+<!--
     <TextView
             android:id="@+id/text_view_empty"
             android:layout_width="wrap_content"
@@ -22,5 +23,6 @@
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="@android:color/secondary_text_dark"/>
+-->
 
 </RelativeLayout>

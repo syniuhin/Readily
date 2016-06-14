@@ -12,7 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
 import com.infmme.readilyapp.view.adapter.CachedBooksAdapter;
@@ -22,7 +21,7 @@ public class FileListFragment extends Fragment
 
   private CachedBooksAdapter mAdapter;
 
-  private TextView mTextViewEmpty;
+  // private TextView mTextViewEmpty;
   private RecyclerView mRecyclerView;
 
   public FileListFragment() {}
@@ -43,28 +42,13 @@ public class FileListFragment extends Fragment
   }
 
   private void findViews(ViewGroup v) {
-    // listView = (ListView) v.findViewById(R.id.fileListView);
     mRecyclerView = (RecyclerView) v.findViewById(R.id.file_recycler_view);
-    mTextViewEmpty = (TextView) v.findViewById(R.id.text_view_empty);
+    // mTextViewEmpty = (TextView) v.findViewById(R.id.text_view_empty);
   }
 
   private void initViews(final Context context) {
     mAdapter = new CachedBooksAdapter(null);
     mRecyclerView.setAdapter(mAdapter);
-/*
-    listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-      @Override
-      public void onScrollStateChanged(AbsListView view, int scrollState) {
-        mAdapter.hideActionView();
-      }
-
-      @Override
-      public void onScroll(AbsListView view, int firstVisibleItem,
-                           int visibleItemCount, int totalItemCount) {}
-    });
-
-    listView.setEmptyView(mTextViewEmpty);
-*/
   }
 
   @Override

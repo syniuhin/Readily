@@ -10,6 +10,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
+import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormat;
 
 /**
  * Created with love, by infm dated on 6/13/16.
@@ -27,7 +29,11 @@ public class CachedBooksAdapter
                                      Cursor cursor) {
     CachedBookCursor bookCursor = new CachedBookCursor(cursor);
     holder.mTitleView.setText(bookCursor.getTitle());
-    holder.mTimeOpenedView.setText(bookCursor.getTimeOpened());
+    LocalDateTime timeOpened = LocalDateTime.parse(bookCursor.getTimeOpened());
+    // TODO: Add options for 'Today', 'Yesterday' etc.
+    String strTimeOpened = timeOpened.toString(
+        DateTimeFormat.forPattern("d MMMM, HH:mm"));
+    holder.mTimeOpenedView.setText(strTimeOpened);
     // TODO: Replace with a real value
     holder.mProgressView.setProgress(50);
   }
@@ -36,7 +42,8 @@ public class CachedBooksAdapter
   public CachedBookHolder onCreateViewHolder(
       ViewGroup parent, int viewType) {
     View v = LayoutInflater.from(parent.getContext())
-                           .inflate(R.layout.file_list_card, parent, false);
+                           .inflate(R.layout.file_list_card_image, parent,
+                                    false);
     CachedBookHolder holder = new CachedBookHolder(v);
     return holder;
   }
