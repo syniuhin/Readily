@@ -84,6 +84,16 @@ public class CachedBookCursor extends AbstractCursor
   }
 
   /**
+   * Uri of the cover image.
+   * Can be {@code null}.
+   */
+  @Nullable
+  public String getCoverImageUri() {
+    String res = getStringOrNull(CachedBookColumns.COVER_IMAGE_URI);
+    return res;
+  }
+
+  /**
    * Optional link to epub_book.
    * Can be {@code null}.
    */
@@ -110,16 +120,6 @@ public class CachedBookCursor extends AbstractCursor
   @Nullable
   public Integer getEpubBookTextPosition() {
     Integer res = getIntegerOrNull(EpubBookColumns.TEXT_POSITION);
-    return res;
-  }
-
-  /**
-   * Uri of the cover image.
-   * Can be {@code null}.
-   */
-  @Nullable
-  public String getEpubBookCoverImageUri() {
-    String res = getStringOrNull(EpubBookColumns.COVER_IMAGE_URI);
     return res;
   }
 
@@ -171,16 +171,6 @@ public class CachedBookCursor extends AbstractCursor
   @Nullable
   public String getFb2BookPathToc() {
     String res = getStringOrNull(Fb2BookColumns.PATH_TOC);
-    return res;
-  }
-
-  /**
-   * Uri of the cover image.
-   * Can be {@code null}.
-   */
-  @Nullable
-  public String getFb2BookCoverImageUri() {
-    String res = getStringOrNull(Fb2BookColumns.COVER_IMAGE_URI);
     return res;
   }
 

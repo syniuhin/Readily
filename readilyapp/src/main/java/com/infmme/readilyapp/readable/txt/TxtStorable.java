@@ -22,7 +22,7 @@ import java.io.*;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-import static com.infmme.readilyapp.readable.old.FileStorable.guessCharset;
+import static com.infmme.readilyapp.readable.Utils.guessCharset;
 
 /**
  * Created with love, by infm dated on 6/15/16.
@@ -181,7 +181,7 @@ public class TxtStorable implements Storable, Chunked, Unprocessed {
   }
 
   @Override
-  public void storeToFile() {
+  public void storeToFile() throws IOException {
     throw new IllegalStateException(
         "You can't store FB2Storable to a filesystem.");
   }

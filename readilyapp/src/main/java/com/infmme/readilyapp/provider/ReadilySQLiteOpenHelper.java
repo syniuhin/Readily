@@ -25,6 +25,7 @@ public class ReadilySQLiteOpenHelper extends SQLiteOpenHelper {
       + CachedBookColumns.PATH + " TEXT NOT NULL, "
       + CachedBookColumns.PERCENTILE + " REAL NOT NULL, "
       + CachedBookColumns.TIME_OPENED + " TEXT NOT NULL, "
+      + CachedBookColumns.COVER_IMAGE_URI + " TEXT, "
       + CachedBookColumns.EPUB_BOOK_ID + " INTEGER, "
       + CachedBookColumns.FB2_BOOK_ID + " INTEGER, "
       + CachedBookColumns.TXT_BOOK_ID + " INTEGER "
@@ -44,8 +45,7 @@ public class ReadilySQLiteOpenHelper extends SQLiteOpenHelper {
       + EpubBookColumns.TABLE_NAME + " ( "
       + EpubBookColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
       + EpubBookColumns.CURRENT_RESOURCE_ID + " TEXT NOT NULL, "
-      + EpubBookColumns.TEXT_POSITION + " INTEGER NOT NULL, "
-      + EpubBookColumns.COVER_IMAGE_URI + " TEXT "
+      + EpubBookColumns.TEXT_POSITION + " INTEGER NOT NULL "
       + " );";
   public static final String SQL_CREATE_TABLE_FB2_BOOK = "CREATE TABLE IF NOT" +
       " EXISTS "
@@ -54,8 +54,7 @@ public class ReadilySQLiteOpenHelper extends SQLiteOpenHelper {
       + Fb2BookColumns.BYTE_POSITION + " INTEGER NOT NULL, "
       + Fb2BookColumns.CURRENT_PART_ID + " TEXT NOT NULL, "
       + Fb2BookColumns.TEXT_POSITION + " INTEGER NOT NULL, "
-      + Fb2BookColumns.PATH_TOC + " TEXT, "
-      + Fb2BookColumns.COVER_IMAGE_URI + " TEXT "
+      + Fb2BookColumns.PATH_TOC + " TEXT "
       + " );";
   public static final String SQL_CREATE_TABLE_TXT_BOOK = "CREATE TABLE IF NOT" +
       " EXISTS "

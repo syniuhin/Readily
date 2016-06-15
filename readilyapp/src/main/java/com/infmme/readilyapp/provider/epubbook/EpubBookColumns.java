@@ -27,11 +27,6 @@ public class EpubBookColumns implements BaseColumns {
    */
   public static final String TEXT_POSITION = "epub_book__text_position";
 
-  /**
-   * Uri of the cover image.
-   */
-  public static final String COVER_IMAGE_URI = "epub_book__cover_image_uri";
-
 
   public static final String DEFAULT_ORDER = TABLE_NAME + "." + _ID;
 
@@ -39,8 +34,7 @@ public class EpubBookColumns implements BaseColumns {
   public static final String[] ALL_COLUMNS = new String[] {
       _ID,
       CURRENT_RESOURCE_ID,
-      TEXT_POSITION,
-      COVER_IMAGE_URI
+      TEXT_POSITION
   };
   // @formatter:on
 
@@ -50,8 +44,6 @@ public class EpubBookColumns implements BaseColumns {
       if (c.equals(CURRENT_RESOURCE_ID) || c.contains(
           "." + CURRENT_RESOURCE_ID)) return true;
       if (c.equals(TEXT_POSITION) || c.contains("." + TEXT_POSITION))
-        return true;
-      if (c.equals(COVER_IMAGE_URI) || c.contains("." + COVER_IMAGE_URI))
         return true;
     }
     return false;

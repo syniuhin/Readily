@@ -246,6 +246,46 @@ public class CachedBookSelection
     return this;
   }
 
+  public CachedBookSelection coverImageUri(String... value) {
+    addEquals(CachedBookColumns.COVER_IMAGE_URI, value);
+    return this;
+  }
+
+  public CachedBookSelection coverImageUriNot(String... value) {
+    addNotEquals(CachedBookColumns.COVER_IMAGE_URI, value);
+    return this;
+  }
+
+  public CachedBookSelection coverImageUriLike(String... value) {
+    addLike(CachedBookColumns.COVER_IMAGE_URI, value);
+    return this;
+  }
+
+  public CachedBookSelection coverImageUriContains(String... value) {
+    addContains(CachedBookColumns.COVER_IMAGE_URI, value);
+    return this;
+  }
+
+  public CachedBookSelection coverImageUriStartsWith(String... value) {
+    addStartsWith(CachedBookColumns.COVER_IMAGE_URI, value);
+    return this;
+  }
+
+  public CachedBookSelection coverImageUriEndsWith(String... value) {
+    addEndsWith(CachedBookColumns.COVER_IMAGE_URI, value);
+    return this;
+  }
+
+  public CachedBookSelection orderByCoverImageUri(boolean desc) {
+    orderBy(CachedBookColumns.COVER_IMAGE_URI, desc);
+    return this;
+  }
+
+  public CachedBookSelection orderByCoverImageUri() {
+    orderBy(CachedBookColumns.COVER_IMAGE_URI, false);
+    return this;
+  }
+
   public CachedBookSelection epubBookId(Long... value) {
     addEquals(CachedBookColumns.EPUB_BOOK_ID, value);
     return this;
@@ -366,46 +406,6 @@ public class CachedBookSelection
 
   public CachedBookSelection orderByEpubBookTextPosition() {
     orderBy(EpubBookColumns.TEXT_POSITION, false);
-    return this;
-  }
-
-  public CachedBookSelection epubBookCoverImageUri(String... value) {
-    addEquals(EpubBookColumns.COVER_IMAGE_URI, value);
-    return this;
-  }
-
-  public CachedBookSelection epubBookCoverImageUriNot(String... value) {
-    addNotEquals(EpubBookColumns.COVER_IMAGE_URI, value);
-    return this;
-  }
-
-  public CachedBookSelection epubBookCoverImageUriLike(String... value) {
-    addLike(EpubBookColumns.COVER_IMAGE_URI, value);
-    return this;
-  }
-
-  public CachedBookSelection epubBookCoverImageUriContains(String... value) {
-    addContains(EpubBookColumns.COVER_IMAGE_URI, value);
-    return this;
-  }
-
-  public CachedBookSelection epubBookCoverImageUriStartsWith(String... value) {
-    addStartsWith(EpubBookColumns.COVER_IMAGE_URI, value);
-    return this;
-  }
-
-  public CachedBookSelection epubBookCoverImageUriEndsWith(String... value) {
-    addEndsWith(EpubBookColumns.COVER_IMAGE_URI, value);
-    return this;
-  }
-
-  public CachedBookSelection orderByEpubBookCoverImageUri(boolean desc) {
-    orderBy(EpubBookColumns.COVER_IMAGE_URI, desc);
-    return this;
-  }
-
-  public CachedBookSelection orderByEpubBookCoverImageUri() {
-    orderBy(EpubBookColumns.COVER_IMAGE_URI, false);
     return this;
   }
 
@@ -606,46 +606,6 @@ public class CachedBookSelection
 
   public CachedBookSelection orderByFb2BookPathToc() {
     orderBy(Fb2BookColumns.PATH_TOC, false);
-    return this;
-  }
-
-  public CachedBookSelection fb2BookCoverImageUri(String... value) {
-    addEquals(Fb2BookColumns.COVER_IMAGE_URI, value);
-    return this;
-  }
-
-  public CachedBookSelection fb2BookCoverImageUriNot(String... value) {
-    addNotEquals(Fb2BookColumns.COVER_IMAGE_URI, value);
-    return this;
-  }
-
-  public CachedBookSelection fb2BookCoverImageUriLike(String... value) {
-    addLike(Fb2BookColumns.COVER_IMAGE_URI, value);
-    return this;
-  }
-
-  public CachedBookSelection fb2BookCoverImageUriContains(String... value) {
-    addContains(Fb2BookColumns.COVER_IMAGE_URI, value);
-    return this;
-  }
-
-  public CachedBookSelection fb2BookCoverImageUriStartsWith(String... value) {
-    addStartsWith(Fb2BookColumns.COVER_IMAGE_URI, value);
-    return this;
-  }
-
-  public CachedBookSelection fb2BookCoverImageUriEndsWith(String... value) {
-    addEndsWith(Fb2BookColumns.COVER_IMAGE_URI, value);
-    return this;
-  }
-
-  public CachedBookSelection orderByFb2BookCoverImageUri(boolean desc) {
-    orderBy(Fb2BookColumns.COVER_IMAGE_URI, desc);
-    return this;
-  }
-
-  public CachedBookSelection orderByFb2BookCoverImageUri() {
-    orderBy(Fb2BookColumns.COVER_IMAGE_URI, false);
     return this;
   }
 

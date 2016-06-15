@@ -38,6 +38,11 @@ public class CachedBookColumns implements BaseColumns {
   public static final String TIME_OPENED = "time_opened";
 
   /**
+   * Uri of the cover image.
+   */
+  public static final String COVER_IMAGE_URI = "cover_image_uri";
+
+  /**
    * Optional link to epub_book.
    */
   public static final String EPUB_BOOK_ID = "epub_book_id";
@@ -62,6 +67,7 @@ public class CachedBookColumns implements BaseColumns {
       PATH,
       PERCENTILE,
       TIME_OPENED,
+      COVER_IMAGE_URI,
       EPUB_BOOK_ID,
       FB2_BOOK_ID,
       TXT_BOOK_ID
@@ -81,6 +87,8 @@ public class CachedBookColumns implements BaseColumns {
       if (c.equals(PATH) || c.contains("." + PATH)) return true;
       if (c.equals(PERCENTILE) || c.contains("." + PERCENTILE)) return true;
       if (c.equals(TIME_OPENED) || c.contains("." + TIME_OPENED)) return true;
+      if (c.equals(COVER_IMAGE_URI) || c.contains("." + COVER_IMAGE_URI))
+        return true;
       if (c.equals(EPUB_BOOK_ID) || c.contains("." + EPUB_BOOK_ID)) return true;
       if (c.equals(FB2_BOOK_ID) || c.contains("." + FB2_BOOK_ID)) return true;
       if (c.equals(TXT_BOOK_ID) || c.contains("." + TXT_BOOK_ID)) return true;

@@ -492,7 +492,7 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
     if (BuildConfig.DEBUG) {
       Log.d(getClass().getName(), "Next reading requested.");
     }
-    mStorable.onReaderNext();
+    mChunked.onReaderNext();
     return mReaderTask.removeDequeHead();
   }
 
@@ -571,6 +571,7 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
         }
       }).start();
     }
+    // if ()
 
     mSettingsBundle.updatePreferences();
 
@@ -640,13 +641,14 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
         !TextUtils.isEmpty(
             link = TextParser.findLink(TextParser.compilePattern(),
                                        intentText))) {
-      final NetReadable netReadable = new NetReadable(link);
+      final NetReadable netReadable = new NetReadable(getActivity(), link);
       new Thread(new Runnable() {
         @Override
         public void run() {
           netReadable.process();
           if (netReadable.isProcessed()) {
             mReading = netReadable;
+            mStorable = netReadable;
             getActivity().runOnUiThread(new Runnable() {
               @Override
               public void run() {

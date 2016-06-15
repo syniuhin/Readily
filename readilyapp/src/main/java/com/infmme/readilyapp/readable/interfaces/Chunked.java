@@ -11,5 +11,10 @@ public interface Chunked {
 
   boolean hasNextReading();
 
+  /**
+   * Called when Reader object starts showing next Reading.
+   */
+  void onReaderNext();
+
   void skipLast();
 }

@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.*;
 
-import static com.infmme.readilyapp.readable.old.FileStorable.guessCharset;
+import static com.infmme.readilyapp.readable.Utils.guessCharset;
 
 /**
  * Created with love, by infm dated on 6/14/16.

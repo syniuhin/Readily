@@ -36,6 +36,13 @@ public interface CachedBookModel extends BaseModel {
   String getTimeOpened();
 
   /**
+   * Uri of the cover image.
+   * Can be {@code null}.
+   */
+  @Nullable
+  String getCoverImageUri();
+
+  /**
    * Optional link to epub_book.
    * Can be {@code null}.
    */

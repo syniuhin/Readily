@@ -9,10 +9,10 @@ import java.util.List;
  */
 
 public class Readable implements Reading {
-  private String mText;
+  protected String mText;
   private StringBuilder mTextBuilder;
 
-  private int mPosition;
+  protected int mPosition;
 
   private List<String> mWordList = null;
   private List<Integer> mEmphasisList = null;

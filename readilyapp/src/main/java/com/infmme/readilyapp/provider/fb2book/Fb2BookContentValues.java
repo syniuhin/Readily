@@ -85,17 +85,4 @@ public class Fb2BookContentValues extends AbstractContentValues {
     mContentValues.putNull(Fb2BookColumns.PATH_TOC);
     return this;
   }
-
-  /**
-   * Uri of the cover image.
-   */
-  public Fb2BookContentValues putCoverImageUri(@Nullable String value) {
-    mContentValues.put(Fb2BookColumns.COVER_IMAGE_URI, value);
-    return this;
-  }
-
-  public Fb2BookContentValues putCoverImageUriNull() {
-    mContentValues.putNull(Fb2BookColumns.COVER_IMAGE_URI);
-    return this;
-  }
 }

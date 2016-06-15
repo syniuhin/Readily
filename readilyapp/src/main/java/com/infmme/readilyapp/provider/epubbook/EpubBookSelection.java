@@ -161,44 +161,4 @@ public class EpubBookSelection extends AbstractSelection<EpubBookSelection> {
     orderBy(EpubBookColumns.TEXT_POSITION, false);
     return this;
   }
-
-  public EpubBookSelection coverImageUri(String... value) {
-    addEquals(EpubBookColumns.COVER_IMAGE_URI, value);
-    return this;
-  }
-
-  public EpubBookSelection coverImageUriNot(String... value) {
-    addNotEquals(EpubBookColumns.COVER_IMAGE_URI, value);
-    return this;
-  }
-
-  public EpubBookSelection coverImageUriLike(String... value) {
-    addLike(EpubBookColumns.COVER_IMAGE_URI, value);
-    return this;
-  }
-
-  public EpubBookSelection coverImageUriContains(String... value) {
-    addContains(EpubBookColumns.COVER_IMAGE_URI, value);
-    return this;
-  }
-
-  public EpubBookSelection coverImageUriStartsWith(String... value) {
-    addStartsWith(EpubBookColumns.COVER_IMAGE_URI, value);
-    return this;
-  }
-
-  public EpubBookSelection coverImageUriEndsWith(String... value) {
-    addEndsWith(EpubBookColumns.COVER_IMAGE_URI, value);
-    return this;
-  }
-
-  public EpubBookSelection orderByCoverImageUri(boolean desc) {
-    orderBy(EpubBookColumns.COVER_IMAGE_URI, desc);
-    return this;
-  }
-
-  public EpubBookSelection orderByCoverImageUri() {
-    orderBy(EpubBookColumns.COVER_IMAGE_URI, false);
-    return this;
-  }
 }

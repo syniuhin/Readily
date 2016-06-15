@@ -62,17 +62,4 @@ public class EpubBookContentValues extends AbstractContentValues {
     return this;
   }
 
-
-  /**
-   * Uri of the cover image.
-   */
-  public EpubBookContentValues putCoverImageUri(@Nullable String value) {
-    mContentValues.put(EpubBookColumns.COVER_IMAGE_URI, value);
-    return this;
-  }
-
-  public EpubBookContentValues putCoverImageUriNull() {
-    mContentValues.putNull(EpubBookColumns.COVER_IMAGE_URI);
-    return this;
-  }
 }

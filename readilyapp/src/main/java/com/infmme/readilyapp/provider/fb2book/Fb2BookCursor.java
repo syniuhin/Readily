@@ -73,14 +73,4 @@ public class Fb2BookCursor extends AbstractCursor implements Fb2BookModel {
     String res = getStringOrNull(Fb2BookColumns.PATH_TOC);
     return res;
   }
-
-  /**
-   * Uri of the cover image.
-   * Can be {@code null}.
-   */
-  @Nullable
-  public String getCoverImageUri() {
-    String res = getStringOrNull(Fb2BookColumns.COVER_IMAGE_URI);
-    return res;
-  }
 }

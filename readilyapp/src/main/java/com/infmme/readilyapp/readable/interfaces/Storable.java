@@ -25,7 +25,7 @@ public interface Storable {
   /**
    * Stores current state to file.
    */
-  void storeToFile();
+  void storeToFile() throws IOException;
 
   /**
    * Reads from filesystem.
@@ -35,9 +35,4 @@ public interface Storable {
   String getPath();
 
   void setPath(String path);
-
-  /**
-   * Called when Reader object starts showing next Reading.
-   */
-  void onReaderNext();
 }

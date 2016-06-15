@@ -83,6 +83,19 @@ public class CachedBookContentValues extends AbstractContentValues {
 
 
   /**
+   * Uri of the cover image.
+   */
+  public CachedBookContentValues putCoverImageUri(@Nullable String value) {
+    mContentValues.put(CachedBookColumns.COVER_IMAGE_URI, value);
+    return this;
+  }
+
+  public CachedBookContentValues putCoverImageUriNull() {
+    mContentValues.putNull(CachedBookColumns.COVER_IMAGE_URI);
+    return this;
+  }
+
+  /**
    * Optional link to epub_book.
    */
   public CachedBookContentValues putEpubBookId(@Nullable Long value) {
