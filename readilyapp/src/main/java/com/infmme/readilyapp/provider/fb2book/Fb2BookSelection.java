@@ -241,4 +241,44 @@ public class Fb2BookSelection extends AbstractSelection<Fb2BookSelection> {
     orderBy(Fb2BookColumns.PATH_TOC, false);
     return this;
   }
+
+  public Fb2BookSelection coverImageUri(String... value) {
+    addEquals(Fb2BookColumns.COVER_IMAGE_URI, value);
+    return this;
+  }
+
+  public Fb2BookSelection coverImageUriNot(String... value) {
+    addNotEquals(Fb2BookColumns.COVER_IMAGE_URI, value);
+    return this;
+  }
+
+  public Fb2BookSelection coverImageUriLike(String... value) {
+    addLike(Fb2BookColumns.COVER_IMAGE_URI, value);
+    return this;
+  }
+
+  public Fb2BookSelection coverImageUriContains(String... value) {
+    addContains(Fb2BookColumns.COVER_IMAGE_URI, value);
+    return this;
+  }
+
+  public Fb2BookSelection coverImageUriStartsWith(String... value) {
+    addStartsWith(Fb2BookColumns.COVER_IMAGE_URI, value);
+    return this;
+  }
+
+  public Fb2BookSelection coverImageUriEndsWith(String... value) {
+    addEndsWith(Fb2BookColumns.COVER_IMAGE_URI, value);
+    return this;
+  }
+
+  public Fb2BookSelection orderByCoverImageUri(boolean desc) {
+    orderBy(Fb2BookColumns.COVER_IMAGE_URI, desc);
+    return this;
+  }
+
+  public Fb2BookSelection orderByCoverImageUri() {
+    orderBy(Fb2BookColumns.COVER_IMAGE_URI, false);
+    return this;
+  }
 }

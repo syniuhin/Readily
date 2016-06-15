@@ -2,6 +2,7 @@ package com.infmme.readilyapp.provider.epubbook;
 
 import android.database.Cursor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.infmme.readilyapp.provider.base.AbstractCursor;
 
 /**
@@ -47,6 +48,16 @@ public class EpubBookCursor extends AbstractCursor implements EpubBookModel {
       throw new NullPointerException(
           "The value of 'text_position' in the database was null, which is " +
               "not allowed according to the model definition");
+    return res;
+  }
+
+  /**
+   * Uri of the cover image.
+   * Can be {@code null}.
+   */
+  @Nullable
+  public String getCoverImageUri() {
+    String res = getStringOrNull(EpubBookColumns.COVER_IMAGE_URI);
     return res;
   }
 }

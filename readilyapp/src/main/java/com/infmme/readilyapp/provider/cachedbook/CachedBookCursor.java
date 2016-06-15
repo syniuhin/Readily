@@ -114,6 +114,16 @@ public class CachedBookCursor extends AbstractCursor
   }
 
   /**
+   * Uri of the cover image.
+   * Can be {@code null}.
+   */
+  @Nullable
+  public String getEpubBookCoverImageUri() {
+    String res = getStringOrNull(EpubBookColumns.COVER_IMAGE_URI);
+    return res;
+  }
+
+  /**
    * Optional link to fb2_book.
    * Can be {@code null}.
    */
@@ -165,12 +175,33 @@ public class CachedBookCursor extends AbstractCursor
   }
 
   /**
+   * Uri of the cover image.
+   * Can be {@code null}.
+   */
+  @Nullable
+  public String getFb2BookCoverImageUri() {
+    String res = getStringOrNull(Fb2BookColumns.COVER_IMAGE_URI);
+    return res;
+  }
+
+  /**
    * Optional link to txt_book.
    * Can be {@code null}.
    */
   @Nullable
   public Long getTxtBookId() {
     Long res = getLongOrNull(CachedBookColumns.TXT_BOOK_ID);
+    return res;
+  }
+
+  /**
+   * Byte position of block in a file, either FB2Part or simple chunk read
+   * continuously.
+   * Can be {@code null}.
+   */
+  @Nullable
+  public Integer getTxtBookBytePosition() {
+    Integer res = getIntegerOrNull(TxtBookColumns.BYTE_POSITION);
     return res;
   }
 

@@ -1,6 +1,7 @@
 package com.infmme.readilyapp.provider.epubbook;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.infmme.readilyapp.provider.base.BaseModel;
 
 /**
@@ -19,4 +20,11 @@ public interface EpubBookModel extends BaseModel {
    * Position in a parsed string, on which read was finished.
    */
   int getTextPosition();
+
+  /**
+   * Uri of the cover image.
+   * Can be {@code null}.
+   */
+  @Nullable
+  String getCoverImageUri();
 }

@@ -18,6 +18,12 @@ public class TxtBookColumns implements BaseColumns {
   public static final String _ID = BaseColumns._ID;
 
   /**
+   * Byte position of block in a file, either FB2Part or simple chunk read
+   * continuously.
+   */
+  public static final String BYTE_POSITION = "txt_book__byte_position";
+
+  /**
    * Position in a parsed string, on which read was finished.
    */
   public static final String TEXT_POSITION = "txt_book__text_position";
@@ -28,6 +34,7 @@ public class TxtBookColumns implements BaseColumns {
   // @formatter:off
   public static final String[] ALL_COLUMNS = new String[] {
       _ID,
+      BYTE_POSITION,
       TEXT_POSITION
   };
   // @formatter:on
@@ -35,6 +42,8 @@ public class TxtBookColumns implements BaseColumns {
   public static boolean hasColumns(String[] projection) {
     if (projection == null) return true;
     for (String c : projection) {
+      if (c.equals(BYTE_POSITION) || c.contains("." + BYTE_POSITION))
+        return true;
       if (c.equals(TEXT_POSITION) || c.contains("." + TEXT_POSITION))
         return true;
     }

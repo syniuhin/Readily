@@ -24,6 +24,19 @@ public class TxtBookCursor extends AbstractCursor implements TxtBookModel {
   }
 
   /**
+   * Byte position of block in a file, either FB2Part or simple chunk read
+   * continuously.
+   */
+  public int getBytePosition() {
+    Integer res = getIntegerOrNull(TxtBookColumns.BYTE_POSITION);
+    if (res == null)
+      throw new NullPointerException(
+          "The value of 'byte_position' in the database was null, which is " +
+              "not allowed according to the model definition");
+    return res;
+  }
+
+  /**
    * Position in a parsed string, on which read was finished.
    */
   public int getTextPosition() {

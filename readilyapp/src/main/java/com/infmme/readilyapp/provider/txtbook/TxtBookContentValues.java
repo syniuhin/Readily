@@ -43,6 +43,16 @@ public class TxtBookContentValues extends AbstractContentValues {
   }
 
   /**
+   * Byte position of block in a file, either FB2Part or simple chunk read
+   * continuously.
+   */
+  public TxtBookContentValues putBytePosition(int value) {
+    mContentValues.put(TxtBookColumns.BYTE_POSITION, value);
+    return this;
+  }
+
+
+  /**
    * Position in a parsed string, on which read was finished.
    */
   public TxtBookContentValues putTextPosition(int value) {

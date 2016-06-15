@@ -33,4 +33,11 @@ public interface Fb2BookModel extends BaseModel {
    */
   @Nullable
   String getPathToc();
+
+  /**
+   * Uri of the cover image.
+   * Can be {@code null}.
+   */
+  @Nullable
+  String getCoverImageUri();
 }

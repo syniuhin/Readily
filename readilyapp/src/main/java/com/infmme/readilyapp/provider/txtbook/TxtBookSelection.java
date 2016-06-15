@@ -82,6 +82,46 @@ public class TxtBookSelection extends AbstractSelection<TxtBookSelection> {
     return orderById(false);
   }
 
+  public TxtBookSelection bytePosition(int... value) {
+    addEquals(TxtBookColumns.BYTE_POSITION, toObjectArray(value));
+    return this;
+  }
+
+  public TxtBookSelection bytePositionNot(int... value) {
+    addNotEquals(TxtBookColumns.BYTE_POSITION, toObjectArray(value));
+    return this;
+  }
+
+  public TxtBookSelection bytePositionGt(int value) {
+    addGreaterThan(TxtBookColumns.BYTE_POSITION, value);
+    return this;
+  }
+
+  public TxtBookSelection bytePositionGtEq(int value) {
+    addGreaterThanOrEquals(TxtBookColumns.BYTE_POSITION, value);
+    return this;
+  }
+
+  public TxtBookSelection bytePositionLt(int value) {
+    addLessThan(TxtBookColumns.BYTE_POSITION, value);
+    return this;
+  }
+
+  public TxtBookSelection bytePositionLtEq(int value) {
+    addLessThanOrEquals(TxtBookColumns.BYTE_POSITION, value);
+    return this;
+  }
+
+  public TxtBookSelection orderByBytePosition(boolean desc) {
+    orderBy(TxtBookColumns.BYTE_POSITION, desc);
+    return this;
+  }
+
+  public TxtBookSelection orderByBytePosition() {
+    orderBy(TxtBookColumns.BYTE_POSITION, false);
+    return this;
+  }
+
   public TxtBookSelection textPosition(int... value) {
     addEquals(TxtBookColumns.TEXT_POSITION, toObjectArray(value));
     return this;
