@@ -13,9 +13,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import com.infmme.readilyapp.navigation.BookPartListActivity;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.ReceiverActivity;
+import com.infmme.readilyapp.navigation.BookPartListActivity;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookSelection;
@@ -56,7 +56,7 @@ public class FileListFragment extends Fragment
   }
 
   private void initViews() {
-    mAdapter = new CachedBooksAdapter(null, this);
+    mAdapter = new CachedBooksAdapter(getActivity(), null, this);
     mRecyclerView.setAdapter(mAdapter);
   }
 

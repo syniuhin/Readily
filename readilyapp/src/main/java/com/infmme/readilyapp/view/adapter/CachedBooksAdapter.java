@@ -1,18 +1,19 @@
 package com.infmme.readilyapp.view.adapter;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.support.percent.PercentRelativeLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
+import com.squareup.picasso.Picasso;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 
@@ -24,11 +25,13 @@ public class CachedBooksAdapter
     extends CursorRecyclerAdapter<CachedBooksAdapter.CachedBookHolder> {
 
   private CachedBookHolder.ItemClickCallback mCallback;
+  private transient Context mContext;
 
-  public CachedBooksAdapter(Cursor cursor,
+  public CachedBooksAdapter(final Context context, Cursor cursor,
                             CachedBookHolder.ItemClickCallback callback) {
     super(cursor);
     mCallback = callback;
+    mContext = context;
   }
 
   @Override
@@ -36,7 +39,8 @@ public class CachedBooksAdapter
                                      Cursor cursor) {
     CachedBookCursor bookCursor = new CachedBookCursor(cursor);
     String coverImageUri = bookCursor.getCoverImageUri();
-    if (coverImageUri != null && URLUtil.isValidUrl(coverImageUri)) {
+    // TODO: Validate coverImageUri.
+    if (coverImageUri != null) {
       bindWithImage(holder, bookCursor);
     } else {
       bindWithoutImage(holder, bookCursor);
@@ -64,7 +68,11 @@ public class CachedBooksAdapter
     holder.mTitleAboveView.setText(bookCursor.getTitle());
 
     holder.mImageView.setVisibility(View.VISIBLE);
-    // Picasso load blah blah blah
+    Picasso.with(mContext)
+           .load("file:" + bookCursor.getCoverImageUri())
+           .centerCrop()
+           .fit()
+           .into(holder.mImageView);
   }
 
   private void bindWithoutImage(final CachedBookHolder holder,
