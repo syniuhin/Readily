@@ -13,7 +13,6 @@ import com.infmme.readilyapp.provider.epubbook.EpubBookCursor;
 import com.infmme.readilyapp.provider.epubbook.EpubBookSelection;
 import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.readable.interfaces.*;
-import com.infmme.readilyapp.readable.interfaces.AbstractTocReference;
 import com.infmme.readilyapp.reader.Reader;
 import com.infmme.readilyapp.util.Constants;
 import nl.siegmann.epublib.domain.Book;
@@ -23,6 +22,8 @@ import nl.siegmann.epublib.epub.EpubReader;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -44,7 +45,9 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
 
   private transient Book mBook;
   private Metadata mMetadata;
+  private String mCoverImageUri;
   private List<Resource> mContents;
+
   private Deque<ChunkInfo> mLoadedChunks = new ArrayDeque<>();
   private List<? extends AbstractTocReference> mTableOfContents = null;
 
@@ -159,6 +162,14 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
       mCurrentResourceId = mContents.get(mCurrentResourceIndex).getId();
       setCurrentPosition(reader.getPosition());
     }
+
+    if (coverImageExists() && !isCoverImageStored()) {
+      try {
+        storeCoverImage();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
   }
 
   @Override
@@ -182,6 +193,7 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
       values.putTimeOpened(mTimeCreated);
       values.putPath(mPath);
       values.putTitle(mMetadata.getFirstTitle());
+      values.putCoverImageUri(mCoverImageUri);
 
       Uri uri = epubValues.insert(mContext.getContentResolver());
       long epubId = Long.parseLong(uri.getLastPathSegment());
@@ -310,6 +322,30 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
   @Override
   public void setCurrentPosition(int position) {
     mCurrentTextPosition = position;
+  }
+
+  private boolean coverImageExists() {
+    return mBook.getCoverImage() != null;
+  }
+
+  private boolean isCoverImageStored() {
+    Resource coverImage = mBook.getCoverImage();
+    return new File(getCoverImagePath(coverImage)).exists();
+  }
+
+  private void storeCoverImage() throws IOException {
+    Resource coverImage = mBook.getCoverImage();
+    byte[] imageBytes = coverImage.getData();
+    String coverImagePath = getCoverImagePath(coverImage);
+    FileOutputStream fos = new FileOutputStream(coverImagePath);
+    fos.write(imageBytes);
+    fos.close();
+    mCoverImageUri = coverImagePath;
+  }
+
+  private String getCoverImagePath(final Resource coverImage) {
+    return mContext.getCacheDir() + mPath.substring(
+        mPath.lastIndexOf('/')) + coverImage.getHref();
   }
 
   private class ChunkInfo {

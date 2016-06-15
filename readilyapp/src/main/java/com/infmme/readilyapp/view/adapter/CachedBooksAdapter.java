@@ -1,6 +1,7 @@
 package com.infmme.readilyapp.view.adapter;
 
 import android.database.Cursor;
+import android.support.percent.PercentRelativeLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -87,12 +88,14 @@ public class CachedBooksAdapter
                            .inflate(R.layout.file_list_card, parent,
                                     false);
     CachedBookHolder holder = new CachedBookHolder(v, 0, mCallback);
-    holder.mImageView.setOnClickListener(holder);
+    holder.mActionView.setOnClickListener(holder);
     return holder;
   }
 
   public static class CachedBookHolder extends RecyclerView.ViewHolder
       implements View.OnClickListener {
+    PercentRelativeLayout mActionView;
+
     ImageView mImageView;
     TextView mTitleAboveView;
     TextView mTitleBelowView;
@@ -106,6 +109,9 @@ public class CachedBooksAdapter
 
     public CachedBookHolder(View v, long id, ItemClickCallback callback) {
       super(v);
+      mActionView = (PercentRelativeLayout) v.findViewById(
+          R.id.file_list_card_child);
+
       mImageView = (ImageView) v.findViewById(R.id.file_list_card_image);
       mTitleAboveView = (TextView) v.findViewById(
           R.id.file_list_card_title_above);

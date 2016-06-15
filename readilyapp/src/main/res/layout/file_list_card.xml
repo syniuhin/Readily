@@ -10,76 +10,79 @@
             android:layout_gravity="center"
             android:layout_margin="5dp"
             card_view:cardCornerRadius="4dp">
-        <android.support.percent.PercentRelativeLayout
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/file_list_card_child">
-
-            <ImageView app:layout_widthPercent="100%"
-                       app:layout_aspectRatio="178%"
-                       android:id="@+id/file_list_card_image"
-                       android:scaleType="centerCrop"
-                       android:cropToPadding="true"
-                       android:layout_alignParentStart="true"
-                       android:layout_alignParentLeft="true"
-                       android:layout_alignParentTop="true"
-                       card_view:srcCompat="@color/design_snackbar_background_color"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/file_list_card_title_above"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                    android:text="@string/title"
-                    android:maxLines="2"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_alignBottom="@+id/file_list_card_image"
-                    android:textColor="?android:attr/textColorPrimaryInverse"/>
-            <ProgressBar
-                    style="?android:attr/progressBarStyleHorizontal"
+        <RelativeLayout android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+            <android.support.percent.PercentRelativeLayout
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:layout_width="match_parent"
-                    android:layout_height="4dp"
-                    android:id="@+id/file_list_card_progress"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_below="@id/file_list_card_image"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/file_list_card_title_below"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                    android:text="@string/title"
-                    android:maxLines="2"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_below="@+id/file_list_card_progress"
-                    android:textColor="?android:attr/textColorPrimary"
-                    android:visibility="gone"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/file_list_card_time_opened"
-                    android:text="@string/just_sample"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_below="@+id/file_list_card_title_below"
-                    android:layout_marginTop="12dp"/>
+                    android:layout_height="match_parent"
+                    android:id="@+id/file_list_card_child">
+
+                <ImageView app:layout_widthPercent="100%"
+                           app:layout_aspectRatio="178%"
+                           android:id="@+id/file_list_card_image"
+                           android:scaleType="centerCrop"
+                           android:cropToPadding="true"
+                           android:layout_alignParentStart="true"
+                           android:layout_alignParentLeft="true"
+                           android:layout_alignParentTop="true"
+                           card_view:srcCompat="@color/design_snackbar_background_color"/>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/file_list_card_title_above"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                        android:text="@string/title"
+                        android:maxLines="2"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_alignBottom="@+id/file_list_card_image"
+                        android:textColor="?android:attr/textColorPrimaryInverse"/>
+                <ProgressBar
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:id="@+id/file_list_card_progress"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_below="@id/file_list_card_image"/>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/file_list_card_title_below"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                        android:text="@string/title"
+                        android:maxLines="2"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_below="@+id/file_list_card_progress"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:visibility="gone"/>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/file_list_card_time_opened"
+                        android:text="@string/just_sample"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginStart="16dp"
+                        android:layout_below="@+id/file_list_card_title_below"
+                        android:layout_marginTop="12dp"/>
+            </android.support.percent.PercentRelativeLayout>
 
             <Button
                     style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/file_list_card_time_opened"
+                    android:layout_below="@id/file_list_card_child"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:id="@+id/file_list_card_button_about"
@@ -95,13 +98,12 @@
                     android:layout_height="wrap_content"
                     android:layout_toStartOf="@+id/file_list_card_button_about"
                     android:layout_toLeftOf="@+id/file_list_card_button_about"
-                    android:layout_below="@id/file_list_card_time_opened"
+                    android:layout_below="@id/file_list_card_child"
                     android:layout_alignBaseline="@id/file_list_card_button_about"
                     android:id="@+id/file_list_card_button_toc"
                     android:text="@string/book_card_navigate"
                     android:layout_marginRight="8dp"
                     android:layout_marginEnd="8dp"/>
-
-        </android.support.percent.PercentRelativeLayout>
+        </RelativeLayout>
     </android.support.v7.widget.CardView>
 </LinearLayout>
