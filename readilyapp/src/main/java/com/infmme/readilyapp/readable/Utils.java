@@ -1,14 +1,8 @@
 package com.infmme.readilyapp.readable;
 
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import com.infmme.readilyapp.util.Constants;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 import org.mozilla.universalchardet.UniversalDetector;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -47,28 +41,5 @@ public class Utils {
 
   public static boolean isExtensionValid(String extension) {
     return extensionsMap.containsKey(extension);
-  }
-
-  public static Target generateCachingTarget(final String path) {
-    return new Target() {
-      @Override
-      public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
-        File file = new File(path);
-        try {
-          file.createNewFile();
-          FileOutputStream ostream = new FileOutputStream(file);
-          bitmap.compress(Bitmap.CompressFormat.PNG, 100, ostream);
-          ostream.close();
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-      }
-
-      @Override
-      public void onBitmapFailed(Drawable errorDrawable) {}
-
-      @Override
-      public void onPrepareLoad(Drawable placeHolderDrawable) {}
-    };
   }
 }

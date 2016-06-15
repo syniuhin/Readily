@@ -1,6 +1,7 @@
 package com.infmme.readilyapp.readable;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookContentValues;
 import com.infmme.readilyapp.provider.txtbook.TxtBookContentValues;
@@ -8,6 +9,7 @@ import com.infmme.readilyapp.readable.interfaces.Storable;
 import com.infmme.readilyapp.readable.interfaces.Unprocessed;
 import com.infmme.readilyapp.reader.Reader;
 import com.infmme.readilyapp.util.Constants;
+import com.squareup.picasso.Picasso;
 import de.jetwick.snacktory.HtmlFetcher;
 import de.jetwick.snacktory.JResult;
 import org.joda.time.LocalDateTime;
@@ -28,6 +30,7 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
   private boolean mProcessed = false;
 
   private transient Context mContext;
+
   public NetReadable(final Context context, String link) {
     mContext = context;
     mLink = link;
@@ -63,14 +66,24 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
     // I don't know what it means, need to read docs/source
     res = fetcher.fetchAndExtract(url, Constants.NET_READABLE_TIMEOUT, true);
     mTitle = res.getTitle();
-    if (res.getImagesCount() > 0) {
-      mImageUrl = res.getImageUrl();
-    }
+    mImageUrl = res.getImageUrl();
     return mTitle + " | " + res.getText();
   }
 
-  private void fetchImage() {
-    // TODO: Fetch image!
+  /**
+   * Asynchronously caches an image into a filesystem.
+   */
+  private void fetchImage() throws IOException {
+    String path = getCoverImagePath();
+    Bitmap bitmap = Picasso.with(mContext)
+                           .load(mImageUrl)
+                           .get();
+
+    File file = new File(path);
+    file.createNewFile();
+    FileOutputStream ostream = new FileOutputStream(file);
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, ostream);
+    ostream.close();
   }
 
   public boolean isCachedToFile() {
@@ -102,7 +115,14 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
   @Override
   public void storeToDb() {
     CachedBookContentValues values = new CachedBookContentValues();
-    values.putCoverImageUri(mImageUrl);
+    if (hasCoverImage()) {
+      try {
+        fetchImage();
+        values.putCoverImageUri(getCoverImagePath());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
     // TODO: Solve this
     values.putPercentile(0);
 
@@ -142,6 +162,15 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
   public String getPath() {
     return mContext.getCacheDir() + "/" + String.valueOf(
         mLink.hashCode()) + ".txt";
+  }
+
+  private String getCoverImagePath() {
+    return mContext.getCacheDir() + "/" + String.valueOf(
+        mLink.hashCode()) + ".png";
+  }
+
+  private boolean hasCoverImage() {
+    return mImageUrl != null;
   }
 
   @Override
