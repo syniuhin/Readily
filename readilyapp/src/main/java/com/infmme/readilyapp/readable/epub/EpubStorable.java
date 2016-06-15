@@ -36,6 +36,7 @@ import static com.infmme.readilyapp.readable.epub.EpubPart.parseRawText;
 public class EpubStorable implements Storable, Chunked, Unprocessed,
     Structured {
   private String mPath;
+  private long mFileSize;
 
   /**
    * Creation time in order to keep track of db records.
@@ -56,6 +57,7 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
   private transient int mLastResourceIndex = -1;
 
   private int mCurrentTextPosition;
+  private double mChunkPercentile = .0;
 
   private boolean mProcessed;
 
@@ -155,6 +157,7 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
     if (mLoadedChunks != null && !mLoadedChunks.isEmpty()) {
       mCurrentResourceIndex = mLoadedChunks.getFirst().mResourceIndex;
       mCurrentResourceId = mContents.get(mCurrentResourceIndex).getId();
+      mChunkPercentile = reader.getPercentile();
       setCurrentPosition(reader.getPosition());
     }
 
@@ -170,8 +173,7 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
   @Override
   public void storeToDb() {
     CachedBookContentValues values = new CachedBookContentValues();
-    // TODO: Solve this
-    values.putPercentile(0);
+    double percent = calcPercentile();
 
     EpubBookContentValues epubValues = new EpubBookContentValues();
     epubValues.putCurrentResourceId(mCurrentResourceId);
@@ -180,11 +182,19 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
     if (isStoredInDb()) {
       CachedBookSelection cachedWhere = new CachedBookSelection();
       cachedWhere.path(mPath);
+      if (percent >= 0 && percent <= 1) {
+        values.putPercentile(calcPercentile());
+        values.update(mContext, cachedWhere);
+      }
       EpubBookSelection epubWhere = new EpubBookSelection();
       epubWhere.id(getFkEpubBookId());
       epubValues.update(mContext, epubWhere);
-      values.update(mContext, cachedWhere);
     } else {
+      if (percent >= 0 && percent <= 1) {
+        values.putPercentile(calcPercentile());
+      } else {
+        values.putPercentile(0);
+      }
       values.putTimeOpened(mTimeCreated);
       values.putPath(mPath);
       values.putTitle(mMetadata.getFirstTitle());
@@ -219,6 +229,27 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
     return id;
   }
 
+  /**
+   * May be very heavy, need to think if it's needed at all.
+   *
+   * @return Percent progress of reading this book.
+   */
+  private double calcPercentile() {
+    if (mCurrentResourceIndex != -1) {
+      List<Resource> passedResources =
+          mContents.subList(0, mCurrentResourceIndex);
+      long bytesPassed = 0;
+      for (Resource r : passedResources) {
+        bytesPassed += r.getSize();
+      }
+      long nextResBytes = bytesPassed +
+          mContents.get(mCurrentResourceIndex).getSize();
+      return (double) bytesPassed / mFileSize + mChunkPercentile *
+          (nextResBytes - bytesPassed) / mFileSize;
+    }
+    return -1;
+  }
+
   @Override
   public void storeToFile() {
     throw new IllegalStateException(
@@ -230,6 +261,7 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
     if (mPath != null) {
       mBook = (new EpubReader()).readEpubLazy(
           mPath, Constants.DEFAULT_ENCODING);
+      mFileSize = new File(mPath).length();
     } else {
       throw new IllegalStateException("No path to read file from.");
     }
