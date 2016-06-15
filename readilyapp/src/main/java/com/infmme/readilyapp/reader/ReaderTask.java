@@ -62,7 +62,9 @@ public class ReaderTask implements Runnable {
           // Checks if we have more data to produce.
           if (mChunked != null && mReadingDeque.size() > 0) {
             Reading currentReading = mReadingDeque.getLast();
-            while (mReadingDeque.size() < DEQUE_SIZE_LIMIT) {
+            while (mReadingDeque.size() < DEQUE_SIZE_LIMIT &&
+                currentReading != null &&
+                !TextUtils.isEmpty(currentReading.getText())) {
               Reading nextReading = null;
               if (mChunked.hasNextReading()) {
                 // Finds non-empty consecutive reading.

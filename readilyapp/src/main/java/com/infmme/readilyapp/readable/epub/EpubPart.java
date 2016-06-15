@@ -33,6 +33,11 @@ public class EpubPart implements AbstractTocReference, Serializable {
     return result;
   }
 
+  public static String parseRawText(String rawText) {
+    Document doc = Jsoup.parse(rawText);
+    return doc.select("p, div.paragraph").text();
+  }
+
   public EpubPart(TOCReference adaptee) {
     mAdaptee = adaptee;
   }
@@ -50,8 +55,7 @@ public class EpubPart implements AbstractTocReference, Serializable {
   @Override
   public String getPreview() throws IOException {
     if (mCachedPreview == null) {
-      Document doc = Jsoup.parse(new String(mAdaptee.getResource().getData()));
-      mCachedPreview = doc.select("p").text();
+      mCachedPreview = parseRawText(new String(mAdaptee.getResource().getData()));
     }
     return mCachedPreview;
   }

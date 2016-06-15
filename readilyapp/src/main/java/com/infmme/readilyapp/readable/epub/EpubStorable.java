@@ -19,8 +19,6 @@ import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Metadata;
 import nl.siegmann.epublib.domain.Resource;
 import nl.siegmann.epublib.epub.EpubReader;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -28,6 +26,8 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
+
+import static com.infmme.readilyapp.readable.epub.EpubPart.parseRawText;
 
 /**
  * Created with love, by infm dated on 6/8/16.
@@ -101,11 +101,6 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
   @Override
   public void skipLast() {
     mLoadedChunks.removeLast();
-  }
-
-  private String parseRawText(String rawText) {
-    Document doc = Jsoup.parse(rawText);
-    return doc.select("p").text();
   }
 
   @Override
