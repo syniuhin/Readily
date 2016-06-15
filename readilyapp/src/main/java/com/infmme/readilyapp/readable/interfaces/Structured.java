@@ -1,7 +1,5 @@
 package com.infmme.readilyapp.readable.interfaces;
 
-import com.infmme.readilyapp.readable.structure.AbstractTocReference;
-
 import java.util.List;
 
 /**

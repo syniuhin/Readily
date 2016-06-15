@@ -1,4 +1,4 @@
-package com.infmme.readilyapp.readable.structure.fb2;
+package com.infmme.readilyapp.readable.fb2;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -15,7 +15,7 @@ import com.infmme.readilyapp.provider.fb2book.Fb2BookCursor;
 import com.infmme.readilyapp.provider.fb2book.Fb2BookSelection;
 import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.readable.interfaces.*;
-import com.infmme.readilyapp.readable.structure.AbstractTocReference;
+import com.infmme.readilyapp.readable.interfaces.AbstractTocReference;
 import com.infmme.readilyapp.reader.Reader;
 import com.infmme.readilyapp.xmlparser.FB2Tags;
 import com.infmme.readilyapp.xmlparser.XMLEvent;

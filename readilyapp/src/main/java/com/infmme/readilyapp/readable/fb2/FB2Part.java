@@ -1,7 +1,7 @@
-package com.infmme.readilyapp.readable.structure.fb2;
+package com.infmme.readilyapp.readable.fb2;
 
 import android.text.TextUtils;
-import com.infmme.readilyapp.readable.structure.AbstractTocReference;
+import com.infmme.readilyapp.readable.interfaces.AbstractTocReference;
 import com.infmme.readilyapp.xmlparser.XMLEvent;
 import com.infmme.readilyapp.xmlparser.XMLEventType;
 import com.infmme.readilyapp.xmlparser.XMLParser;

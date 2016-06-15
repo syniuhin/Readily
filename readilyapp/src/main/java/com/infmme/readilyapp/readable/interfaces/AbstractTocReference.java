@@ -1,4 +1,4 @@
-package com.infmme.readilyapp.readable.structure;
+package com.infmme.readilyapp.readable.interfaces;
 
 /**
  * Created with love, by infm dated on 6/6/16.

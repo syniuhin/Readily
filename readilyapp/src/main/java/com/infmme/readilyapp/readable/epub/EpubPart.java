@@ -1,7 +1,7 @@
-package com.infmme.readilyapp.readable.structure.epub;
+package com.infmme.readilyapp.readable.epub;
 
 import android.support.annotation.NonNull;
-import com.infmme.readilyapp.readable.structure.AbstractTocReference;
+import com.infmme.readilyapp.readable.interfaces.AbstractTocReference;
 import nl.siegmann.epublib.domain.TOCReference;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

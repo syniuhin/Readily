@@ -1,4 +1,4 @@
-package com.infmme.readilyapp.readable.structure.epub;
+package com.infmme.readilyapp.readable.epub;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -13,7 +13,7 @@ import com.infmme.readilyapp.provider.epubbook.EpubBookCursor;
 import com.infmme.readilyapp.provider.epubbook.EpubBookSelection;
 import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.readable.interfaces.*;
-import com.infmme.readilyapp.readable.structure.AbstractTocReference;
+import com.infmme.readilyapp.readable.interfaces.AbstractTocReference;
 import com.infmme.readilyapp.reader.Reader;
 import com.infmme.readilyapp.util.Constants;
 import nl.siegmann.epublib.domain.Book;
