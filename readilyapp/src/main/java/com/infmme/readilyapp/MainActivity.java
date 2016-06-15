@@ -16,7 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.infmme.readilyapp.fragment.FileListFragment;
-import com.infmme.readilyapp.readable.old.FileStorable;
+import com.infmme.readilyapp.readable.Utils;
 import com.infmme.readilyapp.readable.type.ReadableType;
 import com.infmme.readilyapp.readable.type.ReadingSource;
 import com.infmme.readilyapp.service.StorageCheckerService;
@@ -127,7 +127,7 @@ public class MainActivity extends BaseActivity {
         if (resultCode == RESULT_OK) {
           if (data != null) {
             String relativePath = FileUtils.getPath(this, data.getData());
-            if (FileStorable.isExtensionValid(
+            if (Utils.isExtensionValid(
                 FileUtils.getExtension(relativePath))) {
               String extension = FileUtils.getExtension(relativePath);
               ReadableType type;

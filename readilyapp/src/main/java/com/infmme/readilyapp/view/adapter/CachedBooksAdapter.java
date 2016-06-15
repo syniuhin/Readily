@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -33,23 +34,57 @@ public class CachedBooksAdapter
   public void onBindViewHolderCursor(CachedBookHolder holder,
                                      Cursor cursor) {
     CachedBookCursor bookCursor = new CachedBookCursor(cursor);
-    holder.mTitleView.setText(bookCursor.getTitle());
+    String coverImageUri = bookCursor.getCoverImageUri();
+    if (coverImageUri != null && URLUtil.isValidUrl(coverImageUri)) {
+      bindWithImage(holder, bookCursor);
+    } else {
+      bindWithoutImage(holder, bookCursor);
+    }
+    holder.mNavigateButton.setVisibility((supportsNavigation(bookCursor))
+                                             ? View.VISIBLE
+                                             : View.GONE);
+
     LocalDateTime timeOpened = LocalDateTime.parse(bookCursor.getTimeOpened());
     // TODO: Add options for 'Today', 'Yesterday' etc.
     String strTimeOpened = timeOpened.toString(
         DateTimeFormat.forPattern("d MMMM, HH:mm"));
     holder.mTimeOpenedView.setText(strTimeOpened);
     // TODO: Replace with a real value
-    holder.mProgressView.setProgress(50);
+    holder.mProgressView.setProgress((int) (bookCursor.getPercentile() * 100));
 
     holder.mId = bookCursor.getId();
+  }
+
+  private void bindWithImage(final CachedBookHolder holder,
+                             final CachedBookCursor bookCursor) {
+    holder.mTitleBelowView.setVisibility(View.GONE);
+
+    holder.mTitleAboveView.setVisibility(View.VISIBLE);
+    holder.mTitleAboveView.setText(bookCursor.getTitle());
+
+    holder.mImageView.setVisibility(View.VISIBLE);
+    // Picasso load blah blah blah
+  }
+
+  private void bindWithoutImage(final CachedBookHolder holder,
+                                final CachedBookCursor bookCursor) {
+    holder.mTitleAboveView.setVisibility(View.GONE);
+    holder.mImageView.setVisibility(View.GONE);
+
+    holder.mTitleBelowView.setVisibility(View.VISIBLE);
+    holder.mTitleBelowView.setText(bookCursor.getTitle());
+  }
+
+  private boolean supportsNavigation(final CachedBookCursor bookCursor) {
+    return bookCursor.getEpubBookId() != null || bookCursor.getFb2BookId() !=
+        null;
   }
 
   @Override
   public CachedBookHolder onCreateViewHolder(
       ViewGroup parent, int viewType) {
     View v = LayoutInflater.from(parent.getContext())
-                           .inflate(R.layout.file_list_card_image, parent,
+                           .inflate(R.layout.file_list_card, parent,
                                     false);
     CachedBookHolder holder = new CachedBookHolder(v, 0, mCallback);
     holder.mImageView.setOnClickListener(holder);
@@ -59,7 +94,8 @@ public class CachedBooksAdapter
   public static class CachedBookHolder extends RecyclerView.ViewHolder
       implements View.OnClickListener {
     ImageView mImageView;
-    TextView mTitleView;
+    TextView mTitleAboveView;
+    TextView mTitleBelowView;
     TextView mTimeOpenedView;
     ProgressBar mProgressView;
     Button mNavigateButton;
@@ -71,7 +107,10 @@ public class CachedBooksAdapter
     public CachedBookHolder(View v, long id, ItemClickCallback callback) {
       super(v);
       mImageView = (ImageView) v.findViewById(R.id.file_list_card_image);
-      mTitleView = (TextView) v.findViewById(R.id.file_list_card_title);
+      mTitleAboveView = (TextView) v.findViewById(
+          R.id.file_list_card_title_above);
+      mTitleBelowView = (TextView) v.findViewById(
+          R.id.file_list_card_title_below);
       mTimeOpenedView = (TextView) v.findViewById(
           R.id.file_list_card_time_opened);
       mProgressView = (ProgressBar) v.findViewById(

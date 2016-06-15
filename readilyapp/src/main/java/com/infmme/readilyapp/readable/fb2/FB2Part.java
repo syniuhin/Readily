@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.infmme.readilyapp.readable.old.FileStorable.guessCharset;
+import static com.infmme.readilyapp.readable.Utils.guessCharset;
 
 /**
  * Created with love, by infm dated on 6/5/16.
