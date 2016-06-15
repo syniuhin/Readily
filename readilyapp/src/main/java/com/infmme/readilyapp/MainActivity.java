@@ -16,30 +16,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.infmme.readilyapp.fragment.FileListFragment;
-import com.infmme.readilyapp.navigation.BookPartListActivity;
-import com.infmme.readilyapp.readable.old.FB2FileStorable;
 import com.infmme.readilyapp.readable.old.FileStorable;
-import com.infmme.readilyapp.readable.fb2.FB2Part;
 import com.infmme.readilyapp.readable.type.ReadableType;
 import com.infmme.readilyapp.readable.type.ReadingSource;
 import com.infmme.readilyapp.service.StorageCheckerService;
 import com.infmme.readilyapp.settings.SettingsActivity;
 import com.infmme.readilyapp.util.Constants;
 import com.ipaulpro.afilechooser.utils.FileUtils;
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 public class MainActivity extends BaseActivity {
 
   private static final int FILE_SELECT_CODE = 7331;
-  private static final int EPUB_SELECT_CODE = 9871;
-  private static final int FB2_SELECT_CODE = 1982;
   private static final int READ_EXTERNAL_STORAGE_REQUEST = 7878;
 
   @Override
@@ -109,90 +96,9 @@ public class MainActivity extends BaseActivity {
       case R.id.action_instructions:
         InstructionsActivity.start(this);
         break;
-      case R.id.action_epub_bookpartflow:
-        startActivityForResult(
-            Intent.createChooser(FileUtils.createGetContentIntent(),
-                                 getResources().getString(
-                                     R.string.choose_file)),
-            EPUB_SELECT_CODE);
-        break;
-      case R.id.action_fb2_bookpartflow:
-        startActivityForResult(
-            Intent.createChooser(FileUtils.createGetContentIntent(),
-                                 getResources().getString(
-                                     R.string.choose_file)),
-            FB2_SELECT_CODE);
-        break;
-/*
-      case R.id.action_epub_chunking:
-        startActivity(new Intent(this, TestEpubActivity.class));
-        break;
-*/
     }
 
     return super.onOptionsItemSelected(item);
-  }
-
-/*
-  private void startBookPartListActivity(String relativePath) {
-    EpubFileStorable epubFileStorable = new EpubFileStorable(relativePath);
-    epubFileStorable.process(this);
-
-    Intent i = new Intent(this, BookPartListActivity.class);
-    Bundle args = new Bundle();
-    args.putSerializable(
-        Constants.EXTRA_TOC_REFERENCE_LIST,
-        EpubPart.adaptList(
-            epubFileStorable.getTableOfContents().getTocReferences()));
-    i.putExtras(args);
-    startActivity(i);
-  }
-*/
-
-  private void startBookPartFb2ListActivity(String relativePath) {
-    final FB2FileStorable fb2FileStorable = new FB2FileStorable(
-        relativePath);
-    fb2FileStorable.process(this);
-
-    Observable<ArrayList<FB2Part>> o = Observable.create(
-        new Observable.OnSubscribe<ArrayList<FB2Part>>() {
-          @Override
-          public void call(
-              Subscriber<? super ArrayList<FB2Part>> subscriber) {
-            try {
-              ArrayList<FB2Part> toc;
-              final Context c = MainActivity.this;
-              if (fb2FileStorable.isTocCached(c)) {
-                toc = fb2FileStorable.readSavedToc(c);
-              } else {
-                toc = fb2FileStorable.getTableOfContents();
-                fb2FileStorable.saveToc(c, toc);
-              }
-              subscriber.onNext(toc);
-              subscriber.onCompleted();
-            } catch (IOException e) {
-              subscriber.onError(e);
-            }
-          }
-        });
-    o.subscribeOn(Schedulers.newThread())
-     .observeOn(AndroidSchedulers.mainThread())
-     .subscribe(new Action1<ArrayList<FB2Part>>() {
-       @Override
-       public void call(ArrayList<FB2Part> fb2Parts) {
-         Intent i = new Intent(MainActivity.this, BookPartListActivity.class);
-         Bundle args = new Bundle();
-         args.putSerializable(
-             Constants.EXTRA_TOC_REFERENCE_LIST, fb2Parts);
-         i.putExtras(args);
-         startActivity(i);
-       }
-     }, new Action1<Throwable>() {
-       @Override
-       public void call(Throwable throwable) {
-         throwable.printStackTrace();
-       }
-     });
   }
 
   private void getFromClipboard() {
@@ -234,34 +140,6 @@ public class MainActivity extends BaseActivity {
               }
               ReceiverActivity.startReceiverActivity(
                   this, type, ReadingSource.CACHE, relativePath);
-            } else {
-              Toast.makeText(this, R.string.wrong_ext, Toast.LENGTH_SHORT)
-                   .show();
-            }
-          }
-        }
-        break;
-/*
-      case EPUB_SELECT_CODE:
-        if (resultCode == RESULT_OK) {
-          if (data != null) {
-            String relativePath = FileUtils.getPath(this, data.getData());
-            if (FileUtils.getExtension(relativePath).equals(".epub")) {
-              startBookPartListActivity(relativePath);
-            } else {
-              Toast.makeText(this, R.string.wrong_ext, Toast.LENGTH_SHORT)
-                   .show();
-            }
-          }
-        }
-        break;
-*/
-      case FB2_SELECT_CODE:
-        if (resultCode == RESULT_OK) {
-          if (data != null) {
-            String relativePath = FileUtils.getPath(this, data.getData());
-            if (FileUtils.getExtension(relativePath).equals(".fb2")) {
-              startBookPartFb2ListActivity(relativePath);
             } else {
               Toast.makeText(this, R.string.wrong_ext, Toast.LENGTH_SHORT)
                    .show();

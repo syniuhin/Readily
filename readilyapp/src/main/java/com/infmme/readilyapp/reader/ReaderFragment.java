@@ -30,6 +30,7 @@ import com.infmme.readilyapp.readable.interfaces.Reading;
 import com.infmme.readilyapp.readable.interfaces.Storable;
 import com.infmme.readilyapp.readable.epub.EpubStorable;
 import com.infmme.readilyapp.readable.fb2.FB2Storable;
+import com.infmme.readilyapp.readable.txt.TxtStorable;
 import com.infmme.readilyapp.readable.type.ReadableType;
 import com.infmme.readilyapp.readable.type.ReadingSource;
 import com.infmme.readilyapp.settings.SettingsBundle;
@@ -726,6 +727,29 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
           }).start();
           break;
         case TXT:
+          final TxtStorable txtStorable =
+              new TxtStorable(getActivity(), LocalDateTime.now().toString());
+          txtStorable.setPath(args.getString(Constants.EXTRA_PATH));
+          // TODO: Terminate this and other threads according to lifecycle.
+          // TODO: Probably switch to RxAndroid's observables.
+          new Thread(new Runnable() {
+            @Override
+            public void run() {
+              txtStorable.process();
+              if (txtStorable.isProcessed()) {
+                mChunked = txtStorable;
+                mStorable = txtStorable;
+                getActivity().runOnUiThread(
+                    new Runnable() {
+                      @Override
+                      public void run() {
+                        startChunkedReadingFlow(
+                            txtStorable.getPosition());
+                      }
+                    });
+              }
+            }
+          }).start();
           break;
       }
     } else {
