@@ -58,7 +58,7 @@ public class FB2FileStorable extends FileStorable {
         fileInputStream.skip(bytePosition);
 
       parser = new XMLParser();
-      parser.setInput(fileInputStream, encoding);
+      // parser.setInput(fileInputStream, encoding);
       processed = true;
     } catch (IOException e) {
       e.printStackTrace();

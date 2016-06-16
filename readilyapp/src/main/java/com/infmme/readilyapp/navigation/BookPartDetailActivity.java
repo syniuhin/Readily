@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import com.infmme.readilyapp.BaseActivity;
 import com.infmme.readilyapp.R;
+import com.infmme.readilyapp.readable.interfaces.AbstractTocReference;
 import com.infmme.readilyapp.util.Constants;
 
 import static com.infmme.readilyapp.R.id.fab;
@@ -87,14 +88,15 @@ public class BookPartDetailActivity extends BaseActivity implements
   }
 
   @Override
-  public void chooseItem(String itemId, int textPosition) {
+  public void chooseItem(AbstractTocReference tocReference, int textPosition) {
     if (getParent() == null) {
       Intent i = new Intent();
-      i.putExtra(Constants.EXTRA_ITEM_ID, itemId);
+      i.putExtra(Constants.EXTRA_TOC_REFERENCE, tocReference);
       i.putExtra(Constants.EXTRA_POSITION, textPosition);
       setResult(Activity.RESULT_OK, i);
     } else {
-      ((BookPartListActivity) getParent()).chooseItem(itemId, textPosition);
+      ((BookPartListActivity) getParent()).chooseItem(
+          tocReference, textPosition);
     }
     finish();
   }

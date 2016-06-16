@@ -13,11 +13,9 @@ public class Constants {
   public static final String EXTRA_HEADER = "header";
   public static final String EXTRA_PERCENT = "percent_left";
   public static final String EXTRA_DB_OPERATION = "db_operation";
-  public static final String EXTRA_TOC_REFERENCE_LIST = "TocReferenceList";
   public static final String EXTRA_TOC_REFERENCE = "TocReference";
   public static final String EXTRA_TWO_PANE = "IsTwoPane";
   public static final String EXTRA_READING_SOURCE = "ReadingSource";
-  public static final String EXTRA_ITEM_ID = "ItemId";
 
   public static final String DEFAULT_WPM = "250";
   public static final String DEFAULT_FONT_SIZE = "18";

@@ -81,23 +81,23 @@ public class XMLParserTest {
           "<p>Part description</p>" +
           "</title>" +
 
-            "<section>" +
-            "<title>" +
-            "<p>Chapter 1</p>" +
-            "<empty-line/>" +
-            "<p>Chapter 1 description</p>" +
-            "</title>" +
-            "<p>Chapter 1 contents</p>" +
-            "</section>" +
-            "<section>" +
+          "<section>" +
+          "<title>" +
+          "<p>Chapter 1</p>" +
+          "<empty-line/>" +
+          "<p>Chapter 1 description</p>" +
+          "</title>" +
+          "<p>Chapter 1 contents</p>" +
+          "</section>" +
+          "<section>" +
 
-            "<title>" +
-            "<p>Chapter 2</p>" +
-            "<empty-line/>" +
-            "<p>Chapter 2 description</p>" +
-            "</title>" +
-            "<p>Chapter 2 contents</p>" +
-            "</section>" +
+          "<title>" +
+          "<p>Chapter 2</p>" +
+          "<empty-line/>" +
+          "<p>Chapter 2 description</p>" +
+          "</title>" +
+          "<p>Chapter 2 contents</p>" +
+          "</section>" +
 
           "</section>" +
 
@@ -120,7 +120,8 @@ public class XMLParserTest {
   @Test
   public void testSmallXmlEventFlow() throws Exception {
     XMLParser parser = new XMLParser();
-    parser.setInput(new ByteArrayInputStream(SMALL_XML.getBytes()));
+    parser.setInput(
+        new ByteArrayInputStream(SMALL_XML.getBytes()));
 
     XMLEvent event = parser.next();
     XMLEventType eventType = event.getType();
@@ -135,7 +136,8 @@ public class XMLParserTest {
   @Test
   public void testSmallXmlTagNames() throws Exception {
     XMLParser parser = new XMLParser();
-    parser.setInput(new ByteArrayInputStream(SMALL_XML.getBytes()));
+    parser.setInput(
+        new ByteArrayInputStream(SMALL_XML.getBytes()));
 
     XMLEvent event;
     XMLEventType eventType;
@@ -167,7 +169,8 @@ public class XMLParserTest {
   @Test
   public void testSmallXmlContent() throws Exception {
     XMLParser parser = new XMLParser();
-    parser.setInput(new ByteArrayInputStream(SMALL_XML.getBytes()));
+    parser.setInput(
+        new ByteArrayInputStream(SMALL_XML.getBytes()));
 
     XMLEvent event;
     XMLEventType eventType;

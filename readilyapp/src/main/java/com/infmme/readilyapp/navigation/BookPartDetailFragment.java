@@ -179,7 +179,7 @@ public class BookPartDetailFragment extends Fragment implements
             String.format("Res id: %s, word position: %d",
                           mItemReference.getId(), spacesCount));
     }
-    mCallback.chooseItem(mItemReference.getId(), spacesCount);
+    mCallback.chooseItem(mItemReference, spacesCount);
   }
 
   private class ProcessedItem {

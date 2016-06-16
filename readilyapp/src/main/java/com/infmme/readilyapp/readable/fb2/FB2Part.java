@@ -22,7 +22,7 @@ public class FB2Part implements AbstractTocReference {
   private String id = "";
   private String title = "";
   private double percentile;
-  private long streamByteStartLocation;
+  private final long streamByteStartLocation;
   private long streamByteEndLocation;
 
   private transient String filePath;
@@ -66,18 +66,17 @@ public class FB2Part implements AbstractTocReference {
       String encoding = guessCharset(encodingHelper);
       encodingHelper.close();
 
-      FileInputStream fileInputStream = new FileInputStream(file);
-      fileInputStream.skip(streamByteStartLocation);
+      FileInputStream inputStream = new FileInputStream(file);
 
       XMLParser parser = new XMLParser();
-      parser.setInput(fileInputStream, encoding);
+      parser.setInput(inputStream, encoding);
+      parser.skip(streamByteStartLocation);
       XMLEvent event = parser.next();
       XMLEventType eventType = event.getType();
 
       StringBuilder text = new StringBuilder();
-      long currentByteLocation = streamByteStartLocation;
       while (eventType != XMLEventType.DOCUMENT_CLOSE &&
-          currentByteLocation <= streamByteEndLocation) {
+          parser.getPosition() <= streamByteEndLocation) {
         if (eventType == XMLEventType.CONTENT) {
           String contentType = event.getContentType();
           if (!TextUtils.isEmpty(contentType)) {
@@ -86,8 +85,6 @@ public class FB2Part implements AbstractTocReference {
           }
           text.append(" ");
         }
-        currentByteLocation += event.getDomain().second -
-            event.getDomain().first;
         event = parser.next();
         eventType = event.getType();
       }

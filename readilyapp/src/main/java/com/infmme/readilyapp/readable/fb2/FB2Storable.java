@@ -3,6 +3,9 @@ package com.infmme.readilyapp.readable.fb2;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.text.TextUtils;
+import android.util.Log;
+import com.daimajia.androidanimations.library.BuildConfig;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
@@ -15,7 +18,6 @@ import com.infmme.readilyapp.provider.fb2book.Fb2BookCursor;
 import com.infmme.readilyapp.provider.fb2book.Fb2BookSelection;
 import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.readable.interfaces.*;
-import com.infmme.readilyapp.readable.interfaces.AbstractTocReference;
 import com.infmme.readilyapp.reader.Reader;
 import com.infmme.readilyapp.xmlparser.FB2Tags;
 import com.infmme.readilyapp.xmlparser.XMLEvent;
@@ -41,6 +43,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
   private static final int BUFFER_SIZE = 4096;
 
   private String mPath;
+  private long mFileSize;
 
   /**
    * Creation time in order to keep track of db records.
@@ -62,6 +65,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
   private transient long mLastBytePosition = 0;
 
   private int mCurrentTextPosition;
+  private double mChunkPercentile = .0;
 
   private boolean mProcessed;
 
@@ -78,7 +82,17 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
   }
 
   @Override
+  protected void finalize() throws Throwable {
+    super.finalize();
+    mParser.close();
+  }
+
+  @Override
   public Reading readNext() throws IOException {
+    // Checks if we're reading for the first time.
+    if (mParser.getPosition() == 0 && mCurrentBytePosition != 0) {
+      mParser.skip(mCurrentBytePosition);
+    }
     mCurrentBytePosition = mLastBytePosition;
 
     StringBuilder text = new StringBuilder();
@@ -100,10 +114,19 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
         insideBookTitle = false;
       }
       if (mCurrentEvent.enteringSection()) {
+        if (BuildConfig.DEBUG) {
+          Log.d(getClass().getName(),
+                "Entering section on " + String.valueOf(mParser.getPosition()));
+        }
         mCurrentPartId = "section" + mParser.getPosition();
         sectionIdStack.add(mCurrentPartId);
       }
       if (mCurrentEvent.exitingSection()) {
+        if (BuildConfig.DEBUG) {
+          Log.d(getClass().getName(),
+                String.format("Exiting section %s on %d", mTitle,
+                              mParser.getPosition()));
+        }
         if (!sectionIdStack.isEmpty())
           sectionIdStack.pop();
         if (sectionIdStack.isEmpty()) {
@@ -115,11 +138,13 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
       if (mCurrentEventType == XMLEventType.CONTENT) {
         String contentType = mCurrentEvent.getContentType();
         String content = mCurrentEvent.getContent();
-        if (contentType.equals(FB2Tags.PLAIN_TEXT)) {
-          text.append(content).append(" ");
-        } else if (contentType.equals(FB2Tags.BOOK_TITLE)) {
-          if (insideBookTitle && mTitle == null) {
-            mTitle = content;
+        if (contentType != null && !TextUtils.isEmpty(contentType)) {
+          if (contentType.equals(FB2Tags.PLAIN_TEXT)) {
+            text.append(content).append(" ");
+          } else if (contentType.equals(FB2Tags.BOOK_TITLE)) {
+            if (insideBookTitle && mTitle == null) {
+              mTitle = content;
+            }
           }
         }
       }
@@ -204,6 +229,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
   public void prepareForStoring(Reader reader) {
     if (mLoadedChunks != null && !mLoadedChunks.isEmpty()) {
       mCurrentBytePosition = mLoadedChunks.getFirst().mBytePosition;
+      mChunkPercentile = reader.getPercentile();
       setCurrentPosition(reader.getPosition());
     }
   }
@@ -211,10 +237,9 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
   @Override
   public void storeToDb() {
     checkSectionByteIntegrity();
+    double percent = calcPercentile();
 
     CachedBookContentValues values = new CachedBookContentValues();
-    // TODO: Solve this
-    values.putPercentile(0);
 
     Fb2BookContentValues fb2Values = new Fb2BookContentValues();
     fb2Values.putBytePosition((int) mCurrentBytePosition);
@@ -224,11 +249,20 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
     if (isStoredInDb()) {
       CachedBookSelection cachedWhere = new CachedBookSelection();
       cachedWhere.path(mPath);
+      if (percent >= 0 && percent <= 1) {
+        values.putPercentile(calcPercentile());
+        values.update(mContext, cachedWhere);
+      }
       Fb2BookSelection fb2Where = new Fb2BookSelection();
       fb2Where.id(getFkFb2BookId());
       fb2Values.update(mContext, fb2Where);
       values.update(mContext, cachedWhere);
     } else {
+      if (percent >= 0 && percent <= 1) {
+        values.putPercentile(calcPercentile());
+      } else {
+        values.putPercentile(0);
+      }
       values.putTimeOpened(mTimeCreated);
       values.putPath(mPath);
       values.putTitle(mTitle);
@@ -275,14 +309,15 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
   @Override
   public Storable readFromFile() throws IOException {
     File file = new File(mPath);
+    mFileSize = file.length();
     FileInputStream encodingHelper = new FileInputStream(file);
     String encoding = guessCharset(encodingHelper);
     encodingHelper.close();
 
-    FileInputStream fileInputStream = new FileInputStream(file);
+    FileInputStream inputStream = new FileInputStream(file);
 
     mParser = new XMLParser();
-    mParser.setInput(fileInputStream, encoding);
+    mParser.setInput(inputStream, encoding);
     return this;
   }
 
@@ -377,8 +412,10 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
   }
 
   @Override
-  public void setCurrentId(String id) {
-    mCurrentPartId = id;
+  public void setCurrentTocReference(AbstractTocReference tocReference) {
+    FB2Part fb2Part = (FB2Part) tocReference;
+    mCurrentPartId = fb2Part.getId();
+    mCurrentBytePosition = fb2Part.getStreamByteStartLocation();
   }
 
   @Override
@@ -407,7 +444,6 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
       readFromFile();
       if (isStoredInDb()) {
         readFromDb();
-        mParser.skip(mCurrentBytePosition);
       } else {
         mCurrentTextPosition = 0;
       }
@@ -488,6 +524,17 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
     }
     cachedBookCursor.close();
     return id;
+  }
+
+  private double calcPercentile() {
+    long nextBytePosition;
+    if (mLoadedChunks.isEmpty()) {
+      nextBytePosition = mFileSize;
+    } else {
+      nextBytePosition = mLoadedChunks.getFirst().mBytePosition;
+    }
+    return (double) mCurrentBytePosition / mFileSize + mChunkPercentile *
+        (nextBytePosition - mCurrentBytePosition) / mFileSize;
   }
 
   private class ChunkInfo {

@@ -11,7 +11,7 @@ public interface Structured {
 
   String getCurrentId();
 
-  void setCurrentId(String id);
+  void setCurrentTocReference(AbstractTocReference tocReference);
 
   int getCurrentPosition();
 

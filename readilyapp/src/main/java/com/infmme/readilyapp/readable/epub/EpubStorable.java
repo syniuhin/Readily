@@ -337,8 +337,9 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
   }
 
   @Override
-  public void setCurrentId(String id) {
-    mCurrentResourceId = id;
+  public void setCurrentTocReference(AbstractTocReference tocReference) {
+    EpubPart epubPart = (EpubPart) tocReference;
+    mCurrentResourceId = epubPart.getId();
   }
 
   @Override

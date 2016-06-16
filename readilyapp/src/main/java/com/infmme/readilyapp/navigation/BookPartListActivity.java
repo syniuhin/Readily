@@ -14,11 +14,11 @@ import android.view.MenuItem;
 import android.view.View;
 import com.infmme.readilyapp.BaseActivity;
 import com.infmme.readilyapp.R;
-import com.infmme.readilyapp.readable.interfaces.Storable;
-import com.infmme.readilyapp.readable.interfaces.Structured;
-import com.infmme.readilyapp.readable.interfaces.AbstractTocReference;
 import com.infmme.readilyapp.readable.epub.EpubStorable;
 import com.infmme.readilyapp.readable.fb2.FB2Storable;
+import com.infmme.readilyapp.readable.interfaces.AbstractTocReference;
+import com.infmme.readilyapp.readable.interfaces.Storable;
+import com.infmme.readilyapp.readable.interfaces.Structured;
 import com.infmme.readilyapp.readable.type.ReadableType;
 import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.view.FabOnScrollBehavior;
@@ -136,8 +136,10 @@ public class BookPartListActivity extends BaseActivity implements
     switch (requestCode) {
       case DETAIL_ACTIVITY: {
         if (resultCode == Activity.RESULT_OK) {
-          chooseItem(data.getStringExtra(Constants.EXTRA_ITEM_ID),
-                     data.getIntExtra(Constants.EXTRA_POSITION, 0));
+          chooseItem(
+              (AbstractTocReference) data.getSerializableExtra(
+                  Constants.EXTRA_TOC_REFERENCE),
+              data.getIntExtra(Constants.EXTRA_POSITION, 0));
         }
       }
       break;
@@ -234,8 +236,8 @@ public class BookPartListActivity extends BaseActivity implements
   }
 
   @Override
-  public void chooseItem(String itemId, int textPosition) {
-    mStructured.setCurrentId(itemId);
+  public void chooseItem(AbstractTocReference tocReference, int textPosition) {
+    mStructured.setCurrentTocReference(tocReference);
     mStructured.setCurrentPosition(textPosition);
     final Activity activity = this;
     new Thread(new Runnable() {
