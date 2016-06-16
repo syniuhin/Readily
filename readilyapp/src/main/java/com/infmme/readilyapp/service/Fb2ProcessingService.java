@@ -30,7 +30,7 @@ public class FB2ProcessingService extends IntentService {
   @Override
   protected void onHandleIntent(Intent intent) {
     String path = intent.getStringExtra(Constants.EXTRA_PATH);
-    FB2Storable fb2Storable = new FB2Storable(this, null);
+    FB2Storable fb2Storable = new FB2Storable(this);
     fb2Storable.setPath(path);
     fb2Storable.process();
     if (!fb2Storable.isFullyProcessed()) {

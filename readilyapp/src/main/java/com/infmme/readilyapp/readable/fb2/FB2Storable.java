@@ -86,23 +86,17 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
     mContext = context;
   }
 
-  public FB2Storable(Context context, String title) {
-    this.mTitle = title;
-    this.mContext = context;
-  }
-
-  public FB2Storable(Context context, String timeCreated, String title) {
+  public FB2Storable(Context context, String timeCreated) {
     this.mTimeCreated = timeCreated;
     this.mContext = context;
-    this.mTitle = title;
   }
 
   @Override
   protected void finalize() throws Throwable {
     super.finalize();
     if (mParser != null) {
-    // Closes inner input stream.
-    mParser.close();
+      // Closes inner input stream.
+      mParser.close();
     }
   }
 
@@ -281,6 +275,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
     double percent = calcPercentile();
 
     CachedBookContentValues values = new CachedBookContentValues();
+    boolean updateValues = false;
     Fb2BookContentValues fb2Values = new Fb2BookContentValues();
 
     if (isStoredInDb()) {
@@ -289,11 +284,19 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
 
       if (mTitle != null) {
         values.putTitle(mTitle);
+        updateValues = true;
       }
       if (percent >= 0 && percent <= 1) {
         values.putPercentile(calcPercentile());
+        updateValues = true;
       }
-      values.update(mContext, cachedWhere);
+      if (mCoverImageUri != null) {
+        values.putCoverImageUri(mCoverImageUri);
+        updateValues = true;
+      }
+      if (updateValues) {
+        values.update(mContext, cachedWhere);
+      }
 
       fb2Values.putFullyProcessed(mFullyProcessed);
       if (mCurrentBytePosition >= 0) {
@@ -322,6 +325,9 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
       }
       values.putTimeOpened(mTimeCreated);
       values.putPath(mPath);
+      if (mTitle == null) {
+        mTitle = getDefaultTitle();
+      }
       values.putTitle(mTitle);
       values.putCoverImageUri(mCoverImageUri);
 
@@ -330,6 +336,10 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
       values.putFb2BookId(fb2Id);
       values.insert(mContext.getContentResolver());
     }
+  }
+
+  private String getDefaultTitle() {
+    return mPath.substring(mPath.lastIndexOf('/') + 1, mPath.lastIndexOf('.'));
   }
 
   /**
@@ -513,6 +523,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
     boolean insideTitle = false;
     boolean insideBookTitle = false;
     boolean insideCoverPage = false;
+    boolean insideCoverPageBinary = false;
 
     while (eventType != XMLEventType.DOCUMENT_CLOSE) {
       if (event.enteringTag(FB2Tags.SECTION)) {
@@ -563,6 +574,14 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
         insideCoverPage = false;
       }
 
+      if (event.enteringTag(FB2Tags.BINARY) &&
+          event.checkHref(mCoverImageHref)) {
+        insideCoverPageBinary = true;
+      }
+      if (insideCoverPageBinary && event.exitingTag(FB2Tags.BINARY)) {
+        insideCoverPageBinary = false;
+      }
+
       // Checks if we're inside tag contents.
       if (eventType == XMLEventType.CONTENT) {
         String contentType = event.getContentType();
@@ -574,8 +593,8 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
           if (insideBookTitle && mTitle == null) {
             mTitle = content;
           }
-        } else if (contentType.equals(FB2Tags.BINARY) &&
-            event.checkHref(mCoverImageHref)) {
+        } else if (insideCoverPageBinary &&
+            contentType.equals(FB2Tags.BINARY)) {
           mCoverImageEncoded = content;
         }
       } else if (insideCoverPage && event.isImageTag()) {

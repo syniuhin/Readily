@@ -709,8 +709,7 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
           String path = args.getString(Constants.EXTRA_PATH);
           if (path != null) {
             final FB2Storable fb2Storable =
-                new FB2Storable(getActivity(), LocalDateTime.now().toString(),
-                                path.substring(path.lastIndexOf('/') + 1));
+                new FB2Storable(getActivity(), LocalDateTime.now().toString());
             fb2Storable.setPath(path);
             startFb2ProcessingService(path);
             // TODO: Terminate this and other threads according to lifecycle.
