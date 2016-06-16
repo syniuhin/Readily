@@ -35,8 +35,9 @@ import static com.infmme.readilyapp.readable.Utils.guessCharset;
 
 /**
  * Created with love, by infm dated on 6/14/16.
+ * <p>
+ * Class to handle .fb2
  */
-
 public class FB2Storable implements Storable, Chunked, Unprocessed,
     Structured {
 
@@ -84,6 +85,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
   @Override
   protected void finalize() throws Throwable {
     super.finalize();
+    // Closes inner input stream.
     mParser.close();
   }
 
@@ -103,8 +105,11 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
     }
 
     boolean insideBookTitle = false;
+    // Stack needed to keep track of nested sections entered.
     Stack<String> sectionIdStack = new Stack<>();
 
+    // Reads file section by section until reaches end of the file or text
+    // grows bigger, than buffer size.
     while (mCurrentEventType != XMLEventType.DOCUMENT_CLOSE &&
         text.length() < BUFFER_SIZE) {
       if (mCurrentEvent.enteringBookTitle()) {
@@ -127,11 +132,12 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
                 String.format("Exiting section %s on %d", mTitle,
                               mParser.getPosition()));
         }
-        if (!sectionIdStack.isEmpty())
+        // Checks if we're in a nested section.
+        if (!sectionIdStack.isEmpty()) {
           sectionIdStack.pop();
-        if (sectionIdStack.isEmpty()) {
-          mCurrentPartId = null;
-        } else {
+        }
+        // If we should use parent section as a current one.
+        if (!sectionIdStack.isEmpty()) {
           mCurrentPartId = sectionIdStack.peek();
         }
       }
@@ -139,6 +145,8 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
         String contentType = mCurrentEvent.getContentType();
         String content = mCurrentEvent.getContent();
         if (contentType != null && !TextUtils.isEmpty(contentType)) {
+          // Appends plain text to a text.
+          // TODO: Check out other possible tags.
           if (contentType.equals(FB2Tags.PLAIN_TEXT)) {
             text.append(content).append(" ");
           } else if (contentType.equals(FB2Tags.BOOK_TITLE)) {
