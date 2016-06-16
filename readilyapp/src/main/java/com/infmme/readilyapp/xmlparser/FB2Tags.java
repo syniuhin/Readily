@@ -5,8 +5,11 @@ package com.infmme.readilyapp.xmlparser;
  */
 
 public class FB2Tags {
+  public static final String COVER_PAGE = "coverpage";
   public static final String SECTION = "section";
   public static final String TITLE = "title";
   public static final String BOOK_TITLE = "book-title";
   public static final String PLAIN_TEXT = "p";
+  public static final String IMAGE = "image";
+  public static final String BINARY = "binary";
 }

@@ -125,7 +125,7 @@ public class XMLParser {
         case TAG_CLOSE:
         case TAG_SINGLE:
         case TAG_COMMENT:
-          currentEvent.appendTagName((char) currentInt);
+          currentEvent.appendTagContents((char) currentInt);
           break;
         case CONTENT:
           currentEvent.appendContent((char) currentInt);
@@ -158,10 +158,12 @@ public class XMLParser {
       case TAG:
         // Since we didn't meet other requirements
         currentEvent.clarifyTagType(TAG_START);
+        currentEvent.finishAppendingTagContents();
         eventStack.push(currentEvent);
         readNext();
         break;
       case TAG_CLOSE:
+        currentEvent.finishAppendingTagContents();
         if (!eventStack.empty() && eventStack.lastElement()
                                              .getTagName()
                                              .equals(currentEvent.getTagName()))
@@ -169,12 +171,13 @@ public class XMLParser {
         readNext();
         break;
       case TAG_START:
+        currentEvent.finishAppendingTagContents();
         eventStack.push(currentEvent);
         readNext();
         break;
       case DOCUMENT_START:
-        // Was a kostyl'
-        // currentEvent.cutLastTagChar();
+      case TAG_SINGLE:
+        currentEvent.finishAppendingTagContents();
         eventStack.push(currentEvent);
         readNext();
         readNext();

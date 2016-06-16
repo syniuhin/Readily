@@ -53,6 +53,8 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
   private String mTimeCreated;
 
   private String mTitle = null;
+  private String mCoverImageHref = null;
+  private String mCoverImageUri = null;
 
   private XMLParser mParser;
   private XMLEvent mCurrentEvent;
@@ -105,6 +107,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
     }
 
     boolean insideBookTitle = false;
+    boolean insideCoverPage = false;
     // Stack needed to keep track of nested sections entered.
     Stack<String> sectionIdStack = new Stack<>();
 
@@ -117,6 +120,12 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
       }
       if (mCurrentEvent.exitingBookTitle()) {
         insideBookTitle = false;
+      }
+      if (mCurrentEvent.enteringCoverPage()) {
+        insideCoverPage = true;
+      }
+      if (mCurrentEvent.exitingCoverPage()) {
+        insideCoverPage = false;
       }
       if (mCurrentEvent.enteringSection()) {
         if (BuildConfig.DEBUG) {
@@ -152,6 +161,16 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
           } else if (contentType.equals(FB2Tags.BOOK_TITLE)) {
             if (insideBookTitle && mTitle == null) {
               mTitle = content;
+            }
+          }
+        }
+      } else if (insideCoverPage && mCurrentEvent.isImageTag()) {
+        HashMap<String, String> attrs = mCurrentEvent.getTagAttributes();
+        if (attrs != null) {
+          for (HashMap.Entry<String, String> kv : attrs.entrySet()) {
+            if (kv.getKey().contains("href")) {
+              mCoverImageHref = kv.getValue();
+              break;
             }
           }
         }
@@ -274,6 +293,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
       values.putTimeOpened(mTimeCreated);
       values.putPath(mPath);
       values.putTitle(mTitle);
+      values.putCoverImageUri(mCoverImageUri);
 
       Uri uri = fb2Values.insert(mContext.getContentResolver());
       long fb2Id = Long.parseLong(uri.getLastPathSegment());
