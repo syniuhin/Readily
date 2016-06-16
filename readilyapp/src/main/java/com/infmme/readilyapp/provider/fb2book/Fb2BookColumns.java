@@ -18,6 +18,12 @@ public class Fb2BookColumns implements BaseColumns {
   public static final String _ID = BaseColumns._ID;
 
   /**
+   * Tells if this fb2 was fully processed (i.e. table of contents, cover
+   * image).
+   */
+  public static final String FULLY_PROCESSED = "fully_processed";
+
+  /**
    * Byte position of block in a file, either FB2Part or simple chunk read
    * continuously.
    */
@@ -44,6 +50,7 @@ public class Fb2BookColumns implements BaseColumns {
   // @formatter:off
   public static final String[] ALL_COLUMNS = new String[] {
       _ID,
+      FULLY_PROCESSED,
       BYTE_POSITION,
       CURRENT_PART_ID,
       TEXT_POSITION,
@@ -54,6 +61,8 @@ public class Fb2BookColumns implements BaseColumns {
   public static boolean hasColumns(String[] projection) {
     if (projection == null) return true;
     for (String c : projection) {
+      if (c.equals(FULLY_PROCESSED) || c.contains("." + FULLY_PROCESSED))
+        return true;
       if (c.equals(BYTE_POSITION) || c.contains("." + BYTE_POSITION))
         return true;
       if (c.equals(CURRENT_PART_ID) || c.contains("." + CURRENT_PART_ID))

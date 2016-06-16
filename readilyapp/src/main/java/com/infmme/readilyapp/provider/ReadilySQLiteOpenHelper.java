@@ -51,6 +51,7 @@ public class ReadilySQLiteOpenHelper extends SQLiteOpenHelper {
       " EXISTS "
       + Fb2BookColumns.TABLE_NAME + " ( "
       + Fb2BookColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+      + Fb2BookColumns.FULLY_PROCESSED + " INTEGER NOT NULL, "
       + Fb2BookColumns.BYTE_POSITION + " INTEGER NOT NULL, "
       + Fb2BookColumns.CURRENT_PART_ID + " TEXT NOT NULL, "
       + Fb2BookColumns.TEXT_POSITION + " INTEGER NOT NULL, "

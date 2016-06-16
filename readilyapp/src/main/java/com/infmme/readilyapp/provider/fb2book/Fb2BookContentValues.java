@@ -44,6 +44,16 @@ public class Fb2BookContentValues extends AbstractContentValues {
   }
 
   /**
+   * Tells if this fb2 was fully processed (i.e. table of contents, cover
+   * image).
+   */
+  public Fb2BookContentValues putFullyProcessed(boolean value) {
+    mContentValues.put(Fb2BookColumns.FULLY_PROCESSED, value);
+    return this;
+  }
+
+
+  /**
    * Byte position of block in a file, either FB2Part or simple chunk read
    * continuously.
    */

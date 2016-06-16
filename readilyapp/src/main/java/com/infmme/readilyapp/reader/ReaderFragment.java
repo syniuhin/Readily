@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.Spanned;
@@ -25,14 +26,15 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.readable.NetReadable;
 import com.infmme.readilyapp.readable.Readable;
+import com.infmme.readilyapp.readable.epub.EpubStorable;
+import com.infmme.readilyapp.readable.fb2.FB2Storable;
 import com.infmme.readilyapp.readable.interfaces.Chunked;
 import com.infmme.readilyapp.readable.interfaces.Reading;
 import com.infmme.readilyapp.readable.interfaces.Storable;
-import com.infmme.readilyapp.readable.epub.EpubStorable;
-import com.infmme.readilyapp.readable.fb2.FB2Storable;
 import com.infmme.readilyapp.readable.txt.TxtStorable;
 import com.infmme.readilyapp.readable.type.ReadableType;
 import com.infmme.readilyapp.readable.type.ReadingSource;
+import com.infmme.readilyapp.service.FB2ProcessingService;
 import com.infmme.readilyapp.settings.SettingsBundle;
 import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.view.OnSwipeTouchListener;
@@ -703,31 +705,37 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
             }
           }).start();
           break;
-        case FB2:
-          final FB2Storable fb2Storable =
-              new FB2Storable(getActivity(), LocalDateTime.now().toString());
-          fb2Storable.setPath(args.getString(Constants.EXTRA_PATH));
-          // TODO: Terminate this and other threads according to lifecycle.
-          // TODO: Probably switch to RxAndroid's observables.
-          new Thread(new Runnable() {
-            @Override
-            public void run() {
-              fb2Storable.process();
-              if (fb2Storable.isProcessed()) {
-                mChunked = fb2Storable;
-                mStorable = fb2Storable;
-                getActivity().runOnUiThread(
-                    new Runnable() {
-                      @Override
-                      public void run() {
-                        startChunkedReadingFlow(
-                            fb2Storable.getCurrentPosition());
-                      }
-                    });
+        case FB2: {
+          String path = args.getString(Constants.EXTRA_PATH);
+          if (path != null) {
+            final FB2Storable fb2Storable =
+                new FB2Storable(getActivity(), LocalDateTime.now().toString(),
+                                path.substring(path.lastIndexOf('/') + 1));
+            fb2Storable.setPath(path);
+            startFb2ProcessingService(path);
+            // TODO: Terminate this and other threads according to lifecycle.
+            // TODO: Probably switch to RxAndroid's observables.
+            new Thread(new Runnable() {
+              @Override
+              public void run() {
+                fb2Storable.process();
+                if (fb2Storable.isProcessed()) {
+                  mChunked = fb2Storable;
+                  mStorable = fb2Storable;
+                  getActivity().runOnUiThread(
+                      new Runnable() {
+                        @Override
+                        public void run() {
+                          startChunkedReadingFlow(
+                              fb2Storable.getCurrentPosition());
+                        }
+                      });
+                }
               }
-            }
-          }).start();
-          break;
+            }).start();
+          }
+        }
+        break;
         case TXT:
           final TxtStorable txtStorable =
               new TxtStorable(getActivity(), LocalDateTime.now().toString());
@@ -784,6 +792,13 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
     mReaderTask = new ReaderTask(mTaskMonitor, mChunked, this);
     mReadingThread = new Thread(mReaderTask);
     mReadingThread.start();
+  }
+
+  private void startFb2ProcessingService(@NonNull final String path) {
+    Activity a = getActivity();
+    Intent intent = new Intent(a, FB2ProcessingService.class);
+    intent.putExtra(Constants.EXTRA_PATH, path);
+    a.startService(intent);
   }
 
   public interface ReaderFragmentCallback {

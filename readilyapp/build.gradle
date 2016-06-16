@@ -15,7 +15,6 @@ android {
         targetSdkVersion 23
         versionCode 7
         versionName "2.0"
-        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -58,7 +57,6 @@ dependencies {
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.daimajia.androidanimations:library:1.0.5@aar'
     compile 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
-    compile 'com.android.support:multidex:1.0.1'
     compile 'com.android.support:design:23.4.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha1'
     compile 'com.android.support:recyclerview-v7:23.4.0'

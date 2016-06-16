@@ -10,8 +10,11 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
+import com.daimajia.androidanimations.library.BuildConfig;
 import com.infmme.readilyapp.BaseActivity;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.readable.epub.EpubStorable;
@@ -28,6 +31,7 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,8 +65,11 @@ public class BookPartListActivity extends BaseActivity implements
   private Toolbar mToolbar;
   private FloatingActionButton mFab;
   private RecyclerView mRecyclerView;
+  private ProgressBar mProgressBar;
 
   private OnFabClickListener mCallback = null;
+
+  private CompositeSubscription mCompositeSubscription = null;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -79,8 +86,20 @@ public class BookPartListActivity extends BaseActivity implements
       actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
+    mCompositeSubscription = new CompositeSubscription();
+    mProgressBar.setVisibility(View.VISIBLE);
+
     Bundle bundle = getIntent().getExtras();
     loadStorable(bundle);
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    if (mCompositeSubscription != null &&
+        mCompositeSubscription.hasSubscriptions()) {
+      mCompositeSubscription.unsubscribe();
+    }
   }
 
   @Override
@@ -97,9 +116,11 @@ public class BookPartListActivity extends BaseActivity implements
     mToolbar = (Toolbar) findViewById(toolbar);
     mFab = (FloatingActionButton) findViewById(fab);
     mRecyclerView = (RecyclerView) findViewById(R.id.bookpart_list);
+    mProgressBar = (ProgressBar) findViewById(R.id.bookpart_list_progress_bar);
   }
 
   protected void setupViews() {
+    mProgressBar.setVisibility(View.GONE);
     mToolbar.setTitle(getTitle());
 
     mFab.setOnClickListener(new View.OnClickListener() {
@@ -163,48 +184,73 @@ public class BookPartListActivity extends BaseActivity implements
     final String path = args.getString(Constants.EXTRA_PATH);
     final ReadableType type = ReadableType.valueOf(
         args.getString(Constants.EXTRA_TYPE));
-    Observable<List<? extends AbstractTocReference>> o = Observable.create(
-        new Observable.OnSubscribe<List<? extends AbstractTocReference>>() {
-          @Override
-          public void call(
-              Subscriber<? super List<? extends AbstractTocReference>>
-                  subscriber) {
-            switch (type) {
-              case EPUB: {
-                EpubStorable epubStorable = new EpubStorable(
-                    BookPartListActivity.this);
-                epubStorable.setPath(path);
-                epubStorable.process();
-                mStorable = epubStorable;
-                mStructured = epubStorable;
-                subscriber.onNext(epubStorable.getTableOfContents());
+    Observable<List<? extends AbstractTocReference>> tocObservable =
+        Observable.create(
+            new Observable.OnSubscribe<List<? extends AbstractTocReference>>() {
+              @Override
+              public void call(
+                  Subscriber<? super List<? extends AbstractTocReference>>
+                      subscriber) {
+                switch (type) {
+                  case EPUB: {
+                    EpubStorable epubStorable = new EpubStorable(
+                        BookPartListActivity.this);
+                    epubStorable.setPath(path);
+                    epubStorable.process();
+                    mStorable = epubStorable;
+                    mStructured = epubStorable;
+                    subscriber.onNext(epubStorable.getTableOfContents());
+                  }
+                  break;
+                  case FB2: {
+                    FB2Storable fb2Storable = new FB2Storable(
+                        BookPartListActivity.this);
+                    fb2Storable.setPath(path);
+                    mFilePath = path;
+                    fb2Storable.process();
+                    if (!fb2Storable.isFullyProcessed()) {
+                      try {
+                        waitForFullProcessing();
+                      } catch (InterruptedException e) {
+                        e.printStackTrace();
+                      }
+                    }
+                    mStorable = fb2Storable;
+                    mStructured = fb2Storable;
+                    subscriber.onNext(fb2Storable.getTableOfContents());
+                  }
+                  break;
+                }
               }
-              break;
-              case FB2: {
-                FB2Storable fb2Storable = new FB2Storable(
-                    BookPartListActivity.this);
-                fb2Storable.setPath(path);
-                mFilePath = path;
-                fb2Storable.process();
-                mStorable = fb2Storable;
-                mStructured = fb2Storable;
-                subscriber.onNext(fb2Storable.getTableOfContents());
+
+              private void waitForFullProcessing() throws InterruptedException {
+                boolean processed = FB2Storable.isFullyProcessed(
+                    BookPartListActivity.this, path);
+                while (!processed) {
+                  Thread.sleep(1000);
+                  processed = FB2Storable.isFullyProcessed(
+                      BookPartListActivity.this, path);
+                  if (BuildConfig.DEBUG) {
+                    Log.d(BookPartListActivity.class.getName(),
+                          String.format("%s fully processed: %s", path,
+                                        String.valueOf(processed)));
+                  }
+                }
               }
-              break;
-            }
-          }
-        });
-    o.subscribeOn(Schedulers.newThread())
-     .observeOn(AndroidSchedulers.mainThread())
-     .subscribe(
-         new Action1<List<? extends AbstractTocReference>>() {
-           @Override
-           public void call(
-               List<? extends AbstractTocReference> abstractTocReferences) {
-             mTocReferenceList = abstractTocReferences;
-             setupViews();
-           }
-         });
+            });
+    mCompositeSubscription.add(
+        tocObservable.subscribeOn(Schedulers.newThread())
+                     .observeOn(AndroidSchedulers.mainThread())
+                     .subscribe(
+                         new Action1<List<? extends AbstractTocReference>>() {
+                           @Override
+                           public void call(
+                               List<? extends AbstractTocReference>
+                                   abstractTocReferences) {
+                             mTocReferenceList = abstractTocReferences;
+                             setupViews();
+                           }
+                         }));
   }
 
   @Override

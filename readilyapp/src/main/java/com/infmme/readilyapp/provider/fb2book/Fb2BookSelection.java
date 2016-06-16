@@ -82,6 +82,21 @@ public class Fb2BookSelection extends AbstractSelection<Fb2BookSelection> {
     return orderById(false);
   }
 
+  public Fb2BookSelection fullyProcessed(boolean value) {
+    addEquals(Fb2BookColumns.FULLY_PROCESSED, toObjectArray(value));
+    return this;
+  }
+
+  public Fb2BookSelection orderByFullyProcessed(boolean desc) {
+    orderBy(Fb2BookColumns.FULLY_PROCESSED, desc);
+    return this;
+  }
+
+  public Fb2BookSelection orderByFullyProcessed() {
+    orderBy(Fb2BookColumns.FULLY_PROCESSED, false);
+    return this;
+  }
+
   public Fb2BookSelection bytePosition(int... value) {
     addEquals(Fb2BookColumns.BYTE_POSITION, toObjectArray(value));
     return this;

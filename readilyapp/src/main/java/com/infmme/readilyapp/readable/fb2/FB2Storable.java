@@ -70,13 +70,14 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
   private List<? extends AbstractTocReference> mTableOfContents = null;
 
   private transient String mCurrentPartId;
-  private long mCurrentBytePosition = 0;
-  private transient long mLastBytePosition = 0;
+  private long mCurrentBytePosition = -1;
+  private transient long mLastBytePosition = -1;
 
-  private int mCurrentTextPosition;
+  private int mCurrentTextPosition = -1;
   private double mChunkPercentile = .0;
 
-  private boolean mProcessed;
+  private boolean mProcessed = false;
+  private boolean mFullyProcessed = false;
 
   // Again, can be leaking.
   private transient Context mContext = null;
@@ -85,22 +86,30 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
     mContext = context;
   }
 
-  public FB2Storable(Context context, String timeCreated) {
+  public FB2Storable(Context context, String title) {
+    this.mTitle = title;
+    this.mContext = context;
+  }
+
+  public FB2Storable(Context context, String timeCreated, String title) {
     this.mTimeCreated = timeCreated;
     this.mContext = context;
+    this.mTitle = title;
   }
 
   @Override
   protected void finalize() throws Throwable {
     super.finalize();
+    if (mParser != null) {
     // Closes inner input stream.
     mParser.close();
+    }
   }
 
   @Override
   public Reading readNext() throws IOException {
     // Checks if we're reading for the first time.
-    if (mParser.getPosition() == 0 && mCurrentBytePosition != 0) {
+    if (mParser.getPosition() == 0 && mCurrentBytePosition > 0) {
       mParser.skip(mCurrentBytePosition);
     }
     mCurrentBytePosition = mLastBytePosition;
@@ -112,8 +121,6 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
       mLastBytePosition = mParser.getPosition();
     }
 
-    boolean insideBookTitle = false;
-    boolean insideCoverPage = false;
     // Stack needed to keep track of nested sections entered.
     Stack<String> sectionIdStack = new Stack<>();
 
@@ -121,18 +128,6 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
     // grows bigger, than buffer size.
     while (mCurrentEventType != XMLEventType.DOCUMENT_CLOSE &&
         text.length() < BUFFER_SIZE) {
-      if (mCurrentEvent.enteringTag(FB2Tags.BOOK_TITLE)) {
-        insideBookTitle = true;
-      }
-      if (mCurrentEvent.exitingTag(FB2Tags.BOOK_TITLE)) {
-        insideBookTitle = false;
-      }
-      if (mCurrentEvent.enteringTag(FB2Tags.COVER_PAGE)) {
-        insideCoverPage = true;
-      }
-      if (mCurrentEvent.exitingTag(FB2Tags.COVER_PAGE)) {
-        insideCoverPage = false;
-      }
       if (mCurrentEvent.enteringTag(FB2Tags.SECTION)) {
         if (BuildConfig.DEBUG) {
           Log.d(getClass().getName(),
@@ -144,7 +139,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
       if (mCurrentEvent.exitingTag(FB2Tags.SECTION)) {
         if (BuildConfig.DEBUG) {
           Log.d(getClass().getName(),
-                String.format("Exiting section %s on %d", mTitle,
+                String.format("Exiting section %s on %d", mCurrentPartId,
                               mParser.getPosition()));
         }
         // Checks if we're in a nested section.
@@ -165,23 +160,6 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
           // TODO: Check out other possible tags.
           if (contentType.equals(FB2Tags.PLAIN_TEXT)) {
             text.append(content).append(" ");
-          } else if (contentType.equals(FB2Tags.BOOK_TITLE)) {
-            if (insideBookTitle && mTitle == null) {
-              mTitle = content;
-            }
-          } else if (contentType.equals(FB2Tags.BINARY) &&
-              mCurrentEvent.checkHref(mCoverImageHref)) {
-            mCoverImageEncoded = content;
-          }
-        }
-      } else if (insideCoverPage && mCurrentEvent.isImageTag()) {
-        HashMap<String, String> attrs = mCurrentEvent.getTagAttributes();
-        if (attrs != null) {
-          for (HashMap.Entry<String, String> kv : attrs.entrySet()) {
-            if (kv.getKey().contains("href")) {
-              mCoverImageHref = kv.getValue();
-              break;
-            }
           }
         }
       }
@@ -243,12 +221,14 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
                          .query(CachedBookColumns.CONTENT_URI,
                                 Fb2BookColumns.ALL_COLUMNS,
                                 where.sel(), where.args(), null);
+      // ?!??!??!
       if (c != null && c.moveToFirst()) {
         if (c.moveToFirst()) {
           Fb2BookCursor book = new Fb2BookCursor(c);
           mCurrentPartId = book.getCurrentPartId();
           mCurrentTextPosition = book.getTextPosition();
           mCurrentBytePosition = book.getBytePosition();
+          mFullyProcessed = book.getFullyProcessed();
           mLastBytePosition = mCurrentBytePosition;
           book.close();
         } else {
@@ -268,14 +248,6 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
       mCurrentBytePosition = mLoadedChunks.getFirst().mBytePosition;
       mChunkPercentile = reader.getPercentile();
       setCurrentPosition(reader.getPosition());
-    }
-    if (mCoverImageUri == null && mCoverImageEncoded != null) {
-      try {
-        storeCoverImage();
-        mCoverImageUri = getCoverImagePath();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
     }
   }
 
@@ -309,24 +281,40 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
     double percent = calcPercentile();
 
     CachedBookContentValues values = new CachedBookContentValues();
-
     Fb2BookContentValues fb2Values = new Fb2BookContentValues();
-    fb2Values.putBytePosition((int) mCurrentBytePosition);
-    fb2Values.putTextPosition(mCurrentTextPosition);
-    fb2Values.putCurrentPartId(mCurrentPartId);
 
     if (isStoredInDb()) {
       CachedBookSelection cachedWhere = new CachedBookSelection();
       cachedWhere.path(mPath);
+
+      if (mTitle != null) {
+        values.putTitle(mTitle);
+      }
       if (percent >= 0 && percent <= 1) {
         values.putPercentile(calcPercentile());
-        values.update(mContext, cachedWhere);
       }
+      values.update(mContext, cachedWhere);
+
+      fb2Values.putFullyProcessed(mFullyProcessed);
+      if (mCurrentBytePosition >= 0) {
+        fb2Values.putBytePosition((int) mCurrentBytePosition);
+      }
+      if (mCurrentTextPosition >= 0) {
+        fb2Values.putTextPosition(mCurrentTextPosition);
+      }
+      if (mCurrentPartId != null) {
+        fb2Values.putCurrentPartId(mCurrentPartId);
+      }
+
       Fb2BookSelection fb2Where = new Fb2BookSelection();
       fb2Where.id(getFkFb2BookId());
       fb2Values.update(mContext, fb2Where);
-      values.update(mContext, cachedWhere);
     } else {
+      fb2Values.putBytePosition((int) mCurrentBytePosition);
+      fb2Values.putTextPosition(mCurrentTextPosition);
+      fb2Values.putCurrentPartId(mCurrentPartId);
+      fb2Values.putFullyProcessed(mFullyProcessed);
+
       if (percent >= 0 && percent <= 1) {
         values.putPercentile(calcPercentile());
       } else {
@@ -350,7 +338,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
   private void checkSectionByteIntegrity() {
     if (mTableOfContents == null && isTocCached(mContext)) {
       try {
-        mTableOfContents = readSavedToc(mContext);
+        mTableOfContents = readSavedTableOfContents();
       } catch (IOException e) {
         e.printStackTrace();
         return;
@@ -411,63 +399,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
     if (mTableOfContents == null && mProcessed) {
       try {
         if (isTocCached(mContext)) {
-          mTableOfContents = readSavedToc(mContext);
-        } else {
-          ArrayList<FB2Part> toc = new ArrayList<>();
-          Stack<FB2Part> stack = new Stack<>();
-          FB2Part currentPart = null;
-          // Gets initial data for an algorithm.
-          XMLEvent event = mParser.next();
-          XMLEventType eventType = event.getType();
-          boolean insideTitle = false;
-
-          while (eventType != XMLEventType.DOCUMENT_CLOSE) {
-            if (event.enteringTag(FB2Tags.SECTION)) {
-              // Checks if we're not in the section
-              if (currentPart == null) {
-                currentPart = new FB2Part(mParser.getPosition(), mPath);
-              } else {
-                FB2Part childPart = new FB2Part(mParser.getPosition(), mPath);
-                currentPart.addChild(childPart);
-                stack.add(currentPart);
-                currentPart = childPart;
-              }
-            }
-            if (event.exitingTag(FB2Tags.SECTION)) {
-              if (currentPart == null) {
-                throw new IllegalStateException("Can't exit non-existing part");
-              }
-              // This is guaranteed to be unique
-              currentPart.setId("section" + String.valueOf(
-                  currentPart.getStreamByteStartLocation()));
-              currentPart.setStreamByteEndLocation(mParser.getPosition());
-              if (stack.isEmpty()) {
-                toc.add(currentPart);
-                currentPart = null;
-              } else {
-                currentPart = stack.pop();
-              }
-            }
-            if (event.enteringTag(FB2Tags.TITLE)) {
-              insideTitle = true;
-            }
-            if (event.exitingTag(FB2Tags.TITLE)) {
-              insideTitle = false;
-            }
-
-            // Checks if we're inside tag
-            if (eventType == XMLEventType.CONTENT) {
-              if (insideTitle && currentPart != null) {
-                // Appends title to an existent one.
-                currentPart.setTitle(
-                    currentPart.getTitle() + " " + event.getContent());
-              }
-            }
-            event = mParser.next();
-            eventType = event.getType();
-          }
-          mTableOfContents = toc;
-          saveToc(mContext, toc);
+          mTableOfContents = readSavedTableOfContents();
         }
       } catch (IOException e) {
         e.printStackTrace();
@@ -525,22 +457,168 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
     }
   }
 
-  public boolean isTocCached(Context c) {
+  /**
+   * Checks in db if the book specified by path fully processed.
+   * Synchronous.
+   *
+   * @param context Context instance to work with db.
+   */
+  public static boolean isFullyProcessed(final Context context, String mPath) {
+    CachedBookSelection where = new CachedBookSelection();
+    where.path(mPath);
+    Cursor c = context.getContentResolver()
+                      .query(CachedBookColumns.CONTENT_URI,
+                             new String[] { CachedBookColumns.FB2_BOOK_ID },
+                             where.sel(), where.args(), null);
+    boolean result = false;
+    if (c != null) {
+      CachedBookCursor book = new CachedBookCursor(c);
+      if (book.moveToFirst()) {
+        Long fb2BookId = book.getFb2BookId();
+
+        Fb2BookSelection fb2Where = new Fb2BookSelection();
+        fb2Where.id(fb2BookId);
+        Fb2BookCursor fb2BookCursor = new Fb2BookCursor(
+            context.getContentResolver()
+                   .query(CachedBookColumns.CONTENT_URI,
+                          new String[] { Fb2BookColumns.FULLY_PROCESSED },
+                          where.sel(), where.args(), null));
+        if (fb2BookCursor.moveToFirst()) {
+          result = fb2BookCursor.getFullyProcessed();
+        }
+        fb2BookCursor.close();
+      }
+      book.close();
+    }
+    return result;
+  }
+
+  public boolean isFullyProcessed() {
+    return mFullyProcessed;
+  }
+
+  /**
+   * Generates and stores table of contents to a cache, reads cover image.
+   *
+   * @throws IOException
+   */
+  public void processFully() throws IOException {
+    ArrayList<FB2Part> toc = new ArrayList<>();
+
+    Stack<FB2Part> stack = new Stack<>();
+    FB2Part currentPart = null;
+    // Gets initial data for an algorithm.
+    XMLEvent event = mParser.next();
+    XMLEventType eventType = event.getType();
+    boolean insideTitle = false;
+    boolean insideBookTitle = false;
+    boolean insideCoverPage = false;
+
+    while (eventType != XMLEventType.DOCUMENT_CLOSE) {
+      if (event.enteringTag(FB2Tags.SECTION)) {
+        // Checks if we're not in the section
+        if (currentPart == null) {
+          currentPart = new FB2Part(mParser.getPosition(), mPath);
+        } else {
+          FB2Part childPart = new FB2Part(mParser.getPosition(), mPath);
+          currentPart.addChild(childPart);
+          stack.add(currentPart);
+          currentPart = childPart;
+        }
+      }
+      if (event.exitingTag(FB2Tags.SECTION)) {
+        if (currentPart == null) {
+          throw new IllegalStateException("Can't exit non-existing part");
+        }
+        // This is guaranteed to be unique
+        currentPart.setId("section" + String.valueOf(
+            currentPart.getStreamByteStartLocation()));
+        currentPart.setStreamByteEndLocation(mParser.getPosition());
+        if (stack.isEmpty()) {
+          toc.add(currentPart);
+          currentPart = null;
+        } else {
+          currentPart = stack.pop();
+        }
+      }
+
+      if (event.enteringTag(FB2Tags.TITLE)) {
+        insideTitle = true;
+      }
+      if (event.exitingTag(FB2Tags.TITLE)) {
+        insideTitle = false;
+      }
+
+      if (event.enteringTag(FB2Tags.BOOK_TITLE)) {
+        insideBookTitle = true;
+      }
+      if (event.exitingTag(FB2Tags.BOOK_TITLE)) {
+        insideBookTitle = false;
+      }
+
+      if (event.enteringTag(FB2Tags.COVER_PAGE)) {
+        insideCoverPage = true;
+      }
+      if (event.exitingTag(FB2Tags.COVER_PAGE)) {
+        insideCoverPage = false;
+      }
+
+      // Checks if we're inside tag contents.
+      if (eventType == XMLEventType.CONTENT) {
+        String contentType = event.getContentType();
+        String content = event.getContent();
+        if (insideTitle && currentPart != null) {
+          // Appends title to an existent one.
+          currentPart.setTitle(currentPart.getTitle() + " " + content);
+        } else if (contentType.equals(FB2Tags.BOOK_TITLE)) {
+          if (insideBookTitle && mTitle == null) {
+            mTitle = content;
+          }
+        } else if (contentType.equals(FB2Tags.BINARY) &&
+            event.checkHref(mCoverImageHref)) {
+          mCoverImageEncoded = content;
+        }
+      } else if (insideCoverPage && event.isImageTag()) {
+        HashMap<String, String> attrs = event.getTagAttributes();
+        if (attrs != null) {
+          for (HashMap.Entry<String, String> kv : attrs.entrySet()) {
+            if (kv.getKey().contains("href")) {
+              mCoverImageHref = kv.getValue();
+              break;
+            }
+          }
+        }
+      }
+
+      event = mParser.next();
+      eventType = event.getType();
+    }
+
+    if (mCoverImageEncoded != null) {
+      storeCoverImage();
+      mCoverImageUri = getCoverImagePath();
+    }
+
+    mTableOfContents = toc;
+    storeTableOfContents();
+    mFullyProcessed = true;
+  }
+
+  public boolean isTocCached(final Context c) {
     return getCachedTocFile(c).exists();
   }
 
-  public void saveToc(Context c, ArrayList<FB2Part> toc)
+  public void storeTableOfContents()
       throws IOException {
-    FileOutputStream fos = new FileOutputStream(getCachedTocFile(c));
+    FileOutputStream fos = new FileOutputStream(getCachedTocFile(mContext));
     Gson gson = new Gson();
-    String json = gson.toJson(toc);
+    String json = gson.toJson(mTableOfContents);
     fos.write(json.getBytes());
     fos.close();
   }
 
-  public ArrayList<FB2Part> readSavedToc(Context c)
-      throws IOException {
-    FileInputStream fis = new FileInputStream(getCachedTocFile(c));
+  public ArrayList<FB2Part> readSavedTableOfContents() throws IOException {
+    FileInputStream fis = new FileInputStream(getCachedTocFile(mContext));
 
     byte[] buffer = new byte[BUFFER_SIZE];
     StringBuilder input = new StringBuilder();

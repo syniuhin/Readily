@@ -42,5 +42,12 @@
             app:layout_anchorGravity="bottom|end"
             app:layout_behavior="com.infmme.readilyapp.view.FabOnScrollBehavior"/>
 
+    <ProgressBar
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/bookpart_list_progress_bar"
+            android:layout_gravity="center"/>
+
 
 </android.support.design.widget.CoordinatorLayout>

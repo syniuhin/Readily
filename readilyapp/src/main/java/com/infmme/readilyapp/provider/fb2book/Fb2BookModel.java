@@ -10,6 +10,12 @@ import com.infmme.readilyapp.provider.base.BaseModel;
 public interface Fb2BookModel extends BaseModel {
 
   /**
+   * Tells if this fb2 was fully processed (i.e. table of contents, cover
+   * image).
+   */
+  boolean getFullyProcessed();
+
+  /**
    * Byte position of block in a file, either FB2Part or simple chunk read
    * continuously.
    */

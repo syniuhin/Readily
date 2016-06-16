@@ -134,6 +134,17 @@ public class CachedBookCursor extends AbstractCursor
   }
 
   /**
+   * Tells if this fb2 was fully processed (i.e. table of contents, cover
+   * image).
+   * Can be {@code null}.
+   */
+  @Nullable
+  public Boolean getFb2BookFullyProcessed() {
+    Boolean res = getBooleanOrNull(Fb2BookColumns.FULLY_PROCESSED);
+    return res;
+  }
+
+  /**
    * Byte position of block in a file, either FB2Part or simple chunk read
    * continuously.
    * Can be {@code null}.

@@ -26,6 +26,19 @@ public class Fb2BookCursor extends AbstractCursor implements Fb2BookModel {
   }
 
   /**
+   * Tells if this fb2 was fully processed (i.e. table of contents, cover
+   * image).
+   */
+  public boolean getFullyProcessed() {
+    Boolean res = getBooleanOrNull(Fb2BookColumns.FULLY_PROCESSED);
+    if (res == null)
+      throw new NullPointerException(
+          "The value of 'fully_processed' in the database was null, which is " +
+              "not allowed according to the model definition");
+    return res;
+  }
+
+  /**
    * Byte position of block in a file, either FB2Part or simple chunk read
    * continuously.
    */

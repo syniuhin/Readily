@@ -449,6 +449,21 @@ public class CachedBookSelection
     return this;
   }
 
+  public CachedBookSelection fb2BookFullyProcessed(Boolean value) {
+    addEquals(Fb2BookColumns.FULLY_PROCESSED, toObjectArray(value));
+    return this;
+  }
+
+  public CachedBookSelection orderByFb2BookFullyProcessed(boolean desc) {
+    orderBy(Fb2BookColumns.FULLY_PROCESSED, desc);
+    return this;
+  }
+
+  public CachedBookSelection orderByFb2BookFullyProcessed() {
+    orderBy(Fb2BookColumns.FULLY_PROCESSED, false);
+    return this;
+  }
+
   public CachedBookSelection fb2BookBytePosition(Integer... value) {
     addEquals(Fb2BookColumns.BYTE_POSITION, value);
     return this;
