@@ -105,9 +105,11 @@ abstract public class Readable implements Serializable {
       case TYPE_EPUB:
         readable = new EpubFileStorable(intentPath);
         break;
+/*
       case TYPE_FB2:
         readable = new FB2FileStorable(intentPath);
         break;
+*/
       default:
         String link;
         if (!TextUtils.isEmpty(intentText) &&

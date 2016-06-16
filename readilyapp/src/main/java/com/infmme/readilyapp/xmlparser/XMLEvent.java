@@ -1,5 +1,6 @@
 package com.infmme.readilyapp.xmlparser;
 
+import android.support.annotation.NonNull;
 import android.util.Pair;
 
 import java.util.HashMap;
@@ -137,58 +138,30 @@ public class XMLEvent {
     }
   }
 
-  public boolean enteringSection() {
+  public boolean enteringTag(final String tagName) {
     return getType() == XMLEventType.TAG_START &&
         getTagName() != null &&
-        getTagName().equals(FB2Tags.SECTION);
+        getTagName().equals(tagName);
   }
 
-  public boolean exitingSection() {
+  public boolean exitingTag(final String tagName) {
     return getType() == XMLEventType.TAG_CLOSE &&
         getTagName() != null &&
-        getTagName().equals(FB2Tags.SECTION);
-  }
-
-  public boolean enteringTitle() {
-    return getType() == XMLEventType.TAG_START &&
-        getTagName() != null &&
-        getTagName().equals(FB2Tags.TITLE);
-  }
-
-  public boolean exitingTitle() {
-    return getType() == XMLEventType.TAG_CLOSE &&
-        getTagName() != null &&
-        getTagName().equals(FB2Tags.TITLE);
-  }
-
-  public boolean enteringBookTitle() {
-    return getType() == XMLEventType.TAG_START &&
-        getTagName() != null &&
-        getTagName().equals(FB2Tags.BOOK_TITLE);
-  }
-
-  public boolean exitingBookTitle() {
-    return getType() == XMLEventType.TAG_CLOSE &&
-        getTagName() != null &&
-        getTagName().equals(FB2Tags.BOOK_TITLE);
-  }
-
-  public boolean enteringCoverPage() {
-    return getType() == XMLEventType.TAG_START &&
-        getTagName() != null &&
-        getTagName().equals(FB2Tags.COVER_PAGE);
-  }
-
-  public boolean exitingCoverPage() {
-    return getType() == XMLEventType.TAG_CLOSE &&
-        getTagName() != null &&
-        getTagName().equals(FB2Tags.COVER_PAGE);
+        getTagName().equals(tagName);
   }
 
   public boolean isImageTag() {
     return getType() == XMLEventType.TAG_SINGLE &&
         getTagName() != null &&
         getTagName().equals(FB2Tags.IMAGE);
+  }
+
+  public boolean checkHref(@NonNull final String href) {
+    if (tagAttributes.containsKey("id") && href.indexOf('#') == 0) {
+      // Takes into account '#' in the beginning.
+      return tagAttributes.get("id").equals(href.substring(1));
+    }
+    return false;
   }
 
   @Override

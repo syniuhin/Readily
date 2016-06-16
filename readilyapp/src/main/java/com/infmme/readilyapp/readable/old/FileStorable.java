@@ -55,9 +55,11 @@ abstract public class FileStorable extends Storable {
       case Readable.TYPE_EPUB:
         fileStorable = new EpubFileStorable(intentPath);
         break;
+/*
       case Readable.TYPE_FB2:
         fileStorable = new FB2FileStorable(intentPath);
         break;
+*/
       default:
         fileStorable = null;
         break;

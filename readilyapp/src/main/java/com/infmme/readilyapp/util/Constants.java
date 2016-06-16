@@ -44,6 +44,7 @@ public class Constants {
   public static final String DEFAULT_ENCODING = "UTF-8";
   public static final int ENCODING_HELPER_BUFFER_SIZE = 1024;
 
+  public static final String DEFAULT_COVER_PAGE_EXTENSION = ".png";
   public static final int NET_READABLE_TIMEOUT = 10000;
 
   public static class Preferences {

@@ -51,6 +51,7 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
     try {
       setText(parseArticle(mLink));
       if (mImageUrl != null) {
+        // WTF? Why is it blocking? TODO: Make it async wisely.
         fetchImage();
       }
       mProcessed = true;
@@ -71,7 +72,7 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
   }
 
   /**
-   * Asynchronously caches an image into a filesystem.
+   * Synchronously caches an image into a filesystem.
    */
   private void fetchImage() throws IOException {
     String path = getCoverImagePath();
@@ -166,7 +167,7 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
 
   private String getCoverImagePath() {
     return mContext.getCacheDir() + "/" + String.valueOf(
-        mLink.hashCode()) + ".png";
+        mLink.hashCode()) + Constants.DEFAULT_COVER_PAGE_EXTENSION;
   }
 
   private boolean hasCoverImage() {

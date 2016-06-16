@@ -2,8 +2,11 @@ package com.infmme.readilyapp.readable.fb2;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import com.daimajia.androidanimations.library.BuildConfig;
 import com.google.gson.Gson;
@@ -19,6 +22,7 @@ import com.infmme.readilyapp.provider.fb2book.Fb2BookSelection;
 import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.readable.interfaces.*;
 import com.infmme.readilyapp.reader.Reader;
+import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.xmlparser.FB2Tags;
 import com.infmme.readilyapp.xmlparser.XMLEvent;
 import com.infmme.readilyapp.xmlparser.XMLEventType;
@@ -38,6 +42,7 @@ import static com.infmme.readilyapp.readable.Utils.guessCharset;
  * <p>
  * Class to handle .fb2
  */
+// TODO: Refactor parsing flow.
 public class FB2Storable implements Storable, Chunked, Unprocessed,
     Structured {
 
@@ -54,6 +59,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
 
   private String mTitle = null;
   private String mCoverImageHref = null;
+  private String mCoverImageEncoded = null;
   private String mCoverImageUri = null;
 
   private XMLParser mParser;
@@ -115,19 +121,19 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
     // grows bigger, than buffer size.
     while (mCurrentEventType != XMLEventType.DOCUMENT_CLOSE &&
         text.length() < BUFFER_SIZE) {
-      if (mCurrentEvent.enteringBookTitle()) {
+      if (mCurrentEvent.enteringTag(FB2Tags.BOOK_TITLE)) {
         insideBookTitle = true;
       }
-      if (mCurrentEvent.exitingBookTitle()) {
+      if (mCurrentEvent.exitingTag(FB2Tags.BOOK_TITLE)) {
         insideBookTitle = false;
       }
-      if (mCurrentEvent.enteringCoverPage()) {
+      if (mCurrentEvent.enteringTag(FB2Tags.COVER_PAGE)) {
         insideCoverPage = true;
       }
-      if (mCurrentEvent.exitingCoverPage()) {
+      if (mCurrentEvent.exitingTag(FB2Tags.COVER_PAGE)) {
         insideCoverPage = false;
       }
-      if (mCurrentEvent.enteringSection()) {
+      if (mCurrentEvent.enteringTag(FB2Tags.SECTION)) {
         if (BuildConfig.DEBUG) {
           Log.d(getClass().getName(),
                 "Entering section on " + String.valueOf(mParser.getPosition()));
@@ -135,7 +141,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
         mCurrentPartId = "section" + mParser.getPosition();
         sectionIdStack.add(mCurrentPartId);
       }
-      if (mCurrentEvent.exitingSection()) {
+      if (mCurrentEvent.exitingTag(FB2Tags.SECTION)) {
         if (BuildConfig.DEBUG) {
           Log.d(getClass().getName(),
                 String.format("Exiting section %s on %d", mTitle,
@@ -150,6 +156,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
           mCurrentPartId = sectionIdStack.peek();
         }
       }
+
       if (mCurrentEventType == XMLEventType.CONTENT) {
         String contentType = mCurrentEvent.getContentType();
         String content = mCurrentEvent.getContent();
@@ -162,6 +169,9 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
             if (insideBookTitle && mTitle == null) {
               mTitle = content;
             }
+          } else if (contentType.equals(FB2Tags.BINARY) &&
+              mCurrentEvent.checkHref(mCoverImageHref)) {
+            mCoverImageEncoded = content;
           }
         }
       } else if (insideCoverPage && mCurrentEvent.isImageTag()) {
@@ -259,6 +269,38 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
       mChunkPercentile = reader.getPercentile();
       setCurrentPosition(reader.getPosition());
     }
+    if (mCoverImageUri == null && mCoverImageEncoded != null) {
+      try {
+        storeCoverImage();
+        mCoverImageUri = getCoverImagePath();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  /**
+   * Synchronously decodes image from Base64 and stores as bitmap compressed
+   * to PNG in a cache dir.
+   *
+   * @throws IOException
+   */
+  private void storeCoverImage() throws IOException {
+    byte[] decodedBytes = Base64.decode(mCoverImageEncoded, 0);
+    Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0,
+                                                  decodedBytes.length);
+
+    String path = getCoverImagePath();
+    File file = new File(path);
+    file.createNewFile();
+    FileOutputStream ostream = new FileOutputStream(file);
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, ostream);
+    ostream.close();
+  }
+
+  private String getCoverImagePath() {
+    return mContext.getCacheDir() + "/" + String.valueOf(
+        mParser.hashCode()) + Constants.DEFAULT_COVER_PAGE_EXTENSION;
   }
 
   @Override
@@ -380,7 +422,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
           boolean insideTitle = false;
 
           while (eventType != XMLEventType.DOCUMENT_CLOSE) {
-            if (event.enteringSection()) {
+            if (event.enteringTag(FB2Tags.SECTION)) {
               // Checks if we're not in the section
               if (currentPart == null) {
                 currentPart = new FB2Part(mParser.getPosition(), mPath);
@@ -391,7 +433,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
                 currentPart = childPart;
               }
             }
-            if (event.exitingSection()) {
+            if (event.exitingTag(FB2Tags.SECTION)) {
               if (currentPart == null) {
                 throw new IllegalStateException("Can't exit non-existing part");
               }
@@ -406,10 +448,10 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
                 currentPart = stack.pop();
               }
             }
-            if (event.enteringTitle()) {
+            if (event.enteringTag(FB2Tags.TITLE)) {
               insideTitle = true;
             }
-            if (event.exitingTitle()) {
+            if (event.exitingTag(FB2Tags.TITLE)) {
               insideTitle = false;
             }
 
