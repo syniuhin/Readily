@@ -2,8 +2,10 @@ package com.infmme.readilyapp.view.adapter;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Build;
 import android.support.percent.PercentRelativeLayout;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,10 +64,17 @@ public class CachedBooksAdapter
 
   private void bindWithImage(final CachedBookHolder holder,
                              final CachedBookCursor bookCursor) {
-    holder.mTitleBelowView.setVisibility(View.GONE);
-
-    holder.mTitleAboveView.setVisibility(View.VISIBLE);
-    holder.mTitleAboveView.setText(bookCursor.getTitle());
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      holder.mTitleView.setTextAppearance(
+          android.R.style.TextAppearance_Material_Large);
+    } else if (Build.VERSION.SDK_INT >=
+        Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+      holder.mTitleView.setTextAppearance(
+          mContext, android.R.style.TextAppearance_DeviceDefault_Large);
+    } else {
+      holder.mTitleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+    }
+    holder.mTitleView.setText(bookCursor.getTitle());
 
     holder.mImageView.setVisibility(View.VISIBLE);
     Picasso.with(mContext)
@@ -77,11 +86,21 @@ public class CachedBooksAdapter
 
   private void bindWithoutImage(final CachedBookHolder holder,
                                 final CachedBookCursor bookCursor) {
-    holder.mTitleAboveView.setVisibility(View.GONE);
-    holder.mImageView.setVisibility(View.GONE);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      holder.mTitleView.setTextAppearance(
+          android.R.style.TextAppearance_Material_Display1);
+      holder.mTitleView.setTextColor(
+          mContext.getResources()
+                  .getColor(android.R.color.primary_text_light,
+                            mContext.getTheme()));
+    } else {
+      holder.mTitleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26);
+      holder.mTitleView.setTextColor(
+          mContext.getResources().getColor(android.R.color.primary_text_light));
+    }
+    holder.mTitleView.setText(bookCursor.getTitle());
 
-    holder.mTitleBelowView.setVisibility(View.VISIBLE);
-    holder.mTitleBelowView.setText(bookCursor.getTitle());
+    holder.mImageView.setVisibility(View.GONE);
   }
 
   private boolean supportsNavigation(final CachedBookCursor bookCursor) {
@@ -93,7 +112,7 @@ public class CachedBooksAdapter
   public CachedBookHolder onCreateViewHolder(
       ViewGroup parent, int viewType) {
     View v = LayoutInflater.from(parent.getContext())
-                           .inflate(R.layout.file_list_card, parent,
+                           .inflate(R.layout.cache_list_card, parent,
                                     false);
     CachedBookHolder holder = new CachedBookHolder(v, 0, mCallback);
     holder.mActionView.setOnClickListener(holder);
@@ -105,8 +124,7 @@ public class CachedBooksAdapter
     PercentRelativeLayout mActionView;
 
     ImageView mImageView;
-    TextView mTitleAboveView;
-    TextView mTitleBelowView;
+    TextView mTitleView;
     TextView mTimeOpenedView;
     ProgressBar mProgressView;
     Button mNavigateButton;
@@ -118,18 +136,16 @@ public class CachedBooksAdapter
     public CachedBookHolder(View v, long id, ItemClickCallback callback) {
       super(v);
       mActionView = (PercentRelativeLayout) v.findViewById(
-          R.id.file_list_card_child);
+          R.id.cache_list_card_child);
 
-      mImageView = (ImageView) v.findViewById(R.id.file_list_card_image);
-      mTitleAboveView = (TextView) v.findViewById(
-          R.id.file_list_card_title_above);
-      mTitleBelowView = (TextView) v.findViewById(
-          R.id.file_list_card_title_below);
+      mImageView = (ImageView) v.findViewById(R.id.cache_list_card_image);
+      mTitleView = (TextView) v.findViewById(
+          R.id.cache_list_card_title);
       mTimeOpenedView = (TextView) v.findViewById(
-          R.id.file_list_card_time_opened);
+          R.id.cache_list_card_time_opened);
       mProgressView = (ProgressBar) v.findViewById(
-          R.id.file_list_card_progress);
-      mNavigateButton = (Button) v.findViewById(R.id.file_list_card_button_toc);
+          R.id.cache_list_card_progress);
+      mNavigateButton = (Button) v.findViewById(R.id.cache_list_card_button_toc);
       setupButtons();
 
       mId = id;

@@ -2,8 +2,9 @@
 <resources>
     <item name="primary" type="color">#FF484848</item>
     <item name="primary_dark" type="color">#FF262626</item>
-    <item name="accent" type="color">#AA55CBAE</item>
+    <item name="accent" type="color">#4db6ac</item>
+    <item name="accent_dark" type="color">#00897b</item>
 
     <item name="mellow_background" type="color">#FFFAFAEF</item>
-    <item name="image_button_background" type="color" >#53EDEDED</item>
+    <item name="image_button_background" type="color">#53EDEDED</item>
 </resources>
