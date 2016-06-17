@@ -8,7 +8,7 @@
     <item
             android:id="@+id/action_file"
             android:enabled="true"
-            android:icon="@drawable/ic_action_storage"
+            android:icon="@drawable/ic_storage_white_24dp"
             app:showAsAction="ifRoom"
             android:title="@string/preferences_pick_file"
             android:visible="true"/>
@@ -16,7 +16,7 @@
     <item
             android:id="@+id/action_clipboard"
             android:enabled="true"
-            android:icon="@drawable/ic_action_paste"
+            android:icon="@drawable/ic_content_paste_white_24dp"
             app:showAsAction="ifRoom"
             android:title="@string/preferences_clipboard"
             android:visible="true"/>
@@ -25,25 +25,15 @@
     <item
             android:id="@+id/action_instructions"
             android:enabled="true"
-            android:icon="@drawable/ic_action_help"
+            android:icon="@drawable/ic_help_outline_white_24dp"
             app:showAsAction="ifRoom"
             android:title="@string/preferences_instrucions"
             android:visible="true"/>
 
     <item
-            android:title="Test epub navigation"
-            android:id="@+id/action_epub_bookpartflow"
-            app:showAsAction="never"/>
-
-    <item
-            android:title="Test fb2 navigation"
-            android:id="@+id/action_fb2_bookpartflow"
-            app:showAsAction="never"/>
-
-    <item
             android:id="@+id/action_settings"
             android:enabled="true"
-            android:icon="@drawable/ic_action_settings"
+            android:icon="@drawable/ic_settings_white_24dp"
             app:showAsAction="ifRoom"
             android:title="@string/title_activity_settings"
             android:visible="true"/>
