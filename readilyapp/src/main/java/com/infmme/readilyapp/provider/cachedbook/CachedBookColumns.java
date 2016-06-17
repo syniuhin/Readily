@@ -130,6 +130,28 @@ public class CachedBookColumns implements BaseColumns {
       TxtBookColumns.TEXT_POSITION
   };
 
+  // @formatter:off
+  public static final String[] ALL_COLUMNS_FULL_JOIN = new String[] {
+      _ID,
+      TITLE,
+      PATH,
+      PERCENTILE,
+      TIME_OPENED,
+      COVER_IMAGE_URI,
+      COVER_IMAGE_MEAN,
+      EPUB_BOOK_ID,
+      FB2_BOOK_ID,
+      TXT_BOOK_ID,
+      Fb2BookColumns.FULLY_PROCESSED,
+      Fb2BookColumns.BYTE_POSITION,
+      Fb2BookColumns.CURRENT_PART_ID,
+      Fb2BookColumns.TEXT_POSITION,
+      Fb2BookColumns.PATH_TOC,
+      EpubBookColumns.CURRENT_RESOURCE_ID,
+      EpubBookColumns.TEXT_POSITION,
+      TxtBookColumns.BYTE_POSITION,
+      TxtBookColumns.TEXT_POSITION
+  };
   // @formatter:on
   public static final String PREFIX_EPUB_BOOK = TABLE_NAME + "__" +
       EpubBookColumns.TABLE_NAME;

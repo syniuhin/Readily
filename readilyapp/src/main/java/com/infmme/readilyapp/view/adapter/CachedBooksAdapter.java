@@ -1,5 +1,6 @@
 package com.infmme.readilyapp.view.adapter;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Build;
@@ -41,16 +42,30 @@ public class CachedBooksAdapter
   public void onBindViewHolderCursor(CachedBookHolder holder,
                                      Cursor cursor) {
     CachedBookCursor bookCursor = new CachedBookCursor(cursor);
+    holder.mTitleView.setText(bookCursor.getTitle());
+
     String coverImageUri = bookCursor.getCoverImageUri();
     // TODO: Validate coverImageUri.
     if (coverImageUri != null) {
       bindWithImage(holder, bookCursor);
     } else {
-      bindWithoutImage(holder, bookCursor);
+      bindWithoutImage(holder);
     }
-    holder.mNavigateButton.setVisibility((supportsNavigation(bookCursor))
-                                             ? View.VISIBLE
-                                             : View.GONE);
+
+    if (supportsNavigation(bookCursor)) {
+      String subtitle = bookCursor.getEpubBookCurrentResourceId();
+      if (subtitle == null) {
+        subtitle = bookCursor.getFb2BookCurrentPartId();
+      }
+      if (subtitle != null) {
+        holder.mSubtitleView.setVisibility(View.VISIBLE);
+        holder.mSubtitleView.setText(subtitle);
+      }
+      holder.mNavigateButton.setVisibility(View.VISIBLE);
+    } else {
+      holder.mSubtitleView.setVisibility(View.GONE);
+      holder.mNavigateButton.setVisibility(View.GONE);
+    }
 
     LocalDateTime timeOpened = LocalDateTime.parse(bookCursor.getTimeOpened());
     // TODO: Add options for 'Today', 'Yesterday' etc.
@@ -65,49 +80,8 @@ public class CachedBooksAdapter
 
   private void bindWithImage(final CachedBookHolder holder,
                              final CachedBookCursor bookCursor) {
+    holder.hasImage(mContext);
     holder.mCardView.setBackgroundColor(bookCursor.getCoverImageMean());
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      holder.mTitleView.setTextAppearance(
-          android.R.style.TextAppearance_Material_Large_Inverse);
-      holder.mTimeOpenedView.setTextAppearance(
-          android.R.style.TextAppearance_Material_Small_Inverse);
-      holder.mNavigateButton.setTextColor(
-          mContext.getResources()
-                  .getColor(android.R.color.primary_text_dark,
-                            mContext.getTheme()));
-      holder.mMoreButton.setTextColor(
-          mContext.getResources()
-                  .getColor(android.R.color.primary_text_dark,
-                            mContext.getTheme()));
-    } else {
-      holder.mNavigateButton.setTextColor(
-          mContext.getResources()
-                  .getColor(android.R.color.primary_text_dark));
-      holder.mMoreButton.setTextColor(
-          mContext.getResources()
-                  .getColor(android.R.color.primary_text_dark));
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES
-          .ICE_CREAM_SANDWICH) {
-        holder.mTitleView.setTextAppearance(
-            mContext,
-            android.R.style.TextAppearance_DeviceDefault_Large_Inverse);
-        holder.mTimeOpenedView.setTextAppearance(
-            mContext,
-            android.R.style.TextAppearance_DeviceDefault_Small_Inverse);
-      } else {
-        holder.mTitleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
-        holder.mTitleView.setTextColor(
-            mContext.getResources()
-                    .getColor(android.R.color.primary_text_dark));
-        holder.mTimeOpenedView.setTextColor(
-            mContext.getResources()
-                    .getColor(android.R.color.secondary_text_dark));
-      }
-    }
-    holder.mTitleView.setText(bookCursor.getTitle());
-
-    holder.mImageView.setVisibility(View.VISIBLE);
     Picasso.with(mContext)
            .load("file:" + bookCursor.getCoverImageUri())
            .centerCrop()
@@ -115,53 +89,13 @@ public class CachedBooksAdapter
            .into(holder.mImageView);
   }
 
-  private void bindWithoutImage(final CachedBookHolder holder,
-                                final CachedBookCursor bookCursor) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      holder.mCardView.setBackgroundColor(
-          mContext.getResources()
-                  .getColor(R.color.cardview_light_background,
-                            mContext.getTheme()));
-      holder.mTitleView.setTextAppearance(
-          android.R.style.TextAppearance_Material_Display1);
-      holder.mTitleView.setTextColor(
-          mContext.getResources()
-                  .getColor(android.R.color.primary_text_light,
-                            mContext.getTheme()));
-      holder.mTimeOpenedView.setTextAppearance(
-          android.R.style.TextAppearance_Material_Small);
-      holder.mNavigateButton.setTextColor(
-          mContext.getResources()
-                  .getColor(R.color.accent, mContext.getTheme()));
-      holder.mMoreButton.setTextColor(
-          mContext.getResources()
-                  .getColor(android.R.color.primary_text_light,
-                            mContext.getTheme()));
-    } else {
-      holder.mCardView.setBackgroundColor(
-          mContext.getResources()
-                  .getColor(R.color.cardview_light_background));
-      holder.mTitleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26);
-      holder.mTitleView.setTextColor(
-          mContext.getResources().getColor(android.R.color.primary_text_light));
-      holder.mTimeOpenedView.setTextColor(
-          mContext.getResources()
-                  .getColor(android.R.color.secondary_text_light));
-      holder.mNavigateButton.setTextColor(
-          mContext.getResources()
-                  .getColor(R.color.accent));
-      holder.mMoreButton.setTextColor(
-          mContext.getResources()
-                  .getColor(android.R.color.primary_text_light));
-    }
-    holder.mTitleView.setText(bookCursor.getTitle());
-
-    holder.mImageView.setVisibility(View.GONE);
+  private void bindWithoutImage(final CachedBookHolder holder) {
+    holder.hasNoImage(mContext);
   }
 
   private boolean supportsNavigation(final CachedBookCursor bookCursor) {
-    return bookCursor.getEpubBookId() != null || bookCursor.getFb2BookId() !=
-        null;
+    return bookCursor.getEpubBookId() != null ||
+        bookCursor.getFb2BookId() != null;
   }
 
   @Override
@@ -182,6 +116,7 @@ public class CachedBooksAdapter
 
     ImageView mImageView;
     TextView mTitleView;
+    TextView mSubtitleView;
     TextView mTimeOpenedView;
     ProgressBar mProgressView;
     Button mNavigateButton;
@@ -199,6 +134,7 @@ public class CachedBooksAdapter
 
       mImageView = (ImageView) v.findViewById(R.id.cache_list_card_image);
       mTitleView = (TextView) v.findViewById(R.id.cache_list_card_title);
+      mSubtitleView = (TextView) v.findViewById(R.id.cache_list_card_part);
       mTimeOpenedView = (TextView) v.findViewById(
           R.id.cache_list_card_time_opened);
       mProgressView = (ProgressBar) v.findViewById(
@@ -215,6 +151,151 @@ public class CachedBooksAdapter
     @Override
     public void onClick(View v) {
       mCallback.onItem(mId);
+    }
+
+    public void hasImage(final Context context) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        hasImageM(context);
+      } else {
+        mNavigateButton.setTextColor(
+            context.getResources()
+                   .getColor(android.R.color.primary_text_dark));
+        mMoreButton.setTextColor(
+            context.getResources()
+                   .getColor(android.R.color.primary_text_dark));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+          hasImageICS(context);
+        } else {
+          hasImageBelowICS(context);
+        }
+      }
+      mImageView.setVisibility(View.VISIBLE);
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private void hasImageM(final Context context) {
+      mTitleView.setTextAppearance(
+          android.R.style.TextAppearance_Material_Large_Inverse);
+      mSubtitleView.setTextAppearance(
+          android.R.style.TextAppearance_Material_Subhead);
+      mSubtitleView.setTextColor(
+          context.getResources()
+                 .getColor(android.R.color.primary_text_dark,
+                           context.getTheme()));
+      mTimeOpenedView.setTextAppearance(
+          android.R.style.TextAppearance_Material_Small_Inverse);
+      mNavigateButton.setTextColor(
+          context.getResources()
+                 .getColor(android.R.color.primary_text_dark,
+                           context.getTheme()));
+      mMoreButton.setTextColor(
+          context.getResources()
+                 .getColor(android.R.color.primary_text_dark,
+                           context.getTheme()));
+    }
+
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    private void hasImageICS(final Context context) {
+      mTitleView.setTextAppearance(
+          context,
+          android.R.style.TextAppearance_DeviceDefault_Large_Inverse);
+      mSubtitleView.setTextAppearance(
+          context,
+          android.R.style.TextAppearance_DeviceDefault_Medium_Inverse);
+      mTimeOpenedView.setTextAppearance(
+          context,
+          android.R.style.TextAppearance_DeviceDefault_Small_Inverse);
+      mTimeOpenedView.setTextColor(
+          context.getResources()
+                 .getColor(android.R.color.secondary_text_dark));
+    }
+
+    private void hasImageBelowICS(final Context context) {
+      mTitleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+      mTitleView.setTextColor(
+          context.getResources()
+                 .getColor(android.R.color.primary_text_dark));
+      mSubtitleView.setTextColor(
+          context.getResources()
+                 .getColor(android.R.color.secondary_text_dark));
+      mTimeOpenedView.setTextColor(
+          context.getResources()
+                 .getColor(android.R.color.secondary_text_dark));
+    }
+
+    public void hasNoImage(final Context context) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        hasNoImageM(context);
+      } else {
+        mCardView.setBackgroundColor(
+            context.getResources()
+                   .getColor(R.color.cardview_light_background));
+        mNavigateButton.setTextColor(
+            context.getResources()
+                   .getColor(R.color.accent));
+        mMoreButton.setTextColor(
+            context.getResources()
+                   .getColor(android.R.color.primary_text_light));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+          hasNoImageICS(context);
+        } else {
+          hasNoImageBelowICS(context);
+        }
+      }
+
+      mImageView.setVisibility(View.GONE);
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private void hasNoImageM(final Context context) {
+      mCardView.setBackgroundColor(
+          context.getResources()
+                 .getColor(R.color.cardview_light_background,
+                           context.getTheme()));
+      mTitleView.setTextAppearance(
+          android.R.style.TextAppearance_Material_Display1);
+      mTitleView.setTextColor(
+          context.getResources()
+                 .getColor(android.R.color.primary_text_light,
+                           context.getTheme()));
+      mTimeOpenedView.setTextAppearance(
+          android.R.style.TextAppearance_Material_Small);
+      mNavigateButton.setTextColor(
+          context.getResources()
+                 .getColor(R.color.accent, context.getTheme()));
+      mMoreButton.setTextColor(
+          context.getResources()
+                 .getColor(android.R.color.primary_text_light,
+                           context.getTheme()));
+    }
+
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    private void hasNoImageICS(final Context context) {
+      mTitleView.setTextAppearance(
+          context,
+          android.R.style.TextAppearance_DeviceDefault_Large);
+      mSubtitleView.setTextAppearance(
+          context,
+          android.R.style.TextAppearance_DeviceDefault_Medium);
+      mTimeOpenedView.setTextAppearance(
+          context,
+          android.R.style.TextAppearance_DeviceDefault_Small);
+      mTimeOpenedView.setTextColor(
+          context.getResources()
+                 .getColor(android.R.color.secondary_text_light));
+    }
+
+    private void hasNoImageBelowICS(final Context context) {
+      mTitleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
+      mTitleView.setTextColor(
+          context.getResources()
+                 .getColor(android.R.color.primary_text_light));
+      mSubtitleView.setTextColor(
+          context.getResources()
+                 .getColor(android.R.color.secondary_text_light));
+      mTimeOpenedView.setTextColor(
+          context.getResources()
+                 .getColor(android.R.color.secondary_text_light));
     }
 
     private void setupButtons() {

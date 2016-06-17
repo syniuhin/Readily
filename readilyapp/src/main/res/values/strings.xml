@@ -55,6 +55,8 @@
     <string name="next">Next</string>
     <string name="finish">Finish</string>
     <string name="illegal_value">Illegal value</string>
+    <string name="sample_time">Last opened: 1 Jan, 00:00</string>
+    <string name="sample_part">Chapter 1</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Read a text from the clipboard</string>

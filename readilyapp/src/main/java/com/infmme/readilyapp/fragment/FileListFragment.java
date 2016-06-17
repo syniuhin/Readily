@@ -63,7 +63,8 @@ public class FileListFragment extends Fragment
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
     return new CursorLoader(getActivity(), CachedBookColumns.CONTENT_URI,
-                            CachedBookColumns.ALL_COLUMNS, null, null, null);
+                            CachedBookColumns.ALL_COLUMNS_FULL_JOIN, null, null,
+                            null);
   }
 
   @Override
