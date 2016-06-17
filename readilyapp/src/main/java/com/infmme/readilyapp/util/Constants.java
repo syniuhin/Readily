@@ -6,13 +6,9 @@ package com.infmme.readilyapp.util;
 public class Constants {
 
   public static final String EXTRA_PATH = "path";
-  public static final String EXTRA_PATH_ARRAY = "path_array";
   public static final String EXTRA_POSITION = "position";
-  public static final String EXTRA_BYTE_POSITION = "byte_position";
   public static final String EXTRA_TYPE = "source_type";
-  public static final String EXTRA_HEADER = "header";
-  public static final String EXTRA_PERCENT = "percent_left";
-  public static final String EXTRA_DB_OPERATION = "db_operation";
+
   public static final String EXTRA_TOC_REFERENCE = "TocReference";
   public static final String EXTRA_TWO_PANE = "IsTwoPane";
   public static final String EXTRA_READING_SOURCE = "ReadingSource";
@@ -34,9 +30,6 @@ public class Constants {
 
   public static final int READER_START_OFFSET = 10;
 
-  public static final int DB_OPERATION_INSERT = 0;
-  public static final int DB_OPERATION_DELETE = 1;
-
   public static final String EXTENSION_TXT = ".txt";
   public static final String EXTENSION_EPUB = ".epub";
   public static final String EXTENSION_FB2 = ".fb2";
@@ -51,7 +44,6 @@ public class Constants {
     public static final String NEWCOMER = "is_anybody_out_there?";
 
     public static final String TEST = "pref_test";
-    public static final String STORAGE = "pref_cache";
     public static final String WPM = "pref_wpm";
     public static final String SHOW_CONTEXT = "pref_showContext";
     public static final String SWIPE = "pref_swipe";

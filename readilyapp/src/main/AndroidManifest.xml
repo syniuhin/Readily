@@ -105,19 +105,13 @@
         </activity>
 
         <service
-                android:name=".service.LastReadService"
-                android:exported="false"/>
-        <service
-                android:name=".service.StorageCheckerService"
-                android:exported="false"/>
-        <service
                 android:name=".service.FB2ProcessingService"
                 android:exported="false"/>
 
         <provider
                 android:name="com.infmme.readilyapp.provider.ReadilyProvider"
                 android:authorities="com.infmme.readilyapp.provider"
-                android:exported="false" />
+                android:exported="false"/>
     </application>
 
 </manifest>

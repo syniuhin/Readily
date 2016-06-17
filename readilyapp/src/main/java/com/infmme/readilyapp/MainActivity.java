@@ -19,7 +19,6 @@ import com.infmme.readilyapp.fragment.FileListFragment;
 import com.infmme.readilyapp.readable.Utils;
 import com.infmme.readilyapp.readable.type.ReadableType;
 import com.infmme.readilyapp.readable.type.ReadingSource;
-import com.infmme.readilyapp.service.StorageCheckerService;
 import com.infmme.readilyapp.settings.SettingsActivity;
 import com.infmme.readilyapp.util.Constants;
 import com.ipaulpro.afilechooser.utils.FileUtils;
@@ -34,8 +33,6 @@ public class MainActivity extends BaseActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     isAnybodyOutThere(this);
-
-    // startService(createCheckerServiceIntent());
 
     changeActionBarIcon();
     startFileListFragment();
@@ -152,9 +149,9 @@ public class MainActivity extends BaseActivity {
   }
 
   @Override
-  public void onRequestPermissionsResult(int requestCode,
-                                         @NonNull String[] permissions,
-                                         @NonNull int[] grantResults) {
+  public void onRequestPermissionsResult(
+      int requestCode, @NonNull String[] permissions,
+      @NonNull int[] grantResults) {
     switch (requestCode) {
       case READ_EXTERNAL_STORAGE_REQUEST: {
         if (grantResults.length > 0
@@ -166,10 +163,6 @@ public class MainActivity extends BaseActivity {
         }
       }
     }
-  }
-
-  private Intent createCheckerServiceIntent() {
-    return new Intent(this, StorageCheckerService.class);
   }
 
   private void startSettingsActivity() {

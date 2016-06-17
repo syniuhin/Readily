@@ -5,24 +5,18 @@ import org.mozilla.universalchardet.UniversalDetector;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created with love, by infm dated on 6/15/16.
  */
 
 public class Utils {
-  public static final HashMap<String, Integer> extensionsMap = new
-      HashMap<String, Integer>();
 
-  static {
-    extensionsMap.put(Constants.EXTENSION_TXT, com.infmme.readilyapp.readable
-        .old.Readable.TYPE_TXT);
-    extensionsMap.put(Constants.EXTENSION_EPUB, com.infmme.readilyapp
-        .readable.old.Readable.TYPE_EPUB);
-    extensionsMap.put(Constants.EXTENSION_FB2,
-                      com.infmme.readilyapp.readable.old.Readable.TYPE_FB2);
-  }
+  private static final List<String> VALID_EXTENSIONS = Arrays.asList(
+      Constants.EXTENSION_TXT, Constants.EXTENSION_FB2, Constants.EXTENSION_EPUB
+  );
 
   public static String guessCharset(InputStream is) throws IOException {
     UniversalDetector detector = new UniversalDetector(null);
@@ -40,6 +34,6 @@ public class Utils {
   }
 
   public static boolean isExtensionValid(String extension) {
-    return extensionsMap.containsKey(extension);
+    return VALID_EXTENSIONS.contains(extension);
   }
 }
