@@ -55,9 +55,11 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
    * Creation time in order to keep track of db records.
    * Has joda LocalDateTime format.
    */
-  private String mTimeCreated;
+  private String mTimeOpened;
 
   private String mTitle = null;
+  private Double mPercentile = .0;
+
   private String mCoverImageHref = null;
   private String mCoverImageEncoded = null;
   private String mCoverImageUri = null;
@@ -87,7 +89,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
   }
 
   public FB2Storable(Context context, String timeCreated) {
-    this.mTimeCreated = timeCreated;
+    this.mTimeOpened = timeCreated;
     this.mContext = context;
   }
 
@@ -213,23 +215,23 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
       where.path(mPath);
       Cursor c = mContext.getContentResolver()
                          .query(CachedBookColumns.CONTENT_URI,
-                                Fb2BookColumns.ALL_COLUMNS,
+                                CachedBookColumns.ALL_COLUMNS_FB2_JOINED,
                                 where.sel(), where.args(), null);
-      // ?!??!??!
-      if (c != null && c.moveToFirst()) {
-        if (c.moveToFirst()) {
-          Fb2BookCursor book = new Fb2BookCursor(c);
-          mCurrentPartId = book.getCurrentPartId();
-          mCurrentTextPosition = book.getTextPosition();
-          mCurrentBytePosition = book.getBytePosition();
-          mFullyProcessed = book.getFullyProcessed();
-          mLastBytePosition = mCurrentBytePosition;
-          book.close();
-        } else {
-          c.close();
-        }
-      } else {
+      if (c == null) {
         throw new RuntimeException("Unexpected cursor fail.");
+      } else if (c.moveToFirst()) {
+        CachedBookCursor book = new CachedBookCursor(c);
+        mTitle = book.getTitle();
+        mTimeOpened = book.getTimeOpened();
+        mPercentile = book.getPercentile();
+        mCurrentPartId = book.getFb2BookCurrentPartId();
+        mCurrentTextPosition = book.getFb2BookTextPosition();
+        mCurrentBytePosition = book.getFb2BookBytePosition();
+        mFullyProcessed = book.getFb2BookFullyProcessed();
+        mLastBytePosition = mCurrentBytePosition;
+        book.close();
+      } else {
+        c.close();
       }
     } else {
       throw new IllegalStateException("Not stored in a db yet!");
@@ -323,7 +325,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
       } else {
         values.putPercentile(0);
       }
-      values.putTimeOpened(mTimeCreated);
+      values.putTimeOpened(mTimeOpened);
       values.putPath(mPath);
       if (mTitle == null) {
         mTitle = getDefaultTitle();
@@ -397,6 +399,16 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
   @Override
   public void setPath(String path) {
     mPath = path;
+  }
+
+  @Override
+  public String getTitle() {
+    return mTitle;
+  }
+
+  @Override
+  public void setTitle(String title) {
+    mTitle = title;
   }
 
   @Override

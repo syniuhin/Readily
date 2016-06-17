@@ -7,9 +7,7 @@ import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookContentValues;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookSelection;
-import com.infmme.readilyapp.provider.txtbook.TxtBookColumns;
 import com.infmme.readilyapp.provider.txtbook.TxtBookContentValues;
-import com.infmme.readilyapp.provider.txtbook.TxtBookCursor;
 import com.infmme.readilyapp.provider.txtbook.TxtBookSelection;
 import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.readable.interfaces.Chunked;
@@ -42,9 +40,10 @@ public class TxtStorable implements Storable, Chunked, Unprocessed {
    * Creation time in order to keep track of db records.
    * Has joda LocalDateTime format.
    */
-  private String mTimeCreated;
+  private String mTimeOpened;
 
   private String mTitle = null;
+  private Double mPercentile = .0;
 
   private Deque<TxtStorable.ChunkInfo> mLoadedChunks = new ArrayDeque<>();
 
@@ -64,7 +63,7 @@ public class TxtStorable implements Storable, Chunked, Unprocessed {
 
   public TxtStorable(Context context, String timeCreated) {
     mContext = context;
-    mTimeCreated = timeCreated;
+    mTimeOpened = timeCreated;
   }
 
   @Override
@@ -123,20 +122,21 @@ public class TxtStorable implements Storable, Chunked, Unprocessed {
       where.path(mPath);
       Cursor c = mContext.getContentResolver()
                          .query(CachedBookColumns.CONTENT_URI,
-                                TxtBookColumns.ALL_COLUMNS,
+                                CachedBookColumns.ALL_COLUMNS_TXT_JOINED,
                                 where.sel(), where.args(), null);
-      if (c != null && c.moveToFirst()) {
-        if (c.moveToFirst()) {
-          TxtBookCursor book = new TxtBookCursor(c);
-          mCurrentTextPosition = book.getTextPosition();
-          mCurrentBytePosition = book.getBytePosition();
-          mLastBytePosition = mCurrentBytePosition;
-          book.close();
-        } else {
-          c.close();
-        }
-      } else {
+      if (c == null) {
         throw new RuntimeException("Unexpected cursor fail.");
+      } else if (c.moveToFirst()) {
+        CachedBookCursor book = new CachedBookCursor(c);
+        mTitle = book.getTitle();
+        mTimeOpened = book.getTimeOpened();
+        mPercentile = book.getPercentile();
+        mCurrentTextPosition = book.getTxtBookTextPosition();
+        mCurrentBytePosition = book.getTxtBookBytePosition();
+        mLastBytePosition = mCurrentBytePosition;
+        book.close();
+      } else {
+        c.close();
       }
     } else {
       throw new IllegalStateException("Not stored in a db yet!");
@@ -169,7 +169,7 @@ public class TxtStorable implements Storable, Chunked, Unprocessed {
       txtValues.update(mContext, txtWhere);
       values.update(mContext, cachedWhere);
     } else {
-      values.putTimeOpened(mTimeCreated);
+      values.putTimeOpened(mTimeOpened);
       values.putPath(mPath);
       values.putTitle(mTitle);
 
@@ -213,6 +213,16 @@ public class TxtStorable implements Storable, Chunked, Unprocessed {
     mPath = path;
   }
 
+  @Override
+  public String getTitle() {
+    return mTitle;
+  }
+
+  @Override
+  public void setTitle(String title) {
+    mTitle = title;
+  }
+
   public int getPosition() {
     return mCurrentTextPosition;
   }
@@ -235,7 +245,6 @@ public class TxtStorable implements Storable, Chunked, Unprocessed {
   @Override
   public void process() {
     try {
-      mTitle = mPath.substring(mPath.lastIndexOf('/'), mPath.lastIndexOf('.'));
       readFromFile();
       if (mInputStreamReader == null) {
         mProcessed = false;
@@ -245,6 +254,8 @@ public class TxtStorable implements Storable, Chunked, Unprocessed {
         readFromDb();
         mInputStreamReader.skip(mCurrentBytePosition);
       } else {
+        mTitle = mPath.substring(mPath.lastIndexOf('/'),
+                                 mPath.lastIndexOf('.'));
         mCurrentTextPosition = 0;
       }
 

@@ -7,9 +7,7 @@ import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookContentValues;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookSelection;
-import com.infmme.readilyapp.provider.epubbook.EpubBookColumns;
 import com.infmme.readilyapp.provider.epubbook.EpubBookContentValues;
-import com.infmme.readilyapp.provider.epubbook.EpubBookCursor;
 import com.infmme.readilyapp.provider.epubbook.EpubBookSelection;
 import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.readable.interfaces.*;
@@ -42,10 +40,15 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
    * Creation time in order to keep track of db records.
    * Has joda LocalDateTime format.
    */
-  private String mTimeCreated;
+  private String mTimeOpened;
 
   private transient Book mBook;
   private Metadata mMetadata;
+
+  // Stored title.
+  private String mTitle = null;
+  private Double mPercentile = .0;
+
   private String mCoverImageUri;
   private List<Resource> mContents;
 
@@ -70,7 +73,7 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
 
   public EpubStorable(Context context, String timeCreated) {
     mContext = context;
-    mTimeCreated = timeCreated;
+    mTimeOpened = timeCreated;
   }
 
   @Override
@@ -133,19 +136,20 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
       where.path(mPath);
       Cursor c = mContext.getContentResolver()
                          .query(CachedBookColumns.CONTENT_URI,
-                                EpubBookColumns.ALL_COLUMNS,
+                                CachedBookColumns.ALL_COLUMNS_EPUB_JOINED,
                                 where.sel(), where.args(), null);
-      if (c != null && c.moveToFirst()) {
-        if (c.moveToFirst()) {
-          EpubBookCursor book = new EpubBookCursor(c);
-          mCurrentTextPosition = book.getTextPosition();
-          mCurrentResourceId = book.getCurrentResourceId();
-          book.close();
-        } else {
-          c.close();
-        }
-      } else {
+      if (c == null) {
         throw new RuntimeException("Unexpected cursor fail.");
+      } else if (c.moveToFirst()) {
+        CachedBookCursor book = new CachedBookCursor(c);
+        mTitle = book.getTitle();
+        mTimeOpened = book.getTimeOpened();
+        mPercentile = book.getPercentile();
+        mCurrentTextPosition = book.getEpubBookTextPosition();
+        mCurrentResourceId = book.getEpubBookCurrentResourceId();
+        book.close();
+      } else {
+        c.close();
       }
     } else {
       throw new IllegalStateException("Not stored in a db yet!");
@@ -195,7 +199,7 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
       } else {
         values.putPercentile(0);
       }
-      values.putTimeOpened(mTimeCreated);
+      values.putTimeOpened(mTimeOpened);
       values.putPath(mPath);
       values.putTitle(mMetadata.getFirstTitle());
       values.putCoverImageUri(mCoverImageUri);
@@ -276,6 +280,19 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
   @Override
   public void setPath(String path) {
     mPath = path;
+  }
+
+  @Override
+  public String getTitle() {
+    if (mMetadata != null) {
+      return mMetadata.getFirstTitle();
+    }
+    return null;
+  }
+
+  @Override
+  public void setTitle(String title) {
+    mMetadata.getTitles().add(0, title);
   }
 
   @Override

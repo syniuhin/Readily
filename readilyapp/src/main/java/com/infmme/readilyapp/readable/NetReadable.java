@@ -176,4 +176,14 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
 
   @Override
   public void setPath(String path) {}
+
+  @Override
+  public String getTitle() {
+    return mTitle;
+  }
+
+  @Override
+  public void setTitle(String title) {
+    mTitle = title;
+  }
 }

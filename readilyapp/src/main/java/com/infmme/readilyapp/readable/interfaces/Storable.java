@@ -17,6 +17,7 @@ public interface Storable {
   void readFromDb();
 
   void prepareForStoring(Reader reader);
+
   /**
    * Stores (creates or updates) current state to database.
    */
@@ -35,4 +36,8 @@ public interface Storable {
   String getPath();
 
   void setPath(String path);
+
+  String getTitle();
+
+  void setTitle(String title);
 }

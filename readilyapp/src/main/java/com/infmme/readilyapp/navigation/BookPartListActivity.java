@@ -121,7 +121,7 @@ public class BookPartListActivity extends BaseActivity implements
 
   protected void setupViews() {
     mProgressBar.setVisibility(View.GONE);
-    mToolbar.setTitle(getTitle());
+    mToolbar.setTitle(mStorable.getTitle());
 
     mFab.setOnClickListener(new View.OnClickListener() {
       @Override
