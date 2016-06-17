@@ -96,6 +96,19 @@ public class CachedBookContentValues extends AbstractContentValues {
   }
 
   /**
+   * Mean color of the cover image in form of argb.
+   */
+  public CachedBookContentValues putCoverImageMean(@Nullable Integer value) {
+    mContentValues.put(CachedBookColumns.COVER_IMAGE_MEAN, value);
+    return this;
+  }
+
+  public CachedBookContentValues putCoverImageMeanNull() {
+    mContentValues.putNull(CachedBookColumns.COVER_IMAGE_MEAN);
+    return this;
+  }
+
+  /**
    * Optional link to epub_book.
    */
   public CachedBookContentValues putEpubBookId(@Nullable Long value) {

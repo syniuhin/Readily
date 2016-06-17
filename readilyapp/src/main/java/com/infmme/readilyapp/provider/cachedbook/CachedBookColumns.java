@@ -43,6 +43,11 @@ public class CachedBookColumns implements BaseColumns {
   public static final String COVER_IMAGE_URI = "cover_image_uri";
 
   /**
+   * Mean color of the cover image in form of argb.
+   */
+  public static final String COVER_IMAGE_MEAN = "cover_image_mean";
+
+  /**
    * Optional link to epub_book.
    */
   public static final String EPUB_BOOK_ID = "epub_book_id";
@@ -68,6 +73,7 @@ public class CachedBookColumns implements BaseColumns {
       PERCENTILE,
       TIME_OPENED,
       COVER_IMAGE_URI,
+      COVER_IMAGE_MEAN,
       EPUB_BOOK_ID,
       FB2_BOOK_ID,
       TXT_BOOK_ID
@@ -81,6 +87,7 @@ public class CachedBookColumns implements BaseColumns {
       PERCENTILE,
       TIME_OPENED,
       COVER_IMAGE_URI,
+      COVER_IMAGE_MEAN,
       EPUB_BOOK_ID,
       FB2_BOOK_ID,
       TXT_BOOK_ID,
@@ -99,6 +106,7 @@ public class CachedBookColumns implements BaseColumns {
       PERCENTILE,
       TIME_OPENED,
       COVER_IMAGE_URI,
+      COVER_IMAGE_MEAN,
       EPUB_BOOK_ID,
       FB2_BOOK_ID,
       TXT_BOOK_ID,
@@ -114,6 +122,7 @@ public class CachedBookColumns implements BaseColumns {
       PERCENTILE,
       TIME_OPENED,
       COVER_IMAGE_URI,
+      COVER_IMAGE_MEAN,
       EPUB_BOOK_ID,
       FB2_BOOK_ID,
       TXT_BOOK_ID,
@@ -137,6 +146,8 @@ public class CachedBookColumns implements BaseColumns {
       if (c.equals(PERCENTILE) || c.contains("." + PERCENTILE)) return true;
       if (c.equals(TIME_OPENED) || c.contains("." + TIME_OPENED)) return true;
       if (c.equals(COVER_IMAGE_URI) || c.contains("." + COVER_IMAGE_URI))
+        return true;
+      if (c.equals(COVER_IMAGE_MEAN) || c.contains("." + COVER_IMAGE_MEAN))
         return true;
       if (c.equals(EPUB_BOOK_ID) || c.contains("." + EPUB_BOOK_ID)) return true;
       if (c.equals(FB2_BOOK_ID) || c.contains("." + FB2_BOOK_ID)) return true;

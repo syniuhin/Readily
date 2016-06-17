@@ -43,6 +43,13 @@ public interface CachedBookModel extends BaseModel {
   String getCoverImageUri();
 
   /**
+   * Mean color of the cover image in form of argb.
+   * Can be {@code null}.
+   */
+  @Nullable
+  Integer getCoverImageMean();
+
+  /**
    * Optional link to epub_book.
    * Can be {@code null}.
    */

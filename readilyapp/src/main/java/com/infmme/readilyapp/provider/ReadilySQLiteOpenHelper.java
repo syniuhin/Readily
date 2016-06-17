@@ -26,6 +26,7 @@ public class ReadilySQLiteOpenHelper extends SQLiteOpenHelper {
       + CachedBookColumns.PERCENTILE + " REAL NOT NULL, "
       + CachedBookColumns.TIME_OPENED + " TEXT NOT NULL, "
       + CachedBookColumns.COVER_IMAGE_URI + " TEXT, "
+      + CachedBookColumns.COVER_IMAGE_MEAN + " INTEGER, "
       + CachedBookColumns.EPUB_BOOK_ID + " INTEGER, "
       + CachedBookColumns.FB2_BOOK_ID + " INTEGER, "
       + CachedBookColumns.TXT_BOOK_ID + " INTEGER "

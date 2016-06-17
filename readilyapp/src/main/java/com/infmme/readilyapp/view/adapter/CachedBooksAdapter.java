@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Build;
 import android.support.percent.PercentRelativeLayout;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -64,6 +65,22 @@ public class CachedBooksAdapter
 
   private void bindWithImage(final CachedBookHolder holder,
                              final CachedBookCursor bookCursor) {
+    Integer cardViewColor = bookCursor.getCoverImageMean();
+    if (cardViewColor != null) {
+      holder.mCardView.setBackgroundColor(cardViewColor);
+    } else {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        holder.mCardView.setBackgroundColor(
+            mContext.getResources()
+                    .getColor(R.color.cardview_light_background,
+                              mContext.getTheme()));
+      } else {
+        holder.mCardView.setBackgroundColor(
+            mContext.getResources()
+                    .getColor(R.color.cardview_light_background));
+      }
+    }
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       holder.mTitleView.setTextAppearance(
           android.R.style.TextAppearance_Material_Large);
@@ -87,6 +104,10 @@ public class CachedBooksAdapter
   private void bindWithoutImage(final CachedBookHolder holder,
                                 final CachedBookCursor bookCursor) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      holder.mCardView.setBackgroundColor(
+          mContext.getResources()
+                  .getColor(R.color.cardview_light_background,
+                            mContext.getTheme()));
       holder.mTitleView.setTextAppearance(
           android.R.style.TextAppearance_Material_Display1);
       holder.mTitleView.setTextColor(
@@ -94,6 +115,9 @@ public class CachedBooksAdapter
                   .getColor(android.R.color.primary_text_light,
                             mContext.getTheme()));
     } else {
+      holder.mCardView.setBackgroundColor(
+          mContext.getResources()
+                  .getColor(R.color.cardview_light_background));
       holder.mTitleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26);
       holder.mTitleView.setTextColor(
           mContext.getResources().getColor(android.R.color.primary_text_light));
@@ -121,6 +145,7 @@ public class CachedBooksAdapter
 
   public static class CachedBookHolder extends RecyclerView.ViewHolder
       implements View.OnClickListener {
+    CardView mCardView;
     PercentRelativeLayout mActionView;
 
     ImageView mImageView;
@@ -135,6 +160,7 @@ public class CachedBooksAdapter
 
     public CachedBookHolder(View v, long id, ItemClickCallback callback) {
       super(v);
+      mCardView = (CardView) v.findViewById(R.id.cache_list_card);
       mActionView = (PercentRelativeLayout) v.findViewById(
           R.id.cache_list_card_child);
 
@@ -145,7 +171,8 @@ public class CachedBooksAdapter
           R.id.cache_list_card_time_opened);
       mProgressView = (ProgressBar) v.findViewById(
           R.id.cache_list_card_progress);
-      mNavigateButton = (Button) v.findViewById(R.id.cache_list_card_button_toc);
+      mNavigateButton = (Button) v.findViewById(
+          R.id.cache_list_card_button_toc);
       setupButtons();
 
       mId = id;

@@ -49,6 +49,22 @@ public class ReaderTask implements Runnable {
     this.mCallback = callback;
   }
 
+  private Reading nextNonEmptyReading() throws IOException {
+    Reading nextReading = null;
+    if (mChunked.hasNextReading()) {
+      // Finds non-empty consecutive reading.
+      do {
+        // Therefore we're here not for the first time.
+        if (nextReading != null) {
+          mChunked.skipLast();
+        }
+        nextReading = nextReading();
+      } while (TextUtils.isEmpty(
+          nextReading.getText()) && mChunked.hasNextReading());
+    }
+    return nextReading;
+  }
+
   @Override
   public void run() {
     while (mCallback.shouldContinue()) {
@@ -56,8 +72,13 @@ public class ReaderTask implements Runnable {
         synchronized (mReadingDeque) {
           // TODO: Ensure that reading is processed now.
           // Sort of initialization for a deque.
+          Reading nextReading = null;
           if (!mOnceStarted) {
-            mReadingDeque.add(nextReading());
+            nextReading = nextNonEmptyReading();
+            if (nextReading != null && !TextUtils.isEmpty(
+                nextReading.getText())) {
+              mReadingDeque.add(nextReading);
+            }
           }
           // Checks if we have more data to produce.
           if (mChunked != null && mReadingDeque.size() > 0) {
@@ -65,18 +86,7 @@ public class ReaderTask implements Runnable {
             while (mReadingDeque.size() < DEQUE_SIZE_LIMIT &&
                 currentReading != null &&
                 !TextUtils.isEmpty(currentReading.getText())) {
-              Reading nextReading = null;
-              if (mChunked.hasNextReading()) {
-                // Finds non-empty consecutive reading.
-                do {
-                  // Therefore we're here not for the first time.
-                  if (nextReading != null) {
-                    mChunked.skipLast();
-                  }
-                  nextReading = nextReading();
-                } while (TextUtils.isEmpty(
-                    nextReading.getText()) && mChunked.hasNextReading());
-              }
+              nextReading = nextNonEmptyReading();
               if (nextReading != null && !TextUtils.isEmpty(
                   nextReading.getText())) {
                 // Duplicates adjacent reading data to transit smoothly between

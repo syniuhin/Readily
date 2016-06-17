@@ -94,6 +94,16 @@ public class CachedBookCursor extends AbstractCursor
   }
 
   /**
+   * Mean color of the cover image in form of argb.
+   * Can be {@code null}.
+   */
+  @Nullable
+  public Integer getCoverImageMean() {
+    Integer res = getIntegerOrNull(CachedBookColumns.COVER_IMAGE_MEAN);
+    return res;
+  }
+
+  /**
    * Optional link to epub_book.
    * Can be {@code null}.
    */

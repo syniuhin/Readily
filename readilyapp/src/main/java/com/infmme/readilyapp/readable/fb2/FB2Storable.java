@@ -22,6 +22,7 @@ import com.infmme.readilyapp.provider.fb2book.Fb2BookSelection;
 import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.readable.interfaces.*;
 import com.infmme.readilyapp.reader.Reader;
+import com.infmme.readilyapp.util.ColorMatcher;
 import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.xmlparser.FB2Tags;
 import com.infmme.readilyapp.xmlparser.XMLEvent;
@@ -63,6 +64,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
   private String mCoverImageHref = null;
   private String mCoverImageEncoded = null;
   private String mCoverImageUri = null;
+  private Integer mCoverImageMean = null;
 
   private XMLParser mParser;
   private XMLEvent mCurrentEvent;
@@ -264,6 +266,8 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
     FileOutputStream ostream = new FileOutputStream(file);
     bitmap.compress(Bitmap.CompressFormat.PNG, 100, ostream);
     ostream.close();
+
+    mCoverImageMean = ColorMatcher.findClosestMaterialColor(bitmap);
   }
 
   private String getCoverImagePath() {
@@ -294,6 +298,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
       }
       if (mCoverImageUri != null) {
         values.putCoverImageUri(mCoverImageUri);
+        values.putCoverImageMean(mCoverImageMean);
         updateValues = true;
       }
       if (updateValues) {
@@ -332,6 +337,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
       }
       values.putTitle(mTitle);
       values.putCoverImageUri(mCoverImageUri);
+      values.putCoverImageMean(mCoverImageMean);
 
       Uri uri = fb2Values.insert(mContext.getContentResolver());
       long fb2Id = Long.parseLong(uri.getLastPathSegment());

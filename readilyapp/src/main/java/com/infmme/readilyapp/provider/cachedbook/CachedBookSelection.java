@@ -286,6 +286,46 @@ public class CachedBookSelection
     return this;
   }
 
+  public CachedBookSelection coverImageMean(Integer... value) {
+    addEquals(CachedBookColumns.COVER_IMAGE_MEAN, value);
+    return this;
+  }
+
+  public CachedBookSelection coverImageMeanNot(Integer... value) {
+    addNotEquals(CachedBookColumns.COVER_IMAGE_MEAN, value);
+    return this;
+  }
+
+  public CachedBookSelection coverImageMeanGt(int value) {
+    addGreaterThan(CachedBookColumns.COVER_IMAGE_MEAN, value);
+    return this;
+  }
+
+  public CachedBookSelection coverImageMeanGtEq(int value) {
+    addGreaterThanOrEquals(CachedBookColumns.COVER_IMAGE_MEAN, value);
+    return this;
+  }
+
+  public CachedBookSelection coverImageMeanLt(int value) {
+    addLessThan(CachedBookColumns.COVER_IMAGE_MEAN, value);
+    return this;
+  }
+
+  public CachedBookSelection coverImageMeanLtEq(int value) {
+    addLessThanOrEquals(CachedBookColumns.COVER_IMAGE_MEAN, value);
+    return this;
+  }
+
+  public CachedBookSelection orderByCoverImageMean(boolean desc) {
+    orderBy(CachedBookColumns.COVER_IMAGE_MEAN, desc);
+    return this;
+  }
+
+  public CachedBookSelection orderByCoverImageMean() {
+    orderBy(CachedBookColumns.COVER_IMAGE_MEAN, false);
+    return this;
+  }
+
   public CachedBookSelection epubBookId(Long... value) {
     addEquals(CachedBookColumns.EPUB_BOOK_ID, value);
     return this;

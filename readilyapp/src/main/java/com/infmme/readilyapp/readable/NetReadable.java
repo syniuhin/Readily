@@ -8,6 +8,7 @@ import com.infmme.readilyapp.provider.txtbook.TxtBookContentValues;
 import com.infmme.readilyapp.readable.interfaces.Storable;
 import com.infmme.readilyapp.readable.interfaces.Unprocessed;
 import com.infmme.readilyapp.reader.Reader;
+import com.infmme.readilyapp.util.ColorMatcher;
 import com.infmme.readilyapp.util.Constants;
 import com.squareup.picasso.Picasso;
 import de.jetwick.snacktory.HtmlFetcher;
@@ -24,10 +25,12 @@ import java.io.IOException;
 
 public class NetReadable extends Readable implements Unprocessed, Storable {
   private String mTitle;
-  // TODO: Add image fetching and saving.
   private String mImageUrl;
+  private int mCoverImageMean;
   private String mLink;
   private boolean mProcessed = false;
+
+  private double mChunkPercentile;
 
   private transient Context mContext;
 
@@ -52,7 +55,7 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
       setText(parseArticle(mLink));
       if (mImageUrl != null) {
         // WTF? Why is it blocking? TODO: Make it async wisely.
-        fetchImage();
+        fetchCoverImage();
       }
       mProcessed = true;
     } catch (Exception e) {
@@ -74,7 +77,7 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
   /**
    * Synchronously caches an image into a filesystem.
    */
-  private void fetchImage() throws IOException {
+  private void fetchCoverImage() throws IOException {
     String path = getCoverImagePath();
     Bitmap bitmap = Picasso.with(mContext)
                            .load(mImageUrl)
@@ -85,6 +88,8 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
     FileOutputStream ostream = new FileOutputStream(file);
     bitmap.compress(Bitmap.CompressFormat.PNG, 100, ostream);
     ostream.close();
+
+    mCoverImageMean = ColorMatcher.findClosestMaterialColor(bitmap);
   }
 
   public boolean isCachedToFile() {
@@ -108,6 +113,7 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
     // It's already prepared since it's directly loaded into Reader.
     try {
       storeToFile();
+      mChunkPercentile = reader.getPercentile();
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -118,14 +124,14 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
     CachedBookContentValues values = new CachedBookContentValues();
     if (hasCoverImage()) {
       try {
-        fetchImage();
+        fetchCoverImage();
         values.putCoverImageUri(getCoverImagePath());
+        values.putCoverImageMean(mCoverImageMean);
       } catch (IOException e) {
         e.printStackTrace();
       }
     }
-    // TODO: Solve this
-    values.putPercentile(0);
+    values.putPercentile(mChunkPercentile);
 
     TxtBookContentValues txtValues = new TxtBookContentValues();
     txtValues.putBytePosition(0);

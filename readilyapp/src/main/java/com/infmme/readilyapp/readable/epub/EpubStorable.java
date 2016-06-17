@@ -2,6 +2,8 @@ package com.infmme.readilyapp.readable.epub;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookContentValues;
@@ -12,6 +14,7 @@ import com.infmme.readilyapp.provider.epubbook.EpubBookSelection;
 import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.readable.interfaces.*;
 import com.infmme.readilyapp.reader.Reader;
+import com.infmme.readilyapp.util.ColorMatcher;
 import com.infmme.readilyapp.util.Constants;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Metadata;
@@ -50,6 +53,7 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
   private Double mPercentile = .0;
 
   private String mCoverImageUri;
+  private Integer mCoverImageMean = null;
   private List<Resource> mContents;
 
   private Deque<ChunkInfo> mLoadedChunks = new ArrayDeque<>();
@@ -167,6 +171,7 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
 
     if (coverImageExists() && !isCoverImageStored()) {
       try {
+        // TODO: Figure out which thread it belongs to.
         storeCoverImage();
       } catch (IOException e) {
         e.printStackTrace();
@@ -203,6 +208,7 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
       values.putPath(mPath);
       values.putTitle(mMetadata.getFirstTitle());
       values.putCoverImageUri(mCoverImageUri);
+      values.putCoverImageMean(mCoverImageMean);
 
       Uri uri = epubValues.insert(mContext.getContentResolver());
       long epubId = Long.parseLong(uri.getLastPathSegment());
@@ -386,6 +392,10 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
     fos.write(imageBytes);
     fos.close();
     mCoverImageUri = coverImagePath;
+
+    Bitmap bitmap =
+        BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+    mCoverImageMean = ColorMatcher.findClosestMaterialColor(bitmap);
   }
 
   private String getCoverImagePath(final Resource coverImage) {
