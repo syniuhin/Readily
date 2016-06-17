@@ -3,12 +3,26 @@ package com.infmme.readilyapp.util;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
+import java.util.Random;
+
 /**
  * Created with love, by infm dated on 6/17/16.
  */
 
 public class ColorMatcher {
 
+  private static String[] sMaterialHexes = new String[] {
+/*
+      "B71C1C", "880E4F", "4A148C", "311B92", "1A237E", "0D47A1", "01579B",
+      "006064", "004D40", "1B5E20", "33691E", "827717", "F57F17", "FF6F00",
+      "E65100", "BF360C", "3E2723", "212121", "263238",
+*/
+      "EF5350", "F06292", "BA68C8", "9575CD", "7986CB", "1E88E5", "039BE5",
+      "0097A7", "009688", "43A047", "689F38", "827717", "EF6C00", "FF5722",
+      "8D6E63", "757575", "607D8B"
+  };
+
+  // Full set of colors
   private static String[] sMaterialRgbs = new String[] { "244 67 54", "255 " +
       "235 238", "255 205 210", "239 154 154", "229 115 115", "239 83 80",
       "229 57 53", "211 47 47", "198 40 40", "183 28 28", "255 138 128", "255" +
@@ -94,6 +108,15 @@ public class ColorMatcher {
     };
   }
 
+  public static int pickRandomMaterialColor() {
+    Random r = new Random();
+    int rgbPacked = Integer.parseInt(
+        sMaterialHexes[r.nextInt(sMaterialHexes.length)], 16);
+    int[] rgb = new int[4];
+    colorToArgb(rgbPacked, rgb);
+    return Color.argb(0xF8, rgb[1], rgb[2], rgb[3]);
+  }
+
   public static int findClosestMaterialColor(Bitmap bitmap) {
     return findClosestMaterialColor(meanColor(bitmap));
   }
@@ -101,6 +124,7 @@ public class ColorMatcher {
   public static int findClosestMaterialColor(int[] argb) {
     int minDistance = 1 << 30;
     int minDistanceIndex = -1;
+/*
     for (int i = 0; i < sMaterialRgbs.length; ++i) {
       String material = sMaterialRgbs[i];
       String[] rgb = material.split(" ");
@@ -112,10 +136,31 @@ public class ColorMatcher {
         minDistanceIndex = i;
       }
     }
+*/
+    for (int i = 0; i < sMaterialHexes.length; ++i) {
+      String materialHex = sMaterialHexes[i];
+      int rgbPacked = Integer.parseInt(materialHex, 16);
+      int[] rgb = new int[4];
+      colorToArgb(rgbPacked, rgb);
+      int currentDistance = Math.abs(rgb[1] - argb[1]) +
+          Math.abs(rgb[2] - argb[2]) + Math.abs(rgb[3] - argb[3]);
+      if (minDistance > currentDistance) {
+        minDistance = currentDistance;
+        minDistanceIndex = i;
+      }
+    }
+/*
     String[] closestMatch = sMaterialRgbs[minDistanceIndex].split(" ");
+*/
+    int rgbPacked = Integer.parseInt(sMaterialHexes[minDistanceIndex], 16);
+    int[] rgb = new int[4];
+    colorToArgb(rgbPacked, rgb);
+/*
     return Color.argb(255, Integer.parseInt(closestMatch[0]),
                       Integer.parseInt(closestMatch[1]),
                       Integer.parseInt(closestMatch[2]));
+*/
+    return Color.argb(255, rgb[1], rgb[2], rgb[3]);
   }
 
   private static void colorToArgb(int color, int[] argb) {

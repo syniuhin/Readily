@@ -395,7 +395,8 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
 
     Bitmap bitmap =
         BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-    mCoverImageMean = ColorMatcher.findClosestMaterialColor(bitmap);
+    // mCoverImageMean = ColorMatcher.findClosestMaterialColor(bitmap);
+    mCoverImageMean = ColorMatcher.pickRandomMaterialColor();
   }
 
   private String getCoverImagePath(final Resource coverImage) {

@@ -65,31 +65,45 @@ public class CachedBooksAdapter
 
   private void bindWithImage(final CachedBookHolder holder,
                              final CachedBookCursor bookCursor) {
-    Integer cardViewColor = bookCursor.getCoverImageMean();
-    if (cardViewColor != null) {
-      holder.mCardView.setBackgroundColor(cardViewColor);
-    } else {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        holder.mCardView.setBackgroundColor(
-            mContext.getResources()
-                    .getColor(R.color.cardview_light_background,
-                              mContext.getTheme()));
-      } else {
-        holder.mCardView.setBackgroundColor(
-            mContext.getResources()
-                    .getColor(R.color.cardview_light_background));
-      }
-    }
+    holder.mCardView.setBackgroundColor(bookCursor.getCoverImageMean());
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       holder.mTitleView.setTextAppearance(
-          android.R.style.TextAppearance_Material_Large);
-    } else if (Build.VERSION.SDK_INT >=
-        Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-      holder.mTitleView.setTextAppearance(
-          mContext, android.R.style.TextAppearance_DeviceDefault_Large);
+          android.R.style.TextAppearance_Material_Large_Inverse);
+      holder.mTimeOpenedView.setTextAppearance(
+          android.R.style.TextAppearance_Material_Small_Inverse);
+      holder.mNavigateButton.setTextColor(
+          mContext.getResources()
+                  .getColor(android.R.color.primary_text_dark,
+                            mContext.getTheme()));
+      holder.mMoreButton.setTextColor(
+          mContext.getResources()
+                  .getColor(android.R.color.primary_text_dark,
+                            mContext.getTheme()));
     } else {
-      holder.mTitleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+      holder.mNavigateButton.setTextColor(
+          mContext.getResources()
+                  .getColor(android.R.color.primary_text_dark));
+      holder.mMoreButton.setTextColor(
+          mContext.getResources()
+                  .getColor(android.R.color.primary_text_dark));
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES
+          .ICE_CREAM_SANDWICH) {
+        holder.mTitleView.setTextAppearance(
+            mContext,
+            android.R.style.TextAppearance_DeviceDefault_Large_Inverse);
+        holder.mTimeOpenedView.setTextAppearance(
+            mContext,
+            android.R.style.TextAppearance_DeviceDefault_Small_Inverse);
+      } else {
+        holder.mTitleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20);
+        holder.mTitleView.setTextColor(
+            mContext.getResources()
+                    .getColor(android.R.color.primary_text_dark));
+        holder.mTimeOpenedView.setTextColor(
+            mContext.getResources()
+                    .getColor(android.R.color.secondary_text_dark));
+      }
     }
     holder.mTitleView.setText(bookCursor.getTitle());
 
@@ -114,6 +128,15 @@ public class CachedBooksAdapter
           mContext.getResources()
                   .getColor(android.R.color.primary_text_light,
                             mContext.getTheme()));
+      holder.mTimeOpenedView.setTextAppearance(
+          android.R.style.TextAppearance_Material_Small);
+      holder.mNavigateButton.setTextColor(
+          mContext.getResources()
+                  .getColor(R.color.accent, mContext.getTheme()));
+      holder.mMoreButton.setTextColor(
+          mContext.getResources()
+                  .getColor(android.R.color.primary_text_light,
+                            mContext.getTheme()));
     } else {
       holder.mCardView.setBackgroundColor(
           mContext.getResources()
@@ -121,6 +144,15 @@ public class CachedBooksAdapter
       holder.mTitleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 26);
       holder.mTitleView.setTextColor(
           mContext.getResources().getColor(android.R.color.primary_text_light));
+      holder.mTimeOpenedView.setTextColor(
+          mContext.getResources()
+                  .getColor(android.R.color.secondary_text_light));
+      holder.mNavigateButton.setTextColor(
+          mContext.getResources()
+                  .getColor(R.color.accent));
+      holder.mMoreButton.setTextColor(
+          mContext.getResources()
+                  .getColor(android.R.color.primary_text_light));
     }
     holder.mTitleView.setText(bookCursor.getTitle());
 
@@ -154,6 +186,7 @@ public class CachedBooksAdapter
     ProgressBar mProgressView;
     Button mNavigateButton;
     // TODO: Add master-detail flow for 'About' button
+    Button mMoreButton;
 
     long mId;
     ItemClickCallback mCallback;
@@ -165,14 +198,14 @@ public class CachedBooksAdapter
           R.id.cache_list_card_child);
 
       mImageView = (ImageView) v.findViewById(R.id.cache_list_card_image);
-      mTitleView = (TextView) v.findViewById(
-          R.id.cache_list_card_title);
+      mTitleView = (TextView) v.findViewById(R.id.cache_list_card_title);
       mTimeOpenedView = (TextView) v.findViewById(
           R.id.cache_list_card_time_opened);
       mProgressView = (ProgressBar) v.findViewById(
           R.id.cache_list_card_progress);
       mNavigateButton = (Button) v.findViewById(
           R.id.cache_list_card_button_toc);
+      mMoreButton = (Button) v.findViewById(R.id.cache_list_card_button_more);
       setupButtons();
 
       mId = id;
