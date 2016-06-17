@@ -42,11 +42,11 @@ public class CachedBooksAdapter
   public void onBindViewHolderCursor(CachedBookHolder holder,
                                      Cursor cursor) {
     CachedBookCursor bookCursor = new CachedBookCursor(cursor);
-    holder.mTitleView.setText(bookCursor.getTitle());
+    holder.mId = bookCursor.getId();
+    holder.mCoverImageUri = bookCursor.getCoverImageUri();
 
-    String coverImageUri = bookCursor.getCoverImageUri();
-    // TODO: Validate coverImageUri.
-    if (coverImageUri != null) {
+    holder.mTitleView.setText(bookCursor.getTitle());
+    if (holder.mCoverImageUri != null) {
       bindWithImage(holder, bookCursor);
     } else {
       bindWithoutImage(holder);
@@ -74,8 +74,6 @@ public class CachedBooksAdapter
     holder.mTimeOpenedView.setText(strTimeOpened);
     // TODO: Replace with a real value
     holder.mProgressView.setProgress((int) (bookCursor.getPercentile() * 100));
-
-    holder.mId = bookCursor.getId();
   }
 
   private void bindWithImage(final CachedBookHolder holder,
@@ -104,7 +102,7 @@ public class CachedBooksAdapter
     View v = LayoutInflater.from(parent.getContext())
                            .inflate(R.layout.cache_list_card, parent,
                                     false);
-    CachedBookHolder holder = new CachedBookHolder(v, 0, mCallback);
+    CachedBookHolder holder = new CachedBookHolder(v, 0, null, mCallback);
     holder.mActionView.setOnClickListener(holder);
     return holder;
   }
@@ -124,9 +122,11 @@ public class CachedBooksAdapter
     Button mMoreButton;
 
     long mId;
+    String mCoverImageUri;
     ItemClickCallback mCallback;
 
-    public CachedBookHolder(View v, long id, ItemClickCallback callback) {
+    public CachedBookHolder(View v, long id, String coverImageUri,
+                            ItemClickCallback callback) {
       super(v);
       mCardView = (CardView) v.findViewById(R.id.cache_list_card);
       mActionView = (PercentRelativeLayout) v.findViewById(
@@ -145,6 +145,7 @@ public class CachedBooksAdapter
       setupButtons();
 
       mId = id;
+      mCoverImageUri = coverImageUri;
       mCallback = callback;
     }
 
@@ -305,12 +306,21 @@ public class CachedBooksAdapter
           mCallback.onNavigateButton(mId);
         }
       });
+
+      mMoreButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          mCallback.onMoreButton(mImageView, mId, mCoverImageUri);
+        }
+      });
     }
 
     public interface ItemClickCallback {
       void onItem(long id);
 
       void onNavigateButton(long id);
+
+      void onMoreButton(ImageView v, long id, String coverImageUri);
     }
   }
 }

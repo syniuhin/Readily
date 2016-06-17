@@ -41,7 +41,6 @@
                 <data android:mimeType="text/plain"/>
             </intent-filter>
         </activity>
-
         <activity
                 android:name="com.ipaulpro.afilechooser.FileChooserActivity"
                 android:enabled="@bool/use_activity"
@@ -110,9 +109,19 @@
                 android:exported="false"/>
 
         <provider
-                android:name="com.infmme.readilyapp.provider.ReadilyProvider"
+                android:name=".provider.ReadilyProvider"
                 android:authorities="com.infmme.readilyapp.provider"
                 android:exported="false"/>
+
+        <activity
+                android:name=".StorableDetailActivity"
+                android:label="@string/title_activity_storable_detail"
+                android:parentActivityName=".MainActivity"
+                android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="com.infmme.readilyapp.MainActivity"/>
+        </activity>
     </application>
 
 </manifest>

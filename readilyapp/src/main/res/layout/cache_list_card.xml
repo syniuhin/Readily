@@ -16,18 +16,19 @@
             <android.support.percent.PercentRelativeLayout
                     xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:id="@+id/cache_list_card_child">
 
                 <ImageView app:layout_widthPercent="100%"
                            app:layout_aspectRatio="178%"
                            android:id="@+id/cache_list_card_image"
+                           android:transitionName="@string/storable_detail_transition"
                            android:scaleType="centerCrop"
                            android:cropToPadding="true"
                            android:layout_alignParentStart="true"
                            android:layout_alignParentLeft="true"
                            android:layout_alignParentTop="true"
-                           card_view:srcCompat="@color/design_snackbar_background_color"/>
+                           card_view:srcCompat="@color/accent_dark"/>
                 <ProgressBar
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"

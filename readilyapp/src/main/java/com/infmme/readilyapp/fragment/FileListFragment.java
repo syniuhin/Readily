@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -13,8 +14,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.ReceiverActivity;
+import com.infmme.readilyapp.StorableDetailActivity;
 import com.infmme.readilyapp.navigation.BookPartListActivity;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
@@ -134,6 +137,19 @@ public class FileListFragment extends Fragment
         }
       }).start();
     }
+  }
+
+  @Override
+  public void onMoreButton(ImageView v, long id, final String coverImageUri) {
+    final Activity a = getActivity();
+    Intent intent = new Intent(a, StorableDetailActivity.class);
+    intent.putExtra(Constants.EXTRA_ID, id);
+    intent.putExtra(Constants.EXTRA_COVER_IMAGE_URI, coverImageUri);
+    ActivityOptionsCompat options =
+        ActivityOptionsCompat.makeSceneTransitionAnimation(
+            a, v,
+            a.getResources().getString(R.string.storable_detail_transition));
+    startActivity(intent, options.toBundle());
   }
 
   private CachedBookCursor findCachedBook(final Context context, long id) {

@@ -11,6 +11,8 @@ public abstract class BaseActivity extends AppCompatActivity {
   private CompositeSubscription mCompositeSubscription;
 
   abstract protected void findViews();
+  // TODO: Add it
+  // abstract protected void setupViews();
 
   protected void addSubscription(Subscription s) {
     if (mCompositeSubscription == null) {

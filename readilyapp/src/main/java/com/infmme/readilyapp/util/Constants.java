@@ -5,9 +5,11 @@ package com.infmme.readilyapp.util;
  */
 public class Constants {
 
+  public static final String EXTRA_ID = "id";
   public static final String EXTRA_PATH = "path";
   public static final String EXTRA_POSITION = "position";
   public static final String EXTRA_TYPE = "source_type";
+  public static final String EXTRA_COVER_IMAGE_URI = "cover_image_uri";
 
   public static final String EXTRA_TOC_REFERENCE = "TocReference";
   public static final String EXTRA_TWO_PANE = "IsTwoPane";

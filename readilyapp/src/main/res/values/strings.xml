@@ -190,4 +190,9 @@
 
     <string name="book_card_more">More</string>
     <string name="book_card_navigate">Navigate</string>
+    <string name="title_activity_storable_detail">StorableDetailActivity
+    </string>
+    <string name="storable_detail_transition" translatable="false">
+        StorableDetailTransition
+    </string>
 </resources>
