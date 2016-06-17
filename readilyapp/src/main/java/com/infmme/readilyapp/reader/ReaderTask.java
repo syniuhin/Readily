@@ -51,16 +51,26 @@ public class ReaderTask implements Runnable {
 
   private Reading nextNonEmptyReading() throws IOException {
     Reading nextReading = null;
-    if (mChunked.hasNextReading()) {
+    if (mChunked == null) {
+      nextReading = mSingleReading;
+      mSingleReading = null;
+    } else if (mChunked.hasNextReading()) {
       // Finds non-empty consecutive reading.
       do {
         // Therefore we're here not for the first time.
         if (nextReading != null) {
           mChunked.skipLast();
         }
-        nextReading = nextReading();
+        nextReading = mChunked.readNext();
       } while (TextUtils.isEmpty(
           nextReading.getText()) && mChunked.hasNextReading());
+    }
+    if (nextReading != null) {
+      TextParser result =
+          TextParser.newInstance(nextReading,
+                                 mCallback.getDelayCoefficients());
+      result.process();
+      nextReading = result.getReading();
     }
     return nextReading;
   }
@@ -72,7 +82,7 @@ public class ReaderTask implements Runnable {
         synchronized (mReadingDeque) {
           // TODO: Ensure that reading is processed now.
           // Sort of initialization for a deque.
-          Reading nextReading = null;
+          Reading nextReading;
           if (!mOnceStarted) {
             nextReading = nextNonEmptyReading();
             if (nextReading != null && !TextUtils.isEmpty(
@@ -126,20 +136,6 @@ public class ReaderTask implements Runnable {
 
   public synchronized boolean isNextLoaded() {
     return mReadingDeque.size() > 1;
-  }
-
-  private Reading nextReading() throws IOException {
-    Reading nextReading;
-    if (mChunked == null) {
-      nextReading = mSingleReading;
-      mSingleReading = null;
-    } else {
-      nextReading = mChunked.readNext();
-    }
-    TextParser result =
-        TextParser.newInstance(nextReading, mCallback.getDelayCoefficients());
-    result.process();
-    return result.getReading();
   }
 
   private void duplicateAdjacentData(Reading currentReading,
