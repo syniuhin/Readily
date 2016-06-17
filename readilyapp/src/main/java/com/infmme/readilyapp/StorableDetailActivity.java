@@ -1,13 +1,17 @@
 package com.infmme.readilyapp;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import com.infmme.readilyapp.util.Constants;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 public class StorableDetailActivity extends BaseActivity {
@@ -22,6 +26,10 @@ public class StorableDetailActivity extends BaseActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_storable_detail);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      postponeEnterTransition();
+    }
+
     findViews();
 
     Intent i = getIntent();
@@ -52,6 +60,44 @@ public class StorableDetailActivity extends BaseActivity {
            .load("file:" + mCoverImageUri)
            .centerInside()
            .fit()
-           .into(mImageView);
+           .into(mImageView, new Callback() {
+             @Override
+             public void onSuccess() {
+               scheduleStartPostponedTransition(mImageView);
+             }
+
+             @Override
+             public void onError() {
+               scheduleStartPostponedTransition(mImageView);
+             }
+           });
+  }
+
+  /**
+   * Schedules the shared element transition to be started immediately
+   * after the shared element has been measured and laid out within the
+   * activity's view hierarchy. Some common places where it might make
+   * sense to call this method are:
+   * <p>
+   * (1) Inside a Fragment's onCreateView() method (if the shared element
+   * lives inside a Fragment hosted by the called Activity).
+   * <p>
+   * (2) Inside a Picasso Callback object (if you need to wait for Picasso to
+   * asynchronously load/scale a bitmap before the transition can begin).
+   * <p>
+   * (3) Inside a LoaderCallback's onLoadFinished() method (if the shared
+   * element depends on data queried by a Loader).
+   */
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+  private void scheduleStartPostponedTransition(final View sharedElement) {
+    sharedElement.getViewTreeObserver().addOnPreDrawListener(
+        new ViewTreeObserver.OnPreDrawListener() {
+          @Override
+          public boolean onPreDraw() {
+            sharedElement.getViewTreeObserver().removeOnPreDrawListener(this);
+            startPostponedEnterTransition();
+            return true;
+          }
+        });
   }
 }
