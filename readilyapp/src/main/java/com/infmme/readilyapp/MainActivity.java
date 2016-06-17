@@ -1,7 +1,6 @@
 package com.infmme.readilyapp;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,6 +11,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -28,21 +29,31 @@ public class MainActivity extends BaseActivity {
   private static final int FILE_SELECT_CODE = 7331;
   private static final int READ_EXTERNAL_STORAGE_REQUEST = 7878;
 
+  private Toolbar mToolbar;
+  private RecyclerView mRecyclerView;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     isAnybodyOutThere(this);
 
-    changeActionBarIcon();
+    findViews();
+    setupToolbar();
     startFileListFragment();
   }
 
-  @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-  private void changeActionBarIcon() {
-    if (getSupportActionBar() != null) {
-      getSupportActionBar().setIcon(R.drawable.logo_up);
-    }
+  @Override
+  protected void findViews() {
+    mToolbar = (Toolbar) findViewById(R.id.main_toolbar);
+    mRecyclerView = (RecyclerView) findViewById(R.id.cache_list);
+  }
+
+  private void setupToolbar() {
+    setSupportActionBar(mToolbar);
+
+    getSupportActionBar().setDisplayShowTitleEnabled(false);
+    mToolbar.setLogo(R.drawable.logo_up);
   }
 
   /**

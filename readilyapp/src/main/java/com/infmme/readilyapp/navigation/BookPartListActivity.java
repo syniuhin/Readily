@@ -31,7 +31,6 @@ import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,8 +68,6 @@ public class BookPartListActivity extends BaseActivity implements
 
   private OnFabClickListener mCallback = null;
 
-  private CompositeSubscription mCompositeSubscription = null;
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -86,20 +83,10 @@ public class BookPartListActivity extends BaseActivity implements
       actionBar.setDisplayHomeAsUpEnabled(true);
     }
 
-    mCompositeSubscription = new CompositeSubscription();
     mProgressBar.setVisibility(View.VISIBLE);
 
     Bundle bundle = getIntent().getExtras();
     loadStorable(bundle);
-  }
-
-  @Override
-  protected void onDestroy() {
-    super.onDestroy();
-    if (mCompositeSubscription != null &&
-        mCompositeSubscription.hasSubscriptions()) {
-      mCompositeSubscription.unsubscribe();
-    }
   }
 
   @Override
@@ -112,6 +99,7 @@ public class BookPartListActivity extends BaseActivity implements
     return super.onOptionsItemSelected(item);
   }
 
+  @Override
   protected void findViews() {
     mToolbar = (Toolbar) findViewById(toolbar);
     mFab = (FloatingActionButton) findViewById(fab);
@@ -238,7 +226,7 @@ public class BookPartListActivity extends BaseActivity implements
                 }
               }
             });
-    mCompositeSubscription.add(
+    addSubscription(
         tocObservable.subscribeOn(Schedulers.newThread())
                      .observeOn(AndroidSchedulers.mainThread())
                      .subscribe(

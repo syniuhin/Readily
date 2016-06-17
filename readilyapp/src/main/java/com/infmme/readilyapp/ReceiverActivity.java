@@ -52,8 +52,9 @@ public class ReceiverActivity extends BaseActivity
   }
 
   private void setOnSwipeListener(final ReaderFragment readerFragment) {
-    if (contentView == null)
+    if (contentView == null) {
       contentView = findViewById(android.R.id.content);
+    }
 
     contentView.setOnTouchListener(new OnSwipeTouchListener(this) {
       @Override
@@ -93,4 +94,7 @@ public class ReceiverActivity extends BaseActivity
   public void stop() {
     finish();
   }
+
+  @Override
+  protected void findViews() {}
 }

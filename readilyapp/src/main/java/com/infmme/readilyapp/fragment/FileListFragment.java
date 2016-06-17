@@ -51,7 +51,7 @@ public class FileListFragment extends Fragment
   }
 
   private void findViews(ViewGroup v) {
-    mRecyclerView = (RecyclerView) v.findViewById(R.id.file_recycler_view);
+    mRecyclerView = (RecyclerView) v.findViewById(R.id.cache_list);
     // mTextViewEmpty = (TextView) v.findViewById(R.id.text_view_empty);
   }
 
