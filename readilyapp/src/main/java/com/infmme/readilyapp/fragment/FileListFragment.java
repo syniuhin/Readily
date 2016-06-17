@@ -10,11 +10,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.ReceiverActivity;
 import com.infmme.readilyapp.StorableDetailActivity;
@@ -140,15 +142,24 @@ public class FileListFragment extends Fragment
   }
 
   @Override
-  public void onMoreButton(ImageView v, long id, final String coverImageUri) {
+  public void onMoreButton(ImageView imageView, ProgressBar progressBar,
+                           long id, final String coverImageUri) {
     final Activity a = getActivity();
     Intent intent = new Intent(a, StorableDetailActivity.class);
     intent.putExtra(Constants.EXTRA_ID, id);
     intent.putExtra(Constants.EXTRA_COVER_IMAGE_URI, coverImageUri);
+    Pair<View, String> p1 =
+        Pair.create(
+            (View) imageView,
+            a.getResources()
+             .getString(R.string.storable_detail_transition_image_view));
+    Pair<View, String> p2 =
+        Pair.create(
+            (View) progressBar,
+            a.getResources()
+             .getString(R.string.storable_detail_transition_progress_bar));
     ActivityOptionsCompat options =
-        ActivityOptionsCompat.makeSceneTransitionAnimation(
-            a, v,
-            a.getResources().getString(R.string.storable_detail_transition));
+        ActivityOptionsCompat.makeSceneTransitionAnimation(a, p1, p2);
     startActivity(intent, options.toBundle());
   }
 

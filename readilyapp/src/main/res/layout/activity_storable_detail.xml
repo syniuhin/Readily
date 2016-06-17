@@ -9,18 +9,27 @@
         tools:context="com.infmme.readilyapp.StorableDetailActivity">
 
     <android.support.design.widget.AppBarLayout
-            android:layout_height="@dimen/app_bar_height"
+            android:layout_height="@dimen/app_bar_image_height"
             android:layout_width="match_parent"
-            android:theme="@style/AppTheme.AppBarOverlay">
+            android:theme="@style/AppTheme.AppBarOverlay"
+            android:fitsSystemWindows="true">
 
         <android.support.design.widget.CollapsingToolbarLayout
                 android:id="@+id/toolbar_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"
+                app:expandedTitleMarginStart="48dp"
+                app:expandedTitleMarginEnd="64dp"
                 app:contentScrim="?attr/colorPrimary"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed"
-                app:toolbarId="@+id/toolbar">
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <ImageView android:layout_width="match_parent"
+                       android:layout_height="@dimen/app_bar_image_height"
+                       android:id="@+id/storable_detail_image_view"
+                       android:transitionName="@string/storable_detail_transition_image_view"
+                       android:scaleType="centerCrop"
+                       app:layout_collapseMode="parallax"/>
 
             <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar"
@@ -32,18 +41,19 @@
             </android.support.v7.widget.Toolbar>
 
         </android.support.design.widget.CollapsingToolbarLayout>
+
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
-            android:id="@+id/bookpart_detail_container"
+            android:id="@+id/storable_detail_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clipToPadding="false"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <include layout="@layout/content_storable_detail"/>
 
     </android.support.v4.widget.NestedScrollView>
-
 
     <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
@@ -51,6 +61,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_play_arrow_white_36dp"/>
+            android:src="@drawable/ic_play_arrow_white_36dp"
+            app:layout_anchor="@+id/storable_detail_container"
+            app:layout_anchorGravity="bottom|end"
+            app:layout_behavior="com.infmme.readilyapp.view.FabOnScrollBehavior"/>
 
 </android.support.design.widget.CoordinatorLayout>

@@ -57,6 +57,11 @@
     <string name="illegal_value">Illegal value</string>
     <string name="sample_time">Last opened: 1 Jan, 00:00</string>
     <string name="sample_part">Chapter 1</string>
+    <string name="author_prefix">Author: </string>
+    <string name="genre_prefix">Genre: </string>
+    <string name="language_prefix">Language: </string>
+    <string name="part_prefix">Current part:</string>
+    <string name="file_prefix">File: </string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Read a text from the clipboard</string>
@@ -103,6 +108,7 @@
     <string name="preference_font_size_summary">Caution: text may exceed the
         window!
     </string>
+    <string name="preferences_edit">Edit this book</string>
     <string name="hint_font_size">Enter font size and watch example above
     </string>
     <string name="preference_dark_theme">Dark theme</string>
@@ -192,7 +198,10 @@
     <string name="book_card_navigate">Navigate</string>
     <string name="title_activity_storable_detail">StorableDetailActivity
     </string>
-    <string name="storable_detail_transition" translatable="false">
-        StorableDetailTransition
+    <string name="storable_detail_transition_image_view" translatable="false">
+        StorableDetailTransitionImageView
+    </string>
+    <string name="storable_detail_transition_progress_bar" translatable="false">
+        StorableDetailTransitionProgressBar
     </string>
 </resources>

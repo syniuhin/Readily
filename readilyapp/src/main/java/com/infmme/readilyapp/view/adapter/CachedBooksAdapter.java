@@ -310,7 +310,8 @@ public class CachedBooksAdapter
       mMoreButton.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-          mCallback.onMoreButton(mImageView, mId, mCoverImageUri);
+          mCallback.onMoreButton(mImageView, mProgressView, mId,
+                                 mCoverImageUri);
         }
       });
     }
@@ -320,7 +321,8 @@ public class CachedBooksAdapter
 
       void onNavigateButton(long id);
 
-      void onMoreButton(ImageView v, long id, String coverImageUri);
+      void onMoreButton(ImageView imageView, ProgressBar progressBar,
+                        long id, String coverImageUri);
     }
   }
 }

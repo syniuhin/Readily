@@ -10,11 +10,119 @@
         tools:showIn="@layout/activity_storable_detail"
         tools:context="com.infmme.readilyapp.StorableDetailActivity">
 
-    <ImageView android:layout_width="300dp"
-               android:layout_height="300dp"
-               android:id="@+id/storable_detail_image_view"
-               android:transitionName="@string/storable_detail_transition"
-               android:scaleType="centerCrop"
-               android:background="@color/accent"/>
+    <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="4dp"
+            android:id="@+id/storable_detail_progress_bar"
+            android:transitionName="@string/storable_detail_transition_progress_bar"
+            app:layout_constraintLeft_toLeftOf="@+id/content_storable_detail"
+            tools:layout_constraintLeft_creator="1"
+            app:layout_constraintTop_toTopOf="@+id/content_storable_detail"
+            app:layout_constraintRight_toRightOf="@+id/content_storable_detail"
+            tools:layout_constraintRight_creator="1"/>
+
+    <TextView
+            android:text="@string/just_sample"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:id="@+id/storable_detail_current_part"
+            app:layout_constraintLeft_toRightOf="@+id/storable_detail_current_part_prefix"
+            android:layout_marginLeft="8dp" android:layout_marginStart="8dp"
+            app:layout_constraintTop_toTopOf="@+id/storable_detail_current_part_prefix"
+            app:layout_constraintRight_toRightOf="@+id/content_storable_detail"
+            android:layout_marginRight="16dp" android:layout_marginEnd="16dp"/>
+
+    <TextView
+            android:text="@string/author_prefix"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/storable_detail_author_prefix"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="@+id/content_storable_detail"
+            android:layout_marginLeft="16dp" android:layout_marginStart="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/storable_detail_progress_bar"
+            android:layout_marginTop="8dp"/>
+    <TextView
+            android:text="@string/just_sample"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/storable_detail_author"
+            app:layout_constraintLeft_toRightOf="@+id/storable_detail_author_prefix"
+            android:layout_marginLeft="8dp" android:layout_marginStart="8dp"
+            app:layout_constraintTop_toTopOf="@+id/storable_detail_author_prefix"
+            app:layout_constraintRight_toRightOf="@+id/content_storable_detail"
+            android:layout_marginRight="16dp" android:layout_marginEnd="16dp"/>
+    <TextView
+            android:text="@string/genre_prefix"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:id="@+id/storable_detail_genre_prefix"
+            android:textStyle="normal|bold"
+            app:layout_constraintLeft_toLeftOf="@+id/content_storable_detail"
+            android:layout_marginLeft="16dp" android:layout_marginStart="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/storable_detail_author_prefix"
+            android:layout_marginTop="8dp"/>
+    <TextView
+            android:text="@string/just_sample"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:id="@+id/storable_detail_genre"
+            app:layout_constraintLeft_toRightOf="@+id/storable_detail_genre_prefix"
+            android:layout_marginLeft="8dp" android:layout_marginStart="8dp"
+            app:layout_constraintTop_toTopOf="@+id/storable_detail_genre_prefix"
+            app:layout_constraintRight_toRightOf="@+id/content_storable_detail"
+            android:layout_marginRight="16dp" android:layout_marginEnd="16dp"/>
+    <TextView
+            android:text="@string/language_prefix"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:id="@+id/storable_detail_language_prefix"
+            android:textStyle="normal|bold"
+            app:layout_constraintLeft_toLeftOf="@+id/content_storable_detail"
+            android:layout_marginLeft="16dp" android:layout_marginStart="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/storable_detail_genre_prefix"
+            android:layout_marginTop="8dp"/>
+    <TextView
+            android:text="@string/just_sample"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/storable_detail_language"
+            app:layout_constraintLeft_toRightOf="@+id/storable_detail_language_prefix"
+            android:layout_marginLeft="8dp" android:layout_marginStart="8dp"
+            app:layout_constraintTop_toTopOf="@+id/storable_detail_language_prefix"
+            app:layout_constraintRight_toRightOf="@+id/content_storable_detail"
+            android:layout_marginRight="16dp" android:layout_marginEnd="16dp"/>
+    <TextView
+            android:text="@string/part_prefix"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:id="@+id/storable_detail_current_part_prefix"
+            android:textStyle="normal|bold"
+            app:layout_constraintLeft_toLeftOf="@+id/content_storable_detail"
+            android:layout_marginLeft="16dp" android:layout_marginStart="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/storable_detail_language_prefix"
+            android:layout_marginTop="8dp"/>
+    <TextView
+            android:text="@string/file_prefix"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:id="@+id/storable_detail_file_prefix"
+            app:layout_constraintLeft_toLeftOf="@+id/content_storable_detail"
+            android:layout_marginLeft="16dp" android:layout_marginStart="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/storable_detail_current_part_prefix"
+            android:layout_marginTop="16dp"/>
+    <TextView
+            android:text="@string/just_sample"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:id="@+id/storable_detail_file"
+            android:typeface="monospace"
+            app:layout_constraintLeft_toRightOf="@+id/storable_detail_file_prefix"
+            android:layout_marginLeft="8dp" android:layout_marginStart="8dp"
+            app:layout_constraintTop_toTopOf="@+id/storable_detail_file_prefix"
+            app:layout_constraintRight_toRightOf="@+id/content_storable_detail"
+            android:layout_marginRight="16dp" android:layout_marginEnd="16dp"/>
+
 
 </android.support.constraint.ConstraintLayout>

@@ -7,9 +7,11 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.TextView;
 import com.infmme.readilyapp.util.Constants;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -19,6 +21,11 @@ public class StorableDetailActivity extends BaseActivity {
   private Toolbar mToolbar;
   private FloatingActionButton mFab;
   private ImageView mImageView;
+  private TextView mAuthorTextView;
+  private TextView mGenreTextView;
+  private TextView mLanguageTextView;
+  private TextView mCurrentPartTextView;
+  private TextView mFileTextView;
 
   private String mCoverImageUri;
 
@@ -42,6 +49,12 @@ public class StorableDetailActivity extends BaseActivity {
     mToolbar = (Toolbar) findViewById(R.id.toolbar);
     mFab = (FloatingActionButton) findViewById(R.id.fab);
     mImageView = (ImageView) findViewById(R.id.storable_detail_image_view);
+
+    mAuthorTextView = (TextView) findViewById(R.id.storable_detail_author);
+    mGenreTextView = (TextView) findViewById(R.id.storable_detail_genre);
+    mLanguageTextView = (TextView) findViewById(R.id.storable_detail_language);
+    mCurrentPartTextView = (TextView) findViewById(R.id.storable_detail_current_part);
+    mFileTextView = (TextView) findViewById(R.id.storable_detail_file);
   }
 
   protected void setupViews() {
@@ -71,6 +84,12 @@ public class StorableDetailActivity extends BaseActivity {
                scheduleStartPostponedTransition(mImageView);
              }
            });
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.storable_detail, menu);
+    return super.onCreateOptionsMenu(menu);
   }
 
   /**
