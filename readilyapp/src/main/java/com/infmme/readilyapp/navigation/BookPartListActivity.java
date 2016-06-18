@@ -122,12 +122,9 @@ public class BookPartListActivity extends BaseActivity implements
     mProgressBar.setVisibility(View.GONE);
     mToolbar.setTitle(mStorable.getTitle());
 
-    mFab.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        if (mCallback != null) {
-          mCallback.onClick();
-        }
+    mFab.setOnClickListener(view -> {
+      if (mCallback != null) {
+        mCallback.onClick();
       }
     });
     if (mTwoPane) {

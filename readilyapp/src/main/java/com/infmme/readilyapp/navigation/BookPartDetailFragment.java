@@ -11,20 +11,19 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.*;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import com.daimajia.androidanimations.library.BuildConfig;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.readable.Readable;
-import com.infmme.readilyapp.readable.interfaces.Reading;
-import com.infmme.readilyapp.readable.interfaces.AbstractTocReference;
 import com.infmme.readilyapp.readable.fb2.FB2Part;
+import com.infmme.readilyapp.readable.interfaces.AbstractTocReference;
+import com.infmme.readilyapp.readable.interfaces.Reading;
 import com.infmme.readilyapp.reader.TextParser;
 import com.infmme.readilyapp.settings.SettingsBundle;
 import com.infmme.readilyapp.util.Constants;
 import rx.Observable;
-import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 import java.io.IOException;
@@ -43,6 +42,7 @@ public class BookPartDetailFragment extends Fragment implements
 
   private TextView mTitleTextView;
   private TextView mBodyTextView;
+  private ProgressBar mProgressBar;
 
   private boolean mTwoPane = false;
 
@@ -102,57 +102,52 @@ public class BookPartDetailFragment extends Fragment implements
                                            false);
     mTitleTextView = (TextView) rootView.findViewById(
         R.id.bookpart_detail_title);
-    if (mTwoPane) {
-      mTitleTextView.setVisibility(View.VISIBLE);
-    } else {
-      mTitleTextView.setVisibility(View.GONE);
-    }
+    mTitleTextView.setVisibility(View.GONE);
     mBodyTextView = (TextView) rootView.findViewById(R.id.bookpart_detail_body);
+    mBodyTextView.setVisibility(View.GONE);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-      mBodyTextView.setCustomSelectionActionModeCallback(new StartFromHereCallback());
+      mBodyTextView.setCustomSelectionActionModeCallback(
+          new StartFromHereCallback());
     }
 
+    mProgressBar = (ProgressBar) rootView.findViewById(
+        R.id.bookpart_detail_progress_bar);
+    mProgressBar.setVisibility(View.VISIBLE);
+
     if (mItemReference != null) {
-      Observable<ProcessedItem> o = Observable.create(
-          new Observable.OnSubscribe<ProcessedItem>() {
-            @Override
-            public void call(Subscriber<? super ProcessedItem> subscriber) {
-              try {
-                // Loads and caches preview
-                Reading r = new Readable();
-                if (mFilePath != null && mItemReference instanceof FB2Part) {
-                  ((FB2Part) mItemReference).setPath(mFilePath);
-                }
-                r.setText(mItemReference.getPreview());
-                mTextParser = TextParser.newInstance(r, new SettingsBundle(
-                    PreferenceManager.getDefaultSharedPreferences(
-                        getActivity())).getDelayCoefficients());
-                mTextParser.process();
-                subscriber.onNext(
-                    new ProcessedItem(mItemReference.getTitle(), r.getText()));
-                subscriber.onCompleted();
-              } catch (IOException e) {
-                subscriber.onError(e);
-              }
-            }
-          });
+      Observable<ProcessedItem> o = Observable.create(subscriber -> {
+        try {
+          // Loads and caches preview
+          Reading r = new Readable();
+          if (mFilePath != null && mItemReference instanceof FB2Part) {
+            ((FB2Part) mItemReference).setPath(mFilePath);
+          }
+          r.setText(mItemReference.getPreview());
+          mTextParser = TextParser.newInstance(r, new SettingsBundle(
+              PreferenceManager.getDefaultSharedPreferences(
+                  getActivity())).getDelayCoefficients());
+          mTextParser.process();
+          subscriber.onNext(
+              new ProcessedItem(mItemReference.getTitle(), r.getText()));
+          subscriber.onCompleted();
+        } catch (IOException e) {
+          subscriber.onError(e);
+        }
+      });
       o.subscribeOn(Schedulers.newThread())
        .observeOn(AndroidSchedulers.mainThread())
-       .subscribe(new Action1<ProcessedItem>() {
-         @Override
-         public void call(ProcessedItem item) {
-           if (mTwoPane) {
-             mTitleTextView.setText(item.title);
-           }
-           mBodyTextView.setText(item.text);
+       .subscribe(item -> {
+         mProgressBar.setVisibility(View.GONE);
+         if (mTwoPane) {
+           mTitleTextView.setVisibility(View.VISIBLE);
+           mTitleTextView.setText(item.title);
          }
-       }, new Action1<Throwable>() {
-         @Override
-         public void call(Throwable throwable) {
-           throwable.printStackTrace();
-           Snackbar.make(rootView, "Error occurred", Snackbar.LENGTH_SHORT)
-                   .show();
-         }
+         mBodyTextView.setVisibility(View.VISIBLE);
+         mBodyTextView.setText(item.text);
+       }, throwable -> {
+         throwable.printStackTrace();
+         Snackbar.make(rootView, R.string.error_occurred, Snackbar.LENGTH_SHORT)
+                 .show();
        });
     }
 

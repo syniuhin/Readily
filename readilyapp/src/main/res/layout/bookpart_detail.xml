@@ -23,5 +23,11 @@
                   android:textIsSelectable="true"
                   android:text="@string/placeholder_big"
                   android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+        <ProgressBar
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/bookpart_detail_progress_bar"
+                android:layout_gravity="center"/>
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>
