@@ -142,10 +142,12 @@ public class FileListFragment extends Fragment
   }
 
   @Override
-  public void onMoreButton(ImageView imageView, ProgressBar progressBar,
-                           long id, final String coverImageUri) {
+  public void onMoreButton(ImageView imageView,
+                           ProgressBar progressBar,
+                           String title, long id, final String coverImageUri) {
     final Activity a = getActivity();
     Intent intent = new Intent(a, StorableDetailActivity.class);
+    intent.putExtra(Constants.EXTRA_TITLE, title);
     intent.putExtra(Constants.EXTRA_ID, id);
     intent.putExtra(Constants.EXTRA_COVER_IMAGE_URI, coverImageUri);
     Pair<View, String> p1 =

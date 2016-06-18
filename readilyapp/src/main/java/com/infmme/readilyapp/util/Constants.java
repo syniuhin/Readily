@@ -6,6 +6,7 @@ package com.infmme.readilyapp.util;
 public class Constants {
 
   public static final String EXTRA_ID = "id";
+  public static final String EXTRA_TITLE = "Title";
   public static final String EXTRA_PATH = "path";
   public static final String EXTRA_POSITION = "position";
   public static final String EXTRA_TYPE = "source_type";

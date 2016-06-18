@@ -28,6 +28,7 @@ public class StorableDetailActivity extends BaseActivity {
   private TextView mFileTextView;
 
   private String mCoverImageUri;
+  private String mTitle;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,7 @@ public class StorableDetailActivity extends BaseActivity {
 
     Intent i = getIntent();
     mCoverImageUri = i.getStringExtra(Constants.EXTRA_COVER_IMAGE_URI);
+    mTitle = i.getStringExtra(Constants.EXTRA_TITLE);
     setupViews();
   }
 
@@ -58,6 +60,7 @@ public class StorableDetailActivity extends BaseActivity {
   }
 
   protected void setupViews() {
+    mToolbar.setTitle(mTitle);
     setSupportActionBar(mToolbar);
     mFab.setOnClickListener(new View.OnClickListener() {
       @Override
