@@ -109,11 +109,16 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
   }
 
   @Override
-  public void prepareForStoring(Reader reader) {
+  public Storable prepareForStoringSync(Reader reader) {
+    mChunkPercentile = reader.getPercentile();
     // It's already prepared since it's directly loaded into Reader.
+    return this;
+  }
+
+  @Override
+  public void beforeStoringToDb() {
     try {
       storeToFile();
-      mChunkPercentile = reader.getPercentile();
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -163,6 +168,11 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
   public Storable readFromFile() throws IOException {
     throw new IllegalStateException(
         "NetReadable instance can be retrieved only from net!");
+  }
+
+  @Override
+  public void setContext(Context context) {
+    mContext = context;
   }
 
   @Override

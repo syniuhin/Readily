@@ -122,6 +122,11 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.infmme.readilyapp.MainActivity"/>
         </activity>
+
+        <service
+                android:name=".service.StorableService"
+                android:exported="false">
+        </service>
     </application>
 
 </manifest>

@@ -35,6 +35,7 @@ import com.infmme.readilyapp.readable.txt.TxtStorable;
 import com.infmme.readilyapp.readable.type.ReadableType;
 import com.infmme.readilyapp.readable.type.ReadingSource;
 import com.infmme.readilyapp.service.FB2ProcessingService;
+import com.infmme.readilyapp.service.StorableService;
 import com.infmme.readilyapp.settings.SettingsBundle;
 import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.view.OnSwipeTouchListener;
@@ -565,15 +566,9 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
       mReader.performPause();
     }
     if (mStorable != null && mReader != null) {
-      new Thread(new Runnable() {
-        @Override
-        public void run() {
-          mStorable.prepareForStoring(mReader);
-          mStorable.storeToDb();
-        }
-      }).start();
+      mStorable.prepareForStoringSync(mReader);
+      StorableService.startStoring(getActivity(), mStorable);
     }
-    // if ()
 
     mSettingsBundle.updatePreferences();
 

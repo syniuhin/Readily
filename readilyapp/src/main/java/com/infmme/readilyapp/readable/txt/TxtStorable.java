@@ -144,12 +144,16 @@ public class TxtStorable implements Storable, Chunked, Unprocessed {
   }
 
   @Override
-  public void prepareForStoring(Reader reader) {
+  public Storable prepareForStoringSync(Reader reader) {
     if (mLoadedChunks != null && !mLoadedChunks.isEmpty()) {
       mCurrentBytePosition = mLoadedChunks.getFirst().mBytePosition;
       mCurrentTextPosition = reader.getPosition();
     }
+    return this;
   }
+
+  @Override
+  public void beforeStoringToDb() { }
 
   @Override
   public void storeToDb() {
@@ -201,6 +205,11 @@ public class TxtStorable implements Storable, Chunked, Unprocessed {
       e.printStackTrace();
     }
     return this;
+  }
+
+  @Override
+  public void setContext(Context context) {
+    mContext = context;
   }
 
   @Override
@@ -288,7 +297,7 @@ public class TxtStorable implements Storable, Chunked, Unprocessed {
     return id;
   }
 
-  private class ChunkInfo {
+  private class ChunkInfo implements Serializable {
     long mBytePosition;
 
     public ChunkInfo(long bytePosition) {

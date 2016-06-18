@@ -2,8 +2,6 @@ package com.infmme.readilyapp.readable.epub;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookContentValues;
@@ -24,6 +22,7 @@ import nl.siegmann.epublib.epub.EpubReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
@@ -45,8 +44,8 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
    */
   private String mTimeOpened;
 
-  private transient Book mBook;
-  private Metadata mMetadata;
+  private Book mBook;
+  private transient Metadata mMetadata;
 
   // Stored title.
   private String mTitle = null;
@@ -54,14 +53,14 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
 
   private String mCoverImageUri;
   private Integer mCoverImageMean = null;
-  private List<Resource> mContents;
+  private transient List<Resource> mContents;
 
   private Deque<ChunkInfo> mLoadedChunks = new ArrayDeque<>();
-  private List<? extends AbstractTocReference> mTableOfContents = null;
+  private transient List<? extends AbstractTocReference> mTableOfContents = null;
 
-  private transient String mCurrentResourceId;
+  private String mCurrentResourceId;
   private int mCurrentResourceIndex = -1;
-  private transient int mLastResourceIndex = -1;
+  private int mLastResourceIndex = -1;
 
   private int mCurrentTextPosition;
   private double mChunkPercentile = .0;
@@ -161,14 +160,19 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
   }
 
   @Override
-  public void prepareForStoring(Reader reader) {
+  public Storable prepareForStoringSync(Reader reader) {
     if (mLoadedChunks != null && !mLoadedChunks.isEmpty()) {
       mCurrentResourceIndex = mLoadedChunks.getFirst().mResourceIndex;
       mCurrentResourceId = mContents.get(mCurrentResourceIndex).getId();
       mChunkPercentile = reader.getPercentile();
       setCurrentPosition(reader.getPosition());
     }
+    return this;
+  }
 
+  @Override
+  public void beforeStoringToDb() {
+    mContents = mBook.getContents();
     if (coverImageExists() && !isCoverImageStored()) {
       try {
         // TODO: Figure out which thread it belongs to.
@@ -206,7 +210,7 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
       }
       values.putTimeOpened(mTimeOpened);
       values.putPath(mPath);
-      values.putTitle(mMetadata.getFirstTitle());
+      values.putTitle(mTitle);
       values.putCoverImageUri(mCoverImageUri);
       values.putCoverImageMean(mCoverImageMean);
 
@@ -337,6 +341,7 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
       } else {
         mCurrentTextPosition = 0;
         mCurrentResourceId = mContents.get(0).getId();
+        mTitle = mMetadata.getFirstTitle();
       }
       mProcessed = true;
     } catch (IOException e) {
@@ -392,10 +397,6 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
     fos.write(imageBytes);
     fos.close();
     mCoverImageUri = coverImagePath;
-
-    Bitmap bitmap =
-        BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
-    // mCoverImageMean = ColorMatcher.findClosestMaterialColor(bitmap);
     mCoverImageMean = ColorMatcher.pickRandomMaterialColor();
   }
 
@@ -404,7 +405,7 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
         mPath.lastIndexOf('/')) + coverImage.getHref();
   }
 
-  private class ChunkInfo {
+  private class ChunkInfo implements Serializable {
     public int mResourceIndex;
 
     public ChunkInfo(int resourceIndex) {

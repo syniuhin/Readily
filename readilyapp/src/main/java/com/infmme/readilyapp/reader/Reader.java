@@ -98,7 +98,7 @@ public class Reader implements Runnable {
   }
 
   public double getPercentile() {
-    if (mWordList.size() != 0)
+    if (mWordList != null && mWordList.size() != 0)
       return (double) mPosition / mWordList.size();
     return 0;
   }

@@ -29,10 +29,7 @@ import com.infmme.readilyapp.xmlparser.XMLEvent;
 import com.infmme.readilyapp.xmlparser.XMLEventType;
 import com.infmme.readilyapp.xmlparser.XMLParser;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.util.*;
 
@@ -66,16 +63,17 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
   private String mCoverImageUri = null;
   private Integer mCoverImageMean = null;
 
-  private XMLParser mParser;
-  private XMLEvent mCurrentEvent;
-  private XMLEventType mCurrentEventType;
+  private transient XMLParser mParser;
+  private transient XMLEvent mCurrentEvent;
+  private transient XMLEventType mCurrentEventType;
 
   private Deque<ChunkInfo> mLoadedChunks = new ArrayDeque<>();
-  private List<? extends AbstractTocReference> mTableOfContents = null;
+  private transient List<? extends AbstractTocReference> mTableOfContents =
+      null;
 
-  private transient String mCurrentPartId;
+  private String mCurrentPartId;
   private long mCurrentBytePosition = -1;
-  private transient long mLastBytePosition = -1;
+  private long mLastBytePosition = -1;
 
   private int mCurrentTextPosition = -1;
   private double mChunkPercentile = .0;
@@ -241,12 +239,18 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
   }
 
   @Override
-  public void prepareForStoring(Reader reader) {
+  public Storable prepareForStoringSync(Reader reader) {
     if (mLoadedChunks != null && !mLoadedChunks.isEmpty()) {
       mCurrentBytePosition = mLoadedChunks.getFirst().mBytePosition;
       mChunkPercentile = reader.getPercentile();
       setCurrentPosition(reader.getPosition());
     }
+    return this;
+  }
+
+  @Override
+  public void beforeStoringToDb() {
+    // All the logic done by FB2ProcessingService.
   }
 
   /**
@@ -395,6 +399,11 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
     mParser = new XMLParser();
     mParser.setInput(inputStream, encoding);
     return this;
+  }
+
+  @Override
+  public void setContext(Context context) {
+    mContext = context;
   }
 
   @Override
@@ -722,7 +731,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
         (nextBytePosition - mCurrentBytePosition) / mFileSize;
   }
 
-  private class ChunkInfo {
+  private class ChunkInfo implements Serializable {
     String mSectionId;
     long mBytePosition;
 

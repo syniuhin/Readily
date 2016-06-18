@@ -2,13 +2,14 @@ package com.infmme.readilyapp.readable;
 
 import com.infmme.readilyapp.readable.interfaces.Reading;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created with love, by infm dated on 6/8/16.
  */
 
-public class Readable implements Reading {
+public class Readable implements Reading, Serializable {
   protected String mText;
   private StringBuilder mTextBuilder;
 
