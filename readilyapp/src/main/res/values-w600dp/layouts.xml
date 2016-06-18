@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="has_two_panes">false</bool>
+    <item type="layout" name="cache_list">@layout/cache_list_staggered2</item>
+</resources>

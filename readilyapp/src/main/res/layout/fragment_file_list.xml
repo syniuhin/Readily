@@ -1,28 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-    <android.support.v7.widget.RecyclerView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/cache_list"
-            android:scrollbars="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layoutManager="LinearLayoutManager"/>
-
-<!--
-    <TextView
-            android:id="@+id/text_view_empty"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:text="@string/list_empty_view"
-            android:textIsSelectable="false"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/secondary_text_dark"/>
--->
+    <include layout="@layout/cache_list"/>
+    <!--
+        <TextView
+                android:id="@+id/text_view_empty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="@string/list_empty_view"
+                android:textIsSelectable="false"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/secondary_text_dark"/>
+    -->
 
 </RelativeLayout>

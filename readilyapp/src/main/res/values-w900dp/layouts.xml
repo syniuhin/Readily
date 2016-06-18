@@ -2,5 +2,6 @@
 <resources>
     <item type="layout" name="bookpart_list">@layout/bookpart_list_twopane
     </item>
+    <item type="layout" name="cache_list">@layout/cache_list_staggered3</item>
     <bool name="has_two_panes">true</bool>
 </resources>

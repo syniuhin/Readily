@@ -67,6 +67,7 @@ public class CachedBooksAdapter
       holder.mNavigateButton.setVisibility(View.GONE);
     }
 
+    // TODO: Figure out jodatime issue.
     LocalDateTime timeOpened = LocalDateTime.parse(bookCursor.getTimeOpened());
     // TODO: Add options for 'Today', 'Yesterday' etc.
     String strTimeOpened = timeOpened.toString(
