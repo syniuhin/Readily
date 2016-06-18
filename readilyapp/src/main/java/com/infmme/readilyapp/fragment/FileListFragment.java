@@ -28,6 +28,11 @@ import com.infmme.readilyapp.readable.type.ReadableType;
 import com.infmme.readilyapp.readable.type.ReadingSource;
 import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.view.adapter.CachedBooksAdapter;
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 public class FileListFragment extends Fragment
     implements LoaderManager.LoaderCallbacks<Cursor>,
@@ -37,6 +42,8 @@ public class FileListFragment extends Fragment
 
   // private TextView mTextViewEmpty;
   private RecyclerView mRecyclerView;
+
+  private CompositeSubscription mCompositeSubscription;
 
   public FileListFragment() {}
 
@@ -53,6 +60,15 @@ public class FileListFragment extends Fragment
     super.onActivityCreated(savedInstanceState);
     initViews();
     getLoaderManager().initLoader(0, null, this);
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    if (mCompositeSubscription != null &&
+        mCompositeSubscription.hasSubscriptions()) {
+      mCompositeSubscription.unsubscribe();
+    }
   }
 
   private void findViews(ViewGroup v) {
@@ -91,25 +107,16 @@ public class FileListFragment extends Fragment
   public void onItem(final long id) {
     final Activity activity = getActivity();
     if (activity != null) {
-      new Thread(new Runnable() {
-        @Override
-        public void run() {
-          CachedBookCursor bookCursor = findCachedBook(activity, id);
-          if (bookCursor.moveToFirst()) {
-            final String path = bookCursor.getPath();
-            final ReadableType type = inferReadableType(bookCursor);
-            activity.runOnUiThread(new Runnable() {
-              @Override
-              public void run() {
+      addSubscription(
+          findCachedBook(activity, id)
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(bookCursor -> {
+                final String path = bookCursor.getPath();
+                final ReadableType type = inferReadableType(bookCursor);
                 ReceiverActivity.startReceiverActivity(
                     activity, type, ReadingSource.CACHE, path);
-              }
-            });
-          }
-
-          bookCursor.close();
-        }
-      }).start();
+                bookCursor.close();
+              }));
     }
   }
 
@@ -117,27 +124,16 @@ public class FileListFragment extends Fragment
   public void onNavigateButton(final long id) {
     final Activity activity = getActivity();
     if (activity != null) {
-      new Thread(new Runnable() {
-        @Override
-        public void run() {
-          CachedBookCursor bookCursor = findCachedBook(activity, id);
-          if (bookCursor.moveToFirst()) {
-            final String path = bookCursor.getPath();
-            final ReadableType type = inferReadableType(bookCursor);
-            activity.runOnUiThread(new Runnable() {
-              @Override
-              public void run() {
-                Intent i = new Intent(activity, BookPartListActivity.class);
-                i.putExtra(Constants.EXTRA_PATH, path);
-                i.putExtra(Constants.EXTRA_TYPE, type.name());
-                startActivity(i);
-              }
-            });
-          }
-
-          bookCursor.close();
-        }
-      }).start();
+      addSubscription(
+          findCachedBook(activity, id)
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(bookCursor -> {
+                final String path = bookCursor.getPath();
+                final ReadableType type = inferReadableType(bookCursor);
+                BookPartListActivity.startBookPartListActivity(
+                    activity, type, path);
+                bookCursor.close();
+              }));
     }
   }
 
@@ -150,23 +146,32 @@ public class FileListFragment extends Fragment
     intent.putExtra(Constants.EXTRA_TITLE, title);
     intent.putExtra(Constants.EXTRA_ID, id);
     intent.putExtra(Constants.EXTRA_COVER_IMAGE_URI, coverImageUri);
-    Pair<View, String> p1 =
-        Pair.create(
-            (View) imageView,
-            a.getResources()
-             .getString(R.string.storable_detail_transition_image_view));
+    Pair<View, String> p1 = Pair.create(imageView, a.getResources().getString(
+        R.string.storable_detail_transition_image_view));
     ActivityOptionsCompat options =
         ActivityOptionsCompat.makeSceneTransitionAnimation(a, p1);
     startActivity(intent, options.toBundle());
   }
 
-  private CachedBookCursor findCachedBook(final Context context, long id) {
-    CachedBookSelection where = new CachedBookSelection();
-    where.id(id);
-    Cursor c = context.getContentResolver().query(
-        CachedBookColumns.CONTENT_URI, CachedBookColumns.ALL_COLUMNS,
-        where.sel(), where.args(), null);
-    return new CachedBookCursor(c);
+  private Observable<CachedBookCursor> findCachedBook(
+      final Context context, long id) {
+    Observable<CachedBookCursor> res = Observable.create(subscriber -> {
+      CachedBookSelection where = new CachedBookSelection();
+      where.id(id);
+      Cursor c = context.getContentResolver().query(
+          CachedBookColumns.CONTENT_URI, CachedBookColumns.ALL_COLUMNS,
+          where.sel(), where.args(), null);
+      CachedBookCursor bookCursor = new CachedBookCursor(c);
+      if (bookCursor.moveToFirst()) {
+        subscriber.onNext(bookCursor);
+        subscriber.onCompleted();
+      } else {
+        subscriber.onError(new IllegalArgumentException(
+            String.format("CachedBook with a given id: %d not found.", id)));
+      }
+    });
+    res.subscribeOn(Schedulers.io());
+    return res;
   }
 
   private ReadableType inferReadableType(final CachedBookCursor bookCursor) {
@@ -179,5 +184,12 @@ public class FileListFragment extends Fragment
     }
     throw new IllegalStateException(
         "Integrity violation: can't infer ReadableType.");
+  }
+
+  private void addSubscription(Subscription s) {
+    if (mCompositeSubscription == null) {
+      mCompositeSubscription = new CompositeSubscription();
+    }
+    mCompositeSubscription.add(s);
   }
 }

@@ -1,6 +1,7 @@
 package com.infmme.readilyapp.navigation;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -30,7 +31,6 @@ import com.infmme.readilyapp.view.adapter.BookNavigationAdapter;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 import java.util.ArrayList;
@@ -68,6 +68,16 @@ public class BookPartListActivity extends BaseActivity implements
   private ProgressBar mProgressBar;
 
   private OnFabClickListener mCallback = null;
+
+  public static void startBookPartListActivity(
+      Context context, ReadableType intentType, String intentPath) {
+    Intent intent = new Intent(context, BookPartListActivity.class);
+
+    intent.putExtra(Constants.EXTRA_PATH, intentPath);
+    intent.putExtra(Constants.EXTRA_TYPE, intentType.name());
+
+    context.startActivity(intent);
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -231,14 +241,9 @@ public class BookPartListActivity extends BaseActivity implements
         tocObservable.subscribeOn(Schedulers.newThread())
                      .observeOn(AndroidSchedulers.mainThread())
                      .subscribe(
-                         new Action1<List<? extends AbstractTocReference>>() {
-                           @Override
-                           public void call(
-                               List<? extends AbstractTocReference>
-                                   abstractTocReferences) {
-                             mTocReferenceList = abstractTocReferences;
-                             setupViews();
-                           }
+                         abstractTocReferences -> {
+                           mTocReferenceList = abstractTocReferences;
+                           setupViews();
                          }));
   }
 
