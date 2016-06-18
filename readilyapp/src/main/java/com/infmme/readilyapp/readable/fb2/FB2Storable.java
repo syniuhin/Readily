@@ -41,8 +41,7 @@ import static com.infmme.readilyapp.readable.Utils.guessCharset;
  * Class to handle .fb2
  */
 // TODO: Refactor parsing flow.
-public class FB2Storable implements Storable, Chunked, Unprocessed,
-    Structured {
+public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
 
   private static final int BUFFER_SIZE = 4096;
 

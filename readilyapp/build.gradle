@@ -7,14 +7,17 @@ buildscript {
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '23.0.3'
+    compileSdkVersion 24
+    buildToolsVersion '24-rc4'
     defaultConfig {
         applicationId "com.infmme.readilyapp"
         minSdkVersion 9
-        targetSdkVersion 23
+        targetSdkVersion 24
         versionCode 7
-        versionName "2.0"
+        versionName "1.2"
+        jackOptions {
+            enabled true
+        }
     }
     buildTypes {
         release {
@@ -39,6 +42,10 @@ android {
         htmlReport true
         // optional path to report (default will be lint-results.html in the builddir)
         htmlOutput file("lint-report.html")
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 

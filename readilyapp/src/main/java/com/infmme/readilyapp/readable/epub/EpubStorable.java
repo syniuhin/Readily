@@ -33,8 +33,7 @@ import static com.infmme.readilyapp.readable.epub.EpubPart.parseRawText;
  * Created with love, by infm dated on 6/8/16.
  */
 
-public class EpubStorable implements Storable, Chunked, Unprocessed,
-    Structured {
+public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
   private String mPath;
   private long mFileSize;
 

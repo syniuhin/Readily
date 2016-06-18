@@ -10,10 +10,7 @@ import com.infmme.readilyapp.provider.cachedbook.CachedBookSelection;
 import com.infmme.readilyapp.provider.txtbook.TxtBookContentValues;
 import com.infmme.readilyapp.provider.txtbook.TxtBookSelection;
 import com.infmme.readilyapp.readable.Readable;
-import com.infmme.readilyapp.readable.interfaces.Chunked;
-import com.infmme.readilyapp.readable.interfaces.Reading;
-import com.infmme.readilyapp.readable.interfaces.Storable;
-import com.infmme.readilyapp.readable.interfaces.Unprocessed;
+import com.infmme.readilyapp.readable.interfaces.*;
 import com.infmme.readilyapp.reader.Reader;
 
 import java.io.*;
@@ -26,7 +23,7 @@ import static com.infmme.readilyapp.readable.Utils.guessCharset;
  * Created with love, by infm dated on 6/15/16.
  */
 
-public class TxtStorable implements Storable, Chunked, Unprocessed {
+public class TxtStorable implements ChunkedUnprocessedStorable {
 
   private static final int BUFFER_SIZE = 4096;
   private static final int CHAR_BUFFER_SIZE = BUFFER_SIZE / 2;

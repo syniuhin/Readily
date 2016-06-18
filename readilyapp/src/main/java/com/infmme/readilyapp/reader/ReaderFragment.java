@@ -29,6 +29,7 @@ import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.readable.epub.EpubStorable;
 import com.infmme.readilyapp.readable.fb2.FB2Storable;
 import com.infmme.readilyapp.readable.interfaces.Chunked;
+import com.infmme.readilyapp.readable.interfaces.ChunkedUnprocessedStorable;
 import com.infmme.readilyapp.readable.interfaces.Reading;
 import com.infmme.readilyapp.readable.interfaces.Storable;
 import com.infmme.readilyapp.readable.txt.TxtStorable;
@@ -40,6 +41,11 @@ import com.infmme.readilyapp.settings.SettingsBundle;
 import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.view.OnSwipeTouchListener;
 import org.joda.time.LocalDateTime;
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 import java.io.IOException;
 import java.util.List;
@@ -106,6 +112,8 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
 
   private ReaderFragmentCallback mCallback;
 
+  private CompositeSubscription mCompositeSubscription;
+
   @Override
   public void onAttach(Context context) {
     super.onAttach(context);
@@ -146,6 +154,39 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
     setReaderFontSize();
 
     handleArgs(mArgs);
+  }
+
+  @Override
+  public void onStop() {
+    if (mReader != null && !mReader.isPaused()) {
+      mReader.performPause();
+    }
+    if (mStorable != null && mReader != null) {
+      mStorable.prepareForStoringSync(mReader);
+      StorableService.startStoring(getActivity(), mStorable);
+    }
+
+    mSettingsBundle.updatePreferences();
+
+    if (mReader != null) {
+      mReader.setCompleted(true);
+    } else if (mReadingThread != null && mReadingThread.isAlive()) {
+      // We fail to initialize mReader, so at least stop reading thread.
+      mReadingThread.interrupt();
+    }
+    if (mCallback != null) {
+      mCallback.stop();
+    }
+    super.onStop();
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    if (mCompositeSubscription != null &&
+        mCompositeSubscription.hasSubscriptions()) {
+      mCompositeSubscription.unsubscribe();
+    }
   }
 
   public void onSwipeTop() {
@@ -560,30 +601,6 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
     return mReader == null || !mReader.isCompleted();
   }
 
-  @Override
-  public void onStop() {
-    if (mReader != null && !mReader.isPaused()) {
-      mReader.performPause();
-    }
-    if (mStorable != null && mReader != null) {
-      mStorable.prepareForStoringSync(mReader);
-      StorableService.startStoring(getActivity(), mStorable);
-    }
-
-    mSettingsBundle.updatePreferences();
-
-    if (mReader != null) {
-      mReader.setCompleted(true);
-    } else if (mReadingThread != null && mReadingThread.isAlive()) {
-      // We fail to initialize mReader, so at least stop reading thread.
-      mReadingThread.interrupt();
-    }
-    if (mCallback != null) {
-      mCallback.stop();
-    }
-    super.onStop();
-  }
-
   //it's very unflexible, TODO: fix it later
   @Override
   public void onConfigurationChanged(Configuration newConfig) {
@@ -638,32 +655,28 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
         !TextUtils.isEmpty(
             link = TextParser.findLink(TextParser.compilePattern(),
                                        intentText))) {
-      final NetReadable netReadable = new NetReadable(getActivity(), link);
-      new Thread(new Runnable() {
-        @Override
-        public void run() {
-          netReadable.process();
-          if (netReadable.isProcessed()) {
-            mReading = netReadable;
-            mStorable = netReadable;
-            getActivity().runOnUiThread(new Runnable() {
-              @Override
-              public void run() {
-                startSingleReadingFlow();
-              }
-            });
-          } else {
-            getActivity().runOnUiThread(new Runnable() {
-              @Override
-              public void run() {
-                stopShowingProgress();
-                showNotification("Error occurred");
-                mReader.setCompleted(true);
-              }
-            });
-          }
-        }
-      }).start();
+      final NetReadable netReadable =
+          new NetReadable(getActivity(), link);
+      Observable<NetReadable> o = Observable.create(
+          subscriber -> {
+            netReadable.process();
+            subscriber.onNext(netReadable);
+          });
+      addSubscription(
+          o.subscribeOn(Schedulers.io())
+           .observeOn(AndroidSchedulers.mainThread())
+           .subscribe(nr -> {
+             if (nr.isProcessed()) {
+               mReading = nr;
+               mStorable = nr;
+               startSingleReadingFlow();
+             } else {
+               stopShowingProgress();
+               showNotification(R.string.error_occurred);
+               mReader.setCompleted(true);
+             }
+           })
+      );
     } else {
       mReading = new Readable(); //neutral value
       mReading.setText(intentText);
@@ -672,90 +685,48 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
   }
 
   private void handleCacheSource(Bundle args) {
-    String stringType = args.getString(Constants.EXTRA_TYPE);
+    final String stringType = args.getString(Constants.EXTRA_TYPE);
+    final String path = args.getString(Constants.EXTRA_PATH);
     if (stringType != null) {
+      final ChunkedUnprocessedStorable cus;
       switch (ReadableType.valueOf(stringType)) {
         case EPUB:
-          final EpubStorable epubStorable =
-              new EpubStorable(getActivity(), LocalDateTime.now().toString());
-          epubStorable.setPath(args.getString(Constants.EXTRA_PATH));
-          // TODO: Terminate this and other threads according to lifecycle.
-          // TODO: Probably switch to RxAndroid's observables.
-          new Thread(new Runnable() {
-            @Override
-            public void run() {
-              epubStorable.process();
-              if (epubStorable.isProcessed()) {
-                mChunked = epubStorable;
-                mStorable = epubStorable;
-                getActivity().runOnUiThread(
-                    new Runnable() {
-                      @Override
-                      public void run() {
-                        startChunkedReadingFlow(
-                            epubStorable.getCurrentPosition());
-                      }
-                    });
-              }
-            }
-          }).start();
+          cus = new EpubStorable(getActivity(), LocalDateTime.now().toString());
           break;
-        case FB2: {
-          String path = args.getString(Constants.EXTRA_PATH);
-          if (path != null) {
-            final FB2Storable fb2Storable =
-                new FB2Storable(getActivity(), LocalDateTime.now().toString());
-            fb2Storable.setPath(path);
-            startFb2ProcessingService(path);
-            // TODO: Terminate this and other threads according to lifecycle.
-            // TODO: Probably switch to RxAndroid's observables.
-            new Thread(new Runnable() {
-              @Override
-              public void run() {
-                fb2Storable.process();
-                if (fb2Storable.isProcessed()) {
-                  mChunked = fb2Storable;
-                  mStorable = fb2Storable;
-                  getActivity().runOnUiThread(
-                      new Runnable() {
-                        @Override
-                        public void run() {
-                          startChunkedReadingFlow(
-                              fb2Storable.getCurrentPosition());
-                        }
-                      });
-                }
-              }
-            }).start();
-          }
-        }
-        break;
+        case FB2:
+          cus = new FB2Storable(getActivity(), LocalDateTime.now().toString());
+          startFb2ProcessingService(path);
+          break;
         case TXT:
-          final TxtStorable txtStorable =
-              new TxtStorable(getActivity(), LocalDateTime.now().toString());
-          txtStorable.setPath(args.getString(Constants.EXTRA_PATH));
-          // TODO: Terminate this and other threads according to lifecycle.
-          // TODO: Probably switch to RxAndroid's observables.
-          new Thread(new Runnable() {
-            @Override
-            public void run() {
-              txtStorable.process();
-              if (txtStorable.isProcessed()) {
-                mChunked = txtStorable;
-                mStorable = txtStorable;
-                getActivity().runOnUiThread(
-                    new Runnable() {
-                      @Override
-                      public void run() {
-                        startChunkedReadingFlow(
-                            txtStorable.getPosition());
-                      }
-                    });
-              }
-            }
-          }).start();
+          cus = new TxtStorable(getActivity(), LocalDateTime.now().toString());
           break;
+        default:
+          throw new IllegalArgumentException("Unsupported cache source.");
       }
+      cus.setPath(path);
+      Observable<ChunkedUnprocessedStorable> processingObservable =
+          Observable.create(subscriber -> {
+            cus.process();
+            subscriber.onNext(cus);
+            subscriber.onCompleted();
+          });
+      addSubscription(
+          processingObservable
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(x -> {
+                if (x.isProcessed()) {
+                  mChunked = x;
+                  mStorable = x;
+                  // TODO: Fix this after fix of the model.
+                  startChunkedReadingFlow(0);
+                } else {
+                  stopShowingProgress();
+                  showNotification(R.string.error_occurred);
+                  mReader.setCompleted(true);
+                }
+              })
+      );
     } else {
       throw new IllegalStateException(
           "Cache source can't be processed without an explicitly set type!");
@@ -793,6 +764,13 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
     Intent intent = new Intent(a, FB2ProcessingService.class);
     intent.putExtra(Constants.EXTRA_PATH, path);
     a.startService(intent);
+  }
+
+  private void addSubscription(Subscription s) {
+    if (mCompositeSubscription == null) {
+      mCompositeSubscription = new CompositeSubscription();
+    }
+    mCompositeSubscription.add(s);
   }
 
   public interface ReaderFragmentCallback {

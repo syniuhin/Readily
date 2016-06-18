@@ -53,10 +53,6 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
   public void process() {
     try {
       setText(parseArticle(mLink));
-      if (mImageUrl != null) {
-        // WTF? Why is it blocking? TODO: Make it async wisely.
-        fetchCoverImage();
-      }
       mProcessed = true;
     } catch (Exception e) {
       mProcessed = false;
@@ -119,6 +115,7 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
   public void beforeStoringToDb() {
     try {
       storeToFile();
+      fetchCoverImage();
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -128,13 +125,8 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
   public void storeToDb() {
     CachedBookContentValues values = new CachedBookContentValues();
     if (hasCoverImage()) {
-      try {
-        fetchCoverImage();
-        values.putCoverImageUri(getCoverImagePath());
-        values.putCoverImageMean(mCoverImageMean);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      values.putCoverImageUri(getCoverImagePath());
+      values.putCoverImageMean(mCoverImageMean);
     }
     values.putPercentile(mChunkPercentile);
 

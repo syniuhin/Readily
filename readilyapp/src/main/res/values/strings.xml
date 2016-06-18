@@ -63,6 +63,7 @@
     <string name="language_prefix">Language:</string>
     <string name="part_prefix">Current part:</string>
     <string name="file_prefix">File:</string>
+    <string name="error_occurred">Error occurred</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Read a text from the clipboard</string>
