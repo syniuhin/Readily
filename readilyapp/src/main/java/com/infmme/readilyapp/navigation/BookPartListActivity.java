@@ -23,6 +23,7 @@ import com.infmme.readilyapp.readable.interfaces.AbstractTocReference;
 import com.infmme.readilyapp.readable.interfaces.Storable;
 import com.infmme.readilyapp.readable.interfaces.Structured;
 import com.infmme.readilyapp.readable.type.ReadableType;
+import com.infmme.readilyapp.service.StorableService;
 import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.view.FabOnScrollBehavior;
 import com.infmme.readilyapp.view.adapter.BookNavigationAdapter;
@@ -273,18 +274,7 @@ public class BookPartListActivity extends BaseActivity implements
   public void chooseItem(AbstractTocReference tocReference, int textPosition) {
     mStructured.setCurrentTocReference(tocReference);
     mStructured.setCurrentPosition(textPosition);
-    final Activity activity = this;
-    new Thread(new Runnable() {
-      @Override
-      public void run() {
-        mStorable.storeToDb();
-        activity.runOnUiThread(new Runnable() {
-          @Override
-          public void run() {
-            finish();
-          }
-        });
-      }
-    }).start();
+    StorableService.startStoring(this, mStorable);
+    finish();
   }
 }

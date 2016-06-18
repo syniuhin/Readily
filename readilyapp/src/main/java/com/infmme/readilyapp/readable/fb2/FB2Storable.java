@@ -68,8 +68,7 @@ public class FB2Storable implements Storable, Chunked, Unprocessed,
   private transient XMLEventType mCurrentEventType;
 
   private Deque<ChunkInfo> mLoadedChunks = new ArrayDeque<>();
-  private transient List<? extends AbstractTocReference> mTableOfContents =
-      null;
+  private List<? extends AbstractTocReference> mTableOfContents = null;
 
   private String mCurrentPartId;
   private long mCurrentBytePosition = -1;

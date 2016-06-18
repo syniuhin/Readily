@@ -56,7 +56,7 @@ public class EpubStorable implements Storable, Chunked, Unprocessed,
   private transient List<Resource> mContents;
 
   private Deque<ChunkInfo> mLoadedChunks = new ArrayDeque<>();
-  private transient List<? extends AbstractTocReference> mTableOfContents = null;
+  private List<? extends AbstractTocReference> mTableOfContents = null;
 
   private String mCurrentResourceId;
   private int mCurrentResourceIndex = -1;
