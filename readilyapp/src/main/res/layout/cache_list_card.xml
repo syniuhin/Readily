@@ -31,7 +31,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="4dp"
                     android:id="@+id/cache_list_card_progress"
-                    android:transitionName="@string/storable_detail_transition_progress_bar"
                     android:background="@android:color/transparent"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentLeft="true"

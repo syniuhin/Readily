@@ -4,6 +4,8 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
@@ -18,9 +20,12 @@ import com.squareup.picasso.Picasso;
 
 public class StorableDetailActivity extends BaseActivity {
 
+  private CollapsingToolbarLayout mCollapsingToolbarLayout;
+  private AppBarLayout mAppBarLayout;
   private Toolbar mToolbar;
   private FloatingActionButton mFab;
   private ImageView mImageView;
+  private TextView mTitleTextView;
   private TextView mAuthorTextView;
   private TextView mGenreTextView;
   private TextView mLanguageTextView;
@@ -29,6 +34,8 @@ public class StorableDetailActivity extends BaseActivity {
 
   private String mCoverImageUri;
   private String mTitle;
+
+  private String mAppBarTitle;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -48,20 +55,49 @@ public class StorableDetailActivity extends BaseActivity {
 
   @Override
   protected void findViews() {
+    mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+    mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(
+        R.id.toolbar_layout);
     mToolbar = (Toolbar) findViewById(R.id.toolbar);
     mFab = (FloatingActionButton) findViewById(R.id.fab);
     mImageView = (ImageView) findViewById(R.id.storable_detail_image_view);
 
+    mTitleTextView = (TextView) findViewById(R.id.storable_detail_title);
     mAuthorTextView = (TextView) findViewById(R.id.storable_detail_author);
     mGenreTextView = (TextView) findViewById(R.id.storable_detail_genre);
     mLanguageTextView = (TextView) findViewById(R.id.storable_detail_language);
-    mCurrentPartTextView = (TextView) findViewById(R.id.storable_detail_current_part);
+    mCurrentPartTextView = (TextView) findViewById(
+        R.id.storable_detail_current_part);
     mFileTextView = (TextView) findViewById(R.id.storable_detail_file);
   }
 
   protected void setupViews() {
-    mToolbar.setTitle(mTitle);
+    mToolbar.setTitle("");
     setSupportActionBar(mToolbar);
+
+    mTitleTextView.setText(mTitle);
+
+    mAppBarTitle = getResources().getString(R.string.storable_detail_title);
+    mAppBarLayout.addOnOffsetChangedListener(
+        new AppBarLayout.OnOffsetChangedListener() {
+          boolean isShow = false;
+          int scrollRange = -1;
+
+          @Override
+          public void onOffsetChanged(AppBarLayout appBarLayout,
+                                      int verticalOffset) {
+            if (scrollRange == -1) {
+              scrollRange = appBarLayout.getTotalScrollRange();
+            }
+            if (scrollRange + verticalOffset == 0) {
+              mCollapsingToolbarLayout.setTitle(mAppBarTitle);
+              isShow = true;
+            } else if (isShow) {
+              mCollapsingToolbarLayout.setTitle("");
+              isShow = false;
+            }
+          }
+        });
     mFab.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {

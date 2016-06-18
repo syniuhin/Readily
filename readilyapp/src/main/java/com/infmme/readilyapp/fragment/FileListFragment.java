@@ -155,13 +155,8 @@ public class FileListFragment extends Fragment
             (View) imageView,
             a.getResources()
              .getString(R.string.storable_detail_transition_image_view));
-    Pair<View, String> p2 =
-        Pair.create(
-            (View) progressBar,
-            a.getResources()
-             .getString(R.string.storable_detail_transition_progress_bar));
     ActivityOptionsCompat options =
-        ActivityOptionsCompat.makeSceneTransitionAnimation(a, p1, p2);
+        ActivityOptionsCompat.makeSceneTransitionAnimation(a, p1);
     startActivity(intent, options.toBundle());
   }
 

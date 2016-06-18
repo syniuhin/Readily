@@ -115,7 +115,7 @@
 
         <activity
                 android:name=".StorableDetailActivity"
-                android:label="@string/title_activity_storable_detail"
+                android:label="@string/storable_detail_title"
                 android:parentActivityName=".MainActivity"
                 android:theme="@style/AppTheme.NoActionBar">
             <meta-data
