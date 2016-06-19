@@ -24,6 +24,12 @@ public class Fb2BookColumns implements BaseColumns {
   public static final String FULLY_PROCESSED = "fully_processed";
 
   /**
+   * Tells if processing of this record was failed.
+   */
+  public static final String FULLY_PROCESSING_SUCCESS =
+      "fully_processing_success";
+
+  /**
    * Byte position of block in a file, either FB2Part or simple chunk read
    * continuously.
    */
@@ -33,12 +39,6 @@ public class Fb2BookColumns implements BaseColumns {
    * Id of a fb2part, from which last read was made.
    */
   public static final String CURRENT_PART_ID = "current_part_id";
-
-  /**
-   * Title of a fb2part, from which last read was made. May be null because
-   * of async processing.
-   */
-  public static final String CURRENT_PART_TITLE = "current_part_title";
 
   /**
    * Path to .json cache of a table of contents.
@@ -52,9 +52,9 @@ public class Fb2BookColumns implements BaseColumns {
   public static final String[] ALL_COLUMNS = new String[] {
       _ID,
       FULLY_PROCESSED,
+      FULLY_PROCESSING_SUCCESS,
       BYTE_POSITION,
       CURRENT_PART_ID,
-      CURRENT_PART_TITLE,
       PATH_TOC
   };
   // @formatter:on
@@ -64,11 +64,11 @@ public class Fb2BookColumns implements BaseColumns {
     for (String c : projection) {
       if (c.equals(FULLY_PROCESSED) || c.contains("." + FULLY_PROCESSED))
         return true;
+      if (c.equals(FULLY_PROCESSING_SUCCESS) || c.contains(
+          "." + FULLY_PROCESSING_SUCCESS)) return true;
       if (c.equals(BYTE_POSITION) || c.contains("." + BYTE_POSITION))
         return true;
       if (c.equals(CURRENT_PART_ID) || c.contains("." + CURRENT_PART_ID))
-        return true;
-      if (c.equals(CURRENT_PART_TITLE) || c.contains("." + CURRENT_PART_TITLE))
         return true;
       if (c.equals(PATH_TOC) || c.contains("." + PATH_TOC)) return true;
     }

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import com.infmme.readilyapp.provider.base.AbstractSelection;
+import com.infmme.readilyapp.provider.cachedbookinfo.CachedBookInfoColumns;
 import com.infmme.readilyapp.provider.epubbook.EpubBookColumns;
 import com.infmme.readilyapp.provider.fb2book.Fb2BookColumns;
 import com.infmme.readilyapp.provider.txtbook.TxtBookColumns;
@@ -449,49 +450,6 @@ public class CachedBookSelection
     return this;
   }
 
-  public CachedBookSelection epubBookCurrentResourceTitle(String... value) {
-    addEquals(EpubBookColumns.CURRENT_RESOURCE_TITLE, value);
-    return this;
-  }
-
-  public CachedBookSelection epubBookCurrentResourceTitleNot(String... value) {
-    addNotEquals(EpubBookColumns.CURRENT_RESOURCE_TITLE, value);
-    return this;
-  }
-
-  public CachedBookSelection epubBookCurrentResourceTitleLike(String... value) {
-    addLike(EpubBookColumns.CURRENT_RESOURCE_TITLE, value);
-    return this;
-  }
-
-  public CachedBookSelection epubBookCurrentResourceTitleContains(
-      String... value) {
-    addContains(EpubBookColumns.CURRENT_RESOURCE_TITLE, value);
-    return this;
-  }
-
-  public CachedBookSelection epubBookCurrentResourceTitleStartsWith(
-      String... value) {
-    addStartsWith(EpubBookColumns.CURRENT_RESOURCE_TITLE, value);
-    return this;
-  }
-
-  public CachedBookSelection epubBookCurrentResourceTitleEndsWith(
-      String... value) {
-    addEndsWith(EpubBookColumns.CURRENT_RESOURCE_TITLE, value);
-    return this;
-  }
-
-  public CachedBookSelection orderByEpubBookCurrentResourceTitle(boolean desc) {
-    orderBy(EpubBookColumns.CURRENT_RESOURCE_TITLE, desc);
-    return this;
-  }
-
-  public CachedBookSelection orderByEpubBookCurrentResourceTitle() {
-    orderBy(EpubBookColumns.CURRENT_RESOURCE_TITLE, false);
-    return this;
-  }
-
   public CachedBookSelection fb2BookId(Long... value) {
     addEquals(CachedBookColumns.FB2_BOOK_ID, value);
     return this;
@@ -544,6 +502,22 @@ public class CachedBookSelection
 
   public CachedBookSelection orderByFb2BookFullyProcessed() {
     orderBy(Fb2BookColumns.FULLY_PROCESSED, false);
+    return this;
+  }
+
+  public CachedBookSelection fb2BookFullyProcessingSuccess(Boolean value) {
+    addEquals(Fb2BookColumns.FULLY_PROCESSING_SUCCESS, toObjectArray(value));
+    return this;
+  }
+
+  public CachedBookSelection orderByFb2BookFullyProcessingSuccess(
+      boolean desc) {
+    orderBy(Fb2BookColumns.FULLY_PROCESSING_SUCCESS, desc);
+    return this;
+  }
+
+  public CachedBookSelection orderByFb2BookFullyProcessingSuccess() {
+    orderBy(Fb2BookColumns.FULLY_PROCESSING_SUCCESS, false);
     return this;
   }
 
@@ -624,47 +598,6 @@ public class CachedBookSelection
 
   public CachedBookSelection orderByFb2BookCurrentPartId() {
     orderBy(Fb2BookColumns.CURRENT_PART_ID, false);
-    return this;
-  }
-
-  public CachedBookSelection fb2BookCurrentPartTitle(String... value) {
-    addEquals(Fb2BookColumns.CURRENT_PART_TITLE, value);
-    return this;
-  }
-
-  public CachedBookSelection fb2BookCurrentPartTitleNot(String... value) {
-    addNotEquals(Fb2BookColumns.CURRENT_PART_TITLE, value);
-    return this;
-  }
-
-  public CachedBookSelection fb2BookCurrentPartTitleLike(String... value) {
-    addLike(Fb2BookColumns.CURRENT_PART_TITLE, value);
-    return this;
-  }
-
-  public CachedBookSelection fb2BookCurrentPartTitleContains(String... value) {
-    addContains(Fb2BookColumns.CURRENT_PART_TITLE, value);
-    return this;
-  }
-
-  public CachedBookSelection fb2BookCurrentPartTitleStartsWith(
-      String... value) {
-    addStartsWith(Fb2BookColumns.CURRENT_PART_TITLE, value);
-    return this;
-  }
-
-  public CachedBookSelection fb2BookCurrentPartTitleEndsWith(String... value) {
-    addEndsWith(Fb2BookColumns.CURRENT_PART_TITLE, value);
-    return this;
-  }
-
-  public CachedBookSelection orderByFb2BookCurrentPartTitle(boolean desc) {
-    orderBy(Fb2BookColumns.CURRENT_PART_TITLE, desc);
-    return this;
-  }
-
-  public CachedBookSelection orderByFb2BookCurrentPartTitle() {
-    orderBy(Fb2BookColumns.CURRENT_PART_TITLE, false);
     return this;
   }
 
@@ -785,6 +718,212 @@ public class CachedBookSelection
 
   public CachedBookSelection orderByTxtBookBytePosition() {
     orderBy(TxtBookColumns.BYTE_POSITION, false);
+    return this;
+  }
+
+  public CachedBookSelection infoId(Long... value) {
+    addEquals(CachedBookColumns.INFO_ID, value);
+    return this;
+  }
+
+  public CachedBookSelection infoIdNot(Long... value) {
+    addNotEquals(CachedBookColumns.INFO_ID, value);
+    return this;
+  }
+
+  public CachedBookSelection infoIdGt(long value) {
+    addGreaterThan(CachedBookColumns.INFO_ID, value);
+    return this;
+  }
+
+  public CachedBookSelection infoIdGtEq(long value) {
+    addGreaterThanOrEquals(CachedBookColumns.INFO_ID, value);
+    return this;
+  }
+
+  public CachedBookSelection infoIdLt(long value) {
+    addLessThan(CachedBookColumns.INFO_ID, value);
+    return this;
+  }
+
+  public CachedBookSelection infoIdLtEq(long value) {
+    addLessThanOrEquals(CachedBookColumns.INFO_ID, value);
+    return this;
+  }
+
+  public CachedBookSelection orderByInfoId(boolean desc) {
+    orderBy(CachedBookColumns.INFO_ID, desc);
+    return this;
+  }
+
+  public CachedBookSelection orderByInfoId() {
+    orderBy(CachedBookColumns.INFO_ID, false);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoAuthor(String... value) {
+    addEquals(CachedBookInfoColumns.AUTHOR, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoAuthorNot(String... value) {
+    addNotEquals(CachedBookInfoColumns.AUTHOR, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoAuthorLike(String... value) {
+    addLike(CachedBookInfoColumns.AUTHOR, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoAuthorContains(String... value) {
+    addContains(CachedBookInfoColumns.AUTHOR, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoAuthorStartsWith(String... value) {
+    addStartsWith(CachedBookInfoColumns.AUTHOR, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoAuthorEndsWith(String... value) {
+    addEndsWith(CachedBookInfoColumns.AUTHOR, value);
+    return this;
+  }
+
+  public CachedBookSelection orderByCachedBookInfoAuthor(boolean desc) {
+    orderBy(CachedBookInfoColumns.AUTHOR, desc);
+    return this;
+  }
+
+  public CachedBookSelection orderByCachedBookInfoAuthor() {
+    orderBy(CachedBookInfoColumns.AUTHOR, false);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoGenre(String... value) {
+    addEquals(CachedBookInfoColumns.GENRE, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoGenreNot(String... value) {
+    addNotEquals(CachedBookInfoColumns.GENRE, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoGenreLike(String... value) {
+    addLike(CachedBookInfoColumns.GENRE, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoGenreContains(String... value) {
+    addContains(CachedBookInfoColumns.GENRE, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoGenreStartsWith(String... value) {
+    addStartsWith(CachedBookInfoColumns.GENRE, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoGenreEndsWith(String... value) {
+    addEndsWith(CachedBookInfoColumns.GENRE, value);
+    return this;
+  }
+
+  public CachedBookSelection orderByCachedBookInfoGenre(boolean desc) {
+    orderBy(CachedBookInfoColumns.GENRE, desc);
+    return this;
+  }
+
+  public CachedBookSelection orderByCachedBookInfoGenre() {
+    orderBy(CachedBookInfoColumns.GENRE, false);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoLanguage(String... value) {
+    addEquals(CachedBookInfoColumns.LANGUAGE, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoLanguageNot(String... value) {
+    addNotEquals(CachedBookInfoColumns.LANGUAGE, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoLanguageLike(String... value) {
+    addLike(CachedBookInfoColumns.LANGUAGE, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoLanguageContains(String... value) {
+    addContains(CachedBookInfoColumns.LANGUAGE, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoLanguageStartsWith(String... value) {
+    addStartsWith(CachedBookInfoColumns.LANGUAGE, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoLanguageEndsWith(String... value) {
+    addEndsWith(CachedBookInfoColumns.LANGUAGE, value);
+    return this;
+  }
+
+  public CachedBookSelection orderByCachedBookInfoLanguage(boolean desc) {
+    orderBy(CachedBookInfoColumns.LANGUAGE, desc);
+    return this;
+  }
+
+  public CachedBookSelection orderByCachedBookInfoLanguage() {
+    orderBy(CachedBookInfoColumns.LANGUAGE, false);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoCurrentPartTitle(String... value) {
+    addEquals(CachedBookInfoColumns.CURRENT_PART_TITLE, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoCurrentPartTitleNot(
+      String... value) {
+    addNotEquals(CachedBookInfoColumns.CURRENT_PART_TITLE, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoCurrentPartTitleLike(
+      String... value) {
+    addLike(CachedBookInfoColumns.CURRENT_PART_TITLE, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoCurrentPartTitleContains(
+      String... value) {
+    addContains(CachedBookInfoColumns.CURRENT_PART_TITLE, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoCurrentPartTitleStartsWith(
+      String... value) {
+    addStartsWith(CachedBookInfoColumns.CURRENT_PART_TITLE, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoCurrentPartTitleEndsWith(
+      String... value) {
+    addEndsWith(CachedBookInfoColumns.CURRENT_PART_TITLE, value);
+    return this;
+  }
+
+  public CachedBookSelection orderByCachedBookInfoCurrentPartTitle(
+      boolean desc) {
+    orderBy(CachedBookInfoColumns.CURRENT_PART_TITLE, desc);
+    return this;
+  }
+
+  public CachedBookSelection orderByCachedBookInfoCurrentPartTitle() {
+    orderBy(CachedBookInfoColumns.CURRENT_PART_TITLE, false);
     return this;
   }
 }

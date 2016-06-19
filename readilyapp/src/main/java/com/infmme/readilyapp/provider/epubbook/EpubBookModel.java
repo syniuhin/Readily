@@ -14,9 +14,4 @@ public interface EpubBookModel extends BaseModel {
    */
   @NonNull
   String getCurrentResourceId();
-
-  /**
-   * Title of a resource, from which last read was made.
-   */
-  String getCurrentResourceTitle();
 }

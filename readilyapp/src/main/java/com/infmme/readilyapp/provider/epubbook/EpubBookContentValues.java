@@ -53,13 +53,4 @@ public class EpubBookContentValues extends AbstractContentValues {
     return this;
   }
 
-
-  /**
-   * Title of a resource, from which last read was made.
-   */
-  public EpubBookContentValues putCurrentResourceTitle(String value) {
-    mContentValues.put(EpubBookColumns.CURRENT_RESOURCE_TITLE, value);
-    return this;
-  }
-
 }

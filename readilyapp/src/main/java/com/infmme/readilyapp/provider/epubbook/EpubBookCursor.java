@@ -37,13 +37,4 @@ public class EpubBookCursor extends AbstractCursor implements EpubBookModel {
               " is not allowed according to the model definition");
     return res;
   }
-
-  /**
-   * Title of a resource, from which last read was made.
-   * Cannot be {@code null}.
-   */
-  @NonNull
-  public String getCurrentResourceTitle() {
-    return getStringOrNull(EpubBookColumns.CURRENT_RESOURCE_TITLE);
-  }
 }

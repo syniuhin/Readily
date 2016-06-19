@@ -54,6 +54,20 @@ public class Fb2BookContentValues extends AbstractContentValues {
 
 
   /**
+   * Tells if processing of this record was failed.
+   */
+  public Fb2BookContentValues putFullyProcessingSuccess(
+      @Nullable Boolean value) {
+    mContentValues.put(Fb2BookColumns.FULLY_PROCESSING_SUCCESS, value);
+    return this;
+  }
+
+  public Fb2BookContentValues putFullyProcessingSuccessNull() {
+    mContentValues.putNull(Fb2BookColumns.FULLY_PROCESSING_SUCCESS);
+    return this;
+  }
+
+  /**
    * Byte position of block in a file, either FB2Part or simple chunk read
    * continuously.
    */
@@ -73,20 +87,6 @@ public class Fb2BookContentValues extends AbstractContentValues {
     return this;
   }
 
-
-  /**
-   * Title of a fb2part, from which last read was made. May be null because
-   * of async processing.
-   */
-  public Fb2BookContentValues putCurrentPartTitle(@Nullable String value) {
-    mContentValues.put(Fb2BookColumns.CURRENT_PART_TITLE, value);
-    return this;
-  }
-
-  public Fb2BookContentValues putCurrentPartTitleNull() {
-    mContentValues.putNull(Fb2BookColumns.CURRENT_PART_TITLE);
-    return this;
-  }
 
   /**
    * Path to .json cache of a table of contents.

@@ -97,6 +97,21 @@ public class Fb2BookSelection extends AbstractSelection<Fb2BookSelection> {
     return this;
   }
 
+  public Fb2BookSelection fullyProcessingSuccess(Boolean value) {
+    addEquals(Fb2BookColumns.FULLY_PROCESSING_SUCCESS, toObjectArray(value));
+    return this;
+  }
+
+  public Fb2BookSelection orderByFullyProcessingSuccess(boolean desc) {
+    orderBy(Fb2BookColumns.FULLY_PROCESSING_SUCCESS, desc);
+    return this;
+  }
+
+  public Fb2BookSelection orderByFullyProcessingSuccess() {
+    orderBy(Fb2BookColumns.FULLY_PROCESSING_SUCCESS, false);
+    return this;
+  }
+
   public Fb2BookSelection bytePosition(int... value) {
     addEquals(Fb2BookColumns.BYTE_POSITION, toObjectArray(value));
     return this;
@@ -174,46 +189,6 @@ public class Fb2BookSelection extends AbstractSelection<Fb2BookSelection> {
 
   public Fb2BookSelection orderByCurrentPartId() {
     orderBy(Fb2BookColumns.CURRENT_PART_ID, false);
-    return this;
-  }
-
-  public Fb2BookSelection currentPartTitle(String... value) {
-    addEquals(Fb2BookColumns.CURRENT_PART_TITLE, value);
-    return this;
-  }
-
-  public Fb2BookSelection currentPartTitleNot(String... value) {
-    addNotEquals(Fb2BookColumns.CURRENT_PART_TITLE, value);
-    return this;
-  }
-
-  public Fb2BookSelection currentPartTitleLike(String... value) {
-    addLike(Fb2BookColumns.CURRENT_PART_TITLE, value);
-    return this;
-  }
-
-  public Fb2BookSelection currentPartTitleContains(String... value) {
-    addContains(Fb2BookColumns.CURRENT_PART_TITLE, value);
-    return this;
-  }
-
-  public Fb2BookSelection currentPartTitleStartsWith(String... value) {
-    addStartsWith(Fb2BookColumns.CURRENT_PART_TITLE, value);
-    return this;
-  }
-
-  public Fb2BookSelection currentPartTitleEndsWith(String... value) {
-    addEndsWith(Fb2BookColumns.CURRENT_PART_TITLE, value);
-    return this;
-  }
-
-  public Fb2BookSelection orderByCurrentPartTitle(boolean desc) {
-    orderBy(Fb2BookColumns.CURRENT_PART_TITLE, desc);
-    return this;
-  }
-
-  public Fb2BookSelection orderByCurrentPartTitle() {
-    orderBy(Fb2BookColumns.CURRENT_PART_TITLE, false);
     return this;
   }
 

@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.infmme.readilyapp.provider.base.AbstractCursor;
+import com.infmme.readilyapp.provider.cachedbookinfo.CachedBookInfoColumns;
 import com.infmme.readilyapp.provider.epubbook.EpubBookColumns;
 import com.infmme.readilyapp.provider.fb2book.Fb2BookColumns;
 import com.infmme.readilyapp.provider.txtbook.TxtBookColumns;
@@ -174,16 +175,6 @@ public class CachedBookCursor extends AbstractCursor
   }
 
   /**
-   * Title of a resource, from which last read was made.
-   * Can be {@code null}.
-   */
-  @Nullable
-  public String getEpubBookCurrentResourceTitle() {
-    String res = getStringOrNull(EpubBookColumns.CURRENT_RESOURCE_TITLE);
-    return res;
-  }
-
-  /**
    * Optional link to fb2_book.
    * Can be {@code null}.
    */
@@ -205,6 +196,16 @@ public class CachedBookCursor extends AbstractCursor
   }
 
   /**
+   * Tells if processing of this record was failed.
+   * Can be {@code null}.
+   */
+  @Nullable
+  public Boolean getFb2BookFullyProcessingSuccess() {
+    Boolean res = getBooleanOrNull(Fb2BookColumns.FULLY_PROCESSING_SUCCESS);
+    return res;
+  }
+
+  /**
    * Byte position of block in a file, either FB2Part or simple chunk read
    * continuously.
    * Can be {@code null}.
@@ -222,17 +223,6 @@ public class CachedBookCursor extends AbstractCursor
   @Nullable
   public String getFb2BookCurrentPartId() {
     String res = getStringOrNull(Fb2BookColumns.CURRENT_PART_ID);
-    return res;
-  }
-
-  /**
-   * Title of a fb2part, from which last read was made. May be null because
-   * of async processing.
-   * Can be {@code null}.
-   */
-  @Nullable
-  public String getFb2BookCurrentPartTitle() {
-    String res = getStringOrNull(Fb2BookColumns.CURRENT_PART_TITLE);
     return res;
   }
 
@@ -264,6 +254,56 @@ public class CachedBookCursor extends AbstractCursor
   @Nullable
   public Integer getTxtBookBytePosition() {
     Integer res = getIntegerOrNull(TxtBookColumns.BYTE_POSITION);
+    return res;
+  }
+
+  /**
+   * Link to an extended information record.
+   * Can be {@code null}.
+   */
+  @Nullable
+  public Long getInfoId() {
+    Long res = getLongOrNull(CachedBookColumns.INFO_ID);
+    return res;
+  }
+
+  /**
+   * Author of a book or net article.
+   * Can be {@code null}.
+   */
+  @Nullable
+  public String getCachedBookInfoAuthor() {
+    String res = getStringOrNull(CachedBookInfoColumns.AUTHOR);
+    return res;
+  }
+
+  /**
+   * Genre or category of a book or net article.
+   * Can be {@code null}.
+   */
+  @Nullable
+  public String getCachedBookInfoGenre() {
+    String res = getStringOrNull(CachedBookInfoColumns.GENRE);
+    return res;
+  }
+
+  /**
+   * Language of a book.
+   * Can be {@code null}.
+   */
+  @Nullable
+  public String getCachedBookInfoLanguage() {
+    String res = getStringOrNull(CachedBookInfoColumns.LANGUAGE);
+    return res;
+  }
+
+  /**
+   * Current part title of a book.
+   * Can be {@code null}.
+   */
+  @Nullable
+  public String getCachedBookInfoCurrentPartTitle() {
+    String res = getStringOrNull(CachedBookInfoColumns.CURRENT_PART_TITLE);
     return res;
   }
 }

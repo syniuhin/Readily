@@ -39,6 +39,16 @@ public class Fb2BookCursor extends AbstractCursor implements Fb2BookModel {
   }
 
   /**
+   * Tells if processing of this record was failed.
+   * Can be {@code null}.
+   */
+  @Nullable
+  public Boolean getFullyProcessingSuccess() {
+    Boolean res = getBooleanOrNull(Fb2BookColumns.FULLY_PROCESSING_SUCCESS);
+    return res;
+  }
+
+  /**
    * Byte position of block in a file, either FB2Part or simple chunk read
    * continuously.
    */
@@ -62,17 +72,7 @@ public class Fb2BookCursor extends AbstractCursor implements Fb2BookModel {
       throw new NullPointerException(
           "The value of 'current_part_id' in the database was null, which is " +
               "not allowed according to the model definition");
-    return res;
-  }
 
-  /**
-   * Title of a fb2part, from which last read was made. May be null because
-   * of async processing.
-   * Can be {@code null}.
-   */
-  @Nullable
-  public String getCurrentPartTitle() {
-    String res = getStringOrNull(Fb2BookColumns.CURRENT_PART_TITLE);
     return res;
   }
 

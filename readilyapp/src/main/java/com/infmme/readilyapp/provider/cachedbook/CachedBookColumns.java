@@ -3,6 +3,7 @@ package com.infmme.readilyapp.provider.cachedbook;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import com.infmme.readilyapp.provider.ReadilyProvider;
+import com.infmme.readilyapp.provider.cachedbookinfo.CachedBookInfoColumns;
 import com.infmme.readilyapp.provider.epubbook.EpubBookColumns;
 import com.infmme.readilyapp.provider.fb2book.Fb2BookColumns;
 import com.infmme.readilyapp.provider.txtbook.TxtBookColumns;
@@ -67,6 +68,11 @@ public class CachedBookColumns implements BaseColumns {
    */
   public static final String TXT_BOOK_ID = "txt_book_id";
 
+  /**
+   * Link to an extended information record.
+   */
+  public static final String INFO_ID = "info_id";
+
 
   public static final String DEFAULT_ORDER = TABLE_NAME + "." + _ID;
 
@@ -82,7 +88,8 @@ public class CachedBookColumns implements BaseColumns {
       COVER_IMAGE_MEAN,
       EPUB_BOOK_ID,
       FB2_BOOK_ID,
-      TXT_BOOK_ID
+      TXT_BOOK_ID,
+      INFO_ID
   };
 
   // @formatter:off
@@ -98,11 +105,13 @@ public class CachedBookColumns implements BaseColumns {
       EPUB_BOOK_ID,
       FB2_BOOK_ID,
       TXT_BOOK_ID,
+      INFO_ID,
       Fb2BookColumns.FULLY_PROCESSED,
+      Fb2BookColumns.FULLY_PROCESSING_SUCCESS,
       Fb2BookColumns.BYTE_POSITION,
       Fb2BookColumns.CURRENT_PART_ID,
-      Fb2BookColumns.CURRENT_PART_TITLE,
-      Fb2BookColumns.PATH_TOC
+      Fb2BookColumns.PATH_TOC,
+      CachedBookInfoColumns.CURRENT_PART_TITLE
   };
 
   // @formatter:off
@@ -118,8 +127,9 @@ public class CachedBookColumns implements BaseColumns {
       EPUB_BOOK_ID,
       FB2_BOOK_ID,
       TXT_BOOK_ID,
+      INFO_ID,
       EpubBookColumns.CURRENT_RESOURCE_ID,
-      EpubBookColumns.CURRENT_RESOURCE_TITLE
+      CachedBookInfoColumns.CURRENT_PART_TITLE
   };
 
   // @formatter:off
@@ -135,7 +145,28 @@ public class CachedBookColumns implements BaseColumns {
       EPUB_BOOK_ID,
       FB2_BOOK_ID,
       TXT_BOOK_ID,
+      INFO_ID,
       TxtBookColumns.BYTE_POSITION
+  };
+
+  // @formatter:off
+  public static final String[] ALL_COLUMNS_INFO_JOINED = new String[] {
+      _ID,
+      TITLE,
+      PATH,
+      TEXT_POSITION,
+      PERCENTILE,
+      TIME_OPENED,
+      COVER_IMAGE_URI,
+      COVER_IMAGE_MEAN,
+      EPUB_BOOK_ID,
+      FB2_BOOK_ID,
+      TXT_BOOK_ID,
+      INFO_ID,
+      CachedBookInfoColumns.AUTHOR,
+      CachedBookInfoColumns.GENRE,
+      CachedBookInfoColumns.LANGUAGE,
+      CachedBookInfoColumns.CURRENT_PART_TITLE
   };
 
   // @formatter:off
@@ -151,14 +182,18 @@ public class CachedBookColumns implements BaseColumns {
       EPUB_BOOK_ID,
       FB2_BOOK_ID,
       TXT_BOOK_ID,
+      INFO_ID,
       Fb2BookColumns.FULLY_PROCESSED,
+      Fb2BookColumns.FULLY_PROCESSING_SUCCESS,
       Fb2BookColumns.BYTE_POSITION,
       Fb2BookColumns.CURRENT_PART_ID,
-      Fb2BookColumns.CURRENT_PART_TITLE,
       Fb2BookColumns.PATH_TOC,
       EpubBookColumns.CURRENT_RESOURCE_ID,
-      EpubBookColumns.CURRENT_RESOURCE_TITLE,
-      TxtBookColumns.BYTE_POSITION
+      TxtBookColumns.BYTE_POSITION,
+      CachedBookInfoColumns.AUTHOR,
+      CachedBookInfoColumns.GENRE,
+      CachedBookInfoColumns.LANGUAGE,
+      CachedBookInfoColumns.CURRENT_PART_TITLE
   };
   // @formatter:on
   public static final String PREFIX_EPUB_BOOK = TABLE_NAME + "__" +
@@ -167,6 +202,8 @@ public class CachedBookColumns implements BaseColumns {
       Fb2BookColumns.TABLE_NAME;
   public static final String PREFIX_TXT_BOOK = TABLE_NAME + "__" +
       TxtBookColumns.TABLE_NAME;
+  public static final String PREFIX_CACHED_BOOK_INFO = TABLE_NAME + "__" +
+      CachedBookInfoColumns.TABLE_NAME;
 
   public static boolean hasColumns(String[] projection) {
     if (projection == null) return true;
@@ -184,6 +221,7 @@ public class CachedBookColumns implements BaseColumns {
       if (c.equals(EPUB_BOOK_ID) || c.contains("." + EPUB_BOOK_ID)) return true;
       if (c.equals(FB2_BOOK_ID) || c.contains("." + FB2_BOOK_ID)) return true;
       if (c.equals(TXT_BOOK_ID) || c.contains("." + TXT_BOOK_ID)) return true;
+      if (c.equals(INFO_ID) || c.contains("." + INFO_ID)) return true;
     }
     return false;
   }

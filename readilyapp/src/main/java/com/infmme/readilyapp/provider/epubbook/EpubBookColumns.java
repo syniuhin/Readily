@@ -22,19 +22,13 @@ public class EpubBookColumns implements BaseColumns {
    */
   public static final String CURRENT_RESOURCE_ID = "current_resource_id";
 
-  /**
-   * Title of a resource, from which last read was made.
-   */
-  public static final String CURRENT_RESOURCE_TITLE = "current_resource_title";
-
 
   public static final String DEFAULT_ORDER = TABLE_NAME + "." + _ID;
 
   // @formatter:off
   public static final String[] ALL_COLUMNS = new String[] {
       _ID,
-      CURRENT_RESOURCE_ID,
-      CURRENT_RESOURCE_TITLE
+      CURRENT_RESOURCE_ID
   };
   // @formatter:on
 
@@ -43,8 +37,6 @@ public class EpubBookColumns implements BaseColumns {
     for (String c : projection) {
       if (c.equals(CURRENT_RESOURCE_ID) || c.contains(
           "." + CURRENT_RESOURCE_ID)) return true;
-      if (c.equals(CURRENT_RESOURCE_TITLE) || c.contains(
-          "." + CURRENT_RESOURCE_TITLE)) return true;
     }
     return false;
   }

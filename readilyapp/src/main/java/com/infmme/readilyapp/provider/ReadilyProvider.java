@@ -9,6 +9,7 @@ import android.util.Log;
 import com.infmme.readilyapp.BuildConfig;
 import com.infmme.readilyapp.provider.base.BaseContentProvider;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
+import com.infmme.readilyapp.provider.cachedbookinfo.CachedBookInfoColumns;
 import com.infmme.readilyapp.provider.epubbook.EpubBookColumns;
 import com.infmme.readilyapp.provider.fb2book.Fb2BookColumns;
 import com.infmme.readilyapp.provider.txtbook.TxtBookColumns;
@@ -25,14 +26,17 @@ public class ReadilyProvider extends BaseContentProvider {
   private static final int URI_TYPE_CACHED_BOOK = 0;
   private static final int URI_TYPE_CACHED_BOOK_ID = 1;
 
-  private static final int URI_TYPE_EPUB_BOOK = 2;
-  private static final int URI_TYPE_EPUB_BOOK_ID = 3;
+  private static final int URI_TYPE_CACHED_BOOK_INFO = 2;
+  private static final int URI_TYPE_CACHED_BOOK_INFO_ID = 3;
 
-  private static final int URI_TYPE_FB2_BOOK = 4;
-  private static final int URI_TYPE_FB2_BOOK_ID = 5;
+  private static final int URI_TYPE_EPUB_BOOK = 4;
+  private static final int URI_TYPE_EPUB_BOOK_ID = 5;
 
-  private static final int URI_TYPE_TXT_BOOK = 6;
-  private static final int URI_TYPE_TXT_BOOK_ID = 7;
+  private static final int URI_TYPE_FB2_BOOK = 6;
+  private static final int URI_TYPE_FB2_BOOK_ID = 7;
+
+  private static final int URI_TYPE_TXT_BOOK = 8;
+  private static final int URI_TYPE_TXT_BOOK_ID = 9;
 
 
   private static final UriMatcher URI_MATCHER = new UriMatcher(
@@ -43,6 +47,10 @@ public class ReadilyProvider extends BaseContentProvider {
                        URI_TYPE_CACHED_BOOK);
     URI_MATCHER.addURI(AUTHORITY, CachedBookColumns.TABLE_NAME + "/#",
                        URI_TYPE_CACHED_BOOK_ID);
+    URI_MATCHER.addURI(AUTHORITY, CachedBookInfoColumns.TABLE_NAME,
+                       URI_TYPE_CACHED_BOOK_INFO);
+    URI_MATCHER.addURI(AUTHORITY, CachedBookInfoColumns.TABLE_NAME + "/#",
+                       URI_TYPE_CACHED_BOOK_INFO_ID);
     URI_MATCHER.addURI(AUTHORITY, EpubBookColumns.TABLE_NAME,
                        URI_TYPE_EPUB_BOOK);
     URI_MATCHER.addURI(AUTHORITY, EpubBookColumns.TABLE_NAME + "/#",
@@ -73,6 +81,11 @@ public class ReadilyProvider extends BaseContentProvider {
         return TYPE_CURSOR_DIR + CachedBookColumns.TABLE_NAME;
       case URI_TYPE_CACHED_BOOK_ID:
         return TYPE_CURSOR_ITEM + CachedBookColumns.TABLE_NAME;
+
+      case URI_TYPE_CACHED_BOOK_INFO:
+        return TYPE_CURSOR_DIR + CachedBookInfoColumns.TABLE_NAME;
+      case URI_TYPE_CACHED_BOOK_INFO_ID:
+        return TYPE_CURSOR_ITEM + CachedBookInfoColumns.TABLE_NAME;
 
       case URI_TYPE_EPUB_BOOK:
         return TYPE_CURSOR_DIR + EpubBookColumns.TABLE_NAME;
@@ -172,7 +185,23 @@ public class ReadilyProvider extends BaseContentProvider {
               .TXT_BOOK_ID + "=" + CachedBookColumns.PREFIX_TXT_BOOK + "." +
               TxtBookColumns._ID;
         }
+        if (CachedBookInfoColumns.hasColumns(projection)) {
+          res.tablesWithJoins += " LEFT OUTER JOIN " + CachedBookInfoColumns
+              .TABLE_NAME + " AS " + CachedBookColumns
+              .PREFIX_CACHED_BOOK_INFO + " ON " + CachedBookColumns
+              .TABLE_NAME + "." + CachedBookColumns.INFO_ID + "=" +
+              CachedBookColumns.PREFIX_CACHED_BOOK_INFO + "." +
+              CachedBookInfoColumns._ID;
+        }
         res.orderBy = CachedBookColumns.DEFAULT_ORDER;
+        break;
+
+      case URI_TYPE_CACHED_BOOK_INFO:
+      case URI_TYPE_CACHED_BOOK_INFO_ID:
+        res.table = CachedBookInfoColumns.TABLE_NAME;
+        res.idColumn = CachedBookInfoColumns._ID;
+        res.tablesWithJoins = CachedBookInfoColumns.TABLE_NAME;
+        res.orderBy = CachedBookInfoColumns.DEFAULT_ORDER;
         break;
 
       case URI_TYPE_EPUB_BOOK:
@@ -206,6 +235,7 @@ public class ReadilyProvider extends BaseContentProvider {
 
     switch (matchedId) {
       case URI_TYPE_CACHED_BOOK_ID:
+      case URI_TYPE_CACHED_BOOK_INFO_ID:
       case URI_TYPE_EPUB_BOOK_ID:
       case URI_TYPE_FB2_BOOK_ID:
       case URI_TYPE_TXT_BOOK_ID:

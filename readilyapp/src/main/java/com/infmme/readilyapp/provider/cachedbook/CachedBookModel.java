@@ -74,4 +74,11 @@ public interface CachedBookModel extends BaseModel {
    */
   @Nullable
   Long getTxtBookId();
+
+  /**
+   * Link to an extended information record.
+   * Can be {@code null}.
+   */
+  @Nullable
+  Long getInfoId();
 }

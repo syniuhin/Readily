@@ -16,6 +16,13 @@ public interface Fb2BookModel extends BaseModel {
   boolean getFullyProcessed();
 
   /**
+   * Tells if processing of this record was failed.
+   * Can be {@code null}.
+   */
+  @Nullable
+  Boolean getFullyProcessingSuccess();
+
+  /**
    * Byte position of block in a file, either FB2Part or simple chunk read
    * continuously.
    */
@@ -27,14 +34,6 @@ public interface Fb2BookModel extends BaseModel {
    */
   @NonNull
   String getCurrentPartId();
-
-  /**
-   * Title of a fb2part, from which last read was made. May be null because
-   * of async processing.
-   * Can be {@code null}.
-   */
-  @Nullable
-  String getCurrentPartTitle();
 
   /**
    * Path to .json cache of a table of contents.

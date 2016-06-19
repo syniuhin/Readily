@@ -155,4 +155,17 @@ public class CachedBookContentValues extends AbstractContentValues {
     mContentValues.putNull(CachedBookColumns.TXT_BOOK_ID);
     return this;
   }
+
+  /**
+   * Link to an extended information record.
+   */
+  public CachedBookContentValues putInfoId(@Nullable Long value) {
+    mContentValues.put(CachedBookColumns.INFO_ID, value);
+    return this;
+  }
+
+  public CachedBookContentValues putInfoIdNull() {
+    mContentValues.putNull(CachedBookColumns.INFO_ID);
+    return this;
+  }
 }
