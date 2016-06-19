@@ -15,12 +15,14 @@ public class XMLEvent {
 
   // TODO: Think of StringBuilder instead of String instances.
   private String content;
+  private StringBuilder contentBuilder;
+
   private String contentType;
 
-  private StringBuilder tagContents = null;
+  private StringBuilder tagContents;
   private String tagName;
-  private HashMap<String, String> tagAttributes = null;
-  private boolean insideQuotes = false;
+  private HashMap<String, String> tagAttributes;
+  private boolean insideQuotes;
 
   private boolean tagNameReady;
 
@@ -76,7 +78,15 @@ public class XMLEvent {
   }
 
   public void appendContent(char c) {
-    content += c;
+    if (contentBuilder == null) {
+      contentBuilder = new StringBuilder();
+    }
+    contentBuilder.append(c);
+  }
+
+  public void finishAppendingContent() {
+    content = contentBuilder.toString();
+    contentBuilder = new StringBuilder();
   }
 
   public void appendTagContents(char c) {

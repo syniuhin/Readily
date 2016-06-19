@@ -718,7 +718,6 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
                 if (x.isProcessed()) {
                   mChunked = x;
                   mStorable = x;
-                  // TODO: Fix this after fix of the model.
                   startChunkedReadingFlow(mStorable.getCurrentPosition());
                 } else {
                   stopShowingProgress();

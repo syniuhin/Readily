@@ -108,8 +108,6 @@ public class XMLParser {
       case TAG_CLOSE:
         readNext();
       case TAG:
-      case TAG_START:
-      case TAG_SINGLE:
       case TAG_COMMENT:
         readNext();
         updateType(type, currentInt, nextInt);
@@ -144,6 +142,7 @@ public class XMLParser {
     switch (type) {
       case CONTENT:
         // Checks if we met content which we should take into account.
+        currentEvent.finishAppendingContent();
         if (currentEvent.getContent().length() > 1) {
           if (!eventStack.isEmpty() &&
               (currentEvent.getContentType() == null ||

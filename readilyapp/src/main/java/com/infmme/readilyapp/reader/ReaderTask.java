@@ -87,7 +87,6 @@ public class ReaderTask implements Runnable {
       try {
         synchronized (mReadingDeque) {
           Log.d(ReaderTask.class.getName(), "Locking mReadingDeque");
-          // TODO: Ensure that reading is processed now.
           // Sort of initialization for a deque.
           Reading nextReading;
           if (!mOnceStarted) {

@@ -160,7 +160,6 @@ public class TxtStorable implements ChunkedUnprocessedStorable {
   public void storeToDb() {
     CachedBookContentValues values = new CachedBookContentValues();
     values.putTextPosition(mCurrentTextPosition);
-    // TODO: Solve this
     values.putPercentile(calcPercentile());
 
     TxtBookContentValues txtValues = new TxtBookContentValues();

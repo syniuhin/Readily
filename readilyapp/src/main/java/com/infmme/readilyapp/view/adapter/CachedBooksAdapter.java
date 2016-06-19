@@ -76,7 +76,6 @@ public class CachedBooksAdapter
     String strTimeOpened = timeOpened.toString(
         DateTimeFormat.forPattern("d MMMM, HH:mm"));
     holder.mTimeOpenedView.setText(strTimeOpened);
-    // TODO: Replace with a real value
     holder.mProgressView.setProgress((int) (bookCursor.getPercentile() * 100));
   }
 
@@ -123,7 +122,6 @@ public class CachedBooksAdapter
     TextView mTimeOpenedPrefixView;
     ProgressBar mProgressView;
     Button mReadButton;
-    // TODO: Add master-detail flow for 'About' button
     Button mMoreButton;
 
     long mId;
