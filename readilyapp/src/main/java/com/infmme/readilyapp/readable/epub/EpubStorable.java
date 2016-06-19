@@ -47,17 +47,18 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
   private transient Metadata mMetadata;
 
   // Stored title.
-  private String mTitle = null;
+  private String mTitle;
   private Double mPercentile = .0;
 
   private String mCoverImageUri;
-  private Integer mCoverImageMean = null;
+  private Integer mCoverImageMean;
   private transient List<Resource> mContents;
 
   private Deque<ChunkInfo> mLoadedChunks = new ArrayDeque<>();
-  private List<? extends AbstractTocReference> mTableOfContents = null;
+  private List<? extends AbstractTocReference> mTableOfContents;
 
   private String mCurrentResourceId;
+  private String mCurrentResourceTitle;
   private int mCurrentResourceIndex = -1;
   private int mLastResourceIndex = -1;
 
@@ -67,7 +68,7 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
   private boolean mProcessed;
 
   // Again, can be leaking.
-  private transient Context mContext = null;
+  private transient Context mContext;
 
   public EpubStorable(Context context) {
     mContext = context;
@@ -80,19 +81,13 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
 
   @Override
   public Reading readNext() throws IOException {
-    Readable readable = new Readable();
-    if (mLastResourceIndex == -1) {
-      for (int i = 0; i < mContents.size() &&
-          mLastResourceIndex == -1; ++i) {
-        if (mCurrentResourceId.equals(mContents.get(i).getId())) {
-          mLastResourceIndex = i;
-        }
-      }
-    }
     mCurrentResourceIndex = mLastResourceIndex;
 
-    String parsed = parseRawText(
-        new String(mContents.get(mLastResourceIndex).getData()));
+    Resource currentResource = mContents.get(mLastResourceIndex);
+    mCurrentResourceTitle = currentResource.getTitle();
+
+    Readable readable = new Readable();
+    String parsed = parseRawText(new String(currentResource.getData()));
     readable.setText(parsed);
 
     mLoadedChunks.addLast(new ChunkInfo(mCurrentResourceIndex));
@@ -174,7 +169,6 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
     mContents = mBook.getContents();
     if (coverImageExists() && !isCoverImageStored()) {
       try {
-        // TODO: Figure out which thread it belongs to.
         storeCoverImage();
       } catch (IOException e) {
         e.printStackTrace();
@@ -337,6 +331,14 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
       mMetadata = mBook.getMetadata();
       if (isStoredInDb()) {
         readFromDb();
+        if (mCurrentResourceId != null) {
+          for (int i = 0; i < mContents.size() &&
+              mLastResourceIndex == -1; ++i) {
+            if (mCurrentResourceId.equals(mContents.get(i).getId())) {
+              mLastResourceIndex = i;
+            }
+          }
+        }
       } else {
         mCurrentTextPosition = 0;
         mCurrentResourceId = mContents.get(0).getId();
@@ -359,8 +361,13 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
   }
 
   @Override
-  public String getCurrentId() {
+  public String getCurrentPartId() {
     return mCurrentResourceId;
+  }
+
+  @Override
+  public String getCurrentPartTitle() {
+    return mCurrentResourceTitle;
   }
 
   @Override

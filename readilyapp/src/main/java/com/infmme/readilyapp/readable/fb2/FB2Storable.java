@@ -8,9 +8,9 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
-import com.daimajia.androidanimations.library.BuildConfig;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.infmme.readilyapp.BuildConfig;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookContentValues;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
@@ -54,33 +54,44 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
    */
   private String mTimeOpened;
 
-  private String mTitle = null;
+  private String mTitle;
   private Double mPercentile = .0;
 
-  private String mCoverImageHref = null;
-  private String mCoverImageEncoded = null;
-  private String mCoverImageUri = null;
-  private Integer mCoverImageMean = null;
+  private String mCoverImageHref;
+  private String mCoverImageEncoded;
+  private String mCoverImageUri;
+  private Integer mCoverImageMean;
 
   private transient XMLParser mParser;
   private transient XMLEvent mCurrentEvent;
   private transient XMLEventType mCurrentEventType;
 
   private Deque<ChunkInfo> mLoadedChunks = new ArrayDeque<>();
-  private List<? extends AbstractTocReference> mTableOfContents = null;
+  private List<? extends AbstractTocReference> mTableOfContents;
+  private Map<String, String> mSectionIdTitleMap;
 
+  /**
+   * Unique id to differentiate sections of a book.
+   */
   private String mCurrentPartId;
+
+  /**
+   * Title of a part to display in UI.
+   */
+  private String mCurrentPartTitle;
   private long mCurrentBytePosition = -1;
   private long mLastBytePosition = -1;
 
   private int mCurrentTextPosition = -1;
   private double mChunkPercentile = .0;
 
-  private boolean mProcessed = false;
-  private boolean mFullyProcessed = false;
+  private boolean mProcessed;
+  private boolean mFullyProcessed;
 
-  // Again, can be leaking.
-  private transient Context mContext = null;
+  /**
+   * Used in interface overridden methods, so has to be retained in a state.
+   */
+  private transient Context mContext;
 
   public FB2Storable(Context context) {
     mContext = context;
@@ -102,34 +113,38 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
 
   @Override
   public Reading readNext() throws IOException {
-    // Checks if we're reading for the first time.
-    if (mParser.getPosition() == 0 && mCurrentBytePosition > 0) {
-      mParser.skip(mCurrentBytePosition);
-    }
     mCurrentBytePosition = mLastBytePosition;
 
     StringBuilder text = new StringBuilder();
+
+    // Checks if we're reading for the first time.
     if (mCurrentEvent == null) {
       mCurrentEvent = mParser.next();
       mCurrentEventType = mCurrentEvent.getType();
       mLastBytePosition = mParser.getPosition();
     }
 
-    // Stack needed to keep track of nested sections entered.
+    // Stack is needed to keep track of nested sections entered.
     Stack<String> sectionIdStack = new Stack<>();
 
     // Reads file section by section until reaches end of the file or text
-    // grows bigger, than buffer size.
+    // grows bigger than buffer size.
     while (mCurrentEventType != XMLEventType.DOCUMENT_CLOSE &&
         text.length() < BUFFER_SIZE) {
       if (mCurrentEvent.enteringTag(FB2Tags.SECTION)) {
-        if (BuildConfig.DEBUG) {
-          Log.d(getClass().getName(),
-                "Entering section on " + String.valueOf(mParser.getPosition()));
-        }
         mCurrentPartId = "section" + mParser.getPosition();
         sectionIdStack.add(mCurrentPartId);
+        if (mSectionIdTitleMap != null &&
+            mSectionIdTitleMap.containsKey(mCurrentPartId)) {
+          mCurrentPartTitle = mSectionIdTitleMap.get(mCurrentPartId);
+        }
+        if (BuildConfig.DEBUG) {
+          Log.d(getClass().getName(), String.format(
+              "Entering section %s on %d", mCurrentPartTitle,
+              mParser.getPosition()));
+        }
       }
+
       if (mCurrentEvent.exitingTag(FB2Tags.SECTION)) {
         if (BuildConfig.DEBUG) {
           Log.d(getClass().getName(),
@@ -356,7 +371,7 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
    * Attempts to fix integrity issues between byte offset and section id.
    */
   private void checkSectionByteIntegrity() {
-    if (mTableOfContents == null && isTocCached(mContext)) {
+    if (mTableOfContents == null && isTocCached()) {
       try {
         mTableOfContents = readSavedTableOfContents();
       } catch (IOException e) {
@@ -433,7 +448,7 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
   public List<? extends AbstractTocReference> getTableOfContents() {
     if (mTableOfContents == null && mProcessed) {
       try {
-        if (isTocCached(mContext)) {
+        if (isTocCached()) {
           mTableOfContents = readSavedTableOfContents();
         }
       } catch (IOException e) {
@@ -444,14 +459,20 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
   }
 
   @Override
-  public String getCurrentId() {
+  public String getCurrentPartId() {
     return mCurrentPartId;
+  }
+
+  @Override
+  public String getCurrentPartTitle() {
+    return mCurrentPartTitle;
   }
 
   @Override
   public void setCurrentTocReference(AbstractTocReference tocReference) {
     FB2Part fb2Part = (FB2Part) tocReference;
     mCurrentPartId = fb2Part.getId();
+    mCurrentPartTitle = fb2Part.getTitle();
     mCurrentBytePosition = fb2Part.getStreamByteStartLocation();
   }
 
@@ -481,10 +502,15 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
       readFromFile();
       if (isStoredInDb()) {
         readFromDb();
+        if (mCurrentBytePosition > 0) {
+          mParser.skip(mCurrentBytePosition);
+        }
       } else {
         mCurrentTextPosition = 0;
       }
-
+      if (isSectionIdTitleMapCached()) {
+        mSectionIdTitleMap = readSavedSectionIdTitleMap();
+      }
       mProcessed = true;
     } catch (IOException e) {
       e.printStackTrace();
@@ -537,6 +563,7 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
    *
    * @throws IOException
    */
+  //TODO: Refactor this mastodon.
   public void processFully() throws IOException {
     ArrayList<FB2Part> toc = new ArrayList<>();
 
@@ -545,6 +572,7 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
     // Gets initial data for an algorithm.
     XMLEvent event = mParser.next();
     XMLEventType eventType = event.getType();
+
     boolean insideTitle = false;
     boolean insideBookTitle = false;
     boolean insideCoverPage = false;
@@ -613,7 +641,11 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
         String content = event.getContent();
         if (insideTitle && currentPart != null) {
           // Appends title to an existent one.
-          currentPart.setTitle(currentPart.getTitle() + " " + content);
+          if (TextUtils.isEmpty(currentPart.getTitle())) {
+            currentPart.setTitle(content);
+          } else {
+            currentPart.setTitle(currentPart.getTitle() + ", " + content);
+          }
         } else if (contentType.equals(FB2Tags.BOOK_TITLE)) {
           if (insideBookTitle && mTitle == null) {
             mTitle = content;
@@ -645,24 +677,16 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
 
     mTableOfContents = toc;
     storeTableOfContents();
+    storeSectionIdTitleMap();
     mFullyProcessed = true;
   }
 
-  public boolean isTocCached(final Context c) {
-    return getCachedTocFile(c).exists();
+  private boolean isTocCached() {
+    return getCachedTocFile().exists();
   }
 
-  public void storeTableOfContents()
-      throws IOException {
-    FileOutputStream fos = new FileOutputStream(getCachedTocFile(mContext));
-    Gson gson = new Gson();
-    String json = gson.toJson(mTableOfContents);
-    fos.write(json.getBytes());
-    fos.close();
-  }
-
-  public ArrayList<FB2Part> readSavedTableOfContents() throws IOException {
-    FileInputStream fis = new FileInputStream(getCachedTocFile(mContext));
+  private ArrayList<FB2Part> readSavedTableOfContents() throws IOException {
+    FileInputStream fis = new FileInputStream(getCachedTocFile());
 
     byte[] buffer = new byte[BUFFER_SIZE];
     StringBuilder input = new StringBuilder();
@@ -691,9 +715,70 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
     return toc;
   }
 
-  private File getCachedTocFile(Context c) {
-    return new File(c.getCacheDir(),
+  private void storeTableOfContents()
+      throws IOException {
+    FileOutputStream fos = new FileOutputStream(getCachedTocFile());
+    Gson gson = new Gson();
+    String json = gson.toJson(mTableOfContents);
+    fos.write(json.getBytes());
+    fos.close();
+  }
+
+
+  private File getCachedTocFile() {
+    return new File(mContext.getCacheDir(),
                     mPath.substring(mPath.lastIndexOf('/')) + "_TOC.json");
+  }
+
+  private boolean isSectionIdTitleMapCached() {
+    return getCachedIdTitleMapFile().exists();
+  }
+
+  private Map<String, String> readSavedSectionIdTitleMap() throws IOException {
+    FileInputStream fis = new FileInputStream(getCachedIdTitleMapFile());
+
+    byte[] buffer = new byte[BUFFER_SIZE];
+    StringBuilder input = new StringBuilder();
+    long bytesRead;
+    do {
+      bytesRead = fis.read(buffer);
+      if (bytesRead != BUFFER_SIZE) {
+        byte[] buffer0 = new byte[(int) bytesRead];
+        System.arraycopy(buffer, 0, buffer0, 0, (int) bytesRead);
+        input.append(new String(buffer0));
+      } else {
+        input.append(new String(buffer));
+      }
+    } while (bytesRead == BUFFER_SIZE);
+
+    String json = input.toString();
+    Gson gson = new Gson();
+    Type mapType = new TypeToken<Map<String, String>>() {}.getType();
+
+    // Path is needed in order to get preview and, basically, perform any
+    // operation with fb2 itself.
+    return gson.fromJson(json, mapType);
+  }
+
+  private void storeSectionIdTitleMap() throws IOException {
+    // Create a map.
+    Map<String, String> idTitleMap = new HashMap<>();
+    for (AbstractTocReference part : mTableOfContents) {
+      idTitleMap.put(part.getId(), part.getTitle());
+    }
+
+    FileOutputStream fos = new FileOutputStream(
+        getCachedIdTitleMapFile());
+    Gson gson = new Gson();
+    String json = gson.toJson(idTitleMap);
+    fos.write(json.getBytes());
+    fos.close();
+  }
+
+
+  private File getCachedIdTitleMapFile() {
+    return new File(mContext.getCacheDir(), mPath.substring(
+        mPath.lastIndexOf('/')) + "_id_title_map.json");
   }
 
   /**
