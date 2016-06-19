@@ -122,43 +122,43 @@ public class EpubBookSelection extends AbstractSelection<EpubBookSelection> {
     return this;
   }
 
-  public EpubBookSelection textPosition(int... value) {
-    addEquals(EpubBookColumns.TEXT_POSITION, toObjectArray(value));
+  public EpubBookSelection currentResourceTitle(String... value) {
+    addEquals(EpubBookColumns.CURRENT_RESOURCE_TITLE, value);
     return this;
   }
 
-  public EpubBookSelection textPositionNot(int... value) {
-    addNotEquals(EpubBookColumns.TEXT_POSITION, toObjectArray(value));
+  public EpubBookSelection currentResourceTitleNot(String... value) {
+    addNotEquals(EpubBookColumns.CURRENT_RESOURCE_TITLE, value);
     return this;
   }
 
-  public EpubBookSelection textPositionGt(int value) {
-    addGreaterThan(EpubBookColumns.TEXT_POSITION, value);
+  public EpubBookSelection currentResourceTitleLike(String... value) {
+    addLike(EpubBookColumns.CURRENT_RESOURCE_TITLE, value);
     return this;
   }
 
-  public EpubBookSelection textPositionGtEq(int value) {
-    addGreaterThanOrEquals(EpubBookColumns.TEXT_POSITION, value);
+  public EpubBookSelection currentResourceTitleContains(String... value) {
+    addContains(EpubBookColumns.CURRENT_RESOURCE_TITLE, value);
     return this;
   }
 
-  public EpubBookSelection textPositionLt(int value) {
-    addLessThan(EpubBookColumns.TEXT_POSITION, value);
+  public EpubBookSelection currentResourceTitleStartsWith(String... value) {
+    addStartsWith(EpubBookColumns.CURRENT_RESOURCE_TITLE, value);
     return this;
   }
 
-  public EpubBookSelection textPositionLtEq(int value) {
-    addLessThanOrEquals(EpubBookColumns.TEXT_POSITION, value);
+  public EpubBookSelection currentResourceTitleEndsWith(String... value) {
+    addEndsWith(EpubBookColumns.CURRENT_RESOURCE_TITLE, value);
     return this;
   }
 
-  public EpubBookSelection orderByTextPosition(boolean desc) {
-    orderBy(EpubBookColumns.TEXT_POSITION, desc);
+  public EpubBookSelection orderByCurrentResourceTitle(boolean desc) {
+    orderBy(EpubBookColumns.CURRENT_RESOURCE_TITLE, desc);
     return this;
   }
 
-  public EpubBookSelection orderByTextPosition() {
-    orderBy(EpubBookColumns.TEXT_POSITION, false);
+  public EpubBookSelection orderByCurrentResourceTitle() {
+    orderBy(EpubBookColumns.CURRENT_RESOURCE_TITLE, false);
     return this;
   }
 }

@@ -16,7 +16,7 @@ public interface EpubBookModel extends BaseModel {
   String getCurrentResourceId();
 
   /**
-   * Position in a parsed string, on which read was finished.
+   * Title of a resource, from which last read was made.
    */
-  int getTextPosition();
+  String getCurrentResourceTitle();
 }

@@ -67,7 +67,7 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
     res = fetcher.fetchAndExtract(url, Constants.NET_READABLE_TIMEOUT, true);
     mTitle = res.getTitle();
     mImageUrl = res.getImageUrl();
-    return mTitle + " | " + res.getText();
+    return mTitle + " " + res.getText();
   }
 
   /**
@@ -124,6 +124,7 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
   @Override
   public void storeToDb() {
     CachedBookContentValues values = new CachedBookContentValues();
+    values.putTextPosition(mPosition);
     if (hasCoverImage()) {
       values.putCoverImageUri(getCoverImagePath());
       values.putCoverImageMean(mCoverImageMean);
@@ -132,7 +133,6 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
 
     TxtBookContentValues txtValues = new TxtBookContentValues();
     txtValues.putBytePosition(0);
-    txtValues.putTextPosition(mPosition);
 
     String currentTime = LocalDateTime.now().toString();
     values.putTimeOpened(currentTime);
@@ -193,5 +193,15 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
   @Override
   public void setTitle(String title) {
     mTitle = title;
+  }
+
+  @Override
+  public int getCurrentPosition() {
+    return mPosition;
+  }
+
+  @Override
+  public void setCurrentPosition(int position) {
+    mPosition = position;
   }
 }

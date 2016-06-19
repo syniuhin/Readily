@@ -63,6 +63,15 @@ public class CachedBookContentValues extends AbstractContentValues {
 
 
   /**
+   * Position in word list.
+   */
+  public CachedBookContentValues putTextPosition(int value) {
+    mContentValues.put(CachedBookColumns.TEXT_POSITION, value);
+    return this;
+  }
+
+
+  /**
    * Amount of book that is already read, percent.
    */
   public CachedBookContentValues putPercentile(double value) {

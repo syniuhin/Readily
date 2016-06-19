@@ -24,6 +24,11 @@ public interface CachedBookModel extends BaseModel {
   String getPath();
 
   /**
+   * Position in word list.
+   */
+  int getTextPosition();
+
+  /**
    * Amount of book that is already read, percent.
    */
   double getPercentile();

@@ -58,6 +58,18 @@ public class CachedBookCursor extends AbstractCursor
   }
 
   /**
+   * Position in word list.
+   */
+  public int getTextPosition() {
+    Integer res = getIntegerOrNull(CachedBookColumns.TEXT_POSITION);
+    if (res == null)
+      throw new NullPointerException(
+          "The value of 'text_position' in the database was null, which is " +
+              "not allowed according to the model definition");
+    return res;
+  }
+
+  /**
    * Amount of book that is already read, percent.
    */
   public double getPercentile() {
@@ -124,12 +136,12 @@ public class CachedBookCursor extends AbstractCursor
   }
 
   /**
-   * Position in a parsed string, on which read was finished.
+   * Title of a resource, from which last read was made.
    * Can be {@code null}.
    */
   @Nullable
-  public Integer getEpubBookTextPosition() {
-    Integer res = getIntegerOrNull(EpubBookColumns.TEXT_POSITION);
+  public String getEpubBookCurrentResourceTitle() {
+    String res = getStringOrNull(EpubBookColumns.CURRENT_RESOURCE_TITLE);
     return res;
   }
 
@@ -176,12 +188,13 @@ public class CachedBookCursor extends AbstractCursor
   }
 
   /**
-   * Position in a parsed preview, on which read was finished.
+   * Title of a fb2part, from which last read was made. May be null because
+   * of async processing.
    * Can be {@code null}.
    */
   @Nullable
-  public Integer getFb2BookTextPosition() {
-    Integer res = getIntegerOrNull(Fb2BookColumns.TEXT_POSITION);
+  public String getFb2BookCurrentPartTitle() {
+    String res = getStringOrNull(Fb2BookColumns.CURRENT_PART_TITLE);
     return res;
   }
 
@@ -213,16 +226,6 @@ public class CachedBookCursor extends AbstractCursor
   @Nullable
   public Integer getTxtBookBytePosition() {
     Integer res = getIntegerOrNull(TxtBookColumns.BYTE_POSITION);
-    return res;
-  }
-
-  /**
-   * Position in a parsed string, on which read was finished.
-   * Can be {@code null}.
-   */
-  @Nullable
-  public Integer getTxtBookTextPosition() {
-    Integer res = getIntegerOrNull(TxtBookColumns.TEXT_POSITION);
     return res;
   }
 }

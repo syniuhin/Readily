@@ -12,9 +12,4 @@ public interface TxtBookModel extends BaseModel {
    * continuously.
    */
   int getBytePosition();
-
-  /**
-   * Position in a parsed string, on which read was finished.
-   */
-  int getTextPosition();
 }

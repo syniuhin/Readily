@@ -10,7 +10,9 @@ import com.infmme.readilyapp.provider.cachedbook.CachedBookSelection;
 import com.infmme.readilyapp.provider.txtbook.TxtBookContentValues;
 import com.infmme.readilyapp.provider.txtbook.TxtBookSelection;
 import com.infmme.readilyapp.readable.Readable;
-import com.infmme.readilyapp.readable.interfaces.*;
+import com.infmme.readilyapp.readable.interfaces.ChunkedUnprocessedStorable;
+import com.infmme.readilyapp.readable.interfaces.Reading;
+import com.infmme.readilyapp.readable.interfaces.Storable;
 import com.infmme.readilyapp.reader.Reader;
 
 import java.io.*;
@@ -39,8 +41,9 @@ public class TxtStorable implements ChunkedUnprocessedStorable {
    */
   private String mTimeOpened;
 
-  private String mTitle = null;
-  private Double mPercentile = .0;
+  private String mTitle;
+  private double mPercentile = .0;
+  private double mChunkPercentile = .0;
 
   private Deque<TxtStorable.ChunkInfo> mLoadedChunks = new ArrayDeque<>();
 
@@ -126,9 +129,9 @@ public class TxtStorable implements ChunkedUnprocessedStorable {
       } else if (c.moveToFirst()) {
         CachedBookCursor book = new CachedBookCursor(c);
         mTitle = book.getTitle();
+        mCurrentTextPosition = book.getTextPosition();
         mTimeOpened = book.getTimeOpened();
         mPercentile = book.getPercentile();
-        mCurrentTextPosition = book.getTxtBookTextPosition();
         mCurrentBytePosition = book.getTxtBookBytePosition();
         mLastBytePosition = mCurrentBytePosition;
         book.close();
@@ -145,6 +148,7 @@ public class TxtStorable implements ChunkedUnprocessedStorable {
     if (mLoadedChunks != null && !mLoadedChunks.isEmpty()) {
       mCurrentBytePosition = mLoadedChunks.getFirst().mBytePosition;
       mCurrentTextPosition = reader.getPosition();
+      mChunkPercentile = reader.getPercentile();
     }
     return this;
   }
@@ -155,12 +159,12 @@ public class TxtStorable implements ChunkedUnprocessedStorable {
   @Override
   public void storeToDb() {
     CachedBookContentValues values = new CachedBookContentValues();
+    values.putTextPosition(mCurrentTextPosition);
     // TODO: Solve this
-    values.putPercentile(0);
+    values.putPercentile(calcPercentile());
 
     TxtBookContentValues txtValues = new TxtBookContentValues();
     txtValues.putBytePosition((int) mCurrentBytePosition);
-    txtValues.putTextPosition(mCurrentTextPosition);
 
     if (isStoredInDb()) {
       CachedBookSelection cachedWhere = new CachedBookSelection();
@@ -229,6 +233,16 @@ public class TxtStorable implements ChunkedUnprocessedStorable {
     mTitle = title;
   }
 
+  @Override
+  public int getCurrentPosition() {
+    return mCurrentTextPosition;
+  }
+
+  @Override
+  public void setCurrentPosition(int position) {
+    mCurrentTextPosition = position;
+  }
+
   public int getPosition() {
     return mCurrentTextPosition;
   }
@@ -292,6 +306,12 @@ public class TxtStorable implements ChunkedUnprocessedStorable {
     }
     cachedBookCursor.close();
     return id;
+  }
+
+  private double calcPercentile() {
+    return (mCurrentBytePosition + mChunkPercentile *
+        mLoadedChunks.getFirst().mBytePosition -
+        mCurrentBytePosition) / mFileSize;
   }
 
   private class ChunkInfo implements Serializable {

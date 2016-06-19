@@ -75,13 +75,18 @@ public class Fb2BookContentValues extends AbstractContentValues {
 
 
   /**
-   * Position in a parsed preview, on which read was finished.
+   * Title of a fb2part, from which last read was made. May be null because
+   * of async processing.
    */
-  public Fb2BookContentValues putTextPosition(int value) {
-    mContentValues.put(Fb2BookColumns.TEXT_POSITION, value);
+  public Fb2BookContentValues putCurrentPartTitle(@Nullable String value) {
+    mContentValues.put(Fb2BookColumns.CURRENT_PART_TITLE, value);
     return this;
   }
 
+  public Fb2BookContentValues putCurrentPartTitleNull() {
+    mContentValues.putNull(Fb2BookColumns.CURRENT_PART_TITLE);
+    return this;
+  }
 
   /**
    * Path to .json cache of a table of contents.

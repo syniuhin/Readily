@@ -51,13 +51,4 @@ public class TxtBookContentValues extends AbstractContentValues {
     return this;
   }
 
-
-  /**
-   * Position in a parsed string, on which read was finished.
-   */
-  public TxtBookContentValues putTextPosition(int value) {
-    mContentValues.put(TxtBookColumns.TEXT_POSITION, value);
-    return this;
-  }
-
 }

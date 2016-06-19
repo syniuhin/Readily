@@ -55,10 +55,10 @@ public class EpubBookContentValues extends AbstractContentValues {
 
 
   /**
-   * Position in a parsed string, on which read was finished.
+   * Title of a resource, from which last read was made.
    */
-  public EpubBookContentValues putTextPosition(int value) {
-    mContentValues.put(EpubBookColumns.TEXT_POSITION, value);
+  public EpubBookContentValues putCurrentResourceTitle(String value) {
+    mContentValues.put(EpubBookColumns.CURRENT_RESOURCE_TITLE, value);
     return this;
   }
 

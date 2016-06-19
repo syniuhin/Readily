@@ -66,14 +66,13 @@ public class Fb2BookCursor extends AbstractCursor implements Fb2BookModel {
   }
 
   /**
-   * Position in a parsed preview, on which read was finished.
+   * Title of a fb2part, from which last read was made. May be null because
+   * of async processing.
+   * Can be {@code null}.
    */
-  public int getTextPosition() {
-    Integer res = getIntegerOrNull(Fb2BookColumns.TEXT_POSITION);
-    if (res == null)
-      throw new NullPointerException(
-          "The value of 'text_position' in the database was null, which is " +
-              "not allowed according to the model definition");
+  @Nullable
+  public String getCurrentPartTitle() {
+    String res = getStringOrNull(Fb2BookColumns.CURRENT_PART_TITLE);
     return res;
   }
 

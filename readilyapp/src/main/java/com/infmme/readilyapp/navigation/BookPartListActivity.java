@@ -275,7 +275,7 @@ public class BookPartListActivity extends BaseActivity implements
   @Override
   public void chooseItem(AbstractTocReference tocReference, int textPosition) {
     mStructured.setCurrentTocReference(tocReference);
-    mStructured.setCurrentPosition(textPosition);
+    mStorable.setCurrentPosition(textPosition);
     StorableService.startStoring(this, mStorable);
     finish();
   }

@@ -1,6 +1,7 @@
 package com.infmme.readilyapp.reader;
 
 import android.text.TextUtils;
+import android.util.Log;
 import com.infmme.readilyapp.readable.interfaces.Chunked;
 import com.infmme.readilyapp.readable.interfaces.Reading;
 
@@ -51,14 +52,18 @@ public class ReaderTask implements Runnable {
 
   private Reading nextNonEmptyReading() throws IOException {
     Reading nextReading = null;
+    // Checks if we have only one reading to process.
     if (mChunked == null) {
+      Log.d(ReaderTask.class.getName(), "mChunked is null");
       nextReading = mSingleReading;
       mSingleReading = null;
     } else if (mChunked.hasNextReading()) {
+      Log.d(ReaderTask.class.getName(), "mChunked has next reading");
       // Finds non-empty consecutive reading.
       do {
         // Therefore we're here not for the first time.
         if (nextReading != null) {
+          Log.d(ReaderTask.class.getName(), "mChunked skipping last reading");
           mChunked.skipLast();
         }
         nextReading = mChunked.readNext();
@@ -75,11 +80,13 @@ public class ReaderTask implements Runnable {
     return nextReading;
   }
 
+  // TODO: Produce item on start immediately after first one.
   @Override
   public void run() {
     while (mCallback.shouldContinue()) {
       try {
         synchronized (mReadingDeque) {
+          Log.d(ReaderTask.class.getName(), "Locking mReadingDeque");
           // TODO: Ensure that reading is processed now.
           // Sort of initialization for a deque.
           Reading nextReading;
@@ -87,6 +94,8 @@ public class ReaderTask implements Runnable {
             nextReading = nextNonEmptyReading();
             if (nextReading != null && !TextUtils.isEmpty(
                 nextReading.getText())) {
+              Log.d(ReaderTask.class.getName(),
+                    "Adding to reading deque for the first time");
               mReadingDeque.add(nextReading);
             }
           }
@@ -102,6 +111,7 @@ public class ReaderTask implements Runnable {
                 // Duplicates adjacent reading data to transit smoothly between
                 // them.
                 duplicateAdjacentData(currentReading, nextReading);
+                Log.d(ReaderTask.class.getName(), "Adding to reading deque");
                 mReadingDeque.addLast(nextReading);
               }
               currentReading = nextReading;
@@ -110,6 +120,8 @@ public class ReaderTask implements Runnable {
         }
         // If we haven't started Reader flow yet, we have to do it now.
         if (!mOnceStarted) {
+          Log.d(ReaderTask.class.getName(),
+                "Removing from reading deque for the first time");
           mCallback.startReader(removeDequeHead());
           mOnceStarted = true;
         }

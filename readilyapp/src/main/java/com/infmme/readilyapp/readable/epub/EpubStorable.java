@@ -3,6 +3,7 @@ package com.infmme.readilyapp.readable.epub;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookContentValues;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
@@ -59,8 +60,8 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
 
   private String mCurrentResourceId;
   private String mCurrentResourceTitle;
-  private int mCurrentResourceIndex = -1;
-  private int mLastResourceIndex = -1;
+  private int mCurrentResourceIndex;
+  private int mLastResourceIndex;
 
   private int mCurrentTextPosition;
   private double mChunkPercentile = .0;
@@ -83,14 +84,15 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
   public Reading readNext() throws IOException {
     mCurrentResourceIndex = mLastResourceIndex;
 
-    Resource currentResource = mContents.get(mLastResourceIndex);
-    mCurrentResourceTitle = currentResource.getTitle();
-
     Readable readable = new Readable();
-    String parsed = parseRawText(new String(currentResource.getData()));
+    Resource r = mContents.get(mLastResourceIndex);
+    String parsed = parseRawText(new String(r.getData()));
     readable.setText(parsed);
 
-    mLoadedChunks.addLast(new ChunkInfo(mCurrentResourceIndex));
+    mLoadedChunks.addLast(new ChunkInfo(r.getId(), r.getTitle()));
+    Log.d(EpubStorable.class.getName(),
+          String.format("Added id: %s title: %s to loaded chunks.", r.getId(),
+                        r.getTitle()));
     mLastResourceIndex++;
     return readable;
   }
@@ -140,10 +142,11 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
       } else if (c.moveToFirst()) {
         CachedBookCursor book = new CachedBookCursor(c);
         mTitle = book.getTitle();
+        mCurrentTextPosition = book.getTextPosition();
         mTimeOpened = book.getTimeOpened();
         mPercentile = book.getPercentile();
-        mCurrentTextPosition = book.getEpubBookTextPosition();
         mCurrentResourceId = book.getEpubBookCurrentResourceId();
+        mCurrentResourceTitle = book.getEpubBookCurrentResourceTitle();
         book.close();
       } else {
         c.close();
@@ -156,10 +159,14 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
   @Override
   public Storable prepareForStoringSync(Reader reader) {
     if (mLoadedChunks != null && !mLoadedChunks.isEmpty()) {
-      mCurrentResourceIndex = mLoadedChunks.getFirst().mResourceIndex;
-      mCurrentResourceId = mContents.get(mCurrentResourceIndex).getId();
+      ChunkInfo chunk = mLoadedChunks.getFirst();
+      mCurrentResourceId = chunk.mResourceId;
+      mCurrentResourceTitle = chunk.mResourceTitle;
       mChunkPercentile = reader.getPercentile();
       setCurrentPosition(reader.getPosition());
+      Log.d(EpubStorable.class.getName(), String.format(
+          "Preparing for storing sync id: %s title: %s position: %d",
+          mCurrentResourceId, mCurrentResourceTitle, reader.getPosition()));
     }
     return this;
   }
@@ -176,22 +183,24 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
     }
   }
 
+  // TODO: Test this carefully.
   @Override
   public void storeToDb() {
     CachedBookContentValues values = new CachedBookContentValues();
+    values.putTextPosition(mCurrentTextPosition);
     double percent = calcPercentile();
 
     EpubBookContentValues epubValues = new EpubBookContentValues();
     epubValues.putCurrentResourceId(mCurrentResourceId);
-    epubValues.putTextPosition(mCurrentTextPosition);
+    epubValues.putCurrentResourceTitle(mCurrentResourceTitle);
 
     if (isStoredInDb()) {
       CachedBookSelection cachedWhere = new CachedBookSelection();
       cachedWhere.path(mPath);
       if (percent >= 0 && percent <= 1) {
         values.putPercentile(calcPercentile());
-        values.update(mContext, cachedWhere);
       }
+      values.update(mContext, cachedWhere);
       EpubBookSelection epubWhere = new EpubBookSelection();
       epubWhere.id(getFkEpubBookId());
       epubValues.update(mContext, epubWhere);
@@ -332,6 +341,7 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
       if (isStoredInDb()) {
         readFromDb();
         if (mCurrentResourceId != null) {
+          mLastResourceIndex = -1;
           for (int i = 0; i < mContents.size() &&
               mLastResourceIndex == -1; ++i) {
             if (mCurrentResourceId.equals(mContents.get(i).getId())) {
@@ -339,9 +349,11 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
             }
           }
         }
+        mCurrentResourceIndex = mLastResourceIndex;
       } else {
         mCurrentTextPosition = 0;
         mCurrentResourceId = mContents.get(0).getId();
+        mCurrentResourceTitle = mContents.get(0).getTitle();
         mTitle = mMetadata.getFirstTitle();
       }
       mProcessed = true;
@@ -374,6 +386,7 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
   public void setCurrentTocReference(AbstractTocReference tocReference) {
     EpubPart epubPart = (EpubPart) tocReference;
     mCurrentResourceId = epubPart.getId();
+    mCurrentResourceTitle = epubPart.getTitle();
   }
 
   @Override
@@ -404,6 +417,8 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
     fos.close();
     mCoverImageUri = coverImagePath;
     mCoverImageMean = ColorMatcher.pickRandomMaterialColor();
+    Log.d(EpubStorable.class.getName(), String.format(
+        "Stored cover image: %s", mCoverImageUri));
   }
 
   private String getCoverImagePath(final Resource coverImage) {
@@ -412,10 +427,12 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
   }
 
   private class ChunkInfo implements Serializable {
-    public int mResourceIndex;
+    String mResourceId;
+    String mResourceTitle;
 
-    public ChunkInfo(int resourceIndex) {
-      this.mResourceIndex = resourceIndex;
+    public ChunkInfo(String resourceId, String resourceTitle) {
+      this.mResourceId = resourceId;
+      this.mResourceTitle = resourceTitle;
     }
   }
 }

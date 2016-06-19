@@ -166,6 +166,46 @@ public class CachedBookSelection
     return this;
   }
 
+  public CachedBookSelection textPosition(int... value) {
+    addEquals(CachedBookColumns.TEXT_POSITION, toObjectArray(value));
+    return this;
+  }
+
+  public CachedBookSelection textPositionNot(int... value) {
+    addNotEquals(CachedBookColumns.TEXT_POSITION, toObjectArray(value));
+    return this;
+  }
+
+  public CachedBookSelection textPositionGt(int value) {
+    addGreaterThan(CachedBookColumns.TEXT_POSITION, value);
+    return this;
+  }
+
+  public CachedBookSelection textPositionGtEq(int value) {
+    addGreaterThanOrEquals(CachedBookColumns.TEXT_POSITION, value);
+    return this;
+  }
+
+  public CachedBookSelection textPositionLt(int value) {
+    addLessThan(CachedBookColumns.TEXT_POSITION, value);
+    return this;
+  }
+
+  public CachedBookSelection textPositionLtEq(int value) {
+    addLessThanOrEquals(CachedBookColumns.TEXT_POSITION, value);
+    return this;
+  }
+
+  public CachedBookSelection orderByTextPosition(boolean desc) {
+    orderBy(CachedBookColumns.TEXT_POSITION, desc);
+    return this;
+  }
+
+  public CachedBookSelection orderByTextPosition() {
+    orderBy(CachedBookColumns.TEXT_POSITION, false);
+    return this;
+  }
+
   public CachedBookSelection percentile(double... value) {
     addEquals(CachedBookColumns.PERCENTILE, toObjectArray(value));
     return this;
@@ -409,43 +449,46 @@ public class CachedBookSelection
     return this;
   }
 
-  public CachedBookSelection epubBookTextPosition(Integer... value) {
-    addEquals(EpubBookColumns.TEXT_POSITION, value);
+  public CachedBookSelection epubBookCurrentResourceTitle(String... value) {
+    addEquals(EpubBookColumns.CURRENT_RESOURCE_TITLE, value);
     return this;
   }
 
-  public CachedBookSelection epubBookTextPositionNot(Integer... value) {
-    addNotEquals(EpubBookColumns.TEXT_POSITION, value);
+  public CachedBookSelection epubBookCurrentResourceTitleNot(String... value) {
+    addNotEquals(EpubBookColumns.CURRENT_RESOURCE_TITLE, value);
     return this;
   }
 
-  public CachedBookSelection epubBookTextPositionGt(int value) {
-    addGreaterThan(EpubBookColumns.TEXT_POSITION, value);
+  public CachedBookSelection epubBookCurrentResourceTitleLike(String... value) {
+    addLike(EpubBookColumns.CURRENT_RESOURCE_TITLE, value);
     return this;
   }
 
-  public CachedBookSelection epubBookTextPositionGtEq(int value) {
-    addGreaterThanOrEquals(EpubBookColumns.TEXT_POSITION, value);
+  public CachedBookSelection epubBookCurrentResourceTitleContains(
+      String... value) {
+    addContains(EpubBookColumns.CURRENT_RESOURCE_TITLE, value);
     return this;
   }
 
-  public CachedBookSelection epubBookTextPositionLt(int value) {
-    addLessThan(EpubBookColumns.TEXT_POSITION, value);
+  public CachedBookSelection epubBookCurrentResourceTitleStartsWith(
+      String... value) {
+    addStartsWith(EpubBookColumns.CURRENT_RESOURCE_TITLE, value);
     return this;
   }
 
-  public CachedBookSelection epubBookTextPositionLtEq(int value) {
-    addLessThanOrEquals(EpubBookColumns.TEXT_POSITION, value);
+  public CachedBookSelection epubBookCurrentResourceTitleEndsWith(
+      String... value) {
+    addEndsWith(EpubBookColumns.CURRENT_RESOURCE_TITLE, value);
     return this;
   }
 
-  public CachedBookSelection orderByEpubBookTextPosition(boolean desc) {
-    orderBy(EpubBookColumns.TEXT_POSITION, desc);
+  public CachedBookSelection orderByEpubBookCurrentResourceTitle(boolean desc) {
+    orderBy(EpubBookColumns.CURRENT_RESOURCE_TITLE, desc);
     return this;
   }
 
-  public CachedBookSelection orderByEpubBookTextPosition() {
-    orderBy(EpubBookColumns.TEXT_POSITION, false);
+  public CachedBookSelection orderByEpubBookCurrentResourceTitle() {
+    orderBy(EpubBookColumns.CURRENT_RESOURCE_TITLE, false);
     return this;
   }
 
@@ -584,43 +627,44 @@ public class CachedBookSelection
     return this;
   }
 
-  public CachedBookSelection fb2BookTextPosition(Integer... value) {
-    addEquals(Fb2BookColumns.TEXT_POSITION, value);
+  public CachedBookSelection fb2BookCurrentPartTitle(String... value) {
+    addEquals(Fb2BookColumns.CURRENT_PART_TITLE, value);
     return this;
   }
 
-  public CachedBookSelection fb2BookTextPositionNot(Integer... value) {
-    addNotEquals(Fb2BookColumns.TEXT_POSITION, value);
+  public CachedBookSelection fb2BookCurrentPartTitleNot(String... value) {
+    addNotEquals(Fb2BookColumns.CURRENT_PART_TITLE, value);
     return this;
   }
 
-  public CachedBookSelection fb2BookTextPositionGt(int value) {
-    addGreaterThan(Fb2BookColumns.TEXT_POSITION, value);
+  public CachedBookSelection fb2BookCurrentPartTitleLike(String... value) {
+    addLike(Fb2BookColumns.CURRENT_PART_TITLE, value);
     return this;
   }
 
-  public CachedBookSelection fb2BookTextPositionGtEq(int value) {
-    addGreaterThanOrEquals(Fb2BookColumns.TEXT_POSITION, value);
+  public CachedBookSelection fb2BookCurrentPartTitleContains(String... value) {
+    addContains(Fb2BookColumns.CURRENT_PART_TITLE, value);
     return this;
   }
 
-  public CachedBookSelection fb2BookTextPositionLt(int value) {
-    addLessThan(Fb2BookColumns.TEXT_POSITION, value);
+  public CachedBookSelection fb2BookCurrentPartTitleStartsWith(
+      String... value) {
+    addStartsWith(Fb2BookColumns.CURRENT_PART_TITLE, value);
     return this;
   }
 
-  public CachedBookSelection fb2BookTextPositionLtEq(int value) {
-    addLessThanOrEquals(Fb2BookColumns.TEXT_POSITION, value);
+  public CachedBookSelection fb2BookCurrentPartTitleEndsWith(String... value) {
+    addEndsWith(Fb2BookColumns.CURRENT_PART_TITLE, value);
     return this;
   }
 
-  public CachedBookSelection orderByFb2BookTextPosition(boolean desc) {
-    orderBy(Fb2BookColumns.TEXT_POSITION, desc);
+  public CachedBookSelection orderByFb2BookCurrentPartTitle(boolean desc) {
+    orderBy(Fb2BookColumns.CURRENT_PART_TITLE, desc);
     return this;
   }
 
-  public CachedBookSelection orderByFb2BookTextPosition() {
-    orderBy(Fb2BookColumns.TEXT_POSITION, false);
+  public CachedBookSelection orderByFb2BookCurrentPartTitle() {
+    orderBy(Fb2BookColumns.CURRENT_PART_TITLE, false);
     return this;
   }
 
@@ -741,46 +785,6 @@ public class CachedBookSelection
 
   public CachedBookSelection orderByTxtBookBytePosition() {
     orderBy(TxtBookColumns.BYTE_POSITION, false);
-    return this;
-  }
-
-  public CachedBookSelection txtBookTextPosition(Integer... value) {
-    addEquals(TxtBookColumns.TEXT_POSITION, value);
-    return this;
-  }
-
-  public CachedBookSelection txtBookTextPositionNot(Integer... value) {
-    addNotEquals(TxtBookColumns.TEXT_POSITION, value);
-    return this;
-  }
-
-  public CachedBookSelection txtBookTextPositionGt(int value) {
-    addGreaterThan(TxtBookColumns.TEXT_POSITION, value);
-    return this;
-  }
-
-  public CachedBookSelection txtBookTextPositionGtEq(int value) {
-    addGreaterThanOrEquals(TxtBookColumns.TEXT_POSITION, value);
-    return this;
-  }
-
-  public CachedBookSelection txtBookTextPositionLt(int value) {
-    addLessThan(TxtBookColumns.TEXT_POSITION, value);
-    return this;
-  }
-
-  public CachedBookSelection txtBookTextPositionLtEq(int value) {
-    addLessThanOrEquals(TxtBookColumns.TEXT_POSITION, value);
-    return this;
-  }
-
-  public CachedBookSelection orderByTxtBookTextPosition(boolean desc) {
-    orderBy(TxtBookColumns.TEXT_POSITION, desc);
-    return this;
-  }
-
-  public CachedBookSelection orderByTxtBookTextPosition() {
-    orderBy(TxtBookColumns.TEXT_POSITION, false);
     return this;
   }
 }

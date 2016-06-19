@@ -59,4 +59,8 @@ public interface Storable extends Serializable {
   String getTitle();
 
   void setTitle(String title);
+
+  int getCurrentPosition();
+
+  void setCurrentPosition(int position);
 }

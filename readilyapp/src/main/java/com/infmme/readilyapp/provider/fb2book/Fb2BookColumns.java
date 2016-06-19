@@ -35,9 +35,10 @@ public class Fb2BookColumns implements BaseColumns {
   public static final String CURRENT_PART_ID = "current_part_id";
 
   /**
-   * Position in a parsed preview, on which read was finished.
+   * Title of a fb2part, from which last read was made. May be null because
+   * of async processing.
    */
-  public static final String TEXT_POSITION = "fb2_book__text_position";
+  public static final String CURRENT_PART_TITLE = "current_part_title";
 
   /**
    * Path to .json cache of a table of contents.
@@ -53,7 +54,7 @@ public class Fb2BookColumns implements BaseColumns {
       FULLY_PROCESSED,
       BYTE_POSITION,
       CURRENT_PART_ID,
-      TEXT_POSITION,
+      CURRENT_PART_TITLE,
       PATH_TOC
   };
   // @formatter:on
@@ -67,7 +68,7 @@ public class Fb2BookColumns implements BaseColumns {
         return true;
       if (c.equals(CURRENT_PART_ID) || c.contains("." + CURRENT_PART_ID))
         return true;
-      if (c.equals(TEXT_POSITION) || c.contains("." + TEXT_POSITION))
+      if (c.equals(CURRENT_PART_TITLE) || c.contains("." + CURRENT_PART_TITLE))
         return true;
       if (c.equals(PATH_TOC) || c.contains("." + PATH_TOC)) return true;
     }

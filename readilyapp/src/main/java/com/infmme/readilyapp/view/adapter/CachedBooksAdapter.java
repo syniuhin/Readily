@@ -53,13 +53,15 @@ public class CachedBooksAdapter
     }
 
     if (supportsNavigation(bookCursor)) {
-      String subtitle = bookCursor.getEpubBookCurrentResourceId();
+      String subtitle = bookCursor.getEpubBookCurrentResourceTitle();
       if (subtitle == null) {
-        subtitle = bookCursor.getFb2BookCurrentPartId();
+        subtitle = bookCursor.getFb2BookCurrentPartTitle();
       }
       if (subtitle != null) {
         holder.mSubtitleView.setVisibility(View.VISIBLE);
         holder.mSubtitleView.setText(subtitle);
+      } else {
+        holder.mSubtitleView.setVisibility(View.GONE);
       }
       holder.mNavigateButton.setVisibility(View.VISIBLE);
     } else {
@@ -260,6 +262,10 @@ public class CachedBooksAdapter
           context.getResources()
                  .getColor(android.R.color.primary_text_light,
                            context.getTheme()));
+      mSubtitleView.setTextColor(
+          context.getResources()
+                 .getColor(android.R.color.secondary_text_light,
+                           context.getTheme()));
       mTimeOpenedView.setTextAppearance(
           android.R.style.TextAppearance_Material_Small);
       mNavigateButton.setTextColor(
@@ -301,21 +307,11 @@ public class CachedBooksAdapter
     }
 
     private void setupButtons() {
-      mNavigateButton.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          mCallback.onNavigateButton(mId);
-        }
-      });
+      mNavigateButton.setOnClickListener(v -> mCallback.onNavigateButton(mId));
 
-      mMoreButton.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          mCallback.onMoreButton(
-              mImageView, mProgressView, mTitleView.getText().toString(), mId,
-              mCoverImageUri);
-        }
-      });
+      mMoreButton.setOnClickListener(v -> mCallback.onMoreButton(
+          mImageView, mProgressView, mTitleView.getText().toString(), mId,
+          mCoverImageUri));
     }
 
     public interface ItemClickCallback {

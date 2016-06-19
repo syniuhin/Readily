@@ -28,6 +28,11 @@ public class CachedBookColumns implements BaseColumns {
   public static final String PATH = "path";
 
   /**
+   * Position in word list.
+   */
+  public static final String TEXT_POSITION = "text_position";
+
+  /**
    * Amount of book that is already read, percent.
    */
   public static final String PERCENTILE = "percentile";
@@ -70,6 +75,7 @@ public class CachedBookColumns implements BaseColumns {
       _ID,
       TITLE,
       PATH,
+      TEXT_POSITION,
       PERCENTILE,
       TIME_OPENED,
       COVER_IMAGE_URI,
@@ -84,6 +90,7 @@ public class CachedBookColumns implements BaseColumns {
       _ID,
       TITLE,
       PATH,
+      TEXT_POSITION,
       PERCENTILE,
       TIME_OPENED,
       COVER_IMAGE_URI,
@@ -94,7 +101,7 @@ public class CachedBookColumns implements BaseColumns {
       Fb2BookColumns.FULLY_PROCESSED,
       Fb2BookColumns.BYTE_POSITION,
       Fb2BookColumns.CURRENT_PART_ID,
-      Fb2BookColumns.TEXT_POSITION,
+      Fb2BookColumns.CURRENT_PART_TITLE,
       Fb2BookColumns.PATH_TOC
   };
 
@@ -103,6 +110,7 @@ public class CachedBookColumns implements BaseColumns {
       _ID,
       TITLE,
       PATH,
+      TEXT_POSITION,
       PERCENTILE,
       TIME_OPENED,
       COVER_IMAGE_URI,
@@ -111,7 +119,7 @@ public class CachedBookColumns implements BaseColumns {
       FB2_BOOK_ID,
       TXT_BOOK_ID,
       EpubBookColumns.CURRENT_RESOURCE_ID,
-      EpubBookColumns.TEXT_POSITION
+      EpubBookColumns.CURRENT_RESOURCE_TITLE
   };
 
   // @formatter:off
@@ -119,6 +127,7 @@ public class CachedBookColumns implements BaseColumns {
       _ID,
       TITLE,
       PATH,
+      TEXT_POSITION,
       PERCENTILE,
       TIME_OPENED,
       COVER_IMAGE_URI,
@@ -126,8 +135,7 @@ public class CachedBookColumns implements BaseColumns {
       EPUB_BOOK_ID,
       FB2_BOOK_ID,
       TXT_BOOK_ID,
-      TxtBookColumns.BYTE_POSITION,
-      TxtBookColumns.TEXT_POSITION
+      TxtBookColumns.BYTE_POSITION
   };
 
   // @formatter:off
@@ -135,6 +143,7 @@ public class CachedBookColumns implements BaseColumns {
       _ID,
       TITLE,
       PATH,
+      TEXT_POSITION,
       PERCENTILE,
       TIME_OPENED,
       COVER_IMAGE_URI,
@@ -145,12 +154,11 @@ public class CachedBookColumns implements BaseColumns {
       Fb2BookColumns.FULLY_PROCESSED,
       Fb2BookColumns.BYTE_POSITION,
       Fb2BookColumns.CURRENT_PART_ID,
-      Fb2BookColumns.TEXT_POSITION,
+      Fb2BookColumns.CURRENT_PART_TITLE,
       Fb2BookColumns.PATH_TOC,
       EpubBookColumns.CURRENT_RESOURCE_ID,
-      EpubBookColumns.TEXT_POSITION,
-      TxtBookColumns.BYTE_POSITION,
-      TxtBookColumns.TEXT_POSITION
+      EpubBookColumns.CURRENT_RESOURCE_TITLE,
+      TxtBookColumns.BYTE_POSITION
   };
   // @formatter:on
   public static final String PREFIX_EPUB_BOOK = TABLE_NAME + "__" +
@@ -165,6 +173,8 @@ public class CachedBookColumns implements BaseColumns {
     for (String c : projection) {
       if (c.equals(TITLE) || c.contains("." + TITLE)) return true;
       if (c.equals(PATH) || c.contains("." + PATH)) return true;
+      if (c.equals(TEXT_POSITION) || c.contains("." + TEXT_POSITION))
+        return true;
       if (c.equals(PERCENTILE) || c.contains("." + PERCENTILE)) return true;
       if (c.equals(TIME_OPENED) || c.contains("." + TIME_OPENED)) return true;
       if (c.equals(COVER_IMAGE_URI) || c.contains("." + COVER_IMAGE_URI))

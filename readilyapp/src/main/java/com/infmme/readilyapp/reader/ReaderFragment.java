@@ -719,7 +719,7 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
                   mChunked = x;
                   mStorable = x;
                   // TODO: Fix this after fix of the model.
-                  startChunkedReadingFlow(0);
+                  startChunkedReadingFlow(mStorable.getCurrentPosition());
                 } else {
                   stopShowingProgress();
                   showNotification(R.string.error_occurred);

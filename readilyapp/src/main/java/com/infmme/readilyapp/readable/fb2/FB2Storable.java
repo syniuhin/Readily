@@ -147,9 +147,9 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
 
       if (mCurrentEvent.exitingTag(FB2Tags.SECTION)) {
         if (BuildConfig.DEBUG) {
-          Log.d(getClass().getName(),
-                String.format("Exiting section %s on %d", mCurrentPartId,
-                              mParser.getPosition()));
+          Log.d(getClass().getName(), String.format(
+              "Exiting section %s on %d", mCurrentPartTitle,
+              mParser.getPosition()));
         }
         // Checks if we're in a nested section.
         if (!sectionIdStack.isEmpty()) {
@@ -184,7 +184,10 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
     readable.setPosition(0);
 
     mLoadedChunks.addLast(
-        new ChunkInfo(mCurrentPartId, mCurrentBytePosition));
+        new ChunkInfo(mCurrentPartId, mCurrentPartTitle, mCurrentBytePosition));
+    Log.d(FB2Storable.class.getName(),
+          String.format("Added id: %s title: %s to loaded chunks.",
+                        mCurrentPartId, mCurrentPartTitle));
 
     return readable;
   }
@@ -235,10 +238,11 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
       } else if (c.moveToFirst()) {
         CachedBookCursor book = new CachedBookCursor(c);
         mTitle = book.getTitle();
+        mCurrentTextPosition = book.getTextPosition();
         mTimeOpened = book.getTimeOpened();
         mPercentile = book.getPercentile();
         mCurrentPartId = book.getFb2BookCurrentPartId();
-        mCurrentTextPosition = book.getFb2BookTextPosition();
+        mCurrentPartTitle = book.getFb2BookCurrentPartTitle();
         mCurrentBytePosition = book.getFb2BookBytePosition();
         mFullyProcessed = book.getFb2BookFullyProcessed();
         mLastBytePosition = mCurrentBytePosition;
@@ -254,16 +258,22 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
   @Override
   public Storable prepareForStoringSync(Reader reader) {
     if (mLoadedChunks != null && !mLoadedChunks.isEmpty()) {
-      mCurrentBytePosition = mLoadedChunks.getFirst().mBytePosition;
+      ChunkInfo chunk = mLoadedChunks.getFirst();
+      mCurrentBytePosition = chunk.mBytePosition;
+      mCurrentPartId = chunk.mSectionId;
+      mCurrentPartTitle = chunk.mSectionTitle;
       mChunkPercentile = reader.getPercentile();
       setCurrentPosition(reader.getPosition());
+      Log.d(FB2Storable.class.getName(), String.format(
+          "Preparing for storing sync id: %s title: %s position: %d",
+          mCurrentPartId, mCurrentPartTitle, reader.getPosition()));
     }
     return this;
   }
 
   @Override
   public void beforeStoringToDb() {
-    // All the logic done by FB2ProcessingService.
+    // All the logic done by FB2ProcessingService and prepareForStoringSync().
   }
 
   /**
@@ -277,14 +287,16 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
     Bitmap bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0,
                                                   decodedBytes.length);
 
-    String path = getCoverImagePath();
-    File file = new File(path);
+    mCoverImageUri = getCoverImagePath();
+    File file = new File(mCoverImageUri);
     file.createNewFile();
     FileOutputStream ostream = new FileOutputStream(file);
     bitmap.compress(Bitmap.CompressFormat.PNG, 100, ostream);
     ostream.close();
 
     mCoverImageMean = ColorMatcher.findClosestMaterialColor(bitmap);
+    Log.d(FB2Storable.class.getName(), String.format(
+        "Stored cover image: %s", mCoverImageUri));
   }
 
   private String getCoverImagePath() {
@@ -309,6 +321,10 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
         values.putTitle(mTitle);
         updateValues = true;
       }
+      if (mCurrentTextPosition >= 0) {
+        values.putTextPosition(mCurrentTextPosition);
+        updateValues = true;
+      }
       if (percent >= 0 && percent <= 1) {
         values.putPercentile(calcPercentile());
         updateValues = true;
@@ -326,22 +342,22 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
       if (mCurrentBytePosition >= 0) {
         fb2Values.putBytePosition((int) mCurrentBytePosition);
       }
-      if (mCurrentTextPosition >= 0) {
-        fb2Values.putTextPosition(mCurrentTextPosition);
-      }
+      // Shouldn't be null anyway.
       if (mCurrentPartId != null) {
         fb2Values.putCurrentPartId(mCurrentPartId);
       }
+      fb2Values.putCurrentPartTitle(mCurrentPartTitle);
 
       Fb2BookSelection fb2Where = new Fb2BookSelection();
       fb2Where.id(getFkFb2BookId());
       fb2Values.update(mContext, fb2Where);
     } else {
       fb2Values.putBytePosition((int) mCurrentBytePosition);
-      fb2Values.putTextPosition(mCurrentTextPosition);
       fb2Values.putCurrentPartId(mCurrentPartId);
+      fb2Values.putCurrentPartTitle(mCurrentPartTitle);
       fb2Values.putFullyProcessed(mFullyProcessed);
 
+      values.putTextPosition(mCurrentTextPosition);
       if (percent >= 0 && percent <= 1) {
         values.putPercentile(calcPercentile());
       } else {
@@ -589,6 +605,8 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
           stack.add(currentPart);
           currentPart = childPart;
         }
+        Log.d(FB2Storable.class.getName(), String.format(
+            "Entered section on: %d", mParser.getPosition()));
       }
       if (event.exitingTag(FB2Tags.SECTION)) {
         if (currentPart == null) {
@@ -604,34 +622,52 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
         } else {
           currentPart = stack.pop();
         }
+        Log.d(FB2Storable.class.getName(), String.format(
+            "Exited section on: %d", mParser.getPosition()));
       }
 
       if (event.enteringTag(FB2Tags.TITLE)) {
+        Log.d(FB2Storable.class.getName(), String.format(
+            "Entered title on: %d", mParser.getPosition()));
         insideTitle = true;
       }
       if (event.exitingTag(FB2Tags.TITLE)) {
+        Log.d(FB2Storable.class.getName(), String.format(
+            "Exited title on: %d", mParser.getPosition()));
         insideTitle = false;
       }
 
       if (event.enteringTag(FB2Tags.BOOK_TITLE)) {
+        Log.d(FB2Storable.class.getName(), String.format(
+            "Entered book-title on: %d", mParser.getPosition()));
         insideBookTitle = true;
       }
       if (event.exitingTag(FB2Tags.BOOK_TITLE)) {
+        Log.d(FB2Storable.class.getName(), String.format(
+            "Exited book-title on: %d", mParser.getPosition()));
         insideBookTitle = false;
       }
 
       if (event.enteringTag(FB2Tags.COVER_PAGE)) {
+        Log.d(FB2Storable.class.getName(), String.format(
+            "Entered coverpage on: %d", mParser.getPosition()));
         insideCoverPage = true;
       }
       if (event.exitingTag(FB2Tags.COVER_PAGE)) {
+        Log.d(FB2Storable.class.getName(), String.format(
+            "Exited coverpage on: %d", mParser.getPosition()));
         insideCoverPage = false;
       }
 
       if (event.enteringTag(FB2Tags.BINARY) &&
           event.checkHref(mCoverImageHref)) {
+        Log.d(FB2Storable.class.getName(), String.format(
+            "Entered binary on: %d", mParser.getPosition()));
         insideCoverPageBinary = true;
       }
       if (insideCoverPageBinary && event.exitingTag(FB2Tags.BINARY)) {
+        Log.d(FB2Storable.class.getName(), String.format(
+            "Exited coverpage on: %d", mParser.getPosition()));
         insideCoverPageBinary = false;
       }
 
@@ -672,12 +708,13 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
 
     if (mCoverImageEncoded != null) {
       storeCoverImage();
-      mCoverImageUri = getCoverImagePath();
     }
 
     mTableOfContents = toc;
     storeTableOfContents();
+    Log.d(FB2Storable.class.getName(), "TOC stored");
     storeSectionIdTitleMap();
+    Log.d(FB2Storable.class.getName(), "IdTitleMap stored");
     mFullyProcessed = true;
   }
 
@@ -816,10 +853,12 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
 
   private class ChunkInfo implements Serializable {
     String mSectionId;
+    String mSectionTitle;
     long mBytePosition;
 
-    public ChunkInfo(String sectionTitle, long bytePosition) {
-      this.mSectionId = sectionTitle;
+    public ChunkInfo(String sectionId, String sectionTitle, long bytePosition) {
+      this.mSectionId = sectionId;
+      this.mSectionTitle = sectionTitle;
       this.mBytePosition = bytePosition;
     }
   }

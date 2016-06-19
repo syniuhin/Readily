@@ -29,9 +29,12 @@ public interface Fb2BookModel extends BaseModel {
   String getCurrentPartId();
 
   /**
-   * Position in a parsed preview, on which read was finished.
+   * Title of a fb2part, from which last read was made. May be null because
+   * of async processing.
+   * Can be {@code null}.
    */
-  int getTextPosition();
+  @Nullable
+  String getCurrentPartTitle();
 
   /**
    * Path to .json cache of a table of contents.

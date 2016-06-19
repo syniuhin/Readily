@@ -9,13 +9,9 @@ import java.util.List;
 public interface Structured {
   List<? extends AbstractTocReference> getTableOfContents();
 
+  void setCurrentTocReference(AbstractTocReference tocReference);
+
   String getCurrentPartId();
 
   String getCurrentPartTitle();
-
-  void setCurrentTocReference(AbstractTocReference tocReference);
-
-  int getCurrentPosition();
-
-  void setCurrentPosition(int position);
 }

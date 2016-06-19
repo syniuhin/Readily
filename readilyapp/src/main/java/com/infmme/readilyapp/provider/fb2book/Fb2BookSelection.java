@@ -177,43 +177,43 @@ public class Fb2BookSelection extends AbstractSelection<Fb2BookSelection> {
     return this;
   }
 
-  public Fb2BookSelection textPosition(int... value) {
-    addEquals(Fb2BookColumns.TEXT_POSITION, toObjectArray(value));
+  public Fb2BookSelection currentPartTitle(String... value) {
+    addEquals(Fb2BookColumns.CURRENT_PART_TITLE, value);
     return this;
   }
 
-  public Fb2BookSelection textPositionNot(int... value) {
-    addNotEquals(Fb2BookColumns.TEXT_POSITION, toObjectArray(value));
+  public Fb2BookSelection currentPartTitleNot(String... value) {
+    addNotEquals(Fb2BookColumns.CURRENT_PART_TITLE, value);
     return this;
   }
 
-  public Fb2BookSelection textPositionGt(int value) {
-    addGreaterThan(Fb2BookColumns.TEXT_POSITION, value);
+  public Fb2BookSelection currentPartTitleLike(String... value) {
+    addLike(Fb2BookColumns.CURRENT_PART_TITLE, value);
     return this;
   }
 
-  public Fb2BookSelection textPositionGtEq(int value) {
-    addGreaterThanOrEquals(Fb2BookColumns.TEXT_POSITION, value);
+  public Fb2BookSelection currentPartTitleContains(String... value) {
+    addContains(Fb2BookColumns.CURRENT_PART_TITLE, value);
     return this;
   }
 
-  public Fb2BookSelection textPositionLt(int value) {
-    addLessThan(Fb2BookColumns.TEXT_POSITION, value);
+  public Fb2BookSelection currentPartTitleStartsWith(String... value) {
+    addStartsWith(Fb2BookColumns.CURRENT_PART_TITLE, value);
     return this;
   }
 
-  public Fb2BookSelection textPositionLtEq(int value) {
-    addLessThanOrEquals(Fb2BookColumns.TEXT_POSITION, value);
+  public Fb2BookSelection currentPartTitleEndsWith(String... value) {
+    addEndsWith(Fb2BookColumns.CURRENT_PART_TITLE, value);
     return this;
   }
 
-  public Fb2BookSelection orderByTextPosition(boolean desc) {
-    orderBy(Fb2BookColumns.TEXT_POSITION, desc);
+  public Fb2BookSelection orderByCurrentPartTitle(boolean desc) {
+    orderBy(Fb2BookColumns.CURRENT_PART_TITLE, desc);
     return this;
   }
 
-  public Fb2BookSelection orderByTextPosition() {
-    orderBy(Fb2BookColumns.TEXT_POSITION, false);
+  public Fb2BookSelection orderByCurrentPartTitle() {
+    orderBy(Fb2BookColumns.CURRENT_PART_TITLE, false);
     return this;
   }
 

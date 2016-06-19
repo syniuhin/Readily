@@ -39,14 +39,11 @@ public class EpubBookCursor extends AbstractCursor implements EpubBookModel {
   }
 
   /**
-   * Position in a parsed string, on which read was finished.
+   * Title of a resource, from which last read was made.
+   * Cannot be {@code null}.
    */
-  public int getTextPosition() {
-    Integer res = getIntegerOrNull(EpubBookColumns.TEXT_POSITION);
-    if (res == null)
-      throw new NullPointerException(
-          "The value of 'text_position' in the database was null, which is " +
-              "not allowed according to the model definition");
-    return res;
+  @NonNull
+  public String getCurrentResourceTitle() {
+    return getStringOrNull(EpubBookColumns.CURRENT_RESOURCE_TITLE);
   }
 }
