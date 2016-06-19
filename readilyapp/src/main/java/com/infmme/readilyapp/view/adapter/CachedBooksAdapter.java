@@ -2,7 +2,10 @@ package com.infmme.readilyapp.view.adapter;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Build;
 import android.support.percent.PercentRelativeLayout;
 import android.support.v7.widget.CardView;
@@ -161,6 +164,8 @@ public class CachedBooksAdapter
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         hasImageM(context);
       } else {
+        mProgressView.getProgressDrawable().setColorFilter(
+            Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN);
         mNavigateButton.setTextColor(
             context.getResources()
                    .getColor(android.R.color.primary_text_dark));
@@ -178,24 +183,22 @@ public class CachedBooksAdapter
 
     @TargetApi(Build.VERSION_CODES.M)
     private void hasImageM(final Context context) {
+      final Resources resources = context.getResources();
+      final Resources.Theme theme = context.getTheme();
+
+      mProgressView.setProgressTintList(ColorStateList.valueOf(Color.WHITE));
       mTitleView.setTextAppearance(
           android.R.style.TextAppearance_Material_Large_Inverse);
       mSubtitleView.setTextAppearance(
           android.R.style.TextAppearance_Material_Subhead);
       mSubtitleView.setTextColor(
-          context.getResources()
-                 .getColor(android.R.color.primary_text_dark,
-                           context.getTheme()));
+          resources.getColor(android.R.color.primary_text_dark, theme));
       mTimeOpenedView.setTextAppearance(
           android.R.style.TextAppearance_Material_Small_Inverse);
       mNavigateButton.setTextColor(
-          context.getResources()
-                 .getColor(android.R.color.primary_text_dark,
-                           context.getTheme()));
+          resources.getColor(android.R.color.primary_text_dark, theme));
       mMoreButton.setTextColor(
-          context.getResources()
-                 .getColor(android.R.color.primary_text_dark,
-                           context.getTheme()));
+          resources.getColor(android.R.color.primary_text_dark, theme));
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -231,15 +234,15 @@ public class CachedBooksAdapter
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         hasNoImageM(context);
       } else {
+        final Resources resources = context.getResources();
         mCardView.setBackgroundColor(
-            context.getResources()
-                   .getColor(R.color.cardview_light_background));
-        mNavigateButton.setTextColor(
-            context.getResources()
-                   .getColor(R.color.accent));
+            resources.getColor(R.color.cardview_light_background));
+        mProgressView.getProgressDrawable().setColorFilter(
+            resources.getColor(R.color.accent),
+            android.graphics.PorterDuff.Mode.SRC_IN);
+        mNavigateButton.setTextColor(resources.getColor(R.color.accent));
         mMoreButton.setTextColor(
-            context.getResources()
-                   .getColor(android.R.color.primary_text_light));
+            resources.getColor(android.R.color.primary_text_light));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
           hasNoImageICS(context);
         } else {
@@ -252,29 +255,24 @@ public class CachedBooksAdapter
 
     @TargetApi(Build.VERSION_CODES.M)
     private void hasNoImageM(final Context context) {
+      final Resources resources = context.getResources();
+      final Resources.Theme theme = context.getTheme();
+
       mCardView.setBackgroundColor(
-          context.getResources()
-                 .getColor(R.color.cardview_light_background,
-                           context.getTheme()));
+          resources.getColor(R.color.cardview_light_background, theme));
+      mProgressView.setProgressTintList(ColorStateList.valueOf(
+          resources.getColor(R.color.accent, theme)));
       mTitleView.setTextAppearance(
           android.R.style.TextAppearance_Material_Display1);
       mTitleView.setTextColor(
-          context.getResources()
-                 .getColor(android.R.color.primary_text_light,
-                           context.getTheme()));
+          resources.getColor(android.R.color.primary_text_light, theme));
       mSubtitleView.setTextColor(
-          context.getResources()
-                 .getColor(android.R.color.secondary_text_light,
-                           context.getTheme()));
+          resources.getColor(android.R.color.secondary_text_light, theme));
       mTimeOpenedView.setTextAppearance(
           android.R.style.TextAppearance_Material_Small);
-      mNavigateButton.setTextColor(
-          context.getResources()
-                 .getColor(R.color.accent, context.getTheme()));
+      mNavigateButton.setTextColor(resources.getColor(R.color.accent, theme));
       mMoreButton.setTextColor(
-          context.getResources()
-                 .getColor(android.R.color.primary_text_light,
-                           context.getTheme()));
+          resources.getColor(android.R.color.primary_text_light, theme));
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -294,16 +292,15 @@ public class CachedBooksAdapter
     }
 
     private void hasNoImageBelowICS(final Context context) {
+      final Resources resources = context.getResources();
+
       mTitleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 28);
       mTitleView.setTextColor(
-          context.getResources()
-                 .getColor(android.R.color.primary_text_light));
+          resources.getColor(android.R.color.primary_text_light));
       mSubtitleView.setTextColor(
-          context.getResources()
-                 .getColor(android.R.color.secondary_text_light));
+          resources.getColor(android.R.color.secondary_text_light));
       mTimeOpenedView.setTextColor(
-          context.getResources()
-                 .getColor(android.R.color.secondary_text_light));
+          resources.getColor(android.R.color.secondary_text_light));
     }
 
     private void setupButtons() {
