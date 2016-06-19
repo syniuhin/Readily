@@ -48,7 +48,8 @@ public class CachedBooksAdapter
     holder.mId = bookCursor.getId();
     holder.mCoverImageUri = bookCursor.getCoverImageUri();
 
-    holder.mTitleView.setText(bookCursor.getTitle());
+    holder.mTitle = bookCursor.getTitle();
+    holder.mTitleView.setText(holder.mTitle);
     if (holder.mCoverImageUri != null) {
       bindWithImage(holder, bookCursor);
     } else {
@@ -109,6 +110,9 @@ public class CachedBooksAdapter
 
   public static class CachedBookHolder extends RecyclerView.ViewHolder
       implements View.OnClickListener {
+    boolean mWithImage;
+
+    View mRootView;
     CardView mCardView;
     PercentRelativeLayout mActionView;
 
@@ -122,12 +126,28 @@ public class CachedBooksAdapter
     Button mMoreButton;
 
     long mId;
+    String mTitle;
     String mCoverImageUri;
     ItemClickCallback mCallback;
+
+    /**
+     * Constructs an immutable copy to pass an instance as an argument.
+     */
+    public CachedBookHolder(CachedBookHolder that) {
+      super(that.mRootView);
+      this.mWithImage = that.isWithImage();
+      this.mId = that.getId();
+      this.mTitle = that.getTitle();
+      this.mCoverImageUri = that.getCoverImageUri();
+
+      // It's mutable, though.
+      this.mImageView = that.getImageView();
+    }
 
     public CachedBookHolder(View v, long id, String coverImageUri,
                             ItemClickCallback callback) {
       super(v);
+      mRootView = v;
       mCardView = (CardView) v.findViewById(R.id.cache_list_card);
       mActionView = (PercentRelativeLayout) v.findViewById(
           R.id.cache_list_card_child);
@@ -153,10 +173,11 @@ public class CachedBooksAdapter
 
     @Override
     public void onClick(View v) {
-      mCallback.onItem(this);
+      mCallback.onItem(new CachedBookHolder(this));
     }
 
     public void hasImage(final Context context) {
+      mWithImage = true;
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         hasImageM(context);
       } else {
@@ -235,6 +256,7 @@ public class CachedBooksAdapter
     }
 
     public void hasNoImage(final Context context) {
+      mWithImage = false;
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         hasNoImageM(context);
       } else {
@@ -320,11 +342,20 @@ public class CachedBooksAdapter
     private void setupButtons() {
       mReadButton.setOnClickListener(v -> mCallback.onReadButton(mId));
 
-      mMoreButton.setOnClickListener(v -> mCallback.onMoreButton(this));
+      mMoreButton.setOnClickListener(
+          v -> mCallback.onMoreButton(new CachedBookHolder(this)));
+    }
+
+    public boolean isWithImage() {
+      return mWithImage;
     }
 
     public long getId() {
       return mId;
+    }
+
+    public String getTitle() {
+      return mTitle;
     }
 
     public String getCoverImageUri() {

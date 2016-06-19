@@ -131,16 +131,19 @@ public class FileListFragment extends Fragment
       final CachedBooksAdapter.CachedBookHolder holder) {
     final Activity a = getActivity();
     Intent intent = new Intent(a, StorableDetailActivity.class);
-    intent.putExtra(Constants.EXTRA_TITLE,
-                    holder.getTitleView().getText().toString());
+    intent.putExtra(Constants.EXTRA_TITLE, holder.getTitle());
     intent.putExtra(Constants.EXTRA_ID, holder.getId());
     intent.putExtra(Constants.EXTRA_COVER_IMAGE_URI, holder.getCoverImageUri());
-    Pair<View, String> p1 = Pair.create(
-        holder.getImageView(), a.getResources().getString(
-            R.string.storable_detail_transition_image_view));
-    ActivityOptionsCompat options =
-        ActivityOptionsCompat.makeSceneTransitionAnimation(a, p1);
-    startActivity(intent, options.toBundle());
+    if (holder.isWithImage()) {
+      Pair<View, String> p1 = Pair.create(
+          holder.getImageView(), a.getResources().getString(
+              R.string.storable_detail_transition_image_view));
+      ActivityOptionsCompat options =
+          ActivityOptionsCompat.makeSceneTransitionAnimation(a, p1);
+      startActivity(intent, options.toBundle());
+    } else {
+      startActivity(intent);
+    }
   }
 
   private void addSubscription(Subscription s) {
