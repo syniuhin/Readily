@@ -60,6 +60,7 @@
     <string name="sample_part">Chapter 1</string>
     <string name="title_prefix">Title:</string>
     <string name="author_prefix">Author:</string>
+    <string name="description_prefix">Description:</string>
     <string name="genre_prefix">Genre:</string>
     <string name="language_prefix">Language:</string>
     <string name="part_prefix">Current part:</string>

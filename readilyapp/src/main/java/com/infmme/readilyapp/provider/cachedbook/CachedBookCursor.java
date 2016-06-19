@@ -28,7 +28,8 @@ public class CachedBookCursor extends AbstractCursor
       CachedBookSelection where = new CachedBookSelection();
       where.id(id);
       Cursor c = context.getContentResolver().query(
-          CachedBookColumns.CONTENT_URI, CachedBookColumns.ALL_COLUMNS,
+          CachedBookColumns.CONTENT_URI,
+          CachedBookColumns.ALL_COLUMNS_FULL_JOIN,
           where.sel(), where.args(), null);
       CachedBookCursor bookCursor = new CachedBookCursor(c);
       if (bookCursor.moveToFirst()) {

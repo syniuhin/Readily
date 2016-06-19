@@ -8,8 +8,7 @@ import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookContentValues;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookSelection;
-import com.infmme.readilyapp.provider.cachedbookinfo
-    .CachedBookInfoContentValues;
+import com.infmme.readilyapp.provider.cachedbookinfo.CachedBookInfoContentValues;
 import com.infmme.readilyapp.provider.cachedbookinfo.CachedBookInfoSelection;
 import com.infmme.readilyapp.provider.epubbook.EpubBookContentValues;
 import com.infmme.readilyapp.provider.epubbook.EpubBookSelection;
@@ -32,10 +31,8 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 
-import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor
-    .getFkEpubBookId;
-import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor
-    .getFkInfoId;
+import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor.getFkEpubBookId;
+import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor.getFkInfoId;
 import static com.infmme.readilyapp.readable.epub.EpubPart.parseRawText;
 
 /**
@@ -235,13 +232,11 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
       if (authors != null) {
         for (Author a : authors) {
           stringBuilder.append(a.getFirstname()).append(" ")
-                       .append(a.getLastname()).append(" ");
+                       .append(a.getLastname()).append(", ");
         }
         if (stringBuilder.length() > 0) {
           infoValues.putAuthor(
-              stringBuilder.substring(0, stringBuilder.length() - 1));
-        } else {
-          infoValues.putAuthor(stringBuilder.toString());
+              stringBuilder.substring(0, stringBuilder.length() - 2));
         }
       }
 
@@ -249,13 +244,11 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
       List<String> subjects = mMetadata.getSubjects();
       if (subjects != null) {
         for (String s : subjects) {
-          stringBuilder.append(s).append(" ");
+          stringBuilder.append(s).append(", ");
         }
         if (stringBuilder.length() > 0) {
           infoValues.putGenre(
-              stringBuilder.substring(0, stringBuilder.length() - 1));
-        } else {
-          infoValues.putGenre(stringBuilder.toString());
+              stringBuilder.substring(0, stringBuilder.length() - 2));
         }
       }
 
@@ -263,13 +256,11 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
       List<String> descriptions = mMetadata.getDescriptions();
       if (descriptions != null) {
         for (String s : descriptions) {
-          stringBuilder.append(s).append("\n");
+          stringBuilder.append(parseRawText(s)).append("\n");
         }
         if (stringBuilder.length() > 0) {
           infoValues.putDescription(
               stringBuilder.substring(0, stringBuilder.length() - 1));
-        } else {
-          infoValues.putDescription(stringBuilder.toString());
         }
       }
 

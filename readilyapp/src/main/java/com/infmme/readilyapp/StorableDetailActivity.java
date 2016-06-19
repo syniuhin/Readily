@@ -9,6 +9,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,7 +17,9 @@ import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.infmme.readilyapp.navigation.BookPartListActivity;
+import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
 import com.infmme.readilyapp.readable.type.ReadableType;
+import com.infmme.readilyapp.readable.type.ReadingSource;
 import com.infmme.readilyapp.util.Constants;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -35,6 +38,7 @@ public class StorableDetailActivity extends BaseActivity {
   private FloatingActionButton mFab;
   private ImageView mImageView;
   private TextView mTitleTextView;
+  private TextView mDescriptionTextView;
   private TextView mAuthorTextView;
   private TextView mGenreTextView;
   private TextView mLanguageTextView;
@@ -76,6 +80,8 @@ public class StorableDetailActivity extends BaseActivity {
 
     mTitleTextView = (TextView) findViewById(R.id.storable_detail_title);
     mAuthorTextView = (TextView) findViewById(R.id.storable_detail_author);
+    mDescriptionTextView = (TextView) findViewById(
+        R.id.storable_detail_description);
     mGenreTextView = (TextView) findViewById(R.id.storable_detail_genre);
     mLanguageTextView = (TextView) findViewById(R.id.storable_detail_language);
     mCurrentPartTextView = (TextView) findViewById(
@@ -112,7 +118,16 @@ public class StorableDetailActivity extends BaseActivity {
           }
         });
     mFab.setOnClickListener(view -> {
-      // Start ReceiverActivity.
+      addSubscription(
+          findCachedBook(this, mId)
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(bookCursor -> {
+                final String path = bookCursor.getPath();
+                final ReadableType type = inferReadableType(bookCursor);
+                ReceiverActivity.startReceiverActivity(
+                    this, type, ReadingSource.CACHE, path);
+                bookCursor.close();
+              }));
     });
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -131,6 +146,58 @@ public class StorableDetailActivity extends BaseActivity {
                scheduleStartPostponedTransition(mImageView);
              }
            });
+    addSubscription(
+        findCachedBook(this, mId)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(this::setupViews));
+  }
+
+  private void setupViews(CachedBookCursor infoCursor) {
+    String author = infoCursor.getCachedBookInfoAuthor();
+    if (author != null && !TextUtils.isEmpty(author)) {
+      mAuthorTextView.setText(author);
+    } else {
+      findViewById(R.id.storable_detail_author_prefix).setVisibility(View.GONE);
+      mAuthorTextView.setVisibility(View.GONE);
+    }
+
+    String description = infoCursor.getCachedBookInfoDescription();
+    if (description != null && !TextUtils.isEmpty(description)) {
+      mDescriptionTextView.setText(description);
+    } else {
+      findViewById(R.id.storable_detail_description_prefix).setVisibility(
+          View.GONE);
+      mDescriptionTextView.setVisibility(View.GONE);
+    }
+
+    String genre = infoCursor.getCachedBookInfoGenre();
+    if (genre != null && !TextUtils.isEmpty(genre)) {
+      mGenreTextView.setText(genre);
+    } else {
+      findViewById(R.id.storable_detail_genre_prefix).setVisibility(View.GONE);
+      mGenreTextView.setVisibility(View.GONE);
+    }
+
+    String language = infoCursor.getCachedBookInfoLanguage();
+    if (language != null && !TextUtils.isEmpty(language)) {
+      mLanguageTextView.setText(language);
+    } else {
+      findViewById(R.id.storable_detail_language_prefix).setVisibility(
+          View.GONE);
+      mLanguageTextView.setVisibility(View.GONE);
+    }
+
+    String currentPart = infoCursor.getCachedBookInfoCurrentPartTitle();
+    if (currentPart != null && !TextUtils.isEmpty(currentPart)) {
+      mCurrentPartTextView.setText(currentPart);
+    } else {
+      findViewById(R.id.storable_detail_current_part_prefix).setVisibility(
+          View.GONE);
+      mCurrentPartTextView.setVisibility(View.GONE);
+    }
+
+    String path = infoCursor.getPath();
+    mFileTextView.setText(path);
   }
 
   @Override
