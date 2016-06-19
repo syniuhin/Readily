@@ -15,12 +15,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.ReceiverActivity;
 import com.infmme.readilyapp.StorableDetailActivity;
-import com.infmme.readilyapp.navigation.BookPartListActivity;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookSelection;
@@ -104,9 +101,26 @@ public class FileListFragment extends Fragment
   }
 
   @Override
-  public void onItem(final long id) {
+  public void onItem(CachedBooksAdapter.CachedBookHolder holder) {
+    startDetailActivity(holder);
+  }
+
+  @Override
+  public void onReadButton(final long id) {
     final Activity activity = getActivity();
     if (activity != null) {
+/*
+      addSubscription(
+          findCachedBook(activity, id)
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(bookCursor -> {
+                final String path = bookCursor.getPath();
+                final ReadableType type = inferReadableType(bookCursor);
+                BookPartListActivity.startBookPartListActivity(
+                    activity, type, path);
+                bookCursor.close();
+              }));
+*/
       addSubscription(
           findCachedBook(activity, id)
               .observeOn(AndroidSchedulers.mainThread())
@@ -121,33 +135,21 @@ public class FileListFragment extends Fragment
   }
 
   @Override
-  public void onNavigateButton(final long id) {
-    final Activity activity = getActivity();
-    if (activity != null) {
-      addSubscription(
-          findCachedBook(activity, id)
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(bookCursor -> {
-                final String path = bookCursor.getPath();
-                final ReadableType type = inferReadableType(bookCursor);
-                BookPartListActivity.startBookPartListActivity(
-                    activity, type, path);
-                bookCursor.close();
-              }));
-    }
+  public void onMoreButton(CachedBooksAdapter.CachedBookHolder holder) {
+    startDetailActivity(holder);
   }
 
-  @Override
-  public void onMoreButton(ImageView imageView,
-                           ProgressBar progressBar,
-                           String title, long id, final String coverImageUri) {
+  private void startDetailActivity(
+      final CachedBooksAdapter.CachedBookHolder holder) {
     final Activity a = getActivity();
     Intent intent = new Intent(a, StorableDetailActivity.class);
-    intent.putExtra(Constants.EXTRA_TITLE, title);
-    intent.putExtra(Constants.EXTRA_ID, id);
-    intent.putExtra(Constants.EXTRA_COVER_IMAGE_URI, coverImageUri);
-    Pair<View, String> p1 = Pair.create(imageView, a.getResources().getString(
-        R.string.storable_detail_transition_image_view));
+    intent.putExtra(Constants.EXTRA_TITLE,
+                    holder.getTitleView().getText().toString());
+    intent.putExtra(Constants.EXTRA_ID, holder.getId());
+    intent.putExtra(Constants.EXTRA_COVER_IMAGE_URI, holder.getCoverImageUri());
+    Pair<View, String> p1 = Pair.create(
+        holder.getImageView(), a.getResources().getString(
+            R.string.storable_detail_transition_image_view));
     ActivityOptionsCompat options =
         ActivityOptionsCompat.makeSceneTransitionAnimation(a, p1);
     startActivity(intent, options.toBundle());

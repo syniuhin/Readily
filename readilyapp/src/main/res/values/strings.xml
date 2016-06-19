@@ -55,7 +55,8 @@
     <string name="next">Next</string>
     <string name="finish">Finish</string>
     <string name="illegal_value">Illegal value</string>
-    <string name="sample_time">Last opened: 1 Jan, 00:00</string>
+    <string name="time_prefix">Last opened:</string>
+    <string name="sample_time">1 Jan, 00:00</string>
     <string name="sample_part">Chapter 1</string>
     <string name="title_prefix">Title:</string>
     <string name="author_prefix">Author:</string>
@@ -198,6 +199,7 @@
 
     <string name="book_card_more">More</string>
     <string name="book_card_navigate">Navigate</string>
+    <string name="book_card_read">Read</string>
     <string name="storable_detail_title">Reading information</string>
     <string name="storable_detail_transition_image_view" translatable="false">
         StorableDetailTransitionImageView

@@ -66,10 +66,8 @@ public class CachedBooksAdapter
       } else {
         holder.mSubtitleView.setVisibility(View.GONE);
       }
-      holder.mNavigateButton.setVisibility(View.VISIBLE);
     } else {
       holder.mSubtitleView.setVisibility(View.GONE);
-      holder.mNavigateButton.setVisibility(View.GONE);
     }
 
     // TODO: Figure out jodatime issue.
@@ -122,8 +120,9 @@ public class CachedBooksAdapter
     TextView mTitleView;
     TextView mSubtitleView;
     TextView mTimeOpenedView;
+    TextView mTimeOpenedPrefixView;
     ProgressBar mProgressView;
-    Button mNavigateButton;
+    Button mReadButton;
     // TODO: Add master-detail flow for 'About' button
     Button mMoreButton;
 
@@ -143,10 +142,12 @@ public class CachedBooksAdapter
       mSubtitleView = (TextView) v.findViewById(R.id.cache_list_card_part);
       mTimeOpenedView = (TextView) v.findViewById(
           R.id.cache_list_card_time_opened);
+      mTimeOpenedPrefixView = (TextView) v.findViewById(
+          R.id.cache_list_card_time_opened_prefix);
       mProgressView = (ProgressBar) v.findViewById(
           R.id.cache_list_card_progress);
-      mNavigateButton = (Button) v.findViewById(
-          R.id.cache_list_card_button_toc);
+      mReadButton = (Button) v.findViewById(
+          R.id.cache_list_card_button_read);
       mMoreButton = (Button) v.findViewById(R.id.cache_list_card_button_more);
       setupButtons();
 
@@ -157,7 +158,7 @@ public class CachedBooksAdapter
 
     @Override
     public void onClick(View v) {
-      mCallback.onItem(mId);
+      mCallback.onItem(this);
     }
 
     public void hasImage(final Context context) {
@@ -166,7 +167,7 @@ public class CachedBooksAdapter
       } else {
         mProgressView.getProgressDrawable().setColorFilter(
             Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN);
-        mNavigateButton.setTextColor(
+        mReadButton.setTextColor(
             context.getResources()
                    .getColor(android.R.color.primary_text_dark));
         mMoreButton.setTextColor(
@@ -195,7 +196,9 @@ public class CachedBooksAdapter
           resources.getColor(android.R.color.primary_text_dark, theme));
       mTimeOpenedView.setTextAppearance(
           android.R.style.TextAppearance_Material_Small_Inverse);
-      mNavigateButton.setTextColor(
+      mTimeOpenedPrefixView.setTextAppearance(
+          android.R.style.TextAppearance_Material_Small_Inverse);
+      mReadButton.setTextColor(
           resources.getColor(android.R.color.primary_text_dark, theme));
       mMoreButton.setTextColor(
           resources.getColor(android.R.color.primary_text_dark, theme));
@@ -210,6 +213,9 @@ public class CachedBooksAdapter
           context,
           android.R.style.TextAppearance_DeviceDefault_Medium_Inverse);
       mTimeOpenedView.setTextAppearance(
+          context,
+          android.R.style.TextAppearance_DeviceDefault_Small_Inverse);
+      mTimeOpenedPrefixView.setTextAppearance(
           context,
           android.R.style.TextAppearance_DeviceDefault_Small_Inverse);
       mTimeOpenedView.setTextColor(
@@ -228,6 +234,9 @@ public class CachedBooksAdapter
       mTimeOpenedView.setTextColor(
           context.getResources()
                  .getColor(android.R.color.secondary_text_dark));
+      mTimeOpenedPrefixView.setTextColor(
+          context.getResources()
+                 .getColor(android.R.color.secondary_text_dark));
     }
 
     public void hasNoImage(final Context context) {
@@ -240,7 +249,7 @@ public class CachedBooksAdapter
         mProgressView.getProgressDrawable().setColorFilter(
             resources.getColor(R.color.accent),
             android.graphics.PorterDuff.Mode.SRC_IN);
-        mNavigateButton.setTextColor(resources.getColor(R.color.accent));
+        mReadButton.setTextColor(resources.getColor(R.color.accent));
         mMoreButton.setTextColor(
             resources.getColor(android.R.color.primary_text_light));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -270,7 +279,9 @@ public class CachedBooksAdapter
           resources.getColor(android.R.color.secondary_text_light, theme));
       mTimeOpenedView.setTextAppearance(
           android.R.style.TextAppearance_Material_Small);
-      mNavigateButton.setTextColor(resources.getColor(R.color.accent, theme));
+      mTimeOpenedPrefixView.setTextAppearance(
+          android.R.style.TextAppearance_Material_Small);
+      mReadButton.setTextColor(resources.getColor(R.color.accent, theme));
       mMoreButton.setTextColor(
           resources.getColor(android.R.color.primary_text_light, theme));
     }
@@ -289,6 +300,12 @@ public class CachedBooksAdapter
       mTimeOpenedView.setTextColor(
           context.getResources()
                  .getColor(android.R.color.secondary_text_light));
+      mTimeOpenedPrefixView.setTextAppearance(
+          context,
+          android.R.style.TextAppearance_DeviceDefault_Small);
+      mTimeOpenedPrefixView.setTextColor(
+          context.getResources()
+                 .getColor(android.R.color.secondary_text_light));
     }
 
     private void hasNoImageBelowICS(final Context context) {
@@ -301,23 +318,38 @@ public class CachedBooksAdapter
           resources.getColor(android.R.color.secondary_text_light));
       mTimeOpenedView.setTextColor(
           resources.getColor(android.R.color.secondary_text_light));
+      mTimeOpenedPrefixView.setTextColor(
+          resources.getColor(android.R.color.secondary_text_light));
     }
 
     private void setupButtons() {
-      mNavigateButton.setOnClickListener(v -> mCallback.onNavigateButton(mId));
+      mReadButton.setOnClickListener(v -> mCallback.onReadButton(mId));
 
-      mMoreButton.setOnClickListener(v -> mCallback.onMoreButton(
-          mImageView, mProgressView, mTitleView.getText().toString(), mId,
-          mCoverImageUri));
+      mMoreButton.setOnClickListener(v -> mCallback.onMoreButton(this));
+    }
+
+    public long getId() {
+      return mId;
+    }
+
+    public String getCoverImageUri() {
+      return mCoverImageUri;
+    }
+
+    public TextView getTitleView() {
+      return mTitleView;
+    }
+
+    public ImageView getImageView() {
+      return mImageView;
     }
 
     public interface ItemClickCallback {
-      void onItem(long id);
+      void onItem(CachedBookHolder holder);
 
-      void onNavigateButton(long id);
+      void onReadButton(long id);
 
-      void onMoreButton(ImageView imageView, ProgressBar progressBar,
-                        String title, long id, String coverImageUri);
+      void onMoreButton(CachedBookHolder holder);
     }
   }
 }
