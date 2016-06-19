@@ -8,7 +8,6 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 import com.infmme.readilyapp.BaseActivity;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.readable.interfaces.AbstractTocReference;
@@ -67,12 +66,9 @@ public class BookPartDetailActivity extends BaseActivity implements
   protected void setupViews() {
     setSupportActionBar(mToolbar);
 
-    mFab.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        if (mCallback != null) {
-          mCallback.onClick();
-        }
+    mFab.setOnClickListener(view -> {
+      if (mCallback != null) {
+        mCallback.onClick();
       }
     });
   }

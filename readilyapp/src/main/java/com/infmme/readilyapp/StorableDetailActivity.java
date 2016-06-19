@@ -8,15 +8,23 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.infmme.readilyapp.navigation.BookPartListActivity;
+import com.infmme.readilyapp.readable.type.ReadableType;
 import com.infmme.readilyapp.util.Constants;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import rx.android.schedulers.AndroidSchedulers;
+
+import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor.findCachedBook;
+import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor.inferReadableType;
 
 public class StorableDetailActivity extends BaseActivity {
 
@@ -37,6 +45,8 @@ public class StorableDetailActivity extends BaseActivity {
 
   private String mAppBarTitle;
 
+  private long mId;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -48,6 +58,7 @@ public class StorableDetailActivity extends BaseActivity {
     findViews();
 
     Intent i = getIntent();
+    mId = i.getLongExtra(Constants.EXTRA_ID, -1);
     mCoverImageUri = i.getStringExtra(Constants.EXTRA_COVER_IMAGE_URI);
     mTitle = i.getStringExtra(Constants.EXTRA_TITLE);
     setupViews();
@@ -129,6 +140,28 @@ public class StorableDetailActivity extends BaseActivity {
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.storable_detail, menu);
     return super.onCreateOptionsMenu(menu);
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    switch (item.getItemId()) {
+      case R.id.action_navigate:
+        addSubscription(
+            findCachedBook(this, mId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(bookCursor -> {
+                  final String path = bookCursor.getPath();
+                  final ReadableType type = inferReadableType(bookCursor);
+                  BookPartListActivity.startBookPartListActivity(
+                      this, type, path);
+                  bookCursor.close();
+                }));
+        return true;
+      case android.R.id.home:
+        NavUtils.navigateUpFromSameTask(this);
+        return true;
+    }
+    return super.onOptionsItemSelected(item);
   }
 
   /**

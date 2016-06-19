@@ -1,5 +1,6 @@
 package com.infmme.readilyapp.provider.cachedbook;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -7,6 +8,9 @@ import com.infmme.readilyapp.provider.base.AbstractCursor;
 import com.infmme.readilyapp.provider.epubbook.EpubBookColumns;
 import com.infmme.readilyapp.provider.fb2book.Fb2BookColumns;
 import com.infmme.readilyapp.provider.txtbook.TxtBookColumns;
+import com.infmme.readilyapp.readable.type.ReadableType;
+import rx.Observable;
+import rx.schedulers.Schedulers;
 
 /**
  * Cursor wrapper for the {@code cached_book} table.
@@ -15,6 +19,40 @@ public class CachedBookCursor extends AbstractCursor
     implements CachedBookModel {
   public CachedBookCursor(Cursor cursor) {
     super(cursor);
+  }
+
+  public static Observable<CachedBookCursor> findCachedBook(
+      final Context context, long id) {
+    Observable<CachedBookCursor> res = Observable.create(subscriber -> {
+      CachedBookSelection where = new CachedBookSelection();
+      where.id(id);
+      Cursor c = context.getContentResolver().query(
+          CachedBookColumns.CONTENT_URI, CachedBookColumns.ALL_COLUMNS,
+          where.sel(), where.args(), null);
+      CachedBookCursor bookCursor = new CachedBookCursor(c);
+      if (bookCursor.moveToFirst()) {
+        subscriber.onNext(bookCursor);
+        subscriber.onCompleted();
+      } else {
+        subscriber.onError(new IllegalArgumentException(
+            String.format("CachedBook with a given id: %d not found.", id)));
+      }
+    });
+    res.subscribeOn(Schedulers.io());
+    return res;
+  }
+
+  public static ReadableType inferReadableType(
+      final CachedBookCursor bookCursor) {
+    if (bookCursor.getEpubBookId() != null) {
+      return ReadableType.EPUB;
+    } else if (bookCursor.getFb2BookId() != null) {
+      return ReadableType.FB2;
+    } else if (bookCursor.getTxtBookId() != null) {
+      return ReadableType.TXT;
+    }
+    throw new IllegalStateException(
+        "Integrity violation: can't infer ReadableType.");
   }
 
   /**

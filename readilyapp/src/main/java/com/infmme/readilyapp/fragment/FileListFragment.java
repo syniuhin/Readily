@@ -1,7 +1,6 @@
 package com.infmme.readilyapp.fragment;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -19,17 +18,18 @@ import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.ReceiverActivity;
 import com.infmme.readilyapp.StorableDetailActivity;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
-import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
-import com.infmme.readilyapp.provider.cachedbook.CachedBookSelection;
 import com.infmme.readilyapp.readable.type.ReadableType;
 import com.infmme.readilyapp.readable.type.ReadingSource;
 import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.view.adapter.CachedBooksAdapter;
-import rx.Observable;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
+
+import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor
+    .findCachedBook;
+import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor
+    .inferReadableType;
 
 public class FileListFragment extends Fragment
     implements LoaderManager.LoaderCallbacks<Cursor>,
@@ -109,18 +109,6 @@ public class FileListFragment extends Fragment
   public void onReadButton(final long id) {
     final Activity activity = getActivity();
     if (activity != null) {
-/*
-      addSubscription(
-          findCachedBook(activity, id)
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(bookCursor -> {
-                final String path = bookCursor.getPath();
-                final ReadableType type = inferReadableType(bookCursor);
-                BookPartListActivity.startBookPartListActivity(
-                    activity, type, path);
-                bookCursor.close();
-              }));
-*/
       addSubscription(
           findCachedBook(activity, id)
               .observeOn(AndroidSchedulers.mainThread())
@@ -153,39 +141,6 @@ public class FileListFragment extends Fragment
     ActivityOptionsCompat options =
         ActivityOptionsCompat.makeSceneTransitionAnimation(a, p1);
     startActivity(intent, options.toBundle());
-  }
-
-  private Observable<CachedBookCursor> findCachedBook(
-      final Context context, long id) {
-    Observable<CachedBookCursor> res = Observable.create(subscriber -> {
-      CachedBookSelection where = new CachedBookSelection();
-      where.id(id);
-      Cursor c = context.getContentResolver().query(
-          CachedBookColumns.CONTENT_URI, CachedBookColumns.ALL_COLUMNS,
-          where.sel(), where.args(), null);
-      CachedBookCursor bookCursor = new CachedBookCursor(c);
-      if (bookCursor.moveToFirst()) {
-        subscriber.onNext(bookCursor);
-        subscriber.onCompleted();
-      } else {
-        subscriber.onError(new IllegalArgumentException(
-            String.format("CachedBook with a given id: %d not found.", id)));
-      }
-    });
-    res.subscribeOn(Schedulers.io());
-    return res;
-  }
-
-  private ReadableType inferReadableType(final CachedBookCursor bookCursor) {
-    if (bookCursor.getEpubBookId() != null) {
-      return ReadableType.EPUB;
-    } else if (bookCursor.getFb2BookId() != null) {
-      return ReadableType.FB2;
-    } else if (bookCursor.getTxtBookId() != null) {
-      return ReadableType.TXT;
-    }
-    throw new IllegalStateException(
-        "Integrity violation: can't infer ReadableType.");
   }
 
   private void addSubscription(Subscription s) {
