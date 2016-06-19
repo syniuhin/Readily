@@ -94,4 +94,17 @@ public class CachedBookInfoContentValues extends AbstractContentValues {
     mContentValues.putNull(CachedBookInfoColumns.CURRENT_PART_TITLE);
     return this;
   }
+
+  /**
+   * Description of a book or net article.
+   */
+  public CachedBookInfoContentValues putDescription(@Nullable String value) {
+    mContentValues.put(CachedBookInfoColumns.DESCRIPTION, value);
+    return this;
+  }
+
+  public CachedBookInfoContentValues putDescriptionNull() {
+    mContentValues.putNull(CachedBookInfoColumns.DESCRIPTION);
+    return this;
+  }
 }

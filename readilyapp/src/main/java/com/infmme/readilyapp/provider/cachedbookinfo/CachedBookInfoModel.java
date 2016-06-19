@@ -35,4 +35,11 @@ public interface CachedBookInfoModel extends BaseModel {
    */
   @Nullable
   String getCurrentPartTitle();
+
+  /**
+   * Description of a book or net article.
+   * Can be {@code null}.
+   */
+  @Nullable
+  String getDescription();
 }

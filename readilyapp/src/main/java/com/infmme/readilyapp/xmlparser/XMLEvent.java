@@ -13,7 +13,6 @@ public class XMLEvent {
   private XMLEventType type;
   private XMLEventType closeType;
 
-  // TODO: Think of StringBuilder instead of String instances.
   private String content;
   private StringBuilder contentBuilder;
 

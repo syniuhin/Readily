@@ -37,6 +37,11 @@ public class CachedBookInfoColumns implements BaseColumns {
    */
   public static final String CURRENT_PART_TITLE = "current_part_title";
 
+  /**
+   * Description of a book or net article.
+   */
+  public static final String DESCRIPTION = "description";
+
 
   public static final String DEFAULT_ORDER = TABLE_NAME + "." + _ID;
 
@@ -46,7 +51,8 @@ public class CachedBookInfoColumns implements BaseColumns {
       AUTHOR,
       GENRE,
       LANGUAGE,
-      CURRENT_PART_TITLE
+      CURRENT_PART_TITLE,
+      DESCRIPTION
   };
   // @formatter:on
 
@@ -58,6 +64,7 @@ public class CachedBookInfoColumns implements BaseColumns {
       if (c.equals(LANGUAGE) || c.contains("." + LANGUAGE)) return true;
       if (c.equals(CURRENT_PART_TITLE) || c.contains("." + CURRENT_PART_TITLE))
         return true;
+      if (c.equals(DESCRIPTION) || c.contains("." + DESCRIPTION)) return true;
     }
     return false;
   }

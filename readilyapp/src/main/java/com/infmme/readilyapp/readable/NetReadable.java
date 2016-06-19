@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookContentValues;
+import com.infmme.readilyapp.provider.cachedbookinfo
+    .CachedBookInfoContentValues;
 import com.infmme.readilyapp.provider.txtbook.TxtBookContentValues;
 import com.infmme.readilyapp.readable.interfaces.Storable;
 import com.infmme.readilyapp.readable.interfaces.Unprocessed;
@@ -18,6 +20,7 @@ import org.joda.time.LocalDateTime;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Created with love, by infm dated on 6/8/16.
@@ -25,7 +28,10 @@ import java.io.IOException;
 
 public class NetReadable extends Readable implements Unprocessed, Storable {
   private String mTitle;
+  private String mDescription;
   private String mImageUrl;
+  private Collection<String> mKeywords;
+
   private int mCoverImageMean;
   private String mLink;
   private boolean mProcessed = false;
@@ -66,7 +72,9 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
     // I don't know what it means, need to read docs/source
     res = fetcher.fetchAndExtract(url, Constants.NET_READABLE_TIMEOUT, true);
     mTitle = res.getTitle();
+    mDescription = res.getDescription();
     mImageUrl = res.getImageUrl();
+    mKeywords = res.getKeywords();
     return mTitle + " " + res.getText();
   }
 
@@ -131,13 +139,24 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
     }
     values.putPercentile(mChunkPercentile);
 
-    TxtBookContentValues txtValues = new TxtBookContentValues();
-    txtValues.putBytePosition(0);
-
     String currentTime = LocalDateTime.now().toString();
     values.putTimeOpened(currentTime);
     values.putPath(getPath());
     values.putTitle(mTitle);
+
+    CachedBookInfoContentValues infoValues = new CachedBookInfoContentValues();
+    infoValues.putDescription(mDescription);
+
+    StringBuilder stringBuilder = new StringBuilder();
+    for (String kw : mKeywords) {
+      stringBuilder.append(kw).append(", ");
+    }
+    if (stringBuilder.length() > 0)
+      infoValues.putGenre(
+          stringBuilder.substring(0, stringBuilder.length() - 2));
+
+    TxtBookContentValues txtValues = new TxtBookContentValues();
+    txtValues.putBytePosition(0);
 
     Uri uri = txtValues.insert(mContext.getContentResolver());
     long txtId = Long.parseLong(uri.getLastPathSegment());

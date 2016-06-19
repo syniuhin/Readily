@@ -17,7 +17,7 @@ public class ReceiverActivity extends BaseActivity
 
   private static final String READER_FRAGMENT_TAG =
       "ReaSq!d99erFra{{1239gm..1ent1923";
-  private View contentView;
+  private View mContentView;
 
   public static void startReceiverActivity(
       Context context, ReadableType intentType, ReadingSource intentSource,
@@ -52,11 +52,11 @@ public class ReceiverActivity extends BaseActivity
   }
 
   private void setOnSwipeListener(final ReaderFragment readerFragment) {
-    if (contentView == null) {
-      contentView = findViewById(android.R.id.content);
+    if (mContentView == null) {
+      mContentView = findViewById(android.R.id.content);
     }
 
-    contentView.setOnTouchListener(new OnSwipeTouchListener(this) {
+    mContentView.setOnTouchListener(new OnSwipeTouchListener(this) {
       @Override
       public void onSwipeTop() {
         readerFragment.onSwipeTop();
@@ -97,4 +97,7 @@ public class ReceiverActivity extends BaseActivity
 
   @Override
   protected void findViews() {}
+
+  @Override
+  protected void setupViews() {}
 }

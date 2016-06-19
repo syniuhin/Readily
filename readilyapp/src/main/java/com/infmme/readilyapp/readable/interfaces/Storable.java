@@ -33,6 +33,8 @@ public interface Storable extends Serializable {
 
   /**
    * Stores (creates or updates) current state to database.
+   *
+   * TODO: Split to insert and update methods.
    */
   void storeToDb();
 

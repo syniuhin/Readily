@@ -57,6 +57,94 @@ public class CachedBookCursor extends AbstractCursor
   }
 
   /**
+   * Uses uniqueness of a path to get epub_book_id from a cached_book table.
+   *
+   * @return epub_book_id for an mPath.
+   */
+  public static Long getFkEpubBookId(final Context context, final String path) {
+    Long id = null;
+
+    CachedBookSelection cachedWhere = new CachedBookSelection();
+    cachedWhere.path(path);
+    CachedBookCursor cachedBookCursor =
+        new CachedBookCursor(context.getContentResolver().query(
+            CachedBookColumns.CONTENT_URI,
+            new String[] { CachedBookColumns.EPUB_BOOK_ID },
+            cachedWhere.sel(), cachedWhere.args(), null));
+    if (cachedBookCursor.moveToFirst()) {
+      id = cachedBookCursor.getEpubBookId();
+    }
+    cachedBookCursor.close();
+    return id;
+  }
+
+  /**
+   * Uses uniqueness of a path to get fb2_book_id from a cached_book table.
+   *
+   * @return fb2_book_id for an mPath.
+   */
+  public static Long getFkFb2BookId(final Context context, final String path) {
+    Long id = null;
+
+    CachedBookSelection cachedWhere = new CachedBookSelection();
+    cachedWhere.path(path);
+    CachedBookCursor cachedBookCursor =
+        new CachedBookCursor(context.getContentResolver().query(
+            CachedBookColumns.CONTENT_URI,
+            new String[] { CachedBookColumns.FB2_BOOK_ID },
+            cachedWhere.sel(), cachedWhere.args(), null));
+    if (cachedBookCursor.moveToFirst()) {
+      id = cachedBookCursor.getFb2BookId();
+    }
+    cachedBookCursor.close();
+    return id;
+  }
+
+  /**
+   * Uses uniqueness of a path to get txt_book_id from a cached_book table.
+   *
+   * @return txt_book_id for an mPath.
+   */
+  public static Long getFkTxtBookId(final Context context, final String path) {
+    Long id = null;
+
+    CachedBookSelection cachedWhere = new CachedBookSelection();
+    cachedWhere.path(path);
+    CachedBookCursor cachedBookCursor =
+        new CachedBookCursor(context.getContentResolver().query(
+            CachedBookColumns.CONTENT_URI,
+            new String[] { CachedBookColumns.TXT_BOOK_ID },
+            cachedWhere.sel(), cachedWhere.args(), null));
+    if (cachedBookCursor.moveToFirst()) {
+      id = cachedBookCursor.getTxtBookId();
+    }
+    cachedBookCursor.close();
+    return id;
+  }
+
+  /**
+   * Uses uniqueness of a path to get fb2_book_id from a cached_book table.
+   *
+   * @return fb2_book_id for an mPath.
+   */
+  public static Long getFkInfoId(final Context context, final String path) {
+    Long id = null;
+
+    CachedBookSelection cachedWhere = new CachedBookSelection();
+    cachedWhere.path(path);
+    CachedBookCursor cachedBookCursor =
+        new CachedBookCursor(context.getContentResolver().query(
+            CachedBookColumns.CONTENT_URI,
+            new String[] { CachedBookColumns.INFO_ID },
+            cachedWhere.sel(), cachedWhere.args(), null));
+    if (cachedBookCursor.moveToFirst()) {
+      id = cachedBookCursor.getInfoId();
+    }
+    cachedBookCursor.close();
+    return id;
+  }
+
+  /**
    * Primary key.
    */
   public long getId() {
@@ -304,6 +392,16 @@ public class CachedBookCursor extends AbstractCursor
   @Nullable
   public String getCachedBookInfoCurrentPartTitle() {
     String res = getStringOrNull(CachedBookInfoColumns.CURRENT_PART_TITLE);
+    return res;
+  }
+
+  /**
+   * Description of a book or net article.
+   * Can be {@code null}.
+   */
+  @Nullable
+  public String getCachedBookInfoDescription() {
+    String res = getStringOrNull(CachedBookInfoColumns.DESCRIPTION);
     return res;
   }
 }

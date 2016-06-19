@@ -926,4 +926,47 @@ public class CachedBookSelection
     orderBy(CachedBookInfoColumns.CURRENT_PART_TITLE, false);
     return this;
   }
+
+  public CachedBookSelection cachedBookInfoDescription(String... value) {
+    addEquals(CachedBookInfoColumns.DESCRIPTION, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoDescriptionNot(String... value) {
+    addNotEquals(CachedBookInfoColumns.DESCRIPTION, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoDescriptionLike(String... value) {
+    addLike(CachedBookInfoColumns.DESCRIPTION, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoDescriptionContains(
+      String... value) {
+    addContains(CachedBookInfoColumns.DESCRIPTION, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoDescriptionStartsWith(
+      String... value) {
+    addStartsWith(CachedBookInfoColumns.DESCRIPTION, value);
+    return this;
+  }
+
+  public CachedBookSelection cachedBookInfoDescriptionEndsWith(
+      String... value) {
+    addEndsWith(CachedBookInfoColumns.DESCRIPTION, value);
+    return this;
+  }
+
+  public CachedBookSelection orderByCachedBookInfoDescription(boolean desc) {
+    orderBy(CachedBookInfoColumns.DESCRIPTION, desc);
+    return this;
+  }
+
+  public CachedBookSelection orderByCachedBookInfoDescription() {
+    orderBy(CachedBookInfoColumns.DESCRIPTION, false);
+    return this;
+  }
 }

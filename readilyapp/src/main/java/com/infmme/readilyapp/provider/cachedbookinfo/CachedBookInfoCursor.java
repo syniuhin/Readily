@@ -64,4 +64,14 @@ public class CachedBookInfoCursor extends AbstractCursor
     String res = getStringOrNull(CachedBookInfoColumns.CURRENT_PART_TITLE);
     return res;
   }
+
+  /**
+   * Description of a book or net article.
+   * Can be {@code null}.
+   */
+  @Nullable
+  public String getDescription() {
+    String res = getStringOrNull(CachedBookInfoColumns.DESCRIPTION);
+    return res;
+  }
 }

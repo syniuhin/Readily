@@ -193,7 +193,8 @@ public class CachedBookColumns implements BaseColumns {
       CachedBookInfoColumns.AUTHOR,
       CachedBookInfoColumns.GENRE,
       CachedBookInfoColumns.LANGUAGE,
-      CachedBookInfoColumns.CURRENT_PART_TITLE
+      CachedBookInfoColumns.CURRENT_PART_TITLE,
+      CachedBookInfoColumns.DESCRIPTION
   };
   // @formatter:on
   public static final String PREFIX_EPUB_BOOK = TABLE_NAME + "__" +

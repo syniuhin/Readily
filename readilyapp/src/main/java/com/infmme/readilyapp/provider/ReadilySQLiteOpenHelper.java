@@ -53,7 +53,8 @@ public class ReadilySQLiteOpenHelper extends SQLiteOpenHelper {
       + CachedBookInfoColumns.AUTHOR + " TEXT, "
       + CachedBookInfoColumns.GENRE + " TEXT, "
       + CachedBookInfoColumns.LANGUAGE + " TEXT, "
-      + CachedBookInfoColumns.CURRENT_PART_TITLE + " TEXT "
+      + CachedBookInfoColumns.CURRENT_PART_TITLE + " TEXT, "
+      + CachedBookInfoColumns.DESCRIPTION + " TEXT "
       + " );";
   public static final String SQL_CREATE_TABLE_EPUB_BOOK = "CREATE TABLE IF " +
       "NOT EXISTS "

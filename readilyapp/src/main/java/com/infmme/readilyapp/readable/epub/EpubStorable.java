@@ -8,6 +8,9 @@ import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookContentValues;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookSelection;
+import com.infmme.readilyapp.provider.cachedbookinfo
+    .CachedBookInfoContentValues;
+import com.infmme.readilyapp.provider.cachedbookinfo.CachedBookInfoSelection;
 import com.infmme.readilyapp.provider.epubbook.EpubBookContentValues;
 import com.infmme.readilyapp.provider.epubbook.EpubBookSelection;
 import com.infmme.readilyapp.readable.Readable;
@@ -15,6 +18,7 @@ import com.infmme.readilyapp.readable.interfaces.*;
 import com.infmme.readilyapp.reader.Reader;
 import com.infmme.readilyapp.util.ColorMatcher;
 import com.infmme.readilyapp.util.Constants;
+import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Metadata;
 import nl.siegmann.epublib.domain.Resource;
@@ -28,6 +32,10 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 
+import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor
+    .getFkEpubBookId;
+import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor
+    .getFkInfoId;
 import static com.infmme.readilyapp.readable.epub.EpubPart.parseRawText;
 
 /**
@@ -45,7 +53,7 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
   private String mTimeOpened;
 
   private Book mBook;
-  private transient Metadata mMetadata;
+  private Metadata mMetadata;
 
   // Stored title.
   private String mTitle;
@@ -146,7 +154,7 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
         mTimeOpened = book.getTimeOpened();
         mPercentile = book.getPercentile();
         mCurrentResourceId = book.getEpubBookCurrentResourceId();
-        mCurrentResourceTitle = book.getEpubBookCurrentResourceTitle();
+        mCurrentResourceTitle = book.getCachedBookInfoCurrentPartTitle();
         book.close();
       } else {
         c.close();
@@ -192,7 +200,9 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
 
     EpubBookContentValues epubValues = new EpubBookContentValues();
     epubValues.putCurrentResourceId(mCurrentResourceId);
-    epubValues.putCurrentResourceTitle(mCurrentResourceTitle);
+
+    CachedBookInfoContentValues infoValues = new CachedBookInfoContentValues();
+    infoValues.putCurrentPartTitle(mCurrentResourceTitle);
 
     if (isStoredInDb()) {
       CachedBookSelection cachedWhere = new CachedBookSelection();
@@ -202,8 +212,12 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
       }
       values.update(mContext, cachedWhere);
       EpubBookSelection epubWhere = new EpubBookSelection();
-      epubWhere.id(getFkEpubBookId());
+      epubWhere.id(getFkEpubBookId(mContext, mPath));
       epubValues.update(mContext, epubWhere);
+
+      CachedBookInfoSelection infoWhere = new CachedBookInfoSelection();
+      infoWhere.id(getFkInfoId(mContext, mPath));
+      infoValues.update(mContext, infoWhere);
     } else {
       if (percent >= 0 && percent <= 1) {
         values.putPercentile(calcPercentile());
@@ -216,33 +230,61 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
       values.putCoverImageUri(mCoverImageUri);
       values.putCoverImageMean(mCoverImageMean);
 
-      Uri uri = epubValues.insert(mContext.getContentResolver());
-      long epubId = Long.parseLong(uri.getLastPathSegment());
+      StringBuilder stringBuilder = new StringBuilder();
+      List<Author> authors = mMetadata.getAuthors();
+      if (authors != null) {
+        for (Author a : authors) {
+          stringBuilder.append(a.getFirstname()).append(" ")
+                       .append(a.getLastname()).append(" ");
+        }
+        if (stringBuilder.length() > 0) {
+          infoValues.putAuthor(
+              stringBuilder.substring(0, stringBuilder.length() - 1));
+        } else {
+          infoValues.putAuthor(stringBuilder.toString());
+        }
+      }
+
+      stringBuilder = new StringBuilder();
+      List<String> subjects = mMetadata.getSubjects();
+      if (subjects != null) {
+        for (String s : subjects) {
+          stringBuilder.append(s).append(" ");
+        }
+        if (stringBuilder.length() > 0) {
+          infoValues.putGenre(
+              stringBuilder.substring(0, stringBuilder.length() - 1));
+        } else {
+          infoValues.putGenre(stringBuilder.toString());
+        }
+      }
+
+      stringBuilder = new StringBuilder();
+      List<String> descriptions = mMetadata.getDescriptions();
+      if (descriptions != null) {
+        for (String s : descriptions) {
+          stringBuilder.append(s).append("\n");
+        }
+        if (stringBuilder.length() > 0) {
+          infoValues.putDescription(
+              stringBuilder.substring(0, stringBuilder.length() - 1));
+        } else {
+          infoValues.putDescription(stringBuilder.toString());
+        }
+      }
+
+      infoValues.putLanguage(mMetadata.getLanguage());
+
+      Uri infoUri = infoValues.insert(mContext.getContentResolver());
+      long infoId = Long.parseLong(infoUri.getLastPathSegment());
+      values.putInfoId(infoId);
+
+      Uri epubUri = epubValues.insert(mContext.getContentResolver());
+      long epubId = Long.parseLong(epubUri.getLastPathSegment());
       values.putEpubBookId(epubId);
+
       values.insert(mContext.getContentResolver());
     }
-  }
-
-  /**
-   * Uses uniqueness of a path to get epub_book_id from a cached_book table.
-   *
-   * @return epub_book_id for an mPath.
-   */
-  private Long getFkEpubBookId() {
-    Long id = null;
-
-    CachedBookSelection cachedWhere = new CachedBookSelection();
-    cachedWhere.path(mPath);
-    CachedBookCursor cachedBookCursor =
-        new CachedBookCursor(mContext.getContentResolver().query(
-            CachedBookColumns.CONTENT_URI,
-            new String[] { CachedBookColumns.EPUB_BOOK_ID },
-            cachedWhere.sel(), cachedWhere.args(), null));
-    if (cachedBookCursor.moveToFirst()) {
-      id = cachedBookCursor.getEpubBookId();
-    }
-    cachedBookCursor.close();
-    return id;
   }
 
   /**

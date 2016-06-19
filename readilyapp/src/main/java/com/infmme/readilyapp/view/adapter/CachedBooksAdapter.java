@@ -56,10 +56,7 @@ public class CachedBooksAdapter
     }
 
     if (supportsNavigation(bookCursor)) {
-      String subtitle = bookCursor.getEpubBookCurrentResourceTitle();
-      if (subtitle == null) {
-        subtitle = bookCursor.getFb2BookCurrentPartTitle();
-      }
+      String subtitle = bookCursor.getCachedBookInfoCurrentPartTitle();
       if (subtitle != null) {
         holder.mSubtitleView.setVisibility(View.VISIBLE);
         holder.mSubtitleView.setText(subtitle);

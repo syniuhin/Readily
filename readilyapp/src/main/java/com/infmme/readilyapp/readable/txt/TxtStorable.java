@@ -19,6 +19,8 @@ import java.io.*;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor
+    .getFkTxtBookId;
 import static com.infmme.readilyapp.readable.Utils.guessCharset;
 
 /**
@@ -169,7 +171,7 @@ public class TxtStorable implements ChunkedUnprocessedStorable {
       CachedBookSelection cachedWhere = new CachedBookSelection();
       cachedWhere.path(mPath);
       TxtBookSelection txtWhere = new TxtBookSelection();
-      txtWhere.id(getFkTxtBookId());
+      txtWhere.id(getFkTxtBookId(mContext, mPath));
       txtValues.update(mContext, txtWhere);
       values.update(mContext, cachedWhere);
     } else {
@@ -283,28 +285,6 @@ public class TxtStorable implements ChunkedUnprocessedStorable {
       e.printStackTrace();
       mProcessed = false;
     }
-  }
-
-  /**
-   * Uses uniqueness of a path to get txt_book_id from a cached_book table.
-   *
-   * @return txt_book_id for an mPath.
-   */
-  private Long getFkTxtBookId() {
-    Long id = null;
-
-    CachedBookSelection cachedWhere = new CachedBookSelection();
-    cachedWhere.path(mPath);
-    CachedBookCursor cachedBookCursor =
-        new CachedBookCursor(mContext.getContentResolver().query(
-            CachedBookColumns.CONTENT_URI,
-            new String[] { CachedBookColumns.TXT_BOOK_ID },
-            cachedWhere.sel(), cachedWhere.args(), null));
-    if (cachedBookCursor.moveToFirst()) {
-      id = cachedBookCursor.getTxtBookId();
-    }
-    cachedBookCursor.close();
-    return id;
   }
 
   private double calcPercentile() {

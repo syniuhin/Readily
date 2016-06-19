@@ -39,7 +39,7 @@ public class MainActivity extends BaseActivity {
     isAnybodyOutThere(this);
 
     findViews();
-    setupToolbar();
+    setupViews();
     startFileListFragment();
   }
 
@@ -47,6 +47,11 @@ public class MainActivity extends BaseActivity {
   protected void findViews() {
     mToolbar = (Toolbar) findViewById(R.id.main_toolbar);
     mRecyclerView = (RecyclerView) findViewById(R.id.cache_list);
+  }
+
+  @Override
+  protected void setupViews() {
+    setupToolbar();
   }
 
   private void setupToolbar() {
