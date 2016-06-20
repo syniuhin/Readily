@@ -19,7 +19,6 @@ import com.infmme.readilyapp.ReceiverActivity;
 import com.infmme.readilyapp.StorableDetailActivity;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
 import com.infmme.readilyapp.readable.type.ReadableType;
-import com.infmme.readilyapp.readable.type.ReadingSource;
 import com.infmme.readilyapp.util.Constants;
 import com.infmme.readilyapp.view.adapter.CachedBooksAdapter;
 import rx.Subscription;
@@ -115,8 +114,8 @@ public class FileListFragment extends Fragment
               .subscribe(bookCursor -> {
                 final String path = bookCursor.getPath();
                 final ReadableType type = inferReadableType(bookCursor);
-                ReceiverActivity.startReceiverActivity(
-                    activity, type, ReadingSource.CACHE, path);
+                ReceiverActivity.startReceiverActivityCached(
+                    activity, type, path);
                 bookCursor.close();
               }));
     }

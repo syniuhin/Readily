@@ -19,7 +19,6 @@ import android.widget.Toast;
 import com.infmme.readilyapp.fragment.FileListFragment;
 import com.infmme.readilyapp.readable.Utils;
 import com.infmme.readilyapp.readable.type.ReadableType;
-import com.infmme.readilyapp.readable.type.ReadingSource;
 import com.infmme.readilyapp.settings.SettingsActivity2;
 import com.infmme.readilyapp.util.Constants;
 import com.ipaulpro.afilechooser.utils.FileUtils;
@@ -115,8 +114,8 @@ public class MainActivity extends BaseActivity {
   }
 
   private void getFromClipboard() {
-    ReceiverActivity.startReceiverActivity(this, ReadableType.CLIPBOARD,
-                                           ReadingSource.SHARE, null);
+    // TODO: Implement.
+    // ReceiverActivity.startReceiverActivityShared(this, null);
   }
 
   private void getFromFile() {
@@ -151,8 +150,8 @@ public class MainActivity extends BaseActivity {
               } else {
                 type = ReadableType.TXT;
               }
-              ReceiverActivity.startReceiverActivity(
-                  this, type, ReadingSource.CACHE, relativePath);
+              ReceiverActivity.startReceiverActivityCached(
+                  this, type, relativePath);
             } else {
               Toast.makeText(this, R.string.wrong_ext, Toast.LENGTH_SHORT)
                    .show();

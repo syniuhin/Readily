@@ -19,15 +19,28 @@ public class ReceiverActivity extends BaseActivity
       "ReaSq!d99erFra{{1239gm..1ent1923";
   private View mContentView;
 
-  public static void startReceiverActivity(
-      Context context, ReadableType intentType, ReadingSource intentSource,
-      String intentPath) {
+  public static void startReceiverActivityCached(
+      Context context, ReadableType intentType, String intentPath) {
     Intent intent = new Intent(context, ReceiverActivity.class);
 
     Bundle bundle = new Bundle();
     bundle.putString(Constants.EXTRA_TYPE, intentType.name());
-    bundle.putString(Constants.EXTRA_READING_SOURCE, intentSource.name());
+    bundle.putString(Constants.EXTRA_READING_SOURCE,
+                     ReadingSource.CACHE.name());
     bundle.putString(Constants.EXTRA_PATH, intentPath);
+    intent.putExtras(bundle);
+
+    context.startActivity(intent);
+  }
+
+  public static void startReceiverActivityShared(
+      Context context, String intentText) {
+    Intent intent = new Intent(context, ReceiverActivity.class);
+
+    Bundle bundle = new Bundle();
+    bundle.putString(Constants.EXTRA_READING_SOURCE,
+                     ReadingSource.SHARE.name());
+    bundle.putString(Constants.EXTRA_TEXT, intentText);
     intent.putExtras(bundle);
 
     context.startActivity(intent);

@@ -19,7 +19,6 @@ import android.widget.TextView;
 import com.infmme.readilyapp.navigation.BookPartListActivity;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
 import com.infmme.readilyapp.readable.type.ReadableType;
-import com.infmme.readilyapp.readable.type.ReadingSource;
 import com.infmme.readilyapp.util.Constants;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -117,18 +116,15 @@ public class StorableDetailActivity extends BaseActivity {
             }
           }
         });
-    mFab.setOnClickListener(view -> {
-      addSubscription(
-          findCachedBook(this, mId)
-              .observeOn(AndroidSchedulers.mainThread())
-              .subscribe(bookCursor -> {
-                final String path = bookCursor.getPath();
-                final ReadableType type = inferReadableType(bookCursor);
-                ReceiverActivity.startReceiverActivity(
-                    this, type, ReadingSource.CACHE, path);
-                bookCursor.close();
-              }));
-    });
+    mFab.setOnClickListener(view -> addSubscription(
+        findCachedBook(this, mId)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(bookCursor -> {
+              final String path = bookCursor.getPath();
+              final ReadableType type = inferReadableType(bookCursor);
+              ReceiverActivity.startReceiverActivityCached(this, type, path);
+              bookCursor.close();
+            })));
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     Picasso.with(this)

@@ -25,8 +25,6 @@ import android.view.ViewGroup;
 import android.widget.*;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.ReceiverActivity;
-import com.infmme.readilyapp.readable.type.ReadableType;
-import com.infmme.readilyapp.readable.type.ReadingSource;
 import com.infmme.readilyapp.util.Constants;
 import org.jsoup.helper.StringUtil;
 
@@ -64,9 +62,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         return true;
       }
       if (key.equals(Constants.Preferences.TEST)) {
-        ReceiverActivity.startReceiverActivity(
-            getActivity(), ReadableType.RAW, ReadingSource.SHARE,
-            getResources().getString(R.string.sample_text));
+        ReceiverActivity.startReceiverActivityShared(
+            getActivity(), getResources().getString(R.string.sample_text));
         return true;
       }
       if (key.equals(Constants.Preferences.FEEDBACK)) {

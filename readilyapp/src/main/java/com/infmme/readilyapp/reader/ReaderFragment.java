@@ -643,6 +643,9 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
         case CACHE:
           handleCacheSource(args);
           break;
+        case SHARE:
+          handleShareSource(args.getString(Constants.EXTRA_TEXT));
+          break;
       }
     }
   }
