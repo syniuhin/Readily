@@ -1,440 +1,314 @@
 package com.infmme.readilyapp.settings;
 
-import android.annotation.SuppressLint;
+
 import android.annotation.TargetApi;
-import android.app.ActionBar;
-import android.app.AlertDialog;
-import android.app.TaskStackBuilder;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Typeface;
+import android.content.res.Configuration;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
+import android.preference.*;
 import android.support.v4.app.NavUtils;
-import android.text.Editable;
-import android.text.InputType;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.MenuItem;
-import android.view.ViewGroup;
-import android.widget.*;
 import com.infmme.readilyapp.R;
-import com.infmme.readilyapp.ReceiverActivity;
-import com.infmme.readilyapp.readable.type.ReadableType;
-import com.infmme.readilyapp.readable.type.ReadingSource;
-import com.infmme.readilyapp.util.Constants;
-import org.jsoup.helper.StringUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class SettingsActivity extends PreferenceActivity {
+public class SettingsActivity extends AppCompatPreferenceActivity {
+  /**
+   * A preference value change listener that updates the preference's summary
+   * to reflect its new value.
+   */
+  private static Preference.OnPreferenceChangeListener
+      sBindPreferenceSummaryToValueListener = (preference, value) -> {
+    String stringValue = value.toString();
 
-  private int WPM;
+    if (preference instanceof ListPreference) {
+      // For list preferences, look up the correct display value in
+      // the preference's 'entries' list.
+      ListPreference listPreference = (ListPreference) preference;
+      int index = listPreference.findIndexOfValue(stringValue);
+
+      // Set the summary to reflect the new value.
+      preference.setSummary(
+          index >= 0
+              ? listPreference.getEntries()[index]
+              : null);
+
+    } else if (preference instanceof RingtonePreference) {
+      // For ringtone preferences, look up the correct display value
+      // using RingtoneManager.
+      if (TextUtils.isEmpty(stringValue)) {
+        // Empty values correspond to 'silent' (no ringtone).
+        preference.setSummary(R.string.pref_ringtone_silent);
+
+      } else {
+        Ringtone ringtone = RingtoneManager.getRingtone(
+            preference.getContext(), Uri.parse(stringValue));
+
+        if (ringtone == null) {
+          // Clear the summary if there was a lookup error.
+          preference.setSummary(null);
+        } else {
+          // Set the summary to reflect the new ringtone display
+          // name.
+          String name = ringtone.getTitle(preference.getContext());
+          preference.setSummary(name);
+        }
+      }
+
+    } else {
+      // For all other preferences, set the summary to the value's
+      // simple string representation.
+      preference.setSummary(stringValue);
+    }
+    return true;
+  };
+
+  /**
+   * Helper method to determine if the device has an extra-large screen. For
+   * example, 10" tablets are extra-large.
+   */
+  private static boolean isXLargeTablet(Context context) {
+    return (context.getResources().getConfiguration().screenLayout
+        & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration
+        .SCREENLAYOUT_SIZE_XLARGE;
+
+  }
+
+  /**
+   * Determines whether the simplified settings UI should be shown. This is
+   * true if this is forced via {@link #ALWAYS_SIMPLE_PREFS}, or the device
+   * doesn't have newer APIs like {@link PreferenceFragment}, or the device
+   * doesn't have an extra-large screen. In these cases, a single-pane
+   * "simplified" settings UI should be shown.
+   */
+  private static boolean isSimplePreferences(Context context) {
+    return Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB ||
+        !isXLargeTablet(context);
+  }
+
+  /**
+   * Binds a preference's summary to its value. More specifically, when the
+   * preference's value is changed, its summary (line of text below the
+   * preference title) is updated to reflect the value. The summary is also
+   * immediately updated upon calling this method. The exact display format is
+   * dependent on the type of preference.
+   *
+   * @see #sBindPreferenceSummaryToValueListener
+   */
+  private static void bindPreferenceSummaryToValue(Preference preference) {
+    // Set the listener to watch for value changes.
+    preference.setOnPreferenceChangeListener(
+        sBindPreferenceSummaryToValueListener);
+
+    // Trigger the listener immediately with the preference's
+    // current value.
+    sBindPreferenceSummaryToValueListener.onPreferenceChange(
+        preference,
+        PreferenceManager.getDefaultSharedPreferences(preference.getContext())
+                         .getString(preference.getKey(), ""));
+  }
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setupActionBar();
+  }
+
+  /**
+   * Set up the {@link android.app.ActionBar}, if the API is available.
+   */
+  private void setupActionBar() {
+    ActionBar actionBar = getSupportActionBar();
+    if (actionBar != null) {
+      // Show the Up button in the action bar.
+      actionBar.setDisplayHomeAsUpEnabled(true);
+    }
+  }
+
+  @Override
+  public boolean onMenuItemSelected(int featureId, MenuItem item) {
+    int id = item.getItemId();
+    if (id == android.R.id.home) {
+      if (!super.onMenuItemSelected(featureId, item)) {
+        NavUtils.navigateUpFromSameTask(this);
+      }
+      return true;
+    }
+    return super.onMenuItemSelected(featureId, item);
+  }
 
   @Override
   protected void onPostCreate(Bundle savedInstanceState) {
     super.onPostCreate(savedInstanceState);
 
-    addPreferencesFromResource(R.xml.preferences);
-    WPM = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).
-        getString(Constants.Preferences.WPM, Constants.DEFAULT_WPM));
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-      ActionBar actionBar = getActionBar();
-      actionBar.setDisplayHomeAsUpEnabled(true);
-      actionBar.setDisplayShowTitleEnabled(true);
-    }
+    setupSimplePreferencesScreen();
   }
 
-  @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-  @SuppressLint("NewApi")
+  /**
+   * Shows the simplified settings UI if the device configuration if the
+   * device configuration dictates that a simplified, single-pane UI should be
+   * shown.
+   */
+  private void setupSimplePreferencesScreen() {
+    if (!isSimplePreferences(this)) {
+      return;
+    }
+
+    // In the simplified UI, fragments are not used at all and we instead
+    // use the older PreferenceActivity APIs.
+
+    // Add 'general' preferences.
+    addPreferencesFromResource(R.xml.pref_general);
+
+    // Add 'notifications' preferences, and a corresponding header.
+    PreferenceCategory fakeHeader = new PreferenceCategory(this);
+    fakeHeader.setTitle(R.string.pref_header_notifications);
+    getPreferenceScreen().addPreference(fakeHeader);
+    addPreferencesFromResource(R.xml.pref_notification);
+
+    // Add 'data and sync' preferences, and a corresponding header.
+    fakeHeader = new PreferenceCategory(this);
+    fakeHeader.setTitle(R.string.pref_header_data_sync);
+    getPreferenceScreen().addPreference(fakeHeader);
+    addPreferencesFromResource(R.xml.pref_data_sync);
+
+    // Bind the summaries of EditText/List/Dialog/Ringtone preferences to
+    // their values. When their values change, their summaries are updated
+    // to reflect the new value, per the Android Design guidelines.
+    bindPreferenceSummaryToValue(findPreference("example_text"));
+    bindPreferenceSummaryToValue(findPreference("example_list"));
+    bindPreferenceSummaryToValue(
+        findPreference("notifications_new_message_ringtone"));
+    bindPreferenceSummaryToValue(findPreference("sync_frequency"));
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    switch (item.getItemId()) {
-      case android.R.id.home:
-        Intent upIntent = NavUtils.getParentActivityIntent(this);
-        if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
-          TaskStackBuilder.create(this)
-                          .addNextIntentWithParentStack(upIntent)
-                          .startActivities();
-        } else {
-          upIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-          startActivity(upIntent);
-          finish();
-        }
-        return true;
-    }
-    return super.onOptionsItemSelected(item);
+  public boolean onIsMultiPane() {
+    return isXLargeTablet(this) && !isSimplePreferences(this);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen,
-                                       Preference preference) {
-    String key = preference.getKey();
-    if (!TextUtils.isEmpty(key)) {
-      if (key.equals(Constants.Preferences.WPM)) {
-        chooseSpeed(this);
+  @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+  public void onBuildHeaders(List<Header> target) {
+    if (!isSimplePreferences(this)) {
+      loadHeadersFromResource(R.xml.pref_headers, target);
+    }
+  }
+
+  /**
+   * This method stops fragment injection in malicious applications.
+   * Make sure to deny any unknown fragments here.
+   */
+  protected boolean isValidFragment(String fragmentName) {
+    return PreferenceFragment.class.getName().equals(fragmentName)
+        || GeneralPreferenceFragment.class.getName().equals(fragmentName)
+        || DataSyncPreferenceFragment.class.getName().equals(fragmentName)
+        || NotificationPreferenceFragment.class.getName().equals(fragmentName);
+  }
+
+  /**
+   * This fragment shows general preferences only. It is used when the
+   * activity is showing a two-pane settings UI.
+   */
+  @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+  public static class GeneralPreferenceFragment extends PreferenceFragment {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      addPreferencesFromResource(R.xml.pref_general);
+      setHasOptionsMenu(true);
+
+      // Bind the summaries of EditText/List/Dialog/Ringtone preferences
+      // to their values. When their values change, their summaries are
+      // updated to reflect the new value, per the Android Design
+      // guidelines.
+      bindPreferenceSummaryToValue(findPreference("example_text"));
+      bindPreferenceSummaryToValue(findPreference("example_list"));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+      int id = item.getItemId();
+      if (id == android.R.id.home) {
+        startActivity(new Intent(getActivity(), SettingsActivity.class));
         return true;
       }
-      if (key.equals(Constants.Preferences.TEST)) {
-        ReceiverActivity.startReceiverActivity(
-            this, ReadableType.RAW, ReadingSource.SHARE,
-            getResources().getString(R.string.sample_text));
+      return super.onOptionsItemSelected(item);
+    }
+  }
+
+  /**
+   * This fragment shows notification preferences only. It is used when the
+   * activity is showing a two-pane settings UI.
+   */
+  @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+  public static class NotificationPreferenceFragment
+      extends PreferenceFragment {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      addPreferencesFromResource(R.xml.pref_notification);
+      setHasOptionsMenu(true);
+
+      // Bind the summaries of EditText/List/Dialog/Ringtone preferences
+      // to their values. When their values change, their summaries are
+      // updated to reflect the new value, per the Android Design
+      // guidelines.
+      bindPreferenceSummaryToValue(
+          findPreference("notifications_new_message_ringtone"));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+      int id = item.getItemId();
+      if (id == android.R.id.home) {
+        startActivity(new Intent(getActivity(), SettingsActivity.class));
         return true;
       }
-      if (key.equals(Constants.Preferences.FEEDBACK)) {
-        try {
-          Resources resources = getResources();
-          startActivity(Intent.createChooser(new Intent(Intent.ACTION_SENDTO,
-                                                        Uri.parse(
-                                                            resources.getString(
-                                                                R.string
-                                                                    .mail_to_me)
-                                                        )), resources.getString(
-              R.string.send_email)));
-        } catch (ActivityNotFoundException e) {
-          Toast.makeText(this, R.string.email_app_not_found, Toast.LENGTH_SHORT)
-               .show();
-        }
-      }
-      if (key.equals(Constants.Preferences.FONT_SIZE)) {
-        chooseFontSize(this);
-      }
-    }
-    return super.onPreferenceTreeClick(preferenceScreen, preference);
-  }
-
-  private int pxFromDp(int dp) {
-    return (int) (dp * this.getResources().getDisplayMetrics().density + 0.5f);
-  }
-
-  private float spToPixels(Context context, float sp) {
-    float scaledDensity = context.getResources()
-                                 .getDisplayMetrics().scaledDensity;
-    return sp * scaledDensity;
-  }
-
-  private void chooseFontSize(final Context context) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-      showFontSizeNumberPicker(context);
-    } else {
-      showFontSizeEditText(context);
+      return super.onOptionsItemSelected(item);
     }
   }
 
-  private void chooseSpeed(final Context context) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-      showSpeedNumberPicker(context, Constants.MIN_WPM, Constants.MAX_WPM);
-    } else {
-      showSpeedEditText(context, Constants.MIN_WPM, Constants.MAX_WPM);
-    }
-  }
-
-  private boolean changeTextViewSize(TextView text, String nSize) {
-    return StringUtil.isNumeric(nSize) && changeTextViewSize(text,
-                                                             Integer.parseInt(
-                                                                 nSize));
-  }
-
-  private boolean changeTextViewSize(TextView text, int nSize) {
-    if (nSize >= Constants.MIN_FONT_SIZE && nSize <= Constants.MAX_FONT_SIZE) {
-      text.setTextSize(TypedValue.COMPLEX_UNIT_SP, nSize);
-      return true;
-    }
-    return false;
-  }
-
-  private TextView getIndicatorText(final Context context, int initSize) {
-    final TextView sampleText = new TextView(context);
-    sampleText.setBackgroundColor(
-        getResources().getColor(android.R.color.white));
-    sampleText.setText(R.string.just_sample);
-    sampleText.setTextSize(TypedValue.COMPLEX_UNIT_SP, initSize);
-    sampleText.setHeight(
-        (int) (spToPixels(this, Constants.MAX_FONT_SIZE + 10) + .5f));
-    sampleText.setGravity(Gravity.CENTER_HORIZONTAL);
-    sampleText.setTypeface(Typeface.MONOSPACE);
-    return sampleText;
-  }
-
-  private LinearLayout getDialogLayout(final Context context) {
-    final LinearLayout linearLayout = new LinearLayout(context);
-    linearLayout.setOrientation(LinearLayout.VERTICAL);
-    linearLayout.setLayoutParams(
-        new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                     ViewGroup.LayoutParams.WRAP_CONTENT));
-    return linearLayout;
-  }
-
-  private void showFontSizeEditText(final Context context) {
-    int currentFontSize = Integer.parseInt(
-        PreferenceManager.getDefaultSharedPreferences(context).
-            getString(Constants.Preferences.FONT_SIZE, "18"));
-
-    final EditText editText = new EditText(context);
-    editText.setText(Integer.toString(currentFontSize));
-    editText.setHint(R.string.hint_font_size);
-
-    final LinearLayout linearLayout = getDialogLayout(context);
-    final TextView sampleText = getIndicatorText(context, currentFontSize);
-    linearLayout.addView(sampleText);
-    linearLayout.addView(editText);
-
-    editText.addTextChangedListener(new TextWatcher() {
-      @Override
-      public void beforeTextChanged(CharSequence s, int start, int count,
-                                    int after) {}
-
-      @Override
-      public void onTextChanged(CharSequence s, int start, int before,
-                                int count) {}
-
-      @Override
-      public void afterTextChanged(Editable s) {
-        if (s.length() > 0)
-          changeTextViewSize(sampleText, String.valueOf(s));
-      }
-    });
-
-    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-    builder.setTitle(R.string.preference_font_size).
-        setView(linearLayout).
-               setPositiveButton(android.R.string.ok,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog,
-                                                       int which) {
-                                     String nSize = String.valueOf(
-                                         editText.getText())
-                                                          .replaceAll("\\s+",
-                                                                      "");
-                                     if (changeTextViewSize(sampleText, nSize))
-                                       PreferenceManager
-                                           .getDefaultSharedPreferences(
-                                               context)
-                                           .edit()
-                                           .putString(
-                                               Constants
-                                                   .Preferences
-                                                   .FONT_SIZE,
-                                               nSize)
-                                           .commit();
-                                     else
-                                       Toast.makeText(context,
-                                                      R.string.illegal_value,
-                                                      Toast.LENGTH_SHORT)
-                                            .show();
-                                   }
-                                 }
-               ).
-               setNegativeButton(android.R.string.cancel,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog,
-                                                       int which) {
-                                     dialog.cancel();
-                                   }
-                                 }
-               );
-    AlertDialog dialog = builder.create();
-    dialog.show();
-
-    dialog.getWindow().setLayout(pxFromDp(Constants.DIALOG_PICKER_WIDTH),
-                                 pxFromDp(Constants.DIALOG_PICKER_HEIGHT) +
-                                     (int) (spToPixels(this,
-                                                       Constants
-                                                           .MAX_FONT_SIZE +
-                                                           10) + .5f));
-
-  }
-
+  /**
+   * This fragment shows data and sync preferences only. It is used when the
+   * activity is showing a two-pane settings UI.
+   */
   @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-  @SuppressLint("NewApi")
-  private void showFontSizeNumberPicker(final Context context) {
-    int currentFontSize = Integer.parseInt(
-        PreferenceManager.getDefaultSharedPreferences(context).
-            getString(Constants.Preferences.FONT_SIZE,
-                      Constants.DEFAULT_FONT_SIZE));
+  public static class DataSyncPreferenceFragment extends PreferenceFragment {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+      super.onCreate(savedInstanceState);
+      addPreferencesFromResource(R.xml.pref_data_sync);
+      setHasOptionsMenu(true);
 
-    final NumberPicker numberPicker = new NumberPicker(context);
-    numberPicker.setMinValue(Constants.MIN_FONT_SIZE);
-    numberPicker.setMaxValue(Constants.MAX_FONT_SIZE);
-    numberPicker.setValue(currentFontSize);
-
-    final LinearLayout linearLayout = getDialogLayout(context);
-    final TextView sampleText = getIndicatorText(context, currentFontSize);
-    linearLayout.addView(sampleText);
-    linearLayout.addView(numberPicker);
-    numberPicker.setOnValueChangedListener(
-        new NumberPicker.OnValueChangeListener() {
-          @Override
-          public void onValueChange(NumberPicker picker, int oldVal,
-                                    int newVal) {
-            changeTextViewSize(sampleText, newVal);
-          }
-        });
-    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-    builder.setTitle(R.string.preference_font_size).
-        setView(linearLayout).
-               setPositiveButton(android.R.string.ok,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog,
-                                                       int which) {
-                                     PreferenceManager
-                                         .getDefaultSharedPreferences(
-                                             context)
-                                         .edit()
-                                         .putString(
-                                             Constants
-                                                 .Preferences
-                                                 .FONT_SIZE,
-                                             String.valueOf(
-                                                 numberPicker
-                                                     .getValue()))
-                                         .commit();
-                                   }
-                                 }
-               ).
-               setNegativeButton(android.R.string.cancel,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog,
-                                                       int which) {
-                                     dialog.cancel();
-                                   }
-                                 }
-               );
-    AlertDialog dialog = builder.create();
-    dialog.show();
-
-    int textHeight = (int) (spToPixels(this,
-                                       Constants.MAX_FONT_SIZE + 10) + .5f);
-    dialog.getWindow().setLayout(pxFromDp(Constants.DIALOG_PICKER_WIDTH),
-                                 pxFromDp(
-                                     Constants.DIALOG_PICKER_HEIGHT) +
-                                     textHeight);
-  }
-
-  private void showSpeedEditText(final Context context, final int min,
-                                 final int max) {
-    final LinearLayout linearLayout = getDialogLayout(context);
-    final EditText editText = new EditText(context);
-    editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-    editText.setText(Integer.toString(WPM));
-    linearLayout.addView(editText);
-
-    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-    builder.setTitle(R.string.preferences_set_wpm).
-        setView(linearLayout).
-               setPositiveButton(android.R.string.ok,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog,
-                                                       int which) {
-                                     int nWPM = 0;
-                                     if (StringUtil.isNumeric(
-                                         String.valueOf(editText.getText())))
-                                       nWPM = Integer.parseInt(
-                                           String.valueOf(editText.getText()));
-                                     if (nWPM >= min && nWPM <= max)
-                                       PreferenceManager
-                                           .getDefaultSharedPreferences(
-                                               context)
-                                           .edit()
-                                           .putString(
-                                               Constants
-                                                   .Preferences
-                                                   .WPM,
-                                               Integer.toString(
-                                                   WPM = nWPM))
-                                           .commit();
-                                     else
-                                       Toast.makeText(context,
-                                                      R.string.illegal_value,
-                                                      Toast.LENGTH_SHORT).
-                                                show();
-                                   }
-                                 }
-               ).
-               setNegativeButton(android.R.string.cancel,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog,
-                                                       int which) {
-                                     dialog.cancel();
-                                   }
-                                 }
-               );
-    AlertDialog dialog = builder.create();
-    dialog.show();
-    dialog.getWindow().setLayout(pxFromDp(Constants.DIALOG_PICKER_WIDTH),
-                                 pxFromDp(Constants.DIALOG_PICKER_HEIGHT));
-
-  }
-
-
-  @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-  @SuppressLint("NewApi")
-  private void showSpeedNumberPicker(final Context context, final int min,
-                                     final int max) {
-    final NumberPicker numberPicker = new NumberPicker(context);
-    numberPicker.setMinValue(min);
-    numberPicker.setMaxValue(
-        min + (max - min) / Constants.WPM_STEP_PREFERENCES);
-
-    List<String> values = new ArrayList<String>();
-    for (Integer i = min; i <= max; i += Constants.WPM_STEP_PREFERENCES) {
-      values.add(i.toString());
+      // Bind the summaries of EditText/List/Dialog/Ringtone preferences
+      // to their values. When their values change, their summaries are
+      // updated to reflect the new value, per the Android Design
+      // guidelines.
+      bindPreferenceSummaryToValue(findPreference("sync_frequency"));
     }
-    numberPicker.setDisplayedValues(values.toArray(new String[values.size()]));
-    numberPicker.setValue(min + (WPM - min) / Constants.WPM_STEP_PREFERENCES);
-    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-    builder.setTitle(R.string.preferences_set_wpm).
-        setView(numberPicker).
-               setPositiveButton(android.R.string.ok,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog,
-                                                       int which) {
-                                     WPM = min + Constants
-                                         .WPM_STEP_PREFERENCES * (numberPicker
-                                         .getValue() - min);
-                                     PreferenceManager
-                                         .getDefaultSharedPreferences(
-                                             context)
-                                         .edit()
-                                         .putString(
-                                             Constants
-                                                 .Preferences.WPM,
-                                             Integer.toString(WPM))
-                                         .commit();
-                                   }
-                                 }
-               ).
-               setNegativeButton(android.R.string.cancel,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog,
-                                                       int which) {
-                                     dialog.cancel();
-                                   }
-                                 }
-               );
-    AlertDialog dialog = builder.create();
-    dialog.show();
-    dialog.getWindow().setLayout(pxFromDp(Constants.DIALOG_PICKER_WIDTH),
-                                 pxFromDp(Constants.DIALOG_PICKER_HEIGHT));
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+      int id = item.getItemId();
+      if (id == android.R.id.home) {
+        startActivity(new Intent(getActivity(), SettingsActivity.class));
+        return true;
+      }
+      return super.onOptionsItemSelected(item);
+    }
   }
 }

@@ -76,7 +76,7 @@
         <activity android:name=".InstructionsActivity">
         </activity>
         <activity
-                android:name=".settings.SettingsActivity"
+                android:name=".settings.OldSettingsActivity"
                 android:label="@string/title_activity_settings"
                 android:parentActivityName=".MainActivity"
                 android:theme="@style/AppTheme">
@@ -127,6 +127,24 @@
                 android:name=".service.StorableService"
                 android:exported="false">
         </service>
+
+        <activity
+                android:name=".settings.SettingsActivity"
+                android:label="@string/title_activity_settings"
+                android:parentActivityName=".MainActivity">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="com.infmme.readilyapp.MainActivity"/>
+        </activity>
+        <activity
+                android:name=".settings.SettingsActivity2"
+                android:label="@string/title_activity_settings2"
+                android:parentActivityName=".MainActivity"
+                android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="com.infmme.readilyapp.MainActivity"/>
+        </activity>
     </application>
 
 </manifest>

@@ -20,7 +20,7 @@ import com.infmme.readilyapp.fragment.FileListFragment;
 import com.infmme.readilyapp.readable.Utils;
 import com.infmme.readilyapp.readable.type.ReadableType;
 import com.infmme.readilyapp.readable.type.ReadingSource;
-import com.infmme.readilyapp.settings.SettingsActivity;
+import com.infmme.readilyapp.settings.SettingsActivity2;
 import com.infmme.readilyapp.util.Constants;
 import com.ipaulpro.afilechooser.utils.FileUtils;
 
@@ -182,7 +182,7 @@ public class MainActivity extends BaseActivity {
   }
 
   private void startSettingsActivity() {
-    startActivity(new Intent(this, SettingsActivity.class));
+    startActivity(new Intent(this, SettingsActivity2.class));
   }
 
   private void startFileListFragment() {
