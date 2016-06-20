@@ -54,7 +54,6 @@ public class Constants {
     public static final String SWIPE = "pref_swipe";
     public static final String TYPEFACE = "pref_typeface";
     public static final String PUNCTUATION_DIFFERS = "pref_punct";
-    public static final String STORE_COMPLETE = "pref_again";
     public static final String FEEDBACK = "pref_feedback";
     public static final String FONT_SIZE = "pref_font_size";
     public static final String DARK_THEME = "pref_dark_theme";

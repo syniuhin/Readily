@@ -18,7 +18,6 @@ public class SettingsBundle {
   private List<Integer> delayCoefficients;
   private boolean showingContextEnabled;
   private boolean swipesEnabled;
-  private boolean storingComplete;
   private Integer typeface;
   private boolean darkTheme;
   //preferences themselves
@@ -35,10 +34,6 @@ public class SettingsBundle {
 
   public Integer getFontSize() {
     return fontSize;
-  }
-
-  public boolean isStoringComplete() {
-    return storingComplete;
   }
 
   public List<Integer> getDelayCoefficients() {
@@ -77,8 +72,6 @@ public class SettingsBundle {
     punctuationSpeedDiffers = sharedPreferences.getBoolean(
         Constants.Preferences.PUNCTUATION_DIFFERS, true);
     delayCoefficients = buildDelayListCoefficients();
-    storingComplete = sharedPreferences.getBoolean(
-        Constants.Preferences.STORE_COMPLETE, false);
     darkTheme = sharedPreferences.getBoolean(Constants.Preferences.DARK_THEME,
                                              false);
   }
@@ -96,7 +89,6 @@ public class SettingsBundle {
                       showingContextEnabled);
     editor.putBoolean(Constants.Preferences.PUNCTUATION_DIFFERS,
                       punctuationSpeedDiffers);
-    editor.putBoolean(Constants.Preferences.STORE_COMPLETE, storingComplete);
     editor.putBoolean(Constants.Preferences.DARK_THEME, darkTheme);
     editor.apply();
   }
@@ -109,14 +101,15 @@ public class SettingsBundle {
    */
   private ArrayList<Integer> buildDelayListCoefficients() {
     ArrayList<Integer> delayCoeffs = new ArrayList<Integer>();
-    if (punctuationSpeedDiffers)
+    if (punctuationSpeedDiffers) {
       for (int i = 0; i < 6; ++i)
         delayCoeffs.add(Integer.parseInt(
             Constants.Preferences.STR_PUNCTUATION_DEFAULTS[i]));
-    else
+    } else {
       for (int i = 0; i < 6; ++i)
         delayCoeffs.add(Integer.parseInt(
             Constants.Preferences.STR_PUNCTUATION_DEFAULTS[0]));
+    }
     return delayCoeffs;
   }
 }
