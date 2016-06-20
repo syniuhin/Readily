@@ -25,6 +25,7 @@ import com.infmme.readilyapp.util.Constants;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 import java.io.IOException;
 
@@ -49,6 +50,8 @@ public class BookPartDetailFragment extends Fragment implements
   private OnChooseListener mCallback;
 
   private TextParser mTextParser;
+
+  private CompositeSubscription mCompositeSubscription;
 
   /**
    * Mandatory empty constructor for the fragment manager to instantiate the
@@ -93,6 +96,8 @@ public class BookPartDetailFragment extends Fragment implements
       }
       mTwoPane = bundle.getBoolean(Constants.EXTRA_TWO_PANE, false);
     }
+
+    mCompositeSubscription = new CompositeSubscription();
   }
 
   @Override
@@ -119,6 +124,7 @@ public class BookPartDetailFragment extends Fragment implements
         try {
           // Loads and caches preview
           Reading r = new Readable();
+          // We need a path to fetch a part of an .fb2 book.
           if (mFilePath != null && mItemReference instanceof FB2Part) {
             ((FB2Part) mItemReference).setPath(mFilePath);
           }
@@ -134,24 +140,35 @@ public class BookPartDetailFragment extends Fragment implements
           subscriber.onError(e);
         }
       });
-      o.subscribeOn(Schedulers.newThread())
-       .observeOn(AndroidSchedulers.mainThread())
-       .subscribe(item -> {
-         mProgressBar.setVisibility(View.GONE);
-         if (mTwoPane) {
-           mTitleTextView.setVisibility(View.VISIBLE);
-           mTitleTextView.setText(item.title);
-         }
-         mBodyTextView.setVisibility(View.VISIBLE);
-         mBodyTextView.setText(item.text);
-       }, throwable -> {
-         throwable.printStackTrace();
-         Snackbar.make(rootView, R.string.error_occurred, Snackbar.LENGTH_SHORT)
-                 .show();
-       });
+      mCompositeSubscription.add(
+          o.subscribeOn(Schedulers.newThread())
+           .observeOn(AndroidSchedulers.mainThread())
+           .subscribe(item -> {
+             mProgressBar.setVisibility(View.GONE);
+             if (mTwoPane) {
+               mTitleTextView.setVisibility(View.VISIBLE);
+               mTitleTextView.setText(item.title);
+             }
+             mBodyTextView.setVisibility(View.VISIBLE);
+             mBodyTextView.setText(item.text);
+           }, throwable -> {
+             throwable.printStackTrace();
+             Snackbar.make(rootView, R.string.error_occurred,
+                           Snackbar.LENGTH_SHORT)
+                     .show();
+           }));
     }
 
     return rootView;
+  }
+
+  @Override
+  public void onDestroy() {
+    super.onDestroy();
+    if (mCompositeSubscription != null &&
+        mCompositeSubscription.hasSubscriptions()) {
+      mCompositeSubscription.unsubscribe();
+    }
   }
 
   @Override

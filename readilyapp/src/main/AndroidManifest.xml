@@ -11,7 +11,8 @@
             android:allowBackup="true"
             android:icon="@drawable/ic_launcher"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme"
+            android:name=".ReadilyApp">
         <activity
                 android:name=".MainActivity"
                 android:configChanges="orientation|screenSize"
