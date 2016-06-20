@@ -48,13 +48,15 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.List;
 
 /**
  * infm : 16/05/14. Enjoy it ;)
  */
-public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
-    ReaderTask.ReaderTaskCallbacks {
+public class ReaderFragment extends Fragment
+    implements Reader.ReaderCallbacks,
+    ReaderProducerTask.ReaderTaskCallbacks {
 
   private static final int NOTIF_APPEARING_DURATION = 300;
   /**
@@ -74,6 +76,8 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
   private static final String[] DARK_COLOR_SET = new String[] { "#FFFFFF",
       "#999999", "#FF282828" };
   private static final String EMPHASIS_CHAR_COLOR = "#FA2828";
+
+  private static final int DEQUE_SIZE_LIMIT = 3;
 
   private Handler mHandler;
   private long mLocalTime = 0;
@@ -95,8 +99,10 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
   private View mUpLogo;
 
   private Reader mReader;
-  private ReaderTask mReaderTask;
-  private MonitorObject mTaskMonitor;
+  private ReaderProducerTask mReaderProducerTask;
+  private MonitorObject mFullMonitor;
+  private boolean mStarted;
+  private final ArrayDeque<Reading> mReadingDeque = new ArrayDeque<>();
 
   private Reading mReading = null;
   private Chunked mChunked = null;
@@ -528,16 +534,22 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
 
   @Override
   public boolean isNextLoaded() {
-    return mReaderTask.isNextLoaded();
+    return mReadingDeque.size() > 1;
   }
 
   @Override
-  public Reading nextReading() throws IOException {
+  public Reading nextReading() throws IOException, InterruptedException {
     if (BuildConfig.DEBUG) {
       Log.d(getClass().getName(), "Next reading requested.");
     }
     mChunked.onReaderNext();
-    return mReaderTask.removeDequeHead();
+    Reading r;
+    // No need for sync over mReadingDeque?
+    r = mReadingDeque.removeFirst();
+    if (mReadingDeque.size() == DEQUE_SIZE_LIMIT - 1) {
+      mFullMonitor.resumeTask();
+    }
+    return r;
   }
 
   /**
@@ -559,27 +571,27 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
     }
   }
 
-  @Override
   public void startReader(Reading reading) {
+    if (BuildConfig.DEBUG) {
+      Log.d(ReaderFragment.class.getName(), "Starting reader...");
+    }
     mReading = reading;
 
     mReader.changeReading(reading);
     Activity activity = getActivity();
     if (activity != null) {
-      activity.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-          stopShowingProgress();
-          showNotification(R.string.tap_to_start);
-          // mProgress = mReading.calcProgress(initialPosition, 0);
-          mReader.setPosition(Math.max(
-              0, mReader.getPosition() - Constants.READER_START_OFFSET));
-          mReader.updateReaderView();
-          showInfo(mReader);
-          YoYo.with(Techniques.FadeIn)
-              .duration(READER_PULSE_DURATION)
-              .playOn(mReaderLayout);
-        }
+      activity.runOnUiThread(() -> {
+        stopShowingProgress();
+        showNotification(R.string.tap_to_start);
+        // mProgress = mReading.calcProgress(initialPosition, 0);
+        mReader.setPosition(Math.max(
+            0,
+            mReader.getPosition() - Constants.READER_START_OFFSET));
+        mReader.updateReaderView();
+        showInfo(mReader);
+        YoYo.with(Techniques.FadeIn)
+            .duration(READER_PULSE_DURATION)
+            .playOn(mReaderLayout);
       });
     }
     mHasReaderStarted = true;
@@ -599,6 +611,34 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
   @Override
   public boolean shouldContinue() {
     return mReader == null || !mReader.isCompleted();
+  }
+
+  @Override
+  public boolean hasStarted() {
+    return mStarted;
+  }
+
+  @Override
+  public void produce(Reading reading) throws InterruptedException {
+    if (!hasStarted()) {
+      startReader(reading);
+      mStarted = true;
+    } else {
+      synchronized (mReadingDeque) {
+        if (mReadingDeque.size() == DEQUE_SIZE_LIMIT) {
+          if (BuildConfig.DEBUG) {
+            Log.d(ReaderFragment.class.getName(),
+                  "Reading deque is full, pasusing task");
+          }
+          mFullMonitor.pauseTask();
+        }
+        mReadingDeque.add(reading);
+        if (BuildConfig.DEBUG) {
+          Log.d(ReaderFragment.class.getName(), String.format(
+              "Added to a reading deque, new size: %d", mReadingDeque.size()));
+        }
+      }
+    }
   }
 
   //it's very unflexible, TODO: fix it later
@@ -739,10 +779,10 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
    * Method for initializing reading flow using single Reading instance.
    */
   private void startSingleReadingFlow() {
-    mTaskMonitor = new MonitorObject();
-    mReader = new Reader(mHandler, mTaskMonitor, this);
-    mReaderTask = new ReaderTask(mTaskMonitor, mReading, this);
-    mReadingThread = new Thread(mReaderTask);
+    mFullMonitor = new MonitorObject();
+    mReader = new Reader(mHandler, this);
+    mReaderProducerTask = new ReaderProducerTask(mReading, this);
+    mReadingThread = new Thread(mReaderProducerTask);
     mReadingThread.start();
   }
 
@@ -753,11 +793,11 @@ public class ReaderFragment extends Fragment implements Reader.ReaderCallbacks,
    * @param initialPosition Initial position of a reading.
    */
   private void startChunkedReadingFlow(final int initialPosition) {
-    mTaskMonitor = new MonitorObject();
-    mReader = new Reader(mHandler, mTaskMonitor, this);
+    mFullMonitor = new MonitorObject();
+    mReader = new Reader(mHandler, this);
     mReader.setPosition(initialPosition);
-    mReaderTask = new ReaderTask(mTaskMonitor, mChunked, this);
-    mReadingThread = new Thread(mReaderTask);
+    mReaderProducerTask = new ReaderProducerTask(mChunked, this);
+    mReadingThread = new Thread(mReaderProducerTask);
     mReadingThread.start();
   }
 

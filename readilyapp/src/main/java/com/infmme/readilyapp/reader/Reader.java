@@ -36,15 +36,11 @@ public class Reader implements Runnable {
   private List<Integer> mEmphasisList;
   private List<Integer> mDelayList;
 
-  private final MonitorObject mTaskMonitor;
-
   private ReaderCallbacks mCallback;
 
-  public Reader(Handler readerHandler, MonitorObject monitorObject,
+  public Reader(Handler readerHandler,
                 ReaderCallbacks callback) {
     this.mReaderHandler = readerHandler;
-
-    this.mTaskMonitor = monitorObject;
     this.mCallback = callback;
 
     mPaused = 1;
@@ -60,17 +56,6 @@ public class Reader implements Runnable {
   public void run() {
     // Checks if we should show current reading.
     if (isCurrentReading()) {
-      // Block mTaskMonitor to have a condition below satisfied safely.
-      synchronized (mTaskMonitor) {
-        if (mWordList.size() - mPosition < LAST_WORD_PREFIX_SIZE &&
-            mTaskMonitor.isPaused()) {
-          try {
-            mTaskMonitor.resumeTask();
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          }
-        }
-      }
       mCompleted = false;
       if (!isPaused()) {
         // mApproxCharCount += mWordList.get(mPosition).length() + 1;
@@ -86,10 +71,10 @@ public class Reader implements Runnable {
         changeReading(mCallback.nextReading());
         mPosition = 0;
         mReaderHandler.postDelayed(this, calcDelay());
-      } catch (IOException e) {
+      } catch (IOException | InterruptedException e) {
         e.printStackTrace();
       }
-    // Final check is about end of our reading.
+      // Final check is about end of our reading.
     } else {
       mCallback.showNotification(R.string.reading_is_completed);
       mCompleted = true;
@@ -265,6 +250,6 @@ public class Reader implements Runnable {
      * @return Reading  to load into reader window
      * @throws IOException from Chunked.nextReading()
      */
-    Reading nextReading() throws IOException;
+    Reading nextReading() throws IOException, InterruptedException;
   }
 }
