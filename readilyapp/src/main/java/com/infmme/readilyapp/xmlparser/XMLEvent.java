@@ -142,9 +142,21 @@ public class XMLEvent {
       tagAttributes.put(kv[0], value);
     } else {
       throw new IllegalArgumentException(String.format(
-          "Attribute piece is not actually a key-value having %d pieces",
-          kv.length));
+          "Attribute piece %s is not actually a key-value having %d pieces",
+          piece, kv.length));
     }
+  }
+
+  public void appendTagComment(char c) {
+    if (tagContents == null) {
+      tagContents = new StringBuilder();
+    }
+    tagContents.append(c);
+  }
+
+  public void finishAppendingTagComment() {
+    content = tagContents.toString();
+    tagContents = new StringBuilder();
   }
 
   public boolean enteringTag(final String tagName) {

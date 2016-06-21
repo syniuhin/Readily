@@ -122,8 +122,10 @@ public class XMLParser {
         case TAG_START:
         case TAG_CLOSE:
         case TAG_SINGLE:
-        case TAG_COMMENT:
           currentEvent.appendTagContents((char) currentInt);
+          break;
+        case TAG_COMMENT:
+          currentEvent.appendTagComment((char) currentInt);
           break;
         case CONTENT:
           currentEvent.appendContent((char) currentInt);
@@ -171,6 +173,11 @@ public class XMLParser {
         break;
       case TAG_START:
         currentEvent.finishAppendingTagContents();
+        eventStack.push(currentEvent);
+        readNext();
+        break;
+      case TAG_COMMENT:
+        currentEvent.finishAppendingTagComment();
         eventStack.push(currentEvent);
         readNext();
         break;
