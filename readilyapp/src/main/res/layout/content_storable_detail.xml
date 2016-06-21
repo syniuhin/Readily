@@ -60,9 +60,10 @@
             android:layout_height="wrap_content"
             android:id="@+id/storable_detail_description"
             android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
-            app:layout_constraintLeft_toRightOf="@+id/storable_detail_description_prefix"
-            android:layout_marginLeft="8dp" android:layout_marginStart="8dp"
-            app:layout_constraintTop_toTopOf="@+id/storable_detail_description_prefix"
+            app:layout_constraintLeft_toLeftOf="@+id/content_storable_detail"
+            android:layout_marginLeft="16dp" android:layout_marginStart="16dp"
+            app:layout_constraintTop_toBottomOf="@+id/storable_detail_description_prefix"
+            android:layout_marginTop="8dp"
             app:layout_constraintRight_toRightOf="@+id/content_storable_detail"
             android:layout_marginRight="16dp" android:layout_marginEnd="16dp"/>
     <TextView
@@ -122,19 +123,21 @@
             android:id="@+id/storable_detail_file_prefix"
             app:layout_constraintLeft_toLeftOf="@+id/content_storable_detail"
             android:layout_marginLeft="16dp" android:layout_marginStart="16dp"
-            app:layout_constraintTop_toBottomOf="@+id/storable_detail_current_part_prefix"
-            android:layout_marginTop="16dp"/>
+            app:layout_constraintTop_toBottomOf="@+id/storable_detail_current_part"
+            android:layout_marginTop="8dp"/>
     <TextView
             android:text="@string/just_sample"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:id="@+id/storable_detail_file"
             android:typeface="monospace"
             app:layout_constraintLeft_toRightOf="@+id/storable_detail_file_prefix"
             android:layout_marginLeft="8dp" android:layout_marginStart="8dp"
             app:layout_constraintTop_toTopOf="@+id/storable_detail_file_prefix"
             app:layout_constraintRight_toRightOf="@+id/content_storable_detail"
-            android:layout_marginRight="16dp" android:layout_marginEnd="16dp"/>
+            android:layout_marginRight="16dp" android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/content_storable_detail"
+            android:layout_marginBottom="16dp"/>
     <TextView
             android:text="@string/title_prefix"
             android:layout_width="0dp"
