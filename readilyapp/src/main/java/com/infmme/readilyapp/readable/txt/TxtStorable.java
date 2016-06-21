@@ -162,6 +162,7 @@ public class TxtStorable implements ChunkedUnprocessedStorable {
   public void storeToDb() {
     CachedBookContentValues values = new CachedBookContentValues();
     values.putTextPosition(mCurrentTextPosition);
+    values.putTimeOpened(mTimeOpened);
     values.putPercentile(calcPercentile());
 
     TxtBookContentValues txtValues = new TxtBookContentValues();
@@ -175,7 +176,6 @@ public class TxtStorable implements ChunkedUnprocessedStorable {
       txtValues.update(mContext, txtWhere);
       values.update(mContext, cachedWhere);
     } else {
-      values.putTimeOpened(mTimeOpened);
       values.putPath(mPath);
       values.putTitle(mTitle);
 

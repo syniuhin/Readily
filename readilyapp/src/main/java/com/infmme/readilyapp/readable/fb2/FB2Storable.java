@@ -319,7 +319,7 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
     double percent = calcPercentile();
 
     CachedBookContentValues values = new CachedBookContentValues();
-    boolean updateValues = false;
+    values.putTimeOpened(mTimeOpened);
     Fb2BookContentValues fb2Values = new Fb2BookContentValues();
     CachedBookInfoContentValues infoValues = new CachedBookInfoContentValues();
 
@@ -329,24 +329,18 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
 
       if (mTitle != null) {
         values.putTitle(mTitle);
-        updateValues = true;
       }
       if (mCurrentTextPosition >= 0) {
         values.putTextPosition(mCurrentTextPosition);
-        updateValues = true;
       }
       if (percent >= 0 && percent <= 1) {
         values.putPercentile(calcPercentile());
-        updateValues = true;
       }
       if (mCoverImageUri != null) {
         values.putCoverImageUri(mCoverImageUri);
         values.putCoverImageMean(mCoverImageMean);
-        updateValues = true;
       }
-      if (updateValues) {
-        values.update(mContext, cachedWhere);
-      }
+      values.update(mContext, cachedWhere);
 
       fb2Values.putFullyProcessed(mFullyProcessed);
       if (mCurrentBytePosition >= 0) {
@@ -377,7 +371,6 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
       } else {
         values.putPercentile(0);
       }
-      values.putTimeOpened(mTimeOpened);
       values.putPath(mPath);
       if (mTitle == null) {
         mTitle = getDefaultTitle();

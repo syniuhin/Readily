@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
 import com.squareup.picasso.Picasso;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 
@@ -69,9 +70,17 @@ public class CachedBooksAdapter
     }
 
     LocalDateTime timeOpened = LocalDateTime.parse(bookCursor.getTimeOpened());
-    // TODO: Add options for 'Today', 'Yesterday' etc.
-    String strTimeOpened = timeOpened.toString(
-        DateTimeFormat.forPattern("d MMMM, HH:mm"));
+    String strTimeOpened;
+    if (timeOpened.toLocalDate().equals(new LocalDate())) {
+      strTimeOpened = mContext.getResources().getString(R.string.today) + " " +
+          timeOpened.toString(DateTimeFormat.shortTime());
+    } else if (timeOpened
+        .toLocalDate().plusDays(1).equals(new LocalDate())) {
+      strTimeOpened = mContext.getResources().getString(R.string.yesterday) +
+          " " + timeOpened.toString(DateTimeFormat.shortTime());
+    } else {
+      strTimeOpened = timeOpened.toString(DateTimeFormat.shortDateTime());
+    }
     holder.mTimeOpenedView.setText(strTimeOpened);
     holder.mProgressView.setProgress((int) (bookCursor.getPercentile() * 100));
   }
