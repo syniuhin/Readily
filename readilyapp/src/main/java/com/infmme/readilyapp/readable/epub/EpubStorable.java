@@ -148,7 +148,10 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
         CachedBookCursor book = new CachedBookCursor(c);
         mTitle = book.getTitle();
         mCurrentTextPosition = book.getTextPosition();
-        mTimeOpened = book.getTimeOpened();
+        // Therefore we haven't set it in constructor.
+        if (mTimeOpened == null) {
+          mTimeOpened = book.getTimeOpened();
+        }
         mPercentile = book.getPercentile();
         mCurrentResourceId = book.getEpubBookCurrentResourceId();
         mCurrentResourceTitle = book.getCachedBookInfoCurrentPartTitle();
@@ -193,7 +196,9 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
   public void storeToDb() {
     CachedBookContentValues values = new CachedBookContentValues();
     values.putTextPosition(mCurrentTextPosition);
-    values.putTimeOpened(mTimeOpened);
+    if (mTimeOpened != null) {
+      values.putTimeOpened(mTimeOpened);
+    }
     double percent = calcPercentile();
 
     EpubBookContentValues epubValues = new EpubBookContentValues();

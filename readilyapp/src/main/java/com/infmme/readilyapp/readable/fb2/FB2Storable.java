@@ -247,7 +247,10 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
         CachedBookCursor book = new CachedBookCursor(c);
         mTitle = book.getTitle();
         mCurrentTextPosition = book.getTextPosition();
-        mTimeOpened = book.getTimeOpened();
+        // Therefore we haven't set it in constructor.
+        if (mTimeOpened == null) {
+          mTimeOpened = book.getTimeOpened();
+        }
         mPercentile = book.getPercentile();
         mCurrentPartId = book.getFb2BookCurrentPartId();
         mCurrentBytePosition = book.getFb2BookBytePosition();
@@ -319,7 +322,11 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
     double percent = calcPercentile();
 
     CachedBookContentValues values = new CachedBookContentValues();
-    values.putTimeOpened(mTimeOpened);
+    boolean updateValues = false;
+    if (mTimeOpened != null) {
+      values.putTimeOpened(mTimeOpened);
+      updateValues = true;
+    }
     Fb2BookContentValues fb2Values = new Fb2BookContentValues();
     CachedBookInfoContentValues infoValues = new CachedBookInfoContentValues();
 
@@ -329,18 +336,24 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
 
       if (mTitle != null) {
         values.putTitle(mTitle);
+        updateValues = true;
       }
       if (mCurrentTextPosition >= 0) {
         values.putTextPosition(mCurrentTextPosition);
+        updateValues = true;
       }
       if (percent >= 0 && percent <= 1) {
         values.putPercentile(calcPercentile());
+        updateValues = true;
       }
       if (mCoverImageUri != null) {
         values.putCoverImageUri(mCoverImageUri);
         values.putCoverImageMean(mCoverImageMean);
+        updateValues = true;
       }
-      values.update(mContext, cachedWhere);
+      if (updateValues) {
+        values.update(mContext, cachedWhere);
+      }
 
       fb2Values.putFullyProcessed(mFullyProcessed);
       if (mCurrentBytePosition >= 0) {
