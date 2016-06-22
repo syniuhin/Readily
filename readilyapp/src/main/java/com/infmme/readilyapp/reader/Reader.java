@@ -6,6 +6,7 @@ import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.readable.interfaces.Reading;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.infmme.readilyapp.reader.ReaderFragment.READER_PULSE_DURATION;
@@ -13,7 +14,7 @@ import static com.infmme.readilyapp.reader.ReaderFragment.READER_PULSE_DURATION;
 /**
  * Encapsulates logic for handling current Reading chunk, loading it into view
  * and asking for a next part.
- *
+ * <p>
  * Created with love, by infm dated on 6/10/16.
  */
 public class Reader implements Runnable {
@@ -64,7 +65,7 @@ public class Reader implements Runnable {
         mReaderHandler.postDelayed(this, calcDelay());
         mPosition++;
       }
-    // Checks if we have next reading loaded, so we shouldn't stop out flow.
+      // Checks if we have next reading loaded, so we shouldn't stop out flow.
     } else if (mCallback.isNextLoaded()) {
       try {
         // Set next Reading to this object.
@@ -162,6 +163,7 @@ public class Reader implements Runnable {
 
   /**
    * Substitutes current reading contents with another's ones.
+   *
    * @param another Reading instance to load neccessary components from.
    */
   public void changeReading(@NonNull final Reading another) {
@@ -186,15 +188,19 @@ public class Reader implements Runnable {
 
   /**
    * Wrapper function to call appropriate callback's (fragment's) method.
+   *
    * @param position Position to fetch parameters (word, next words,
    *                 emphasis position) for a callback's method.
    */
   private void updateReaderView(int position) {
     if (mWordList != null && mEmphasisList != null && mDelayList != null &&
         position < mWordList.size() && position >= 0) {
+      // Forced to copy since subList (suddenly) doesn't provide a copy, so we
+      // work with mWordList from multiple threads which is bad.
       List<String> nextWords =
-          mWordList.subList(position, Math.min(position + LAST_WORD_PREFIX_SIZE,
-                                               mWordList.size()));
+          new ArrayList<>(mWordList.subList(position, Math.min(
+              position + LAST_WORD_PREFIX_SIZE,
+              mWordList.size())));
       mCallback.updateReaderView(mWordList.get(position), nextWords,
                                  mEmphasisList.get(position));
     }
@@ -202,6 +208,7 @@ public class Reader implements Runnable {
 
   /**
    * Checks if we can stay in terms of current reading loaded.
+   *
    * @return Condition to be satisfied in the beginning of run().
    */
   private boolean isCurrentReading() {
@@ -234,12 +241,14 @@ public class Reader implements Runnable {
 
     /**
      * Fetches this setting from SharedPreferences.
+     *
      * @return WPM to use in calcDelay().
      */
     Integer getWordsPerMinute();
 
     /**
      * Communicates with a producer thread (ReaderTask).
+     *
      * @return If we have next reading to load to here.
      */
     boolean isNextLoaded();
