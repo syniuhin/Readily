@@ -2,19 +2,27 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-    <include layout="@layout/cache_list"/>
-    <!--
-        <TextView
-                android:id="@+id/text_view_empty"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:text="@string/list_empty_view"
-                android:textIsSelectable="false"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/secondary_text_dark"/>
-    -->
-
+    <FrameLayout android:layout_width="match_parent"
+                 android:layout_height="match_parent"
+                 android:id="@+id/cache_list_container">
+        <include layout="@layout/cache_list"/>
+    </FrameLayout>
+    <TextView
+            android:id="@+id/text_view_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:text="@string/list_empty_view"
+            android:textIsSelectable="false"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/secondary_text_dark"/>
+    <ProgressBar
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/cache_list_progress_bar"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"/>
 </RelativeLayout>

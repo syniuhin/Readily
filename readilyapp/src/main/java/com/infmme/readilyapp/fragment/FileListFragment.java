@@ -14,6 +14,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import com.infmme.readilyapp.R;
 import com.infmme.readilyapp.ReceiverActivity;
 import com.infmme.readilyapp.StorableDetailActivity;
@@ -36,7 +38,8 @@ public class FileListFragment extends Fragment
 
   private CachedBooksAdapter mAdapter;
 
-  // private TextView mTextViewEmpty;
+  private TextView mTextViewEmpty;
+  private ProgressBar mProgressBar;
   private RecyclerView mRecyclerView;
 
   private CompositeSubscription mCompositeSubscription;
@@ -69,7 +72,8 @@ public class FileListFragment extends Fragment
 
   private void findViews(ViewGroup v) {
     mRecyclerView = (RecyclerView) v.findViewById(R.id.cache_list);
-    // mTextViewEmpty = (TextView) v.findViewById(R.id.text_view_empty);
+    mTextViewEmpty = (TextView) v.findViewById(R.id.text_view_empty);
+    mProgressBar = (ProgressBar) v.findViewById(R.id.cache_list_progress_bar);
   }
 
   private void initViews() {
@@ -79,13 +83,24 @@ public class FileListFragment extends Fragment
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-    return new CursorLoader(getActivity(), CachedBookColumns.CONTENT_URI,
-                            CachedBookColumns.ALL_COLUMNS_FULL_JOIN, null, null,
-                            null);
+    mRecyclerView.setVisibility(View.GONE);
+    mTextViewEmpty.setVisibility(View.GONE);
+    mProgressBar.setVisibility(View.VISIBLE);
+    return new CursorLoader(
+        getActivity(), CachedBookColumns.CONTENT_URI,
+        CachedBookColumns.ALL_COLUMNS_FULL_JOIN, null, null, null);
   }
 
   @Override
   public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    mProgressBar.setVisibility(View.GONE);
+    if (data.getCount() > 0) {
+      mRecyclerView.setVisibility(View.VISIBLE);
+      mTextViewEmpty.setVisibility(View.GONE);
+    } else {
+      mRecyclerView.setVisibility(View.GONE);
+      mTextViewEmpty.setVisibility(View.VISIBLE);
+    }
     mAdapter.swapCursor(data);
   }
 
