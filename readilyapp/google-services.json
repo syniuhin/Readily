@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "155572157229",
+    "firebase_url": "https://readily-b4c4a.firebaseio.com",
+    "project_id": "readily-b4c4a",
+    "storage_bucket": "readily-b4c4a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:155572157229:android:48a5691dbd2374d2",
+        "android_client_info": {
+          "package_name": "com.infmme.readilyapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "155572157229-c9r4nklipa90f128a4pmkvf3rs8kf2of.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.infmme.readilyapp",
+            "certificate_hash": "7551A0E358AE721CCB31563F233A4FB190BDE7E2"
+          }
+        },
+        {
+          "client_id": "155572157229-6ioveouk5rg1dshql9igl9p7qotlj6lq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDt7zJ0EFtLg5leK93kos2pHRwyIcrz3kQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "155572157229-6ioveouk5rg1dshql9igl9p7qotlj6lq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
