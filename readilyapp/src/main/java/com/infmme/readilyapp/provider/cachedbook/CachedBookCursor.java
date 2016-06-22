@@ -2,13 +2,19 @@ package com.infmme.readilyapp.provider.cachedbook;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.infmme.readilyapp.provider.base.AbstractCursor;
+import com.infmme.readilyapp.provider.base.AbstractSelection;
 import com.infmme.readilyapp.provider.cachedbookinfo.CachedBookInfoColumns;
+import com.infmme.readilyapp.provider.cachedbookinfo.CachedBookInfoSelection;
 import com.infmme.readilyapp.provider.epubbook.EpubBookColumns;
+import com.infmme.readilyapp.provider.epubbook.EpubBookSelection;
 import com.infmme.readilyapp.provider.fb2book.Fb2BookColumns;
+import com.infmme.readilyapp.provider.fb2book.Fb2BookSelection;
 import com.infmme.readilyapp.provider.txtbook.TxtBookColumns;
+import com.infmme.readilyapp.provider.txtbook.TxtBookSelection;
 import com.infmme.readilyapp.readable.type.ReadableType;
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -42,6 +48,51 @@ public class CachedBookCursor extends AbstractCursor
     });
     res.subscribeOn(Schedulers.io());
     return res;
+  }
+
+  public static Observable<Boolean> removeCachedBook(
+      final Context context, long id) {
+    return findCachedBook(context, id).map(bookCursor -> {
+      AbstractSelection where = null;
+      Uri uri = null;
+      if (bookCursor.getEpubBookId() != null) {
+        where = new EpubBookSelection();
+        ((EpubBookSelection) where).id(bookCursor.getEpubBookId());
+        uri = EpubBookColumns.CONTENT_URI;
+      } else if (bookCursor.getFb2BookId() != null) {
+        where = new Fb2BookSelection();
+        ((Fb2BookSelection) where).id(bookCursor.getFb2BookId());
+        uri = Fb2BookColumns.CONTENT_URI;
+      } else if (bookCursor.getTxtBookId() != null) {
+        where = new TxtBookSelection();
+        ((TxtBookSelection) where).id(bookCursor.getTxtBookId());
+        uri = TxtBookColumns.CONTENT_URI;
+      } else {
+        bookCursor.close();
+        return false;
+      }
+      CachedBookInfoSelection infoWhere = null;
+      Long infoId = bookCursor.getInfoId();
+      bookCursor.close();
+      if (infoId != null) {
+        infoWhere = new CachedBookInfoSelection();
+        infoWhere.id(infoId);
+      }
+
+      // Deletes a parent book record.
+      context.getContentResolver().delete(uri, where.sel(), where.args());
+
+      if (infoWhere != null) {
+        context.getContentResolver()
+               .delete(CachedBookInfoColumns.CONTENT_URI, infoWhere.sel(),
+                       infoWhere.args());
+      }
+      // Notifies cached_book table since ReadilyProvider does it only for a
+      // parent one.
+      context.getContentResolver()
+             .notifyChange(CachedBookColumns.CONTENT_URI, null);
+      return true;
+    }).subscribeOn(Schedulers.io());
   }
 
   public static ReadableType inferReadableType(

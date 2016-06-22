@@ -10,6 +10,7 @@ import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookSelection;
 import com.infmme.readilyapp.provider.cachedbookinfo.CachedBookInfoContentValues;
 import com.infmme.readilyapp.provider.cachedbookinfo.CachedBookInfoSelection;
+import com.infmme.readilyapp.provider.epubbook.EpubBookColumns;
 import com.infmme.readilyapp.provider.epubbook.EpubBookContentValues;
 import com.infmme.readilyapp.provider.epubbook.EpubBookSelection;
 import com.infmme.readilyapp.readable.Readable;
@@ -155,6 +156,7 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
         mPercentile = book.getPercentile();
         mCurrentResourceId = book.getEpubBookCurrentResourceId();
         mCurrentResourceTitle = book.getCachedBookInfoCurrentPartTitle();
+        mCoverImageUri = book.getCoverImageUri();
         book.close();
       } else {
         c.close();
@@ -182,11 +184,19 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
   @Override
   public void beforeStoringToDb() {
     mContents = mBook.getContents();
-    if (coverImageExists() && !isCoverImageStored()) {
-      try {
-        storeCoverImage();
-      } catch (IOException e) {
-        e.printStackTrace();
+    if (coverImageExists()) {
+      if (isCoverImageStored()) {
+        // If we've got an orphan.
+        if (mCoverImageUri == null) {
+          mCoverImageUri = getCoverImagePath(mBook.getCoverImage());
+          mCoverImageMean = ColorMatcher.pickRandomMaterialColor();
+        }
+      } else {
+        try {
+          storeCoverImage();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
       }
     }
   }
@@ -199,6 +209,7 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
     if (mTimeOpened != null) {
       values.putTimeOpened(mTimeOpened);
     }
+    values.putCoverImageUri(mCoverImageUri);
     double percent = calcPercentile();
 
     EpubBookContentValues epubValues = new EpubBookContentValues();
@@ -281,6 +292,15 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
 
       values.insert(mContext.getContentResolver());
     }
+  }
+
+  @Override
+  public void deleteFromDb() {
+    long id = getFkEpubBookId(mContext, mPath);
+    EpubBookSelection where = new EpubBookSelection();
+    where.id(id);
+    mContext.getContentResolver()
+            .delete(EpubBookColumns.CONTENT_URI, where.sel(), where.args());
   }
 
   /**

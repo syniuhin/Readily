@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
+import com.daimajia.androidanimations.library.BuildConfig;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -136,6 +137,9 @@ public abstract class BaseContentProvider extends ContentProvider {
     String notify;
     if (res != 0 && ((notify = uri.getQueryParameter(
         QUERY_NOTIFY)) == null || "true".equals(notify))) {
+      if (BuildConfig.DEBUG) {
+        Log.d(BaseContentProvider.class.getName(), "Notifying about deletion.");
+      }
       getContext().getContentResolver().notifyChange(uri, null);
     }
     return res;

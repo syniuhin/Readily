@@ -164,6 +164,11 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
     values.insert(mContext.getContentResolver());
   }
 
+  @Override
+  public void deleteFromDb() {
+    // Empty - nothing to delete.
+  }
+
   /**
    * Stores fetched readable to a cache folder and creates appropriate
    * records in db tables.

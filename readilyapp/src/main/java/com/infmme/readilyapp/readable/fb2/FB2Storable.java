@@ -254,10 +254,11 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
         mPercentile = book.getPercentile();
         mCurrentPartId = book.getFb2BookCurrentPartId();
         mCurrentBytePosition = book.getFb2BookBytePosition();
+        mLastBytePosition = mCurrentBytePosition;
         mFullyProcessed = book.getFb2BookFullyProcessed();
         mFullyProcessingSuccess = book.getFb2BookFullyProcessingSuccess();
         mCurrentPartTitle = book.getCachedBookInfoCurrentPartTitle();
-        mLastBytePosition = mCurrentBytePosition;
+        mCoverImageUri = book.getCoverImageUri();
         book.close();
       } else {
         c.close();
@@ -404,6 +405,15 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
 
       values.insert(mContext.getContentResolver());
     }
+  }
+
+  @Override
+  public void deleteFromDb() {
+    long id = getFkFb2BookId(mContext, mPath);
+    Fb2BookSelection where = new Fb2BookSelection();
+    where.id(id);
+    mContext.getContentResolver()
+            .delete(Fb2BookColumns.CONTENT_URI, where.sel(), where.args());
   }
 
   private String getDefaultTitle() {

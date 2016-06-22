@@ -2,7 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:tools="http://schemas.android.com/tools"
       xmlns:app="http://schemas.android.com/apk/res-auto"
-      tools:context="com.infmme.readilyapp.MainActivity">
+      tools:context="com.infmme.readilyapp.StorableDetailActivity">
+
+    <item android:id="@+id/action_navigate"
+          android:enabled="true"
+          android:icon="@drawable/ic_compass_outline_white_24dp"
+          app:showAsAction="ifRoom"
+          android:title="@string/book_card_navigate"
+          android:visible="true"/>
 
     <item android:id="@+id/action_edit"
           android:enabled="true"
@@ -11,11 +18,11 @@
           android:title="@string/preferences_edit"
           android:visible="true"/>
 
-    <item android:id="@+id/action_navigate"
+    <item android:id="@+id/action_delete"
           android:enabled="true"
-          android:icon="@drawable/ic_compass_outline_white_24dp"
+          android:icon="@drawable/ic_delete_white_24dp"
           app:showAsAction="ifRoom"
-          android:title="@string/book_card_navigate"
+          android:title="@string/preferences_delete"
           android:visible="true"/>
 
 </menu>

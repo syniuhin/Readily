@@ -4,9 +4,7 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.*;
 import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -24,13 +22,11 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import rx.android.schedulers.AndroidSchedulers;
 
-import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor
-    .findCachedBook;
-import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor
-    .inferReadableType;
+import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor.*;
 
 public class StorableDetailActivity extends BaseActivity {
 
+  private CoordinatorLayout mRootView;
   private CollapsingToolbarLayout mCollapsingToolbarLayout;
   private AppBarLayout mAppBarLayout;
   private Toolbar mToolbar;
@@ -70,6 +66,7 @@ public class StorableDetailActivity extends BaseActivity {
 
   @Override
   protected void findViews() {
+    mRootView = (CoordinatorLayout) findViewById(R.id.storable_detail_root);
     mAppBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
     mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(
         R.id.toolbar_layout);
@@ -145,7 +142,11 @@ public class StorableDetailActivity extends BaseActivity {
     addSubscription(
         findCachedBook(this, mId)
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(this::setupViews));
+            .subscribe(this::setupViews, throwable -> {
+              throwable.printStackTrace();
+              Snackbar.make(mRootView, "Error occurred", Snackbar.LENGTH_SHORT)
+                      .show();
+            }));
   }
 
   private void setupViews(CachedBookCursor infoCursor) {
@@ -217,6 +218,27 @@ public class StorableDetailActivity extends BaseActivity {
                   bookCursor.close();
                 }));
         return true;
+      case R.id.action_edit:
+        Snackbar.make(mRootView, "To be implemented", Snackbar.LENGTH_SHORT)
+                .show();
+        break;
+      case R.id.action_delete:
+        addSubscription(
+            removeCachedBook(this, mId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(isDeleted -> {
+                  if (isDeleted) {
+                    finish();
+                  } else {
+                    Snackbar.make(mRootView, "Error deleting this reading",
+                                  Snackbar.LENGTH_LONG).show();
+                  }
+                }, throwable -> {
+                  throwable.printStackTrace();
+                  Snackbar.make(mRootView, "Error deleting this reading",
+                                Snackbar.LENGTH_LONG).show();
+                }));
+        break;
       case android.R.id.home:
         NavUtils.navigateUpFromSameTask(this);
         return true;

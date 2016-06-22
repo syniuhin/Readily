@@ -115,6 +115,7 @@
         window!
     </string>
     <string name="preferences_edit">Edit this book</string>
+    <string name="preferences_delete">Delete this book</string>
     <string name="hint_font_size">Enter font size and watch example above
     </string>
     <string name="preference_dark_theme">Dark theme</string>

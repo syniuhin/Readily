@@ -7,6 +7,7 @@ import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookContentValues;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookSelection;
+import com.infmme.readilyapp.provider.txtbook.TxtBookColumns;
 import com.infmme.readilyapp.provider.txtbook.TxtBookContentValues;
 import com.infmme.readilyapp.provider.txtbook.TxtBookSelection;
 import com.infmme.readilyapp.readable.Readable;
@@ -189,6 +190,15 @@ public class TxtStorable implements ChunkedUnprocessedStorable {
       values.putTxtBookId(txtId);
       values.insert(mContext.getContentResolver());
     }
+  }
+
+  @Override
+  public void deleteFromDb() {
+    long id = getFkTxtBookId(mContext, mPath);
+    TxtBookSelection where = new TxtBookSelection();
+    where.id(id);
+    mContext.getContentResolver()
+            .delete(TxtBookColumns.CONTENT_URI, where.sel(), where.args());
   }
 
   @Override
