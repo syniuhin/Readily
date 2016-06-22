@@ -10,7 +10,6 @@ import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookSelection;
 import com.infmme.readilyapp.provider.cachedbookinfo.CachedBookInfoContentValues;
 import com.infmme.readilyapp.provider.cachedbookinfo.CachedBookInfoSelection;
-import com.infmme.readilyapp.provider.epubbook.EpubBookColumns;
 import com.infmme.readilyapp.provider.epubbook.EpubBookContentValues;
 import com.infmme.readilyapp.provider.epubbook.EpubBookSelection;
 import com.infmme.readilyapp.readable.Readable;
@@ -148,15 +147,16 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
       } else if (c.moveToFirst()) {
         CachedBookCursor book = new CachedBookCursor(c);
         mTitle = book.getTitle();
-        mCurrentTextPosition = book.getTextPosition();
         // Therefore we haven't set it in constructor.
         if (mTimeOpened == null) {
           mTimeOpened = book.getTimeOpened();
         }
         mPercentile = book.getPercentile();
+        mCurrentTextPosition = book.getTextPosition();
         mCurrentResourceId = book.getEpubBookCurrentResourceId();
         mCurrentResourceTitle = book.getCachedBookInfoCurrentPartTitle();
         mCoverImageUri = book.getCoverImageUri();
+        mCoverImageMean = book.getCoverImageMean();
         book.close();
       } else {
         c.close();
@@ -204,103 +204,122 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
   // TODO: Test this carefully.
   @Override
   public void storeToDb() {
+    if (isStoredInDb()) {
+      updateInDb();
+    } else {
+      insertToDb();
+    }
+  }
+
+  @Override
+  public void insertToDb() {
     CachedBookContentValues values = new CachedBookContentValues();
+    EpubBookContentValues epubValues = new EpubBookContentValues();
+    CachedBookInfoContentValues infoValues = new CachedBookInfoContentValues();
+    putVolatileValues(values, epubValues, infoValues);
+
+    values.putPath(mPath);
+    values.putTitle(mTitle);
+    values.putCoverImageUri(mCoverImageUri);
+    values.putCoverImageMean(mCoverImageMean);
+
+    putAuthors(infoValues);
+    putGenre(infoValues);
+    putDescription(infoValues);
+    infoValues.putLanguage(mMetadata.getLanguage());
+
+    Uri infoUri = infoValues.insert(mContext.getContentResolver());
+    long infoId = Long.parseLong(infoUri.getLastPathSegment());
+    values.putInfoId(infoId);
+
+    Uri epubUri = epubValues.insert(mContext.getContentResolver());
+    long epubId = Long.parseLong(epubUri.getLastPathSegment());
+    values.putEpubBookId(epubId);
+
+    values.insert(mContext.getContentResolver());
+  }
+
+  @Override
+  public void updateInDb() {
+    CachedBookContentValues values = new CachedBookContentValues();
+    EpubBookContentValues epubValues = new EpubBookContentValues();
+    CachedBookInfoContentValues infoValues = new CachedBookInfoContentValues();
+    putVolatileValues(values, epubValues, infoValues);
+
+    CachedBookSelection cachedWhere = new CachedBookSelection();
+    cachedWhere.path(mPath);
+    values.update(mContext, cachedWhere);
+
+    EpubBookSelection epubWhere = new EpubBookSelection();
+    epubWhere.id(getFkEpubBookId(mContext, mPath));
+    epubValues.update(mContext, epubWhere);
+
+    CachedBookInfoSelection infoWhere = new CachedBookInfoSelection();
+    infoWhere.id(getFkInfoId(mContext, mPath));
+    infoValues.update(mContext, infoWhere);
+  }
+
+
+  private void putVolatileValues(CachedBookContentValues values,
+                                 EpubBookContentValues epubValues,
+                                 CachedBookInfoContentValues infoValues) {
     values.putTextPosition(mCurrentTextPosition);
     if (mTimeOpened != null) {
       values.putTimeOpened(mTimeOpened);
     }
     values.putCoverImageUri(mCoverImageUri);
     double percent = calcPercentile();
-
-    EpubBookContentValues epubValues = new EpubBookContentValues();
-    epubValues.putCurrentResourceId(mCurrentResourceId);
-
-    CachedBookInfoContentValues infoValues = new CachedBookInfoContentValues();
-    infoValues.putCurrentPartTitle(mCurrentResourceTitle);
-
-    if (isStoredInDb()) {
-      CachedBookSelection cachedWhere = new CachedBookSelection();
-      cachedWhere.path(mPath);
-      if (percent >= 0 && percent <= 1) {
-        values.putPercentile(calcPercentile());
-      }
-      values.update(mContext, cachedWhere);
-      EpubBookSelection epubWhere = new EpubBookSelection();
-      epubWhere.id(getFkEpubBookId(mContext, mPath));
-      epubValues.update(mContext, epubWhere);
-
-      CachedBookInfoSelection infoWhere = new CachedBookInfoSelection();
-      infoWhere.id(getFkInfoId(mContext, mPath));
-      infoValues.update(mContext, infoWhere);
+    if (percent >= 0 && percent <= 1) {
+      values.putPercentile(calcPercentile());
     } else {
-      if (percent >= 0 && percent <= 1) {
-        values.putPercentile(calcPercentile());
-      } else {
-        values.putPercentile(0);
+      values.putPercentile(0);
+    }
+
+    epubValues.putCurrentResourceId(mCurrentResourceId);
+    infoValues.putCurrentPartTitle(mCurrentResourceTitle);
+  }
+
+  private void putAuthors(CachedBookInfoContentValues infoValues) {
+    StringBuilder stringBuilder = new StringBuilder();
+    List<Author> authors = mMetadata.getAuthors();
+    if (authors != null) {
+      for (Author a : authors) {
+        stringBuilder.append(a.getFirstname()).append(" ")
+                     .append(a.getLastname()).append(", ");
       }
-      values.putPath(mPath);
-      values.putTitle(mTitle);
-      values.putCoverImageUri(mCoverImageUri);
-      values.putCoverImageMean(mCoverImageMean);
-
-      StringBuilder stringBuilder = new StringBuilder();
-      List<Author> authors = mMetadata.getAuthors();
-      if (authors != null) {
-        for (Author a : authors) {
-          stringBuilder.append(a.getFirstname()).append(" ")
-                       .append(a.getLastname()).append(", ");
-        }
-        if (stringBuilder.length() > 0) {
-          infoValues.putAuthor(
-              stringBuilder.substring(0, stringBuilder.length() - 2));
-        }
+      if (stringBuilder.length() > 0) {
+        infoValues.putAuthor(
+            stringBuilder.substring(0, stringBuilder.length() - 2));
       }
-
-      stringBuilder = new StringBuilder();
-      List<String> subjects = mMetadata.getSubjects();
-      if (subjects != null) {
-        for (String s : subjects) {
-          stringBuilder.append(s).append(", ");
-        }
-        if (stringBuilder.length() > 0) {
-          infoValues.putGenre(
-              stringBuilder.substring(0, stringBuilder.length() - 2));
-        }
-      }
-
-      stringBuilder = new StringBuilder();
-      List<String> descriptions = mMetadata.getDescriptions();
-      if (descriptions != null) {
-        for (String s : descriptions) {
-          stringBuilder.append(parseRawText(s)).append("\n");
-        }
-        if (stringBuilder.length() > 0) {
-          infoValues.putDescription(
-              stringBuilder.substring(0, stringBuilder.length() - 1));
-        }
-      }
-
-      infoValues.putLanguage(mMetadata.getLanguage());
-
-      Uri infoUri = infoValues.insert(mContext.getContentResolver());
-      long infoId = Long.parseLong(infoUri.getLastPathSegment());
-      values.putInfoId(infoId);
-
-      Uri epubUri = epubValues.insert(mContext.getContentResolver());
-      long epubId = Long.parseLong(epubUri.getLastPathSegment());
-      values.putEpubBookId(epubId);
-
-      values.insert(mContext.getContentResolver());
     }
   }
 
-  @Override
-  public void deleteFromDb() {
-    long id = getFkEpubBookId(mContext, mPath);
-    EpubBookSelection where = new EpubBookSelection();
-    where.id(id);
-    mContext.getContentResolver()
-            .delete(EpubBookColumns.CONTENT_URI, where.sel(), where.args());
+  private void putGenre(CachedBookInfoContentValues infoValues) {
+    StringBuilder stringBuilder = new StringBuilder();
+    List<String> subjects = mMetadata.getSubjects();
+    if (subjects != null) {
+      for (String s : subjects) {
+        stringBuilder.append(s).append(", ");
+      }
+      if (stringBuilder.length() > 0) {
+        infoValues.putGenre(
+            stringBuilder.substring(0, stringBuilder.length() - 2));
+      }
+    }
+  }
+
+  private void putDescription(CachedBookInfoContentValues infoValues) {
+    StringBuilder stringBuilder = new StringBuilder();
+    List<String> descriptions = mMetadata.getDescriptions();
+    if (descriptions != null) {
+      for (String s : descriptions) {
+        stringBuilder.append(parseRawText(s)).append("\n");
+      }
+      if (stringBuilder.length() > 0) {
+        infoValues.putDescription(
+            stringBuilder.substring(0, stringBuilder.length() - 1));
+      }
+    }
   }
 
   /**

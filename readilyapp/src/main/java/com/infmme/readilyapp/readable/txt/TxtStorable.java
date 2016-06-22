@@ -7,7 +7,6 @@ import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookContentValues;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookSelection;
-import com.infmme.readilyapp.provider.txtbook.TxtBookColumns;
 import com.infmme.readilyapp.provider.txtbook.TxtBookContentValues;
 import com.infmme.readilyapp.provider.txtbook.TxtBookSelection;
 import com.infmme.readilyapp.readable.Readable;
@@ -20,8 +19,7 @@ import java.io.*;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor
-    .getFkTxtBookId;
+import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor.getFkTxtBookId;
 import static com.infmme.readilyapp.readable.Utils.guessCharset;
 
 /**
@@ -132,12 +130,12 @@ public class TxtStorable implements ChunkedUnprocessedStorable {
       } else if (c.moveToFirst()) {
         CachedBookCursor book = new CachedBookCursor(c);
         mTitle = book.getTitle();
-        mCurrentTextPosition = book.getTextPosition();
         // Therefore we haven't set it in constructor.
         if (mTimeOpened == null) {
           mTimeOpened = book.getTimeOpened();
         }
         mPercentile = book.getPercentile();
+        mCurrentTextPosition = book.getTextPosition();
         mCurrentBytePosition = book.getTxtBookBytePosition();
         mLastBytePosition = mCurrentBytePosition;
         book.close();
@@ -164,41 +162,52 @@ public class TxtStorable implements ChunkedUnprocessedStorable {
 
   @Override
   public void storeToDb() {
+    if (isStoredInDb()) {
+      updateInDb();
+    } else {
+      insertToDb();
+    }
+  }
+
+  @Override
+  public void insertToDb() {
     CachedBookContentValues values = new CachedBookContentValues();
+    TxtBookContentValues txtValues = new TxtBookContentValues();
+    putVolatileValues(values, txtValues);
+
+    values.putPath(mPath);
+
+    Uri uri = txtValues.insert(mContext.getContentResolver());
+    long txtId = Long.parseLong(uri.getLastPathSegment());
+    values.putTxtBookId(txtId);
+    values.insert(mContext.getContentResolver());
+  }
+
+  @Override
+  public void updateInDb() {
+    CachedBookContentValues values = new CachedBookContentValues();
+    TxtBookContentValues txtValues = new TxtBookContentValues();
+    putVolatileValues(values, txtValues);
+
+    TxtBookSelection txtWhere = new TxtBookSelection();
+    txtWhere.id(getFkTxtBookId(mContext, mPath));
+    txtValues.update(mContext, txtWhere);
+
+    CachedBookSelection cachedWhere = new CachedBookSelection();
+    cachedWhere.path(mPath);
+    values.update(mContext, cachedWhere);
+  }
+
+  private void putVolatileValues(CachedBookContentValues values,
+                                 TxtBookContentValues txtValues) {
     values.putTextPosition(mCurrentTextPosition);
+    values.putTitle(mTitle);
     if (mTimeOpened != null) {
       values.putTimeOpened(mTimeOpened);
     }
     values.putPercentile(calcPercentile());
 
-    TxtBookContentValues txtValues = new TxtBookContentValues();
     txtValues.putBytePosition((int) mCurrentBytePosition);
-
-    if (isStoredInDb()) {
-      CachedBookSelection cachedWhere = new CachedBookSelection();
-      cachedWhere.path(mPath);
-      TxtBookSelection txtWhere = new TxtBookSelection();
-      txtWhere.id(getFkTxtBookId(mContext, mPath));
-      txtValues.update(mContext, txtWhere);
-      values.update(mContext, cachedWhere);
-    } else {
-      values.putPath(mPath);
-      values.putTitle(mTitle);
-
-      Uri uri = txtValues.insert(mContext.getContentResolver());
-      long txtId = Long.parseLong(uri.getLastPathSegment());
-      values.putTxtBookId(txtId);
-      values.insert(mContext.getContentResolver());
-    }
-  }
-
-  @Override
-  public void deleteFromDb() {
-    long id = getFkTxtBookId(mContext, mPath);
-    TxtBookSelection where = new TxtBookSelection();
-    where.id(id);
-    mContext.getContentResolver()
-            .delete(TxtBookColumns.CONTENT_URI, where.sel(), where.args());
   }
 
   @Override

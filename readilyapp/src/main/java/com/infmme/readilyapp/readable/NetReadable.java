@@ -131,6 +131,11 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
 
   @Override
   public void storeToDb() {
+    insertToDb();
+  }
+
+  @Override
+  public void insertToDb() {
     CachedBookContentValues values = new CachedBookContentValues();
     values.putTextPosition(mPosition);
     if (hasCoverImage()) {
@@ -151,11 +156,13 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
     for (String kw : mKeywords) {
       stringBuilder.append(kw).append(", ");
     }
-    if (stringBuilder.length() > 0)
+    if (stringBuilder.length() > 0) {
       infoValues.putGenre(
           stringBuilder.substring(0, stringBuilder.length() - 2));
+    }
 
     TxtBookContentValues txtValues = new TxtBookContentValues();
+    // Since we have only 1 chunk.
     txtValues.putBytePosition(0);
 
     Uri uri = txtValues.insert(mContext.getContentResolver());
@@ -165,8 +172,8 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
   }
 
   @Override
-  public void deleteFromDb() {
-    // Empty - nothing to delete.
+  public void updateInDb() {
+    // Empty
   }
 
   /**

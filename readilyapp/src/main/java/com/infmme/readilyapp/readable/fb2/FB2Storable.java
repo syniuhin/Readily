@@ -53,6 +53,7 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
   private static final int BUFFER_SIZE = 4096;
 
   private String mPath;
+  private String mPathToc;
   private long mFileSize;
 
   /**
@@ -246,12 +247,12 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
       } else if (c.moveToFirst()) {
         CachedBookCursor book = new CachedBookCursor(c);
         mTitle = book.getTitle();
-        mCurrentTextPosition = book.getTextPosition();
         // Therefore we haven't set it in constructor.
         if (mTimeOpened == null) {
           mTimeOpened = book.getTimeOpened();
         }
         mPercentile = book.getPercentile();
+        mCurrentTextPosition = book.getTextPosition();
         mCurrentPartId = book.getFb2BookCurrentPartId();
         mCurrentBytePosition = book.getFb2BookBytePosition();
         mLastBytePosition = mCurrentBytePosition;
@@ -259,6 +260,8 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
         mFullyProcessingSuccess = book.getFb2BookFullyProcessingSuccess();
         mCurrentPartTitle = book.getCachedBookInfoCurrentPartTitle();
         mCoverImageUri = book.getCoverImageUri();
+        mCoverImageMean = book.getCoverImageMean();
+        mPathToc = book.getFb2BookPathToc();
         book.close();
       } else {
         c.close();
@@ -286,7 +289,9 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
 
   @Override
   public void beforeStoringToDb() {
-    // All the logic done by FB2ProcessingService and prepareForStoringSync().
+    if (mTitle == null) {
+      mTitle = getDefaultTitle();
+    }
   }
 
   /**
@@ -320,100 +325,118 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
   @Override
   public void storeToDb() {
     checkSectionByteIntegrity();
-    double percent = calcPercentile();
-
-    CachedBookContentValues values = new CachedBookContentValues();
-    boolean updateValues = false;
-    if (mTimeOpened != null) {
-      values.putTimeOpened(mTimeOpened);
-      updateValues = true;
-    }
-    Fb2BookContentValues fb2Values = new Fb2BookContentValues();
-    CachedBookInfoContentValues infoValues = new CachedBookInfoContentValues();
-
     if (isStoredInDb()) {
-      CachedBookSelection cachedWhere = new CachedBookSelection();
-      cachedWhere.path(mPath);
-
-      if (mTitle != null) {
-        values.putTitle(mTitle);
-        updateValues = true;
-      }
-      if (mCurrentTextPosition >= 0) {
-        values.putTextPosition(mCurrentTextPosition);
-        updateValues = true;
-      }
-      if (percent >= 0 && percent <= 1) {
-        values.putPercentile(calcPercentile());
-        updateValues = true;
-      }
-      if (mCoverImageUri != null) {
-        values.putCoverImageUri(mCoverImageUri);
-        values.putCoverImageMean(mCoverImageMean);
-        updateValues = true;
-      }
-      if (updateValues) {
-        values.update(mContext, cachedWhere);
-      }
-
-      fb2Values.putFullyProcessed(mFullyProcessed);
-      if (mCurrentBytePosition >= 0) {
-        fb2Values.putBytePosition((int) mCurrentBytePosition);
-      }
-      // Shouldn't be null anyway.
-      if (mCurrentPartId != null) {
-        fb2Values.putCurrentPartId(mCurrentPartId);
-      }
-
-      Fb2BookSelection fb2Where = new Fb2BookSelection();
-      fb2Where.id(getFkFb2BookId(mContext, mPath));
-      fb2Values.update(mContext, fb2Where);
-
-      infoValues.putCurrentPartTitle(mCurrentPartTitle);
-
-      CachedBookInfoSelection infoWhere = new CachedBookInfoSelection();
-      infoWhere.id(getFkInfoId(mContext, mPath));
-      infoValues.update(mContext.getContentResolver(), infoWhere);
+      updateInDb();
     } else {
-      fb2Values.putBytePosition((int) mCurrentBytePosition);
-      fb2Values.putCurrentPartId(mCurrentPartId);
-      fb2Values.putFullyProcessed(mFullyProcessed);
+      insertToDb();
+    }
+  }
 
-      values.putTextPosition(mCurrentTextPosition);
-      if (percent >= 0 && percent <= 1) {
-        values.putPercentile(calcPercentile());
-      } else {
-        values.putPercentile(0);
-      }
-      values.putPath(mPath);
-      if (mTitle == null) {
-        mTitle = getDefaultTitle();
-      }
+  /**
+   * Separate methods which only puts values updated during full processing.
+   */
+  public void updateAfterFullProcessing() {
+    Fb2BookContentValues fb2Values = new Fb2BookContentValues();
+
+    if (mFullyProcessingSuccess) {
+      CachedBookContentValues values = new CachedBookContentValues();
       values.putTitle(mTitle);
       values.putCoverImageUri(mCoverImageUri);
       values.putCoverImageMean(mCoverImageMean);
 
+      CachedBookSelection cachedWhere = new CachedBookSelection();
+      cachedWhere.path(mPath);
+      values.update(mContext.getContentResolver(), cachedWhere);
+
+      fb2Values.putPathToc(mPathToc);
+
+      CachedBookInfoContentValues infoValues = new CachedBookInfoContentValues();
       infoValues.putCurrentPartTitle(mCurrentPartTitle);
-      // TODO: Put more information <=> Parse more information.
-      Uri infoUri = infoValues.insert(mContext.getContentResolver());
-      long infoId = Long.parseLong(infoUri.getLastPathSegment());
-      values.putInfoId(infoId);
+      // TODO: Put more
 
-      Uri fb2Uri = fb2Values.insert(mContext.getContentResolver());
-      long fb2Id = Long.parseLong(fb2Uri.getLastPathSegment());
-      values.putFb2BookId(fb2Id);
-
-      values.insert(mContext.getContentResolver());
+      CachedBookInfoSelection infoWhere = new CachedBookInfoSelection();
+      infoWhere.id(getFkInfoId(mContext, mPath));
+      infoValues.update(mContext.getContentResolver(), infoWhere);
     }
+
+    fb2Values.putFullyProcessed(mFullyProcessed);
+    fb2Values.putFullyProcessingSuccess(mFullyProcessingSuccess);
+
+    Fb2BookSelection fb2Where = new Fb2BookSelection();
+    fb2Where.id(getFkFb2BookId(mContext, mPath));
+    fb2Values.update(mContext, fb2Where);
   }
 
   @Override
-  public void deleteFromDb() {
-    long id = getFkFb2BookId(mContext, mPath);
-    Fb2BookSelection where = new Fb2BookSelection();
-    where.id(id);
-    mContext.getContentResolver()
-            .delete(Fb2BookColumns.CONTENT_URI, where.sel(), where.args());
+  public void insertToDb() {
+    CachedBookContentValues values = new CachedBookContentValues();
+    Fb2BookContentValues fb2Values = new Fb2BookContentValues();
+    CachedBookInfoContentValues infoValues = new CachedBookInfoContentValues();
+    putVolatileValues(values, fb2Values, infoValues);
+
+    values.putPath(mPath);
+
+    // TODO: Put more information <=> Parse more information.
+    Uri infoUri = infoValues.insert(mContext.getContentResolver());
+    long infoId = Long.parseLong(infoUri.getLastPathSegment());
+    values.putInfoId(infoId);
+
+    Uri fb2Uri = fb2Values.insert(mContext.getContentResolver());
+    long fb2Id = Long.parseLong(fb2Uri.getLastPathSegment());
+    values.putFb2BookId(fb2Id);
+
+    values.insert(mContext.getContentResolver());
+  }
+
+  @Override
+  public void updateInDb() {
+    CachedBookContentValues values = new CachedBookContentValues();
+    Fb2BookContentValues fb2Values = new Fb2BookContentValues();
+    CachedBookInfoContentValues infoValues = new CachedBookInfoContentValues();
+    putVolatileValues(values, fb2Values, infoValues);
+
+    CachedBookSelection cachedWhere = new CachedBookSelection();
+    cachedWhere.path(mPath);
+    values.update(mContext, cachedWhere);
+
+    Fb2BookSelection fb2Where = new Fb2BookSelection();
+    fb2Where.id(getFkFb2BookId(mContext, mPath));
+    fb2Values.update(mContext, fb2Where);
+
+    CachedBookInfoSelection infoWhere = new CachedBookInfoSelection();
+    infoWhere.id(getFkInfoId(mContext, mPath));
+    infoValues.update(mContext.getContentResolver(), infoWhere);
+  }
+
+  private void putVolatileValues(CachedBookContentValues values,
+                                 Fb2BookContentValues fb2Values,
+                                 CachedBookInfoContentValues infoValues) {
+    if (mTimeOpened != null) {
+      values.putTimeOpened(mTimeOpened);
+    }
+    // Put them anyway - we're either stay with the same one or get a new one
+    // from processFully();
+    values.putTitle(mTitle);
+    values.putCoverImageUri(mCoverImageUri);
+    values.putCoverImageMean(mCoverImageMean);
+
+    values.putTextPosition(mCurrentTextPosition);
+
+    double percent = calcPercentile();
+    if (percent >= 0 && percent <= 1) {
+      values.putPercentile(percent);
+    } else {
+      values.putPercentile(mPercentile);
+    }
+
+    fb2Values.putFullyProcessed(mFullyProcessed);
+    fb2Values.putFullyProcessingSuccess(mFullyProcessingSuccess);
+    fb2Values.putBytePosition((int) mCurrentBytePosition);
+    // We can read before storing for the first time
+    fb2Values.putCurrentPartId(mCurrentPartId);
+    fb2Values.putPathToc(mPathToc);
+
+    infoValues.putCurrentPartTitle(mCurrentPartTitle);
   }
 
   private String getDefaultTitle() {

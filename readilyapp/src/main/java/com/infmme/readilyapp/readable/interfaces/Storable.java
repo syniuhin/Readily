@@ -38,7 +38,9 @@ public interface Storable extends Serializable {
    */
   void storeToDb();
 
-  void deleteFromDb();
+  void insertToDb();
+
+  void updateInDb();
 
   /**
    * Stores current state to file.
