@@ -29,7 +29,6 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.*;
 import com.infmme.readilyapp.R;
-import com.infmme.readilyapp.ReceiverActivity;
 import com.infmme.readilyapp.util.Constants;
 import org.jsoup.helper.StringUtil;
 
@@ -86,8 +85,10 @@ public class OldSettingsActivity extends PreferenceActivity {
         return true;
       }
       if (key.equals(Constants.Preferences.TEST)) {
+/*
         ReceiverActivity.startReceiverActivityShared(
             this, getResources().getString(R.string.sample_text));
+*/
         return true;
       }
       if (key.equals(Constants.Preferences.FEEDBACK)) {

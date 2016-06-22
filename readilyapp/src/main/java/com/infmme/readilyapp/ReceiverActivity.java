@@ -34,10 +34,11 @@ public class ReceiverActivity extends BaseActivity
   }
 
   public static void startReceiverActivityShared(
-      Context context, String intentText) {
+      Context context, ReadableType intentType, String intentText) {
     Intent intent = new Intent(context, ReceiverActivity.class);
 
     Bundle bundle = new Bundle();
+    bundle.putString(Constants.EXTRA_TYPE, intentType.name());
     bundle.putString(Constants.EXTRA_READING_SOURCE,
                      ReadingSource.SHARE.name());
     bundle.putString(Constants.EXTRA_TEXT, intentText);

@@ -114,8 +114,7 @@ public class MainActivity extends BaseActivity {
   }
 
   private void getFromClipboard() {
-    // TODO: Implement.
-    // ReceiverActivity.startReceiverActivityShared(this, null);
+    ReceiverActivity.startReceiverActivityShared(this, ReadableType.CLIPBOARD, null);
   }
 
   private void getFromFile() {

@@ -33,7 +33,7 @@ public class TxtStorable implements ChunkedUnprocessedStorable {
 
   private String mPath;
 
-  private InputStreamReader mInputStreamReader;
+  private transient InputStreamReader mInputStreamReader;
   private long mFileSize;
 
   /**

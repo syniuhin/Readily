@@ -115,6 +115,7 @@ public class NetReadable extends Readable implements Unprocessed, Storable {
   @Override
   public Storable prepareForStoringSync(Reader reader) {
     mChunkPercentile = reader.getPercentile();
+    mPosition = reader.getPosition();
     // It's already prepared since it's directly loaded into Reader.
     return this;
   }

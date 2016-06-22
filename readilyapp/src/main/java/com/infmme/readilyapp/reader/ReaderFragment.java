@@ -24,6 +24,7 @@ import com.daimajia.androidanimations.library.BuildConfig;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.infmme.readilyapp.R;
+import com.infmme.readilyapp.readable.ClipboardReadable;
 import com.infmme.readilyapp.readable.NetReadable;
 import com.infmme.readilyapp.readable.Readable;
 import com.infmme.readilyapp.readable.epub.EpubStorable;
@@ -50,6 +51,8 @@ import rx.subscriptions.CompositeSubscription;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.List;
+
+import static com.infmme.readilyapp.readable.type.ReadableType.RAW;
 
 /**
  * infm : 16/05/14. Enjoy it ;)
@@ -350,14 +353,11 @@ public class ReaderFragment extends Fragment
   private void initPrevButton() {
     if (!mSettingsBundle.isSwipesEnabled()) {
       mPrevButton.setImageResource(android.R.drawable.ic_media_previous);
-      mPrevButton.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          mReader.moveToPreviousPosition();
-        }
-      });
+      mPrevButton.setOnClickListener(v -> mReader.moveToPreviousPosition());
       mPrevButton.setVisibility(View.INVISIBLE);
-    } else { mPrevButton.setVisibility(View.INVISIBLE); }
+    } else {
+      mPrevButton.setVisibility(View.INVISIBLE);
+    }
   }
 
   private float spToPixels(Context context, float sp) {
@@ -412,12 +412,9 @@ public class ReaderFragment extends Fragment
         YoYo.with(Techniques.SlideInDown)
             .duration(NOTIF_APPEARING_DURATION)
             .playOn(mNotificationTextView);
-        mNotificationTextView.postDelayed(new Runnable() {
-          @Override
-          public void run() {
-            mNotificationTextView.setVisibility(View.VISIBLE);
-          }
-        }, NOTIF_APPEARING_DURATION);
+        mNotificationTextView.postDelayed(
+            () -> mNotificationTextView.setVisibility(View.VISIBLE),
+            NOTIF_APPEARING_DURATION);
 
         YoYo.with(Techniques.FadeOut)
             .duration(NOTIF_APPEARING_DURATION)
@@ -471,12 +468,9 @@ public class ReaderFragment extends Fragment
         YoYo.with(Techniques.SlideOutUp)
             .duration(NOTIF_APPEARING_DURATION)
             .playOn(mNotificationTextView);
-        mNotificationTextView.postDelayed(new Runnable() {
-          @Override
-          public void run() {
-            mNotificationTextView.setVisibility(View.INVISIBLE);
-          }
-        }, NOTIF_APPEARING_DURATION);
+        mNotificationTextView.postDelayed(
+            () -> mNotificationTextView.setVisibility(View.INVISIBLE),
+            NOTIF_APPEARING_DURATION);
 
         YoYo.with(Techniques.FadeIn)
             .duration(NOTIF_APPEARING_DURATION)
@@ -501,12 +495,8 @@ public class ReaderFragment extends Fragment
       YoYo.with(Techniques.FadeIn)
           .duration(NOTIF_APPEARING_DURATION * 2)
           .playOn(mInfoLayout);
-      mInfoLayout.postDelayed(new Runnable() {
-        @Override
-        public void run() {
-          mInfoLayout.setVisibility(View.VISIBLE);
-        }
-      }, NOTIF_APPEARING_DURATION);
+      mInfoLayout.postDelayed(() -> mInfoLayout.setVisibility(View.VISIBLE),
+                              NOTIF_APPEARING_DURATION);
       mInfoHided = false;
     }
   }
@@ -517,12 +507,8 @@ public class ReaderFragment extends Fragment
       YoYo.with(Techniques.FadeOut)
           .duration(NOTIF_APPEARING_DURATION)
           .playOn(mInfoLayout);
-      mInfoLayout.postDelayed(new Runnable() {
-        @Override
-        public void run() {
-          mInfoLayout.setVisibility(View.INVISIBLE);
-        }
-      }, NOTIF_APPEARING_DURATION);
+      mInfoLayout.postDelayed(() -> mInfoLayout.setVisibility(View.INVISIBLE),
+                              NOTIF_APPEARING_DURATION);
       mInfoHided = true;
     }
   }
@@ -675,7 +661,7 @@ public class ReaderFragment extends Fragment
 
   private void handleArgs(Bundle args) {
     if (args.containsKey(Intent.EXTRA_TEXT)) {
-      handleShareSource(args.getString(Intent.EXTRA_TEXT));
+      handleShareSource(args);
     } else {
       ReadingSource sourceType = ReadingSource.valueOf(
           args.getString(Constants.EXTRA_READING_SOURCE));
@@ -684,46 +670,88 @@ public class ReaderFragment extends Fragment
           handleCacheSource(args);
           break;
         case SHARE:
-          handleShareSource(args.getString(Constants.EXTRA_TEXT));
+          handleShareSource(args);
           break;
       }
     }
   }
 
-  private void handleShareSource(String intentText) {
-    String link;
-    // Checks if intentText contains link to parse article from.
-    if (!TextUtils.isEmpty(intentText) &&
-        intentText.length() < Constants.NON_LINK_LENGTH &&
-        !TextUtils.isEmpty(
-            link = TextParser.findLink(TextParser.compilePattern(),
-                                       intentText))) {
-      final NetReadable netReadable =
-          new NetReadable(getActivity(), link);
-      Observable<NetReadable> o = Observable.create(
-          subscriber -> {
-            netReadable.process();
-            subscriber.onNext(netReadable);
-          });
-      addSubscription(
-          o.subscribeOn(Schedulers.io())
-           .observeOn(AndroidSchedulers.mainThread())
-           .subscribe(nr -> {
-             if (nr.isProcessed()) {
-               mReading = nr;
-               mStorable = nr;
-               startSingleReadingFlow();
-             } else {
-               stopShowingProgress();
-               showNotification(R.string.error_occurred);
-               mReader.setCompleted(true);
-             }
-           })
-      );
+  private void handleShareSource(Bundle args) {
+    final ReadableType type;
+    if (args.containsKey(Constants.EXTRA_TYPE)) {
+      type = ReadableType.valueOf(args.getString(Constants.EXTRA_TYPE));
     } else {
-      mReading = new Readable(); //neutral value
-      mReading.setText(intentText);
-      startSingleReadingFlow();
+      type = RAW;
+    }
+    final String text;
+    if (args.containsKey(Constants.EXTRA_TEXT)) {
+      text = args.getString(Constants.EXTRA_TEXT);
+    } else {
+      text = args.getString(Intent.EXTRA_TEXT);
+    }
+    switch (type) {
+      case RAW: {
+        String link;
+        // Checks if text contains link to parse article from.
+        if (!TextUtils.isEmpty(text) &&
+            text.length() < Constants.NON_LINK_LENGTH &&
+            !TextUtils.isEmpty(
+                link = TextParser.findLink(TextParser.compilePattern(),
+                                           text))) {
+          final NetReadable netReadable =
+              new NetReadable(getActivity(), link);
+          Observable<NetReadable> o = Observable.create(
+              subscriber -> {
+                netReadable.process();
+                subscriber.onNext(netReadable);
+                subscriber.onCompleted();
+              });
+          addSubscription(
+              o.subscribeOn(Schedulers.io())
+               .observeOn(AndroidSchedulers.mainThread())
+               .subscribe(nr -> {
+                 if (nr.isProcessed()) {
+                   mReading = nr;
+                   mStorable = nr;
+                   startSingleReadingFlow();
+                 } else {
+                   stopShowingProgress();
+                   showNotification(R.string.error_occurred);
+                   mReader.setCompleted(true);
+                 }
+               })
+          );
+        } else {
+          mReading = new Readable(); //neutral value
+          mReading.setText(text);
+          startSingleReadingFlow();
+        }
+      }
+      break;
+      case CLIPBOARD:
+        ClipboardReadable clipboardReadable = new ClipboardReadable(
+            getActivity());
+        Observable<ClipboardReadable> o = Observable.create(
+            subscriber -> {
+              clipboardReadable.process();
+              subscriber.onNext(clipboardReadable);
+              subscriber.onCompleted();
+            });
+        addSubscription(
+            o.subscribeOn(Schedulers.io())
+             .observeOn(AndroidSchedulers.mainThread())
+             .subscribe(cr -> {
+               if (cr.isProcessed()) {
+                 mReading = cr;
+                 startSingleReadingFlow();
+               } else {
+                 stopShowingProgress();
+                 showNotification(R.string.error_occurred);
+                 mReader.setCompleted(true);
+               }
+             })
+        );
+        break;
     }
   }
 
