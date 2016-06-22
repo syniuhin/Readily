@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_marginLeft="@dimen/port_margin_left"
-        android:layout_marginRight="@dimen/port_margin_left"
+        android:layout_marginLeft="@dimen/reader_margin_left"
+        android:layout_marginRight="@dimen/reader_margin_right"
         android:orientation="vertical">
 
     <RelativeLayout
@@ -19,8 +18,10 @@
                 android:layout_width="125dp"
                 android:layout_height="wrap_content"
                 android:src="@drawable/logo_up"
+                android:layout_marginEnd="5dp"
                 android:layout_marginRight="5dp"
                 android:contentDescription="@string/app_name"
+                android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentBottom="true"
                 android:baselineAlignBottom="false"/>
@@ -30,6 +31,7 @@
                 android:layout_height="match_parent"
                 android:id="@+id/imageViewGradient"
                 android:background="@drawable/reader_up_border"
+                android:layout_toStartOf="@+id/logo_up"
                 android:layout_toLeftOf="@+id/logo_up"/>
 
         <TextView
@@ -70,6 +72,7 @@
                 android:layout_height="match_parent"
                 android:layout_above="@+id/progressBar"
                 android:layout_alignParentBottom="false"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:layout_margin="3dp"
@@ -83,27 +86,43 @@
                 android:layout_width="match_parent"
                 android:layout_height="65dp"
                 android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
                 android:layout_centerInParent="true"
+                android:layout_toEndOf="@id/previousWordImageButton"
                 android:layout_toRightOf="@id/previousWordImageButton"
                 android:background="@android:color/transparent"
-                android:visibility="gone">
+                android:visibility="visible">
 
             <TextView
-                    style="@style/reader_text_main"
-                    android:id="@+id/currentWordTextView"
-                    android:layout_alignLeft="@+id/pointerTopImageView"/>
+                    style="@style/reader_emphasis_text"
+                    android:id="@+id/reader_current_letter"
+                    android:layout_alignStart="@+id/pointerTopImageView"
+                    android:layout_alignLeft="@+id/pointerTopImageView"
+                    android:text="s"/>
 
             <TextView
-                    style="@style/reader_text_main"
-                    android:id="@+id/leftWordTextView"
-                    android:layout_alignBaseline="@+id/currentWordTextView"
-                    android:layout_toLeftOf="@+id/currentWordTextView"/>
+                    style="@style/reader_word_text"
+                    android:id="@+id/reader_word_left"
+                    android:layout_alignBaseline="@+id/reader_current_letter"
+                    android:layout_toStartOf="@+id/reader_current_letter"
+                    android:layout_toLeftOf="@+id/reader_current_letter"
+                    android:text="@string/just_sample"/>
 
             <TextView
-                    style="@style/reader_text_main"
-                    android:id="@+id/rightWordTextView"
-                    android:layout_alignBaseline="@+id/currentWordTextView"
-                    android:layout_toRightOf="@+id/currentWordTextView"/>
+                    style="@style/reader_word_text"
+                    android:id="@+id/reader_word_right"
+                    android:layout_alignBaseline="@+id/reader_current_letter"
+                    android:layout_toEndOf="@+id/reader_current_letter"
+                    android:layout_toRightOf="@+id/reader_current_letter"
+                    android:text="@string/just_sample"/>
+
+            <TextView
+                    style="@style/reader_next_words_text"
+                    android:id="@+id/reader_next_words"
+                    android:layout_alignBaseline="@+id/reader_current_letter"
+                    android:layout_toEndOf="@+id/reader_word_right"
+                    android:layout_toRightOf="@+id/reader_word_right"
+                    android:text="@string/just_sample"/>
 
             <ImageView
                     style="@style/reader_pointer"
@@ -125,7 +144,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:indeterminate="false"
-                android:visibility="visible"/>
+                android:visibility="gone"/>
 
     </RelativeLayout>
     <RelativeLayout
@@ -141,8 +160,10 @@
                 android:layout_height="wrap_content"
                 android:text="@string/speed"
                 android:id="@+id/text_view_info_speed"
+                android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
                 android:layout_marginLeft="10dp"
                 android:textStyle="bold"
                 android:textColor="@android:color/primary_text_dark"
@@ -153,8 +174,10 @@
                 android:layout_height="wrap_content"
                 android:text="@string/percent_left"
                 android:id="@+id/text_view_info_position"
+                android:layout_toStartOf="@+id/text_view_info_position_value"
                 android:layout_toLeftOf="@+id/text_view_info_position_value"
                 android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
                 android:layout_marginLeft="10dp"
                 android:textStyle="bold"
                 android:textColor="@android:color/primary_text_dark"
@@ -165,7 +188,9 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/text_view_info_speed_value"
                 android:layout_centerVertical="true"
+                android:layout_toEndOf="@+id/text_view_info_speed"
                 android:layout_toRightOf="@+id/text_view_info_speed"
+                android:layout_marginStart="3dp"
                 android:layout_marginLeft="3dp"
                 android:textColor="@android:color/primary_text_dark"
                 android:textSize="12sp"/>
@@ -175,11 +200,15 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/text_view_info_position_value"
                 android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
+                android:layout_marginStart="3dp"
                 android:layout_marginLeft="3dp"
+                android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
                 android:textColor="@android:color/primary_text_dark"
                 android:textSize="12sp"/>
 
     </RelativeLayout>
+
 </LinearLayout>

@@ -4,15 +4,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.text.Html;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
@@ -74,12 +70,6 @@ public class ReaderFragment extends Fragment
 
   private static final float POINTER_LEFT_PADDING_COEFFICIENT = 5f / 18f;
 
-  private static final String[] LIGHT_COLOR_SET = new String[] { "#0A0A0A",
-      "#AAAAAA" };
-  private static final String[] DARK_COLOR_SET = new String[] { "#FFFFFF",
-      "#999999", "#FF282828" };
-  private static final String EMPHASIS_CHAR_COLOR = "#FA2828";
-
   private static final int DEQUE_SIZE_LIMIT = 3;
 
   private Handler mHandler;
@@ -95,6 +85,7 @@ public class ReaderFragment extends Fragment
   private TextView mCurrentTextView;
   private TextView mLeftTextView;
   private TextView mRightTextView;
+  private TextView mNextTextView;
   private TextView mNotificationTextView;
   private ProgressBar mProgressBar;
   private ProgressBar mParsingProgressBar;
@@ -115,8 +106,6 @@ public class ReaderFragment extends Fragment
   private Thread mReadingThread;
 
   private boolean mHasReaderStarted = false;
-  private String mPrimaryTextColor = LIGHT_COLOR_SET[0];
-  private String mSecondaryTextColor = LIGHT_COLOR_SET[1];
   private int mProgress;
 
   private ReaderFragmentCallback mCallback;
@@ -146,6 +135,7 @@ public class ReaderFragment extends Fragment
     View fragmentLayout = inflater.inflate(R.layout.fragment_reader, container,
                                            false);
     findViews((ViewGroup) fragmentLayout);
+    startShowingProgress();
     return fragmentLayout;
   }
 
@@ -217,62 +207,36 @@ public class ReaderFragment extends Fragment
    * @param emphasis Word emphasis position
    * @return Spanned object to draw
    */
-  private Spanned getFormattedLeft(String word, int emphasis) {
-    if (TextUtils.isEmpty(word))
-      return Html.fromHtml("");
-    return Html.fromHtml("<font color='" + mPrimaryTextColor + "'>" +
-                             word.substring(0, emphasis) + "</font>");
+  private String getFormattedLeft(String word, int emphasis) {
+    return word.substring(0, emphasis);
   }
 
   /**
-   * Generates formatted emphasis character
-   *
    * @param word     Word to show
    * @param emphasis Word emphasis position
    * @return Spanned object to draw
    */
-  private Spanned getFormattedEmphasis(String word, int emphasis) {
-    if (TextUtils.isEmpty(word))
-      return Html.fromHtml("");
-    return Html.fromHtml("<font color='" + EMPHASIS_CHAR_COLOR + "'>" +
-                             word.substring(emphasis,
-                                            emphasis + 1) + "</font>");
+  private String getFormattedEmphasis(String word, int emphasis) {
+    return word.substring(emphasis, emphasis + 1);
   }
 
   /**
-   * Generates formatted text after emphasis character
-   * (part of current word, if exists and next ones, if option is enabled)
-   *
    * @param word     Word to show
    * @param emphasis Word emphasis position
    * @return Spanned object to draw
    */
-  private Spanned getFormattedRight(String word, List<String> nextWords,
-                                    int emphasis) {
-    if (TextUtils.isEmpty(word))
-      return Html.fromHtml("");
-    StringBuilder format = new StringBuilder(
-        "<font><font color='" + mPrimaryTextColor + "'>" +
-            word.substring(emphasis + 1,
-                           word.length()) + "</font>");
-    if (mSettingsBundle.isShowingContextEnabled())
-      format.append(getNextWordsFormat(nextWords));
-    format.append("</font>");
-    return Html.fromHtml(format.toString());
+  private String getFormattedRight(String word, int emphasis) {
+    return word.substring(emphasis + 1, word.length());
   }
 
   /**
-   * Generates Html formatted String of next words in text (called if
-   * 'context' option is enabled)
-   *
    * @param nextWords A couple of next words to show in a reader view
    * @return Html format String
    */
-  private String getNextWordsFormat(List<String> nextWords) {
+  private String getFormattedNextWords(List<String> nextWords) {
     int charLen = 0;
     int wordListIndex = 0;
-    StringBuilder format = new StringBuilder(
-        "&nbsp;<font color='" + mSecondaryTextColor + "'>");
+    StringBuilder format = new StringBuilder(" ");
     while (charLen < 40 && wordListIndex < nextWords.size() - 1) {
       String word = nextWords.get(++wordListIndex);
       if (!TextUtils.isEmpty(word)) {
@@ -280,7 +244,6 @@ public class ReaderFragment extends Fragment
         format.append(word).append(" ");
       }
     }
-    format.append("</font>");
     return format.toString();
   }
 
@@ -292,9 +255,10 @@ public class ReaderFragment extends Fragment
   private void findViews(ViewGroup v) {
     mReaderLayout = (RelativeLayout) v.findViewById(R.id.reader_layout);
     mParsingProgressBar = (ProgressBar) v.findViewById(R.id.parsingProgressBar);
-    mCurrentTextView = (TextView) v.findViewById(R.id.currentWordTextView);
-    mLeftTextView = (TextView) v.findViewById(R.id.leftWordTextView);
-    mRightTextView = (TextView) v.findViewById(R.id.rightWordTextView);
+    mCurrentTextView = (TextView) v.findViewById(R.id.reader_current_letter);
+    mLeftTextView = (TextView) v.findViewById(R.id.reader_word_left);
+    mRightTextView = (TextView) v.findViewById(R.id.reader_word_right);
+    mNextTextView = (TextView) v.findViewById(R.id.reader_next_words);
     mProgressBar = (ProgressBar) v.findViewById(R.id.progressBar);
     mNotificationTextView = (TextView) v.findViewById(R.id.reader_notification);
     mPrevButton = (ImageButton) v.findViewById(R.id.previousWordImageButton);
@@ -391,6 +355,8 @@ public class ReaderFragment extends Fragment
   }
 
   private void setReaderBackground() {
+    // TODO: Finish styles for this.
+/*
     if (mSettingsBundle.isDarkTheme()) {
       ((View) mReaderLayout.getParent()).setBackgroundColor(
           Color.parseColor(DARK_COLOR_SET[2]));
@@ -401,6 +367,7 @@ public class ReaderFragment extends Fragment
       ((ImageView) mReaderLayout.findViewById(R.id.pointerBottomImageView))
           .setImageResource(R.drawable.word_pointer_dark);
     }
+*/
   }
 
   private void showNotification(String text) {
@@ -449,7 +416,8 @@ public class ReaderFragment extends Fragment
                                int emphasis) {
     mCurrentTextView.setText(getFormattedEmphasis(word, emphasis));
     mLeftTextView.setText(getFormattedLeft(word, emphasis));
-    mRightTextView.setText(getFormattedRight(word, nextWords, emphasis));
+    mRightTextView.setText(getFormattedRight(word, emphasis));
+    mNextTextView.setText(getFormattedNextWords(nextWords));
     mProgressBar.setProgress(mProgress);
     hideNotification(false);
   }
@@ -583,6 +551,11 @@ public class ReaderFragment extends Fragment
     mHasReaderStarted = true;
   }
 
+  private void startShowingProgress() {
+    mParsingProgressBar.setVisibility(View.VISIBLE);
+    mReaderLayout.setVisibility(View.GONE);
+  }
+
   private void stopShowingProgress() {
     mParsingProgressBar.clearAnimation();
     mParsingProgressBar.setVisibility(View.GONE);
@@ -636,26 +609,27 @@ public class ReaderFragment extends Fragment
     }
     View view = getView();
     if (view != null) {
+      // TODO: Implement this in terms of different dimension folders.
+/*
       FrameLayout.LayoutParams params =
           (FrameLayout.LayoutParams) view.getLayoutParams();
       int currentMargin = params.leftMargin;
 
       Resources resources = getResources();
       int portMargin,
-          landMargin = (int) resources.getDimension(R.dimen.land_margin_left);
+          landMargin = (int) resources.getDimension(R.dimen.reader_margin_left);
       if (currentMargin <= landMargin) {
-        portMargin = (int) resources.getDimension(R.dimen.port_margin_left);
+        portMargin = (int) resources.getDimension(R.dimen.reader_margin_left);
       } else {
-        portMargin = (int) resources.getDimension(
-            R.dimen.port_tablet_margin_left);
-        landMargin = (int) resources.getDimension(
-            R.dimen.land_tablet_margin_left);
+        portMargin = (int) resources.getDimension(R.dimen.reader_margin_left);
+        landMargin = (int) resources.getDimension(R.dimen.reader_margin_left);
       }
       int newMargin = (currentMargin == portMargin)
           ? landMargin
           : portMargin;
       params.setMargins(newMargin, 0, newMargin, 0);
       view.setLayoutParams(params);
+*/
     }
   }
 

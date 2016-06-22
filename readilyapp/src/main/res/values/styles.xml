@@ -79,6 +79,33 @@
         <item name="android:typeface">monospace</item>
     </style>
 
+    <style name="reader_text">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:typeface">monospace</item>
+    </style>
+
+    <style name="reader_emphasis_text" parent="reader_text">
+        <item name="android:textColor">#FA2828</item>
+        <item name="android:maxLength">1</item>
+    </style>
+
+    <style name="reader_word_text" parent="reader_text">
+        <item name="android:textColor">#0A0A0A</item>
+    </style>
+
+    <style name="reader_next_words_text" parent="reader_text">
+        <item name="android:textColor">#AAAAAA</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:layout_alignParentEnd">true</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_marginEnd">5dp</item>
+        <item name="android:layout_marginRight">5dp</item>
+    </style>
+
     <style name="reader_pointer">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

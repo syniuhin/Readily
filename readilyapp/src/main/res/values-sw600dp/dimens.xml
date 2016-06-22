@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="reader_margin_left">90dp</dimen>
+    <dimen name="reader_margin_right">90dp</dimen>
+</resources>
