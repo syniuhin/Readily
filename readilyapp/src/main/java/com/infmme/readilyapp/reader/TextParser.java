@@ -16,8 +16,10 @@ import java.util.regex.Pattern;
 
 public class TextParser implements Serializable, Callable<TextParser> {
 
-  public static final String makeMeSpecial =
+  public static final String sMakeMeSpecial =
       " " + "." + "!" + "?" + "-" + "—" + ":" + ";" + "," + '\"' + "(" + ")";
+  private static final String sMadeMeSpecial =
+      sMakeMeSpecial.substring(1, 9) + ")";
   private static final int MAX_LEFT_CHARACTER_COUNT = 8;
   private static final Map<String, Integer> PRIORITIES;
 
@@ -67,15 +69,29 @@ public class TextParser implements Serializable, Callable<TextParser> {
   private List<Integer> delayCoefficients;
   private int resultCode;
 
+  private StringBuilder mStrBuilder;
+  private ArrayList<String> mStrArrayList;
+  private ArrayList<Integer> mIntArrayList;
+
   public TextParser(Reading reading) {
     this.reading = reading;
     lengthPreference = 13; //TODO:implement it optional
+    mStrBuilder = new StringBuilder();
+    mStrArrayList = new ArrayList<>();
+    mIntArrayList = new ArrayList<>();
+  }
+
+  public void clearWith(Reading reading) {
+    this.reading = reading;
+    mStrBuilder.setLength(0);
+    mStrArrayList.clear();
+    mIntArrayList.clear();
   }
 
   /**
    * Need it to get rid of Context, which isn't Serializable
    *
-   * @param reading        : Reading instance to process
+   * @param reading           : Reading instance to process
    * @param delayCoefficients : Delay coefficients to use in this parser.
    * @return TextParser instance
    */
@@ -157,50 +173,48 @@ public class TextParser implements Serializable, Callable<TextParser> {
 
   /* normalize() auxiliary methods */
   private String clearFromRepetitions(String text) {
-    StringBuilder res = new StringBuilder();
+    mStrBuilder.setLength(0);
     int previousPosition = -1;
     for (char ch : text.toCharArray()) {
-      int position = makeMeSpecial.indexOf(ch);
+      int position = sMakeMeSpecial.indexOf(ch);
       if (position > -1 && position != previousPosition) {
         previousPosition = position;
-        res.append(ch);
+        mStrBuilder.append(ch);
       } else if (position < 0) {
         previousPosition = -1;
-        res.append(ch);
+        mStrBuilder.append(ch);
       }
     }
-    return res.toString();
+    return mStrBuilder.toString();
   }
 
   private String removeSpacesBeforePunctuation(String text) {
-    StringBuilder res = new StringBuilder();
-    String madeMeSpecial = makeMeSpecial.substring(1, 9) + ")";
+    mStrBuilder.setLength(0);
     for (char ch : text.toCharArray()) {
-      if (madeMeSpecial.indexOf(ch) > -1 &&
-          res.length() > 0 &&
-          " ".equals(res.substring(res.length() - 1))) {
-        res.deleteCharAt(res.length() - 1);
+      if (sMadeMeSpecial.indexOf(ch) > -1 &&
+          mStrBuilder.length() > 0 &&
+          " ".equals(mStrBuilder.substring(mStrBuilder.length() - 1))) {
+        mStrBuilder.deleteCharAt(mStrBuilder.length() - 1);
       }
-      res.append(ch);
+      mStrBuilder.append(ch);
     }
-    return res.toString();
+    return mStrBuilder.toString();
   }
 
   private String insertSpacesAfterPunctuation(String text) {
-    StringBuilder res = new StringBuilder();
-    String madeMeSpecial = makeMeSpecial.substring(1, 9) + ")";
+    mStrBuilder.setLength(0);
     char ch;
     char nextCh;
     for (int i = 0; i < text.length(); ++i) {
       ch = text.charAt(i);
-      res.append(ch);
+      mStrBuilder.append(ch);
       if (i < text.length() - 1) {
         nextCh = text.charAt(i + 1);
-        if (madeMeSpecial.indexOf(ch) > -1 && Character.isLetter(nextCh))
-          res.append(" ");
+        if (sMadeMeSpecial.indexOf(ch) > -1 && Character.isLetter(nextCh))
+          mStrBuilder.append(" ");
       }
     }
-    return res.toString();
+    return mStrBuilder.toString();
   }
 
   private String handleSpecialCases(String text) {
@@ -208,34 +222,35 @@ public class TextParser implements Serializable, Callable<TextParser> {
   }
 
   private String handleAbbreviations(String text) {
-    StringBuilder res = new StringBuilder();
+    mStrBuilder.setLength(0);
     for (int i = 0; i < text.length(); ++i) {
       if (i > 0 && text.charAt(i - 1) == '.') {
         if (!(i + 2 < text.length() && text.charAt(i + 2) == '.'))
-          res.append(text.charAt(i));
+          mStrBuilder.append(text.charAt(i));
       } else {
-        res.append(text.charAt(i));
+        mStrBuilder.append(text.charAt(i));
       }
     }
-    return res.toString();
+    return mStrBuilder.toString();
   }
 
   private void cutLongWords(Reading reading) {
-    List<String> res = new ArrayList<>();
+    mStrArrayList.clear();
     for (String word : reading.getText().split(" ")) {
       while (word.length() - 1 > lengthPreference) {
         int pos = lengthPreference - 2;
         while (pos > 3 && !Character.isLetter(word.charAt(pos)))
           --pos;
-        res.add(word.substring(0, pos) + "-");
+        mStrArrayList.add(word.substring(0, pos) + "-");
         word = word.substring(pos);
       }
-      res.add(word);
+      mStrArrayList.add(word);
     }
-    StringBuilder sb = new StringBuilder();
-    for (String s : res)
-      sb.append(s).append(" ");
-    reading.setText(sb.substring(0, Math.max(0, sb.length() - 1)));
+    mStrBuilder.setLength(0);
+    for (String s : mStrArrayList)
+      mStrBuilder.append(s).append(" ");
+    reading.setText(
+        mStrBuilder.substring(0, Math.max(0, mStrBuilder.length() - 1)));
   }
 
   private int measureWord(String word) {
@@ -288,21 +303,25 @@ public class TextParser implements Serializable, Callable<TextParser> {
 
   private void cleanWordList(Reading reading) {
     List<String> wordList = reading.getWordList();
-    List<String> res = new ArrayList<>();
+    mStrArrayList.clear();
     for (String word : wordList) {
-      if (!TextUtils.isEmpty(word)) { res.add(word); }
+      if (!TextUtils.isEmpty(word)) {
+        mStrArrayList.add(word);
+      }
     }
-    reading.setWordList(res);
+    reading.setWordList(mStrArrayList);
   }
 
   private void buildDelayList(Reading reading) {
-    List<Integer> res = new ArrayList<>();
-    for (String word : reading.getWordList()) res.add(measureWord(word));
-    reading.setDelayList(res);
+    mIntArrayList.clear();
+    for (String word : reading.getWordList()) {
+      mIntArrayList.add(measureWord(word));
+    }
+    reading.setDelayList(mIntArrayList);
   }
 
   private void buildEmphasis(Reading reading) {
-    List<Integer> res = new ArrayList<>();
+    mIntArrayList.clear();
     for (String word : reading.getWordList()) {
       Map<String, Pair<Integer, Integer>> priorities = new HashMap<>();
       int len = word.length();
@@ -332,9 +351,9 @@ public class TextParser implements Serializable, Callable<TextParser> {
           resInd = entry.getValue().second;
         }
       }
-      res.add(resInd);
+      mIntArrayList.add(resInd);
     }
-    reading.setEmphasisList(res);
+    reading.setEmphasisList(mIntArrayList);
   }
 
   @Override

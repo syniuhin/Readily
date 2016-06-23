@@ -15,8 +15,7 @@ import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookContentValues;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookSelection;
-import com.infmme.readilyapp.provider.cachedbookinfo
-    .CachedBookInfoContentValues;
+import com.infmme.readilyapp.provider.cachedbookinfo.CachedBookInfoContentValues;
 import com.infmme.readilyapp.provider.cachedbookinfo.CachedBookInfoSelection;
 import com.infmme.readilyapp.provider.fb2book.Fb2BookColumns;
 import com.infmme.readilyapp.provider.fb2book.Fb2BookContentValues;
@@ -36,10 +35,8 @@ import java.io.*;
 import java.lang.reflect.Type;
 import java.util.*;
 
-import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor
-    .getFkFb2BookId;
-import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor
-    .getFkInfoId;
+import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor.getFkFb2BookId;
+import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor.getFkInfoId;
 import static com.infmme.readilyapp.readable.Utils.guessCharset;
 
 /**
@@ -51,6 +48,10 @@ import static com.infmme.readilyapp.readable.Utils.guessCharset;
 public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
 
   private static final int BUFFER_SIZE = 4096;
+  /**
+   * Used to reduce allocations of local StringBuilder instances.
+   */
+  private transient StringBuilder mStrBuilder;
 
   private String mPath;
   private String mPathToc;
@@ -124,7 +125,9 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
   public Reading readNext() throws IOException {
     mCurrentBytePosition = mLastBytePosition;
 
-    StringBuilder text = new StringBuilder();
+    if (mStrBuilder == null) {
+      mStrBuilder = new StringBuilder();
+    }
 
     // Checks if we're reading for the first time.
     if (mCurrentEvent == null) {
@@ -139,7 +142,7 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
     // Reads file section by section until reaches end of the file or text
     // grows bigger than buffer size.
     while (mCurrentEventType != XMLEventType.DOCUMENT_CLOSE &&
-        text.length() < BUFFER_SIZE) {
+        mStrBuilder.length() < BUFFER_SIZE) {
       if (mCurrentEvent.enteringTag(FB2Tags.SECTION)) {
         mCurrentPartId = "section" + mParser.getPosition();
         sectionIdStack.add(mCurrentPartId);
@@ -177,7 +180,7 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
           // Appends plain text to a text.
           // TODO: Check out other possible tags.
           if (contentType.equals(FB2Tags.PLAIN_TEXT)) {
-            text.append(content).append(" ");
+            mStrBuilder.append(content).append(" ");
           }
         }
       }
@@ -189,7 +192,8 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
     }
 
     Readable readable = new Readable();
-    readable.setText(text.toString());
+    readable.setText(mStrBuilder.toString());
+    mStrBuilder.setLength(0);
     readable.setPosition(0);
 
     mLoadedChunks.addLast(
@@ -790,20 +794,23 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
     FileInputStream fis = new FileInputStream(getCachedTocFile());
 
     byte[] buffer = new byte[BUFFER_SIZE];
-    StringBuilder input = new StringBuilder();
+    if (mStrBuilder == null) {
+      mStrBuilder = new StringBuilder();
+    }
     long bytesRead;
     do {
       bytesRead = fis.read(buffer);
       if (bytesRead != BUFFER_SIZE) {
         byte[] buffer0 = new byte[(int) bytesRead];
         System.arraycopy(buffer, 0, buffer0, 0, (int) bytesRead);
-        input.append(new String(buffer0));
+        mStrBuilder.append(new String(buffer0));
       } else {
-        input.append(new String(buffer));
+        mStrBuilder.append(new String(buffer));
       }
     } while (bytesRead == BUFFER_SIZE);
 
-    String json = input.toString();
+    String json = mStrBuilder.toString();
+    mStrBuilder.setLength(0);
     Gson gson = new Gson();
     Type listType = new TypeToken<ArrayList<FB2Part>>() {}.getType();
 
@@ -839,20 +846,23 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
     FileInputStream fis = new FileInputStream(getCachedIdTitleMapFile());
 
     byte[] buffer = new byte[BUFFER_SIZE];
-    StringBuilder input = new StringBuilder();
+    if (mStrBuilder == null) {
+      mStrBuilder = new StringBuilder();
+    }
     long bytesRead;
     do {
       bytesRead = fis.read(buffer);
       if (bytesRead != BUFFER_SIZE) {
         byte[] buffer0 = new byte[(int) bytesRead];
         System.arraycopy(buffer, 0, buffer0, 0, (int) bytesRead);
-        input.append(new String(buffer0));
+        mStrBuilder.append(new String(buffer0));
       } else {
-        input.append(new String(buffer));
+        mStrBuilder.append(new String(buffer));
       }
     } while (bytesRead == BUFFER_SIZE);
 
-    String json = input.toString();
+    String json = mStrBuilder.toString();
+    mStrBuilder.setLength(0);
     Gson gson = new Gson();
     Type mapType = new TypeToken<Map<String, String>>() {}.getType();
 

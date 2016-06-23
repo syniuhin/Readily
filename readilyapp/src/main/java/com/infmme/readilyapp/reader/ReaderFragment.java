@@ -15,7 +15,10 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.ImageButton;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import com.daimajia.androidanimations.library.BuildConfig;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -101,6 +104,8 @@ public class ReaderFragment extends Fragment
   private Reading mReading = null;
   private Chunked mChunked = null;
   private Storable mStorable = null;
+
+  private StringBuilder mFormatStrBuilder;
 
   private SettingsBundle mSettingsBundle;
   private Thread mReadingThread;
@@ -201,50 +206,24 @@ public class ReaderFragment extends Fragment
   }
 
   /**
-   * Generates formatted text before emphasis point
-   *
-   * @param word     Word to show
-   * @param emphasis Word emphasis position
-   * @return Spanned object to draw
-   */
-  private String getFormattedLeft(String word, int emphasis) {
-    return word.substring(0, emphasis);
-  }
-
-  /**
-   * @param word     Word to show
-   * @param emphasis Word emphasis position
-   * @return Spanned object to draw
-   */
-  private String getFormattedEmphasis(String word, int emphasis) {
-    return word.substring(emphasis, emphasis + 1);
-  }
-
-  /**
-   * @param word     Word to show
-   * @param emphasis Word emphasis position
-   * @return Spanned object to draw
-   */
-  private String getFormattedRight(String word, int emphasis) {
-    return word.substring(emphasis + 1, word.length());
-  }
-
-  /**
    * @param nextWords A couple of next words to show in a reader view
    * @return Html format String
    */
   private String getFormattedNextWords(List<String> nextWords) {
-    int charLen = 0;
     int wordListIndex = 0;
-    StringBuilder format = new StringBuilder(" ");
-    while (charLen < 40 && wordListIndex < nextWords.size() - 1) {
-      String word = nextWords.get(++wordListIndex);
-      if (!TextUtils.isEmpty(word)) {
-        charLen += word.length() + 1;
-        format.append(word).append(" ");
+    if (mFormatStrBuilder == null) {
+      mFormatStrBuilder = new StringBuilder(" ");
+    } else {
+      mFormatStrBuilder.setLength(1);
+    }
+    while (mFormatStrBuilder.length() < 40 &&
+        wordListIndex < nextWords.size() - 1) {
+      ++wordListIndex;
+      if (!TextUtils.isEmpty(nextWords.get(wordListIndex))) {
+        mFormatStrBuilder.append(nextWords.get(wordListIndex)).append(" ");
       }
     }
-    return format.toString();
+    return mFormatStrBuilder.toString();
   }
 
   /**
@@ -414,9 +393,9 @@ public class ReaderFragment extends Fragment
   @Override
   public void updateReaderView(String word, List<String> nextWords,
                                int emphasis) {
-    mCurrentTextView.setText(getFormattedEmphasis(word, emphasis));
-    mLeftTextView.setText(getFormattedLeft(word, emphasis));
-    mRightTextView.setText(getFormattedRight(word, emphasis));
+    mCurrentTextView.setText(word.substring(emphasis, emphasis + 1));
+    mLeftTextView.setText(word.substring(0, emphasis));
+    mRightTextView.setText(word.substring(emphasis + 1, word.length()));
     mNextTextView.setText(getFormattedNextWords(nextWords));
     mProgressBar.setProgress(mProgress);
     hideNotification(false);
@@ -424,8 +403,9 @@ public class ReaderFragment extends Fragment
 
   @Override
   public void showNotification(int resourceId) {
-    if (isAdded())
+    if (isAdded()) {
       showNotification(getResources().getString(resourceId));
+    }
   }
 
   @Override

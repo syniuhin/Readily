@@ -22,6 +22,8 @@ public class ReaderProducerTask implements Runnable {
 
   private ReaderTaskCallbacks mCallback;
 
+  private TextParser mTextParser;
+
   /**
    * Constructs ReaderTask for chunked reading source.
    *
@@ -66,11 +68,14 @@ public class ReaderProducerTask implements Runnable {
           nextReading.getText()) && mChunked.hasNextReading());
     }
     if (nextReading != null) {
-      TextParser result =
-          TextParser.newInstance(nextReading,
-                                 mCallback.getDelayCoefficients());
-      result.process();
-      nextReading = result.getReading();
+      if (mTextParser == null) {
+        mTextParser = TextParser.newInstance(
+            nextReading, mCallback.getDelayCoefficients());
+      } else {
+        mTextParser.clearWith(nextReading);
+      }
+      mTextParser.process();
+      nextReading = mTextParser.getReading();
     }
     return nextReading;
   }

@@ -3,6 +3,7 @@ package com.infmme.readilyapp.readable;
 import com.infmme.readilyapp.readable.interfaces.Reading;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,7 +12,6 @@ import java.util.List;
 
 public class Readable implements Reading, Serializable {
   protected String mText;
-  private StringBuilder mTextBuilder;
 
   protected int mPosition;
 
@@ -29,20 +29,6 @@ public class Readable implements Reading, Serializable {
     mText = text;
   }
 
-  public void appendText(String text) {
-    if (mTextBuilder == null) {
-      mTextBuilder = new StringBuilder();
-    }
-    mTextBuilder.append(text).append(" ");
-  }
-
-  public void finishAppendingText() {
-    if (mTextBuilder != null) {
-      mText = mTextBuilder.toString();
-      mTextBuilder = null;
-    }
-  }
-
   @Override
   public List<String> getWordList() {
     return mWordList;
@@ -50,7 +36,7 @@ public class Readable implements Reading, Serializable {
 
   @Override
   public void setWordList(List<String> wordList) {
-    mWordList = wordList;
+    mWordList = new ArrayList<>(wordList);
   }
 
   @Override
@@ -60,7 +46,7 @@ public class Readable implements Reading, Serializable {
 
   @Override
   public void setEmphasisList(List<Integer> emphasisList) {
-    mEmphasisList = emphasisList;
+    mEmphasisList = new ArrayList<>(emphasisList);
   }
 
   @Override
@@ -70,7 +56,7 @@ public class Readable implements Reading, Serializable {
 
   @Override
   public void setDelayList(List<Integer> delayList) {
-    mDelayList = delayList;
+    mDelayList = new ArrayList<>(delayList);
   }
 
   @Override
