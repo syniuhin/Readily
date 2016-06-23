@@ -3,14 +3,19 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:layout_marginStart="@dimen/reader_margin_left"
         android:layout_marginLeft="@dimen/reader_margin_left"
+        android:layout_marginEnd="@dimen/reader_margin_right"
         android:layout_marginRight="@dimen/reader_margin_right"
         android:orientation="vertical">
 
+    <!--
+        TODO: Consider using another type of layouts since this one consumes 5% of CPU time measure.
+    -->
     <RelativeLayout
             android:id="@+id/up_bar_layout"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="@dimen/reader_up_bar_height"
             android:background="@drawable/logo_up_background">
 
         <ImageView
@@ -35,10 +40,10 @@
                 android:layout_toLeftOf="@+id/logo_up"/>
 
         <TextView
+                style="@style/Base.TextAppearance.AppCompat.Large.Inverse"
                 android:id="@+id/reader_notification"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="22sp"
                 android:visibility="invisible"
                 android:layout_centerInParent="true"
                 android:textColor="@android:color/primary_text_dark"
@@ -49,7 +54,7 @@
     <RelativeLayout
             android:id="@+id/reader_main_layout"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="@dimen/reader_main_height"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/reader_background">
 
@@ -98,7 +103,7 @@
                     android:id="@+id/reader_current_letter"
                     android:layout_alignStart="@+id/pointerTopImageView"
                     android:layout_alignLeft="@+id/pointerTopImageView"
-                    android:text="s"/>
+                    android:text="@string/letter_sample"/>
 
             <TextView
                     style="@style/reader_word_text"
@@ -127,12 +132,14 @@
             <ImageView
                     style="@style/reader_pointer"
                     android:id="@+id/pointerTopImageView"
-                    android:layout_alignParentTop="true"/>
+                    android:layout_alignParentTop="true"
+                    android:contentDescription="@string/upper_pointer"/>
 
             <ImageView
                     style="@style/reader_pointer"
                     android:id="@+id/pointerBottomImageView"
-                    android:layout_alignParentBottom="true"/>
+                    android:layout_alignParentBottom="true"
+                    android:contentDescription="@string/lower_pointer"/>
 
         </RelativeLayout>
 
@@ -153,7 +160,6 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:id="@+id/reader_info_layout"
-            android:visibility="invisible"
             android:background="@color/primary">
         <TextView
                 android:layout_width="wrap_content"
@@ -190,6 +196,8 @@
                 android:layout_centerVertical="true"
                 android:layout_toEndOf="@+id/text_view_info_speed"
                 android:layout_toRightOf="@+id/text_view_info_speed"
+                android:layout_toStartOf="@+id/text_view_info_position_value"
+                android:layout_toLeftOf="@+id/text_view_info_position_value"
                 android:layout_marginStart="3dp"
                 android:layout_marginLeft="3dp"
                 android:textColor="@android:color/primary_text_dark"

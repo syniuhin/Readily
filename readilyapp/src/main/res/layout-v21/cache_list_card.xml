@@ -19,10 +19,10 @@
             <ImageView app:layout_widthPercent="100%"
                        app:layout_aspectRatio="178%"
                        android:id="@+id/cache_list_card_image"
+                       android:transitionName="@string/storable_detail_transition_image_view"
                        android:scaleType="centerCrop"
                        android:cropToPadding="true"
                        android:layout_alignParentStart="true"
-                       android:layout_alignParentLeft="true"
                        android:layout_alignParentTop="true"
                        card_view:srcCompat="@color/accent_dark"
                        android:contentDescription="@string/card_image"/>
@@ -33,9 +33,7 @@
                     android:id="@+id/cache_list_card_progress"
                     android:background="@android:color/transparent"
                     android:layout_alignParentStart="true"
-                    android:layout_alignParentLeft="true"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
                     android:layout_below="@id/cache_list_card_image"/>
             <TextView
                     android:layout_width="wrap_content"
@@ -45,8 +43,6 @@
                     android:text="@string/title"
                     android:maxLines="3"
                     android:layout_alignParentStart="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="20dp"
                     android:layout_below="@+id/cache_list_card_progress"
@@ -59,9 +55,7 @@
                     android:text="@string/sample_part"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                     android:layout_alignParentStart="true"
-                    android:layout_alignParentLeft="true"
                     android:layout_below="@+id/cache_list_card_title"
-                    android:layout_marginLeft="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="4dp"/>
             <TextView
@@ -71,9 +65,7 @@
                     android:text="@string/time_prefix"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     android:layout_alignParentStart="true"
-                    android:layout_alignParentLeft="true"
                     android:layout_below="@+id/cache_list_card_part"
-                    android:layout_marginLeft="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="12dp"/>
             <TextView
@@ -83,10 +75,8 @@
                     android:text="@string/sample_time"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     android:layout_below="@+id/cache_list_card_part"
-                    android:layout_toRightOf="@+id/cache_list_card_time_opened_prefix"
                     android:layout_toEndOf="@+id/cache_list_card_time_opened_prefix"
                     android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
                     android:layout_marginTop="12dp"/>
         </android.support.percent.PercentRelativeLayout>
 
@@ -97,7 +87,6 @@
                 android:id="@+id/cache_list_card_button_more"
                 android:layout_below="@+id/cache_list_card_child"
                 android:layout_toEndOf="@+id/cache_list_card_button_read"
-                android:layout_toRightOf="@+id/cache_list_card_button_read"
                 android:text="@string/book_card_more"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"/>
@@ -108,13 +97,11 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/cache_list_card_button_read"
                 android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
                 android:layout_below="@+id/cache_list_card_child"
                 android:layout_alignBaseline="@id/cache_list_card_button_more"
                 android:text="@string/book_card_read"
                 android:layout_marginTop="16dp"
                 android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
                 android:layout_marginBottom="8dp"/>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

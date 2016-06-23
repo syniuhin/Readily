@@ -68,6 +68,15 @@
     <string name="error_occurred">Error occurred</string>
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
+    <string name="card_image">Cover image of a book or article</string>
+    <string name="expand">Expand</string>
+    <string name="letter_sample">X</string>
+    <string name="upper_pointer">Upper pointer to an emphasis letter</string>
+    <string name="lower_pointer">Lower pointer to an emphasis letter</string>
+    <string name="logo">Logo</string>
+    <string name="share">Share</string>
+    <string name="example_of_work">An example of work</string>
+    <string name="particular_color">Particular color</string>
 
     <!-- Preferences.xml -->
     <string name="preferences_clipboard">Read a text from the clipboard</string>

@@ -18,5 +18,6 @@
                android:layout_height="match_parent"
                android:id="@+id/bookpart_parent_item_image_button"
                android:layout_weight="1"
-               android:src="@drawable/ic_expand_more_black_36dp"/>
+               android:src="@drawable/ic_expand_more_black_36dp"
+               android:contentDescription="@string/expand"/>
 </LinearLayout>

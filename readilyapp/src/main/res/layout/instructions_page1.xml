@@ -9,7 +9,8 @@
             android:layout_height="40dp"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
-            android:src="@drawable/logo_up"/>
+            android:src="@drawable/logo_up"
+            android:contentDescription="@string/logo"/>
 
     <TextView
             style="@style/instructions_text_ordinar"

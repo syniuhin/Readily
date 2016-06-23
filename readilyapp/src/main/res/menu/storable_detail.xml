@@ -11,12 +11,14 @@
           android:title="@string/book_card_navigate"
           android:visible="true"/>
 
+<!-- TODO: Handle this action
     <item android:id="@+id/action_edit"
           android:enabled="true"
           android:icon="@drawable/ic_edit_white_24dp"
           app:showAsAction="ifRoom"
           android:title="@string/preferences_edit"
           android:visible="true"/>
+-->
 
     <item android:id="@+id/action_delete"
           android:enabled="true"

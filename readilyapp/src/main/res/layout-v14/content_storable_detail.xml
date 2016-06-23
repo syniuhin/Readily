@@ -22,44 +22,44 @@
             android:layout_marginRight="16dp" android:layout_marginEnd="16dp"/>
 
     <TextView
-            style="@style/Base.TextAppearance.AppCompat.Medium"
             android:text="@string/author_prefix"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/storable_detail_author_prefix"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
             android:textStyle="normal|bold"
             app:layout_constraintLeft_toLeftOf="@+id/content_storable_detail"
             android:layout_marginLeft="16dp" android:layout_marginStart="16dp"
             app:layout_constraintTop_toBottomOf="@+id/storable_detail_description"
             android:layout_marginTop="8dp"/>
     <TextView
-            style="@style/Base.TextAppearance.AppCompat.Medium"
             android:text="@string/just_sample"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/storable_detail_author"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
             app:layout_constraintLeft_toRightOf="@+id/storable_detail_author_prefix"
             android:layout_marginLeft="8dp" android:layout_marginStart="8dp"
             app:layout_constraintTop_toTopOf="@+id/storable_detail_author_prefix"
             app:layout_constraintRight_toRightOf="@+id/content_storable_detail"
             android:layout_marginRight="16dp" android:layout_marginEnd="16dp"/>
     <TextView
-            style="@style/Base.TextAppearance.AppCompat.Medium"
             android:text="@string/description_prefix"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/storable_detail_description_prefix"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
             android:textStyle="normal|bold"
             app:layout_constraintLeft_toLeftOf="@+id/content_storable_detail"
             android:layout_marginLeft="16dp" android:layout_marginStart="16dp"
             app:layout_constraintTop_toBottomOf="@+id/storable_detail_title"
             android:layout_marginTop="8dp"/>
     <TextView
-            style="@style/Base.TextAppearance.AppCompat.Medium"
             android:text="@string/just_sample"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/storable_detail_description"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
             app:layout_constraintLeft_toLeftOf="@+id/content_storable_detail"
             android:layout_marginLeft="16dp" android:layout_marginStart="16dp"
             app:layout_constraintTop_toBottomOf="@+id/storable_detail_description_prefix"
@@ -139,22 +139,22 @@
             app:layout_constraintBottom_toBottomOf="@+id/content_storable_detail"
             android:layout_marginBottom="16dp"/>
     <TextView
-            style="@style/TextAppearance.AppCompat.Large"
             android:text="@string/title_prefix"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:id="@+id/storable_detail_title_prefix"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
             android:textStyle="normal|bold"
             app:layout_constraintLeft_toLeftOf="@+id/content_storable_detail"
             android:layout_marginLeft="16dp" android:layout_marginStart="16dp"
             app:layout_constraintTop_toTopOf="@+id/content_storable_detail"
             android:layout_marginTop="16dp"/>
     <TextView
-            style="@style/TextAppearance.AppCompat.Large"
             android:text="@string/just_sample"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/storable_detail_title"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
             app:layout_constraintLeft_toRightOf="@+id/storable_detail_title_prefix"
             android:layout_marginLeft="8dp" android:layout_marginStart="8dp"
             app:layout_constraintTop_toTopOf="@+id/storable_detail_title_prefix"

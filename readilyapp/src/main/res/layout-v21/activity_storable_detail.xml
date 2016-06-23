@@ -27,6 +27,7 @@
             <ImageView android:layout_width="match_parent"
                        android:layout_height="@dimen/app_bar_image_height"
                        android:id="@+id/storable_detail_image_view"
+                       android:transitionName="@string/storable_detail_transition_image_view"
                        android:scaleType="centerCrop"
                        app:layout_collapseMode="parallax"
                        android:contentDescription="@string/card_image"/>

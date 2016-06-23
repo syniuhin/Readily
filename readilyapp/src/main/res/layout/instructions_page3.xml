@@ -9,100 +9,97 @@
             android:text="@string/instructions_controls_header"
             android:id="@+id/instructions_header_controls"/>
 
-    <RelativeLayout
+    <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/instructions_header_controls"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="15dp">
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true">
 
-        <ScrollView
+        <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true">
+                android:layout_height="wrap_content">
 
-            <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+            <TextView
+                    style="@style/instructions_text_ordinar"
+                    android:text="@string/instructions_fifth_paragraph"
+                    android:id="@+id/text_view_fifth_paragraph"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"/>
 
-                <TextView
-                        style="@style/instructions_text_ordinar"
-                        android:text="@string/instructions_fifth_paragraph"
-                        android:id="@+id/text_view_fifth_paragraph"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentTop="true"/>
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageView_screenshot"
+                    android:src="@drawable/reader_screenshot"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_below="@+id/text_view_fifth_paragraph"
+                    android:layout_centerHorizontal="true"
+                    android:contentDescription="@string/example_of_work"/>
 
-                <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/imageView_screenshot"
-                        android:src="@drawable/reader_screenshot"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginLeft="3dp"
-                        android:layout_marginRight="3dp"
-                        android:layout_below="@+id/text_view_fifth_paragraph"
-                        android:layout_centerHorizontal="true"/>
+            <View
+                    style="@style/instructions_color_line"
+                    android:id="@+id/line_emphasis_point"
+                    android:layout_alignTop="@+id/text_view_instructions_emphasis_point"
+                    android:layout_alignBottom="@+id/text_view_instructions_emphasis_point"
+                    android:background="#fffa2b2b"/>
 
-                <ImageView
-                        style="@style/instructions_color_line"
-                        android:id="@+id/line_emphasis_point"
-                        android:layout_alignTop="@+id/text_view_instructions_emphasis_point"
-                        android:layout_alignBottom="@+id/text_view_instructions_emphasis_point"
-                        android:background="#fffa2b2b"/>
+            <TextView
+                    style="@style/instructions_text_ordinar"
+                    android:text="@string/instructions_emphasis_point"
+                    android:id="@+id/text_view_instructions_emphasis_point"
+                    android:layout_below="@+id/imageView_screenshot"
+                    android:layout_toEndOf="@+id/line_emphasis_point"
+                    android:layout_toRightOf="@+id/line_emphasis_point"/>
 
-                <TextView
-                        style="@style/instructions_text_ordinar"
-                        android:text="@string/instructions_emphasis_point"
-                        android:id="@+id/text_view_instructions_emphasis_point"
-                        android:layout_below="@+id/imageView_screenshot"
-                        android:layout_toRightOf="@+id/line_emphasis_point"/>
+            <View
+                    style="@style/instructions_color_line"
+                    android:id="@+id/line_notification"
+                    android:layout_alignTop="@+id/text_view_instructions_notification"
+                    android:layout_alignBottom="@+id/text_view_instructions_notification"
+                    android:background="#ffA57CA0"/>
 
-                <View
-                        style="@style/instructions_color_line"
-                        android:id="@+id/line_notification"
-                        android:layout_alignTop="@+id/text_view_instructions_notification"
-                        android:layout_alignBottom="@+id/text_view_instructions_notification"
-                        android:background="#ffA57CA0"/>
+            <TextView
+                    style="@style/instructions_text_ordinar"
+                    android:text="@string/instructions_notification"
+                    android:id="@+id/text_view_instructions_notification"
+                    android:layout_below="@+id/text_view_instructions_emphasis_point"
+                    android:layout_toEndOf="@+id/line_notification"
+                    android:layout_toRightOf="@+id/line_notification"/>
 
-                <TextView
-                        style="@style/instructions_text_ordinar"
-                        android:text="@string/instructions_notification"
-                        android:id="@+id/text_view_instructions_notification"
-                        android:layout_below="@+id/text_view_instructions_emphasis_point"
-                        android:layout_toRightOf="@+id/line_notification"/>
+            <View
+                    style="@style/instructions_color_line"
+                    android:id="@+id/line_previous_word_button"
+                    android:layout_alignTop="@+id/text_view_instructions_word_button"
+                    android:layout_alignBottom="@+id/text_view_instructions_word_button"
+                    android:background="#fffa8e58"/>
 
-                <View
-                        style="@style/instructions_color_line"
-                        android:id="@+id/line_previous_word_button"
-                        android:layout_alignTop="@+id/text_view_instructions_word_button"
-                        android:layout_alignBottom="@+id/text_view_instructions_word_button"
-                        android:background="#fffa8e58"/>
+            <TextView
+                    style="@style/instructions_text_ordinar"
+                    android:text="@string/instructions_previous_word_button"
+                    android:id="@+id/text_view_instructions_word_button"
+                    android:layout_below="@+id/text_view_instructions_notification"
+                    android:layout_toEndOf="@+id/line_previous_word_button"
+                    android:layout_toRightOf="@+id/line_previous_word_button"/>
 
-                <TextView
-                        style="@style/instructions_text_ordinar"
-                        android:text="@string/instructions_previous_word_button"
-                        android:id="@+id/text_view_instructions_word_button"
-                        android:layout_below="@+id/text_view_instructions_notification"
-                        android:layout_toRightOf="@+id/line_previous_word_button"/>
+            <View
+                    style="@style/instructions_color_line"
+                    android:id="@+id/line_progress_bar"
+                    android:layout_alignTop="@+id/text_view_instructions_progress_bar"
+                    android:layout_alignBottom="@+id/text_view_instructions_progress_bar"
+                    android:background="#ffcaea5a"/>
 
-                <View
-                        style="@style/instructions_color_line"
-                        android:id="@+id/line_progress_bar"
-                        android:layout_alignTop="@+id/text_view_instructions_progress_bar"
-                        android:layout_alignBottom="@+id/text_view_instructions_progress_bar"
-                        android:background="#ffcaea5a"/>
+            <TextView
+                    style="@style/instructions_text_ordinar"
+                    android:text="@string/instructions_progress_bar"
+                    android:id="@+id/text_view_instructions_progress_bar"
+                    android:layout_below="@+id/text_view_instructions_word_button"
+                    android:layout_toEndOf="@+id/line_progress_bar"
+                    android:layout_toRightOf="@+id/line_progress_bar"/>
 
-                <TextView
-                        style="@style/instructions_text_ordinar"
-                        android:text="@string/instructions_progress_bar"
-                        android:id="@+id/text_view_instructions_progress_bar"
-                        android:layout_below="@+id/text_view_instructions_word_button"
-                        android:layout_toRightOf="@+id/line_progress_bar"/>
+        </RelativeLayout>
 
-            </RelativeLayout>
-
-        </ScrollView>
-
-    </RelativeLayout>
+    </ScrollView>
 
 </RelativeLayout>
