@@ -44,7 +44,7 @@ public class FB2ProcessingService extends IntentService {
           Log.d(FB2ProcessingService.class.getName(),
                 "Finishes fully processing of %s" + fb2Storable.getPath());
         }
-        fb2Storable.updateAfterFullProcessing();
+        fb2Storable.storeAfterFullProcessing();
         if (BuildConfig.DEBUG) {
           Log.d(FB2ProcessingService.class.getName(),
                 "Finishes storing of %s" + fb2Storable.getPath());

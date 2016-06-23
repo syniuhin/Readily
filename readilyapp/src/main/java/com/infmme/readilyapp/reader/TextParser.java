@@ -69,9 +69,13 @@ public class TextParser implements Serializable, Callable<TextParser> {
   private List<Integer> delayCoefficients;
   private int resultCode;
 
+  /**
+   * Used to reduce unnecessary allocations for temporary objects.
+   */
   private StringBuilder mStrBuilder;
   private ArrayList<String> mStrArrayList;
   private ArrayList<Integer> mIntArrayList;
+  Map<String, Pair<Integer, Integer>> mPriorities;
 
   public TextParser(Reading reading) {
     this.reading = reading;
@@ -79,6 +83,7 @@ public class TextParser implements Serializable, Callable<TextParser> {
     mStrBuilder = new StringBuilder();
     mStrArrayList = new ArrayList<>();
     mIntArrayList = new ArrayList<>();
+    mPriorities = new HashMap<>();
   }
 
   public void clearWith(Reading reading) {
@@ -86,6 +91,7 @@ public class TextParser implements Serializable, Callable<TextParser> {
     mStrBuilder.setLength(0);
     mStrArrayList.clear();
     mIntArrayList.clear();
+    mPriorities.clear();
   }
 
   /**
@@ -323,34 +329,34 @@ public class TextParser implements Serializable, Callable<TextParser> {
   private void buildEmphasis(Reading reading) {
     mIntArrayList.clear();
     for (String word : reading.getWordList()) {
-      Map<String, Pair<Integer, Integer>> priorities = new HashMap<>();
       int len = word.length();
       for (int i = 0; i < Math.min(MAX_LEFT_CHARACTER_COUNT, len); ++i) {
         if (!Character.isLetter(word.charAt(i))) continue;
 
         String ch = word.substring(i, i + 1).toLowerCase();
         if (PRIORITIES.get(ch) != null &&
-            (priorities.get(ch) == null ||
-                priorities.get(ch).first < PRIORITIES.get(ch) * 100 / Math.max(
+            (mPriorities.get(ch) == null ||
+                mPriorities.get(ch).first < PRIORITIES.get(ch) * 100 / Math.max(
                     1, Math.abs(len / 2 - i)))) {
-          priorities.put(ch, new Pair<>(
+          mPriorities.put(ch, new Pair<>(
               PRIORITIES.get(ch) * 100 / Math.max(1, Math.abs(len / 2 - i)),
               i));
-        } else { priorities.put(ch, new Pair<>(0, i)); }
+        } else { mPriorities.put(ch, new Pair<>(0, i)); }
         if (i + 1 < word.length() && word.charAt(i) == word.charAt(i + 1)) {
-          priorities.put(ch, new Pair<>(
-              priorities.get(ch).first * 4, i));
+          mPriorities.put(ch, new Pair<>(
+              mPriorities.get(ch).first * 4, i));
         }
       }
       int resInd = word.length() / 2;
       int mmax = 0;
-      for (Map.Entry<String, Pair<Integer, Integer>> entry : priorities
+      for (Map.Entry<String, Pair<Integer, Integer>> entry : mPriorities
           .entrySet()) {
         if (mmax < entry.getValue().first) {
           mmax = entry.getValue().first;
           resInd = entry.getValue().second;
         }
       }
+      mPriorities.clear();
       mIntArrayList.add(resInd);
     }
     reading.setEmphasisList(mIntArrayList);

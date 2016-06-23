@@ -127,24 +127,21 @@ public class ReaderProducerTask implements Runnable {
     wordList.addAll(
         nextReading.getWordList()
                    .subList(0, Math.min(nextReading.getWordList().size(),
-                                        Reader
-                                            .LAST_WORD_PREFIX_SIZE)));
+                                        Reader.LAST_WORD_PREFIX_SIZE)));
     currentReading.setWordList(wordList);
 
     List<Integer> emphasisList = currentReading.getEmphasisList();
     emphasisList.addAll(
         nextReading.getEmphasisList()
                    .subList(0, Math.min(nextReading.getEmphasisList().size(),
-                                        Reader
-                                            .LAST_WORD_PREFIX_SIZE)));
+                                        Reader.LAST_WORD_PREFIX_SIZE)));
     currentReading.setEmphasisList(emphasisList);
 
     List<Integer> delayList = currentReading.getDelayList();
     delayList.addAll(
         nextReading.getDelayList()
                    .subList(0, Math.min(nextReading.getDelayList().size(),
-                                        Reader
-                                            .LAST_WORD_PREFIX_SIZE)));
+                                        Reader.LAST_WORD_PREFIX_SIZE)));
     currentReading.setDelayList(delayList);
   }
 

@@ -15,7 +15,8 @@ import com.infmme.readilyapp.provider.cachedbook.CachedBookColumns;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookContentValues;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookCursor;
 import com.infmme.readilyapp.provider.cachedbook.CachedBookSelection;
-import com.infmme.readilyapp.provider.cachedbookinfo.CachedBookInfoContentValues;
+import com.infmme.readilyapp.provider.cachedbookinfo
+    .CachedBookInfoContentValues;
 import com.infmme.readilyapp.provider.cachedbookinfo.CachedBookInfoSelection;
 import com.infmme.readilyapp.provider.fb2book.Fb2BookColumns;
 import com.infmme.readilyapp.provider.fb2book.Fb2BookContentValues;
@@ -30,13 +31,16 @@ import com.infmme.readilyapp.xmlparser.FB2Tags;
 import com.infmme.readilyapp.xmlparser.XMLEvent;
 import com.infmme.readilyapp.xmlparser.XMLEventType;
 import com.infmme.readilyapp.xmlparser.XMLParser;
+import org.joda.time.LocalDateTime;
 
 import java.io.*;
 import java.lang.reflect.Type;
 import java.util.*;
 
-import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor.getFkFb2BookId;
-import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor.getFkInfoId;
+import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor
+    .getFkFb2BookId;
+import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor
+    .getFkInfoId;
 import static com.infmme.readilyapp.readable.Utils.guessCharset;
 
 /**
@@ -336,41 +340,6 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
     }
   }
 
-  /**
-   * Separate methods which only puts values updated during full processing.
-   */
-  public void updateAfterFullProcessing() {
-    Fb2BookContentValues fb2Values = new Fb2BookContentValues();
-
-    if (mFullyProcessingSuccess) {
-      CachedBookContentValues values = new CachedBookContentValues();
-      values.putTitle(mTitle);
-      values.putCoverImageUri(mCoverImageUri);
-      values.putCoverImageMean(mCoverImageMean);
-
-      CachedBookSelection cachedWhere = new CachedBookSelection();
-      cachedWhere.path(mPath);
-      values.update(mContext.getContentResolver(), cachedWhere);
-
-      fb2Values.putPathToc(mPathToc);
-
-      CachedBookInfoContentValues infoValues = new CachedBookInfoContentValues();
-      infoValues.putCurrentPartTitle(mCurrentPartTitle);
-      // TODO: Put more
-
-      CachedBookInfoSelection infoWhere = new CachedBookInfoSelection();
-      infoWhere.id(getFkInfoId(mContext, mPath));
-      infoValues.update(mContext.getContentResolver(), infoWhere);
-    }
-
-    fb2Values.putFullyProcessed(mFullyProcessed);
-    fb2Values.putFullyProcessingSuccess(mFullyProcessingSuccess);
-
-    Fb2BookSelection fb2Where = new Fb2BookSelection();
-    fb2Where.id(getFkFb2BookId(mContext, mPath));
-    fb2Values.update(mContext, fb2Where);
-  }
-
   @Override
   public void insertToDb() {
     CachedBookContentValues values = new CachedBookContentValues();
@@ -378,6 +347,7 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
     CachedBookInfoContentValues infoValues = new CachedBookInfoContentValues();
     putVolatileValues(values, fb2Values, infoValues);
 
+    values.putTitle(mTitle);
     values.putPath(mPath);
 
     // TODO: Put more information <=> Parse more information.
@@ -385,6 +355,7 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
     long infoId = Long.parseLong(infoUri.getLastPathSegment());
     values.putInfoId(infoId);
 
+    fb2Values.putFullyProcessed(mFullyProcessed);
     Uri fb2Uri = fb2Values.insert(mContext.getContentResolver());
     long fb2Id = Long.parseLong(fb2Uri.getLastPathSegment());
     values.putFb2BookId(fb2Id);
@@ -412,18 +383,108 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
     infoValues.update(mContext.getContentResolver(), infoWhere);
   }
 
+  /**
+   * Separate methods which only puts values updated during full processing.
+   */
+  public void storeAfterFullProcessing() {
+    if (isStoredInDb()) {
+      updateAfterFullProcessing();
+    } else {
+      insertAfterFullProcessing();
+    }
+  }
+
+  private void insertAfterFullProcessing() {
+    CachedBookContentValues values = new CachedBookContentValues();
+    Fb2BookContentValues fb2Values = new Fb2BookContentValues();
+    CachedBookInfoContentValues infoValues = new CachedBookInfoContentValues();
+
+    values.putPath(mPath);
+    if (mTimeOpened == null) {
+      mTimeOpened = LocalDateTime.now().toString();
+    }
+    values.putTimeOpened(mTimeOpened);
+
+    if (mTitle != null) {
+      values.putTitle(mTitle);
+    }
+
+    values.putTextPosition(0);
+    values.putPercentile(0);
+
+    if (mCoverImageUri != null) {
+      values.putCoverImageUri(mCoverImageUri);
+      values.putCoverImageMean(mCoverImageMean);
+    }
+
+    fb2Values.putFullyProcessed(mFullyProcessed);
+    fb2Values.putFullyProcessingSuccess(mFullyProcessingSuccess);
+    fb2Values.putBytePosition(0);
+    if (mTableOfContents != null && mTableOfContents.size() > 0) {
+      fb2Values.putCurrentPartId(mTableOfContents.get(0).getId());
+      infoValues.putCurrentPartTitle(mTableOfContents.get(0).getTitle());
+    } else {
+      fb2Values.putCurrentPartId("");
+    }
+    if (mPathToc != null) {
+      fb2Values.putPathToc(mPathToc);
+    }
+
+    Uri fb2Uri = fb2Values.insert(mContext.getContentResolver());
+    long fb2Id = Long.parseLong(fb2Uri.getLastPathSegment());
+    values.putFb2BookId(fb2Id);
+
+    if (mCurrentPartTitle != null) {
+      infoValues.putCurrentPartTitle(mCurrentPartTitle);
+    }
+    // TODO: Put more
+
+    Uri infoUri = infoValues.insert(mContext.getContentResolver());
+    long infoId = Long.parseLong(infoUri.getLastPathSegment());
+    values.putInfoId(infoId);
+
+    values.insert(mContext.getContentResolver());
+  }
+
+  private void updateAfterFullProcessing() {
+    Fb2BookContentValues fb2Values = new Fb2BookContentValues();
+
+    if (mFullyProcessingSuccess) {
+      CachedBookContentValues values = new CachedBookContentValues();
+      values.putTitle(mTitle);
+      values.putCoverImageUri(mCoverImageUri);
+      values.putCoverImageMean(mCoverImageMean);
+
+      CachedBookSelection cachedWhere = new CachedBookSelection();
+      cachedWhere.path(mPath);
+      values.update(mContext.getContentResolver(), cachedWhere);
+
+      fb2Values.putPathToc(mPathToc);
+
+      CachedBookInfoContentValues infoValues = new
+          CachedBookInfoContentValues();
+      infoValues.putCurrentPartTitle(mCurrentPartTitle);
+      // TODO: Put more
+
+      CachedBookInfoSelection infoWhere = new CachedBookInfoSelection();
+      infoWhere.id(getFkInfoId(mContext, mPath));
+      infoValues.update(mContext.getContentResolver(), infoWhere);
+    }
+
+    fb2Values.putFullyProcessed(mFullyProcessed);
+    fb2Values.putFullyProcessingSuccess(mFullyProcessingSuccess);
+
+    Fb2BookSelection fb2Where = new Fb2BookSelection();
+    fb2Where.id(getFkFb2BookId(mContext, mPath));
+    fb2Values.update(mContext, fb2Where);
+  }
+
   private void putVolatileValues(CachedBookContentValues values,
                                  Fb2BookContentValues fb2Values,
                                  CachedBookInfoContentValues infoValues) {
     if (mTimeOpened != null) {
       values.putTimeOpened(mTimeOpened);
     }
-    // Put them anyway - we're either stay with the same one or get a new one
-    // from processFully();
-    values.putTitle(mTitle);
-    values.putCoverImageUri(mCoverImageUri);
-    values.putCoverImageMean(mCoverImageMean);
-
     values.putTextPosition(mCurrentTextPosition);
 
     double percent = calcPercentile();
@@ -433,13 +494,9 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
       values.putPercentile(mPercentile);
     }
 
-    fb2Values.putFullyProcessed(mFullyProcessed);
-    fb2Values.putFullyProcessingSuccess(mFullyProcessingSuccess);
     fb2Values.putBytePosition((int) mCurrentBytePosition);
     // We can read before storing for the first time
     fb2Values.putCurrentPartId(mCurrentPartId);
-    fb2Values.putPathToc(mPathToc);
-
     infoValues.putCurrentPartTitle(mCurrentPartTitle);
   }
 
@@ -629,7 +686,7 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
         }
         fb2BookCursor.close();
       }
-      book.close();
+      c.close();
     }
     return result;
   }

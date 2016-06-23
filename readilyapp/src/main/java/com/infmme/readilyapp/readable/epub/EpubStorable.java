@@ -73,7 +73,7 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
 
   private boolean mProcessed;
 
-  // Again, can be leaking.
+  // Again, can be leaking. TODO: Review interfaces to use context from args.
   private transient Context mContext;
 
   public EpubStorable(Context context) {
