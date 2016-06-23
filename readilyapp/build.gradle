@@ -1,6 +1,6 @@
 buildscript {
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.+'
+        classpath 'io.fabric.tools:gradle:1.21.7'
     }
 
     repositories {
@@ -19,7 +19,7 @@ repositories {
 
 android {
     compileSdkVersion 24
-    buildToolsVersion '24-rc4'
+    buildToolsVersion '24.0.0'
     defaultConfig {
         applicationId "com.infmme.readilyapp"
         minSdkVersion 9
@@ -32,11 +32,21 @@ android {
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
+    signingConfigs {
+        release {
+            storeFile file("/Users/infm/Coding/android/signing_key/veryimportantkey.jks")
+            storePassword "highway134"
+            keyAlias "veryimportantkey"
+            keyPassword "highway134"
+        }
+    }
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'),
                     'proguard-rules.txt'
+            zipAlignEnabled true
+            signingConfig signingConfigs.release
         }
     }
     lintOptions {
