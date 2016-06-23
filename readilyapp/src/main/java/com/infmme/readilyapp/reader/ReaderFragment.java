@@ -20,6 +20,7 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import com.crashlytics.android.Crashlytics;
 import com.daimajia.androidanimations.library.BuildConfig;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
@@ -763,7 +764,7 @@ public class ReaderFragment extends Fragment
                 }
               }, throwable -> {
                 throwable.printStackTrace();
-                // TODO: Report to Firebase.
+                Crashlytics.logException(throwable);
                 stopShowingProgress();
                 showNotification(R.string.error_occurred);
                 mReader.setCompleted(true);

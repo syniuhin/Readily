@@ -75,7 +75,7 @@ public class TextParser implements Serializable, Callable<TextParser> {
   private StringBuilder mStrBuilder;
   private ArrayList<String> mStrArrayList;
   private ArrayList<Integer> mIntArrayList;
-  Map<String, Pair<Integer, Integer>> mPriorities;
+  private Map<String, Pair<Integer, Integer>> mPriorities;
 
   public TextParser(Reading reading) {
     this.reading = reading;

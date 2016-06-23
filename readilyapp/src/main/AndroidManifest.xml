@@ -136,6 +136,9 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.infmme.readilyapp.MainActivity"/>
         </activity>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="0db4f67b016e755d7cc9ec045205dcab746e7c46" />
     </application>
 
 </manifest>

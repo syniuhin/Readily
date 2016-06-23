@@ -1,18 +1,29 @@
 buildscript {
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+
     repositories {
         jcenter()
+        maven { url 'https://maven.fabric.io/public' }
     }
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 24
     buildToolsVersion '24-rc4'
     defaultConfig {
         applicationId "com.infmme.readilyapp"
         minSdkVersion 9
-        targetSdkVersion 23
+        targetSdkVersion 24
         versionCode 7
         versionName "1.2"
         jackOptions {
@@ -55,15 +66,15 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile project(':aFileChooser')
-    compile 'com.android.support:design:23.4.0'
-    compile 'com.android.support:recyclerview-v7:23.4.0'
-    compile 'com.android.support:design:23.4.0'
-    compile 'com.android.support:recyclerview-v7:23.4.0'
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:support-v4:23.4.0'
-    compile 'com.android.support:cardview-v7:23.4.0'
-    compile 'com.android.support:percent:23.4.0'
-    compile 'com.android.support:preference-v7:23.4.0'
+    compile 'com.android.support:design:24.0.0'
+    compile 'com.android.support:recyclerview-v7:24.0.0'
+    compile 'com.android.support:design:24.0.0'
+    compile 'com.android.support:recyclerview-v7:24.0.0'
+    compile 'com.android.support:appcompat-v7:24.0.0'
+    compile 'com.android.support:support-v4:24.0.0'
+    compile 'com.android.support:cardview-v7:24.0.0'
+    compile 'com.android.support:percent:24.0.0'
+    compile 'com.android.support:preference-v7:24.0.0'
     compile 'com.google.android.gms:play-services-base:9.0.2'
     compile 'org.jsoup:jsoup:1.7.3'
     compile 'org.slf4j:slf4j-android:1.7.7'
@@ -77,12 +88,13 @@ dependencies {
     compile 'net.danlew:android.joda:2.9.3.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha3'
-    compile 'com.android.support:support-vector-drawable:23.4.0'
+    compile 'com.android.support:support-vector-drawable:24.0.0'
     testCompile 'junit:junit:4.12'
     androidTestCompile 'com.android.support.test:runner:0.5'
     androidTestCompile 'com.android.support.test:rules:0.5'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
-    androidTestCompile 'com.android.support:support-v4:23.4.0'
+    androidTestCompile 'com.android.support:support-v4:24.0.0'
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.7@aar') {
+        transitive = true;
+    }
 }
-
-apply plugin: 'com.google.gms.google-services'
