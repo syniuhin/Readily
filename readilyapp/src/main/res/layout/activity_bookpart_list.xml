@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
-            android:src="@drawable/ic_play_arrow_white_36dp"
+            android:src="@drawable/ic_done_white_36dp"
             app:layout_anchor="@+id/bookpart_frame_layout"
             app:layout_anchorGravity="bottom|end"
             app:layout_behavior="com.infmme.readilyapp.view.FabOnScrollBehavior"/>
