@@ -1,6 +1,5 @@
 package com.infmme.readilyapp.xmlparser;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -111,11 +110,6 @@ public class XMLParserTest {
           "<p>Part 3 contents</p>" +
 
           "</section>";
-
-  @Before
-  public void setUp() throws Exception {
-
-  }
 
   @Test
   public void testSmallXmlEventFlow() throws Exception {

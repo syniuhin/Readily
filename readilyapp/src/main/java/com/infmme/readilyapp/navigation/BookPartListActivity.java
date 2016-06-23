@@ -245,7 +245,7 @@ public class BookPartListActivity extends BaseActivity implements
   }
 
   @Override
-  public void onBookPartClicked(View v, AbstractTocReference tocReference) {
+  public void onBookPartClicked(AbstractTocReference tocReference) {
     if (mTwoPane) {
       Bundle arguments = new Bundle();
       arguments.putSerializable(Constants.EXTRA_TOC_REFERENCE, tocReference);

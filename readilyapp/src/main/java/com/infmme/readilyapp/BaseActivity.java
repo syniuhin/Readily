@@ -25,7 +25,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     super.onDestroy();
     if (mCompositeSubscription != null &&
         mCompositeSubscription.hasSubscriptions()) {
-      mCompositeSubscription.unsubscribe();;
+      mCompositeSubscription.unsubscribe();
     }
   }
 }

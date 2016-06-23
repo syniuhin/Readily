@@ -8,6 +8,4 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:showIn="@layout/activity_settings2"
-        tools:context="com.infmme.readilyapp.settings.SettingsActivity2">
-
-</FrameLayout>
+        tools:context="com.infmme.readilyapp.settings.SettingsActivity2"/>

@@ -9,15 +9,14 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
-import android.view.View;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import com.infmme.readilyapp.fragment.InstructionsFragment;
 
 /**
  * created on 7/16/14 by infm. Enjoy ;)
  */
-public class InstructionsActivity extends ActionBarActivity {
+public class InstructionsActivity extends AppCompatActivity {
   private static final int NUM_PAGES = 6;
 
   private ViewPager pager;
@@ -39,7 +38,7 @@ public class InstructionsActivity extends ActionBarActivity {
     pager = (ViewPager) findViewById(R.id.instructions_pager);
     pagerAdapter = new InstructionsPagerAdapter(getSupportFragmentManager());
     pager.setAdapter(pagerAdapter);
-    pager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+    pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
       @Override
       public void onPageSelected(int position) {
         supportInvalidateOptionsMenu();
@@ -48,15 +47,12 @@ public class InstructionsActivity extends ActionBarActivity {
     });
 
     nextButton = (Button) findViewById(R.id.nextButton);
-    nextButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        boolean action = updateNextButton();
-        if (action)
-          pager.setCurrentItem(pager.getCurrentItem() + 1, true);
-        else
-          onStop();
-      }
+    nextButton.setOnClickListener(v -> {
+      boolean action = updateNextButton();
+      if (action)
+        pager.setCurrentItem(pager.getCurrentItem() + 1, true);
+      else
+        onStop();
     });
   }
 

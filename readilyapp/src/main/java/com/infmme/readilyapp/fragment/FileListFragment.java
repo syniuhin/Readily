@@ -110,11 +110,6 @@ public class FileListFragment extends Fragment
   }
 
   @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-  }
-
-  @Override
   public void onItem(CachedBooksAdapter.CachedBookHolder holder) {
     startDetailActivity(holder);
   }
@@ -152,6 +147,7 @@ public class FileListFragment extends Fragment
       Pair<View, String> p1 = Pair.create(
           holder.getImageView(), a.getResources().getString(
               R.string.storable_detail_transition_image_view));
+      @SuppressWarnings("unchecked")
       ActivityOptionsCompat options =
           ActivityOptionsCompat.makeSceneTransitionAnimation(a, p1);
       startActivity(intent, options.toBundle());

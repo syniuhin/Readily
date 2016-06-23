@@ -29,8 +29,8 @@ public class BookNavigationAdapter
         BookNavigationAdapter.ChildPartViewHolder> {
 
 
-  private LayoutInflater mInflater;
-  private OnItemClickListener mOnItemClickListener;
+  private final LayoutInflater mInflater;
+  private final OnItemClickListener mOnItemClickListener;
 
   /**
    * Primary constructor. Sets up {@link #mParentItemList} and
@@ -79,13 +79,8 @@ public class BookNavigationAdapter
     // If it doesn't have any children - it's actually a child
     if (!parentPart.hasChildren()) {
       parentViewHolder.mContainerView.setOnClickListener(
-          new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-              mOnItemClickListener
-                  .onBookPartClicked(v, parentPart.getParentReference());
-            }
-          });
+          v -> mOnItemClickListener
+              .onBookPartClicked(parentPart.getParentReference()));
     } else {
       parentViewHolder.setDefaultOnClickListener();
     }
@@ -100,19 +95,14 @@ public class BookNavigationAdapter
     childViewHolder.bind(tocReference);
     childViewHolder.mContainerView.setClickable(true);
     childViewHolder.mContainerView.setOnClickListener(
-        new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            mOnItemClickListener.onBookPartClicked(v, tocReference);
-          }
-        });
+        v -> mOnItemClickListener.onBookPartClicked(tocReference));
   }
 
   public static class ParentPart implements ParentListItem {
 
-    private AbstractTocReference mParentReference;
-    private List mReferenceList;
-    private String mTitle;
+    private final AbstractTocReference mParentReference;
+    private final List mReferenceList;
+    private final String mTitle;
 
     public ParentPart(AbstractTocReference parentReference) {
       mParentReference = parentReference;
@@ -145,9 +135,9 @@ public class BookNavigationAdapter
 
   public class ParentPartViewHolder extends ParentViewHolder {
 
-    private View mContainerView;
-    private TextView mParentTextView;
-    private ImageView mImageView;
+    private final View mContainerView;
+    private final TextView mParentTextView;
+    private final ImageView mImageView;
 
     /**
      * Default constructor.
@@ -174,22 +164,19 @@ public class BookNavigationAdapter
     }
 
     public void setDefaultOnClickListener() {
-      mContainerView.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          Context c = v.getContext();
-          Drawable d;
-          if (isExpanded()) {
-            collapseView();
-            d = ContextCompat
-                .getDrawable(c, R.drawable.ic_expand_more_black_36dp);
-          } else {
-            expandView();
-            d = ContextCompat
-                .getDrawable(c, R.drawable.ic_expand_less_black_36dp);
-          }
-          mImageView.setImageDrawable(d);
+      mContainerView.setOnClickListener(v -> {
+        Context c = v.getContext();
+        Drawable d;
+        if (isExpanded()) {
+          collapseView();
+          d = ContextCompat
+              .getDrawable(c, R.drawable.ic_expand_more_black_36dp);
+        } else {
+          expandView();
+          d = ContextCompat
+              .getDrawable(c, R.drawable.ic_expand_less_black_36dp);
         }
+        mImageView.setImageDrawable(d);
       });
     }
 
@@ -201,8 +188,8 @@ public class BookNavigationAdapter
 
   public class ChildPartViewHolder extends ChildViewHolder {
 
-    private View mContainerView;
-    private TextView mChildTextView;
+    private final View mContainerView;
+    private final TextView mChildTextView;
 
     /**
      * Default constructor.
@@ -222,6 +209,6 @@ public class BookNavigationAdapter
   }
 
   public interface OnItemClickListener {
-    void onBookPartClicked(View v, AbstractTocReference tocReference);
+    void onBookPartClicked(AbstractTocReference tocReference);
   }
 }

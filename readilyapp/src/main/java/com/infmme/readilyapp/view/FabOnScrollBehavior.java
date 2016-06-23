@@ -13,6 +13,8 @@ import android.view.View;
 
 public class FabOnScrollBehavior extends FloatingActionButton.Behavior {
 
+  // Parameters are used by views.
+  @SuppressWarnings("UnusedParameters")
   public FabOnScrollBehavior(Context context, AttributeSet attributeSet) {
     super();
   }

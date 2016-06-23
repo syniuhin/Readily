@@ -1,5 +1,7 @@
 package com.infmme.readilyapp.xmlparser;
 
+import android.support.annotation.NonNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -46,7 +48,7 @@ public class PositionInputStreamReader extends InputStreamReader {
 */
 
   @Override
-  public synchronized int read(char[] b, int off, int len)
+  public synchronized int read(@NonNull char[] b, int off, int len)
       throws IOException {
     int n = super.read(b, off, len);
     if (n > 0)

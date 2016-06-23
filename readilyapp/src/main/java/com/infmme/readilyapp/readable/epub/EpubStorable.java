@@ -126,7 +126,7 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
       if (book.getCount() < 1) {
         result = false;
       }
-      book.close();
+      c.close();
     } else {
       result = false;
     }
@@ -167,7 +167,7 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
   }
 
   @Override
-  public Storable prepareForStoringSync(Reader reader) {
+  public void prepareForStoringSync(Reader reader) {
     if (mLoadedChunks != null && !mLoadedChunks.isEmpty()) {
       ChunkInfo chunk = mLoadedChunks.getFirst();
       mCurrentResourceId = chunk.mResourceId;
@@ -178,7 +178,6 @@ public class EpubStorable implements ChunkedUnprocessedStorable, Structured {
           "Preparing for storing sync id: %s title: %s position: %d",
           mCurrentResourceId, mCurrentResourceTitle, reader.getPosition()));
     }
-    return this;
   }
 
   @Override

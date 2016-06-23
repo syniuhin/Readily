@@ -191,9 +191,11 @@ public class CachedBooksAdapter
       } else {
         mProgressView.getProgressDrawable().setColorFilter(
             Color.WHITE, android.graphics.PorterDuff.Mode.SRC_IN);
+        //noinspection deprecation
         mReadButton.setTextColor(
             context.getResources()
                    .getColor(android.R.color.primary_text_dark));
+        //noinspection deprecation
         mMoreButton.setTextColor(
             context.getResources()
                    .getColor(android.R.color.primary_text_dark));
@@ -228,6 +230,7 @@ public class CachedBooksAdapter
           resources.getColor(android.R.color.primary_text_dark, theme));
     }
 
+    @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     private void hasImageICS(final Context context) {
       mTitleView.setTextAppearance(
@@ -247,6 +250,7 @@ public class CachedBooksAdapter
                  .getColor(android.R.color.secondary_text_dark));
     }
 
+    @SuppressWarnings("deprecation")
     private void hasImageBelowICS(final Context context) {
       mTitleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
       mTitleView.setTextColor(
@@ -269,12 +273,16 @@ public class CachedBooksAdapter
         hasNoImageM(context);
       } else {
         final Resources resources = context.getResources();
+        //noinspection deprecation
         mCardView.setBackgroundColor(
             resources.getColor(R.color.cardview_light_background));
+        //noinspection deprecation
         mProgressView.getProgressDrawable().setColorFilter(
             resources.getColor(R.color.accent),
             android.graphics.PorterDuff.Mode.SRC_IN);
+        //noinspection deprecation
         mReadButton.setTextColor(resources.getColor(R.color.accent));
+        //noinspection deprecation
         mMoreButton.setTextColor(
             resources.getColor(android.R.color.primary_text_light));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -311,6 +319,7 @@ public class CachedBooksAdapter
           resources.getColor(android.R.color.primary_text_light, theme));
     }
 
+    @SuppressWarnings("deprecation")
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     private void hasNoImageICS(final Context context) {
       mTitleView.setTextAppearance(
@@ -333,6 +342,7 @@ public class CachedBooksAdapter
                  .getColor(android.R.color.secondary_text_light));
     }
 
+    @SuppressWarnings("deprecation")
     private void hasNoImageBelowICS(final Context context) {
       final Resources resources = context.getResources();
 

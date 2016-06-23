@@ -30,8 +30,6 @@ public class OnSwipeTouchListener implements OnTouchListener {
 
   public void onClick() {}
 
-  public void onLongClick() {}
-
   private final class GestureListener extends SimpleOnGestureListener {
 
     private static final int SWIPE_THRESHOLD = 100;
@@ -79,12 +77,6 @@ public class OnSwipeTouchListener implements OnTouchListener {
     public boolean onSingleTapUp(MotionEvent e) {
       onClick();
       return true;
-    }
-
-    @Override
-    public void onLongPress(MotionEvent e) {
-      onLongClick();
-      super.onLongPress(e);
     }
   }
 }

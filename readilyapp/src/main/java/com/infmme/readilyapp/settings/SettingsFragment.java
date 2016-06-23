@@ -5,7 +5,6 @@ import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Typeface;
@@ -129,8 +128,15 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
   private TextView getIndicatorText(final Context context, int initSize) {
     final TextView sampleText = new TextView(context);
-    sampleText.setBackgroundColor(
-        getResources().getColor(android.R.color.white));
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      sampleText.setBackgroundColor(
+          getResources().getColor(android.R.color.white,
+                                  getActivity().getTheme()));
+    } else {
+      //noinspection deprecation
+      sampleText.setBackgroundColor(
+          getResources().getColor(android.R.color.white));
+    }
     sampleText.setText(R.string.just_sample);
     sampleText.setTextSize(TypedValue.COMPLEX_UNIT_SP, initSize);
     sampleText.setHeight(
@@ -183,41 +189,31 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     builder.setTitle(R.string.preference_font_size).
         setView(linearLayout).
                setPositiveButton(android.R.string.ok,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog,
-                                                       int which) {
-                                     String nSize = String.valueOf(
-                                         editText.getText())
-                                                          .replaceAll("\\s+",
-                                                                      "");
-                                     if (changeTextViewSize(sampleText, nSize))
-                                       PreferenceManager
-                                           .getDefaultSharedPreferences(
-                                               context)
-                                           .edit()
-                                           .putString(
-                                               Constants
-                                                   .Preferences
-                                                   .FONT_SIZE,
-                                               nSize)
-                                           .commit();
-                                     else
-                                       Toast.makeText(context,
-                                                      R.string.illegal_value,
-                                                      Toast.LENGTH_SHORT)
-                                            .show();
-                                   }
+                                 (dialog, which) -> {
+                                   String nSize = String.valueOf(
+                                       editText.getText())
+                                                        .replaceAll("\\s+",
+                                                                    "");
+                                   if (changeTextViewSize(sampleText, nSize))
+                                     PreferenceManager
+                                         .getDefaultSharedPreferences(
+                                             context)
+                                         .edit()
+                                         .putString(
+                                             Constants
+                                                 .Preferences
+                                                 .FONT_SIZE,
+                                             nSize)
+                                         .apply();
+                                   else
+                                     Toast.makeText(context,
+                                                    R.string.illegal_value,
+                                                    Toast.LENGTH_SHORT)
+                                          .show();
                                  }
                ).
                setNegativeButton(android.R.string.cancel,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog,
-                                                       int which) {
-                                     dialog.cancel();
-                                   }
-                                 }
+                                 (dialog, which) -> dialog.cancel()
                );
     AlertDialog dialog = builder.create();
     dialog.show();
@@ -249,44 +245,26 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     linearLayout.addView(sampleText);
     linearLayout.addView(numberPicker);
     numberPicker.setOnValueChangedListener(
-        new NumberPicker.OnValueChangeListener() {
-          @Override
-          public void onValueChange(NumberPicker picker, int oldVal,
-                                    int newVal) {
-            changeTextViewSize(sampleText, newVal);
-          }
-        });
+        (picker, oldVal, newVal) -> changeTextViewSize(sampleText, newVal));
     AlertDialog.Builder builder = new AlertDialog.Builder(context);
     builder.setTitle(R.string.preference_font_size).
         setView(linearLayout).
                setPositiveButton(android.R.string.ok,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog,
-                                                       int which) {
-                                     PreferenceManager
-                                         .getDefaultSharedPreferences(
-                                             context)
-                                         .edit()
-                                         .putString(
-                                             Constants
-                                                 .Preferences
-                                                 .FONT_SIZE,
-                                             String.valueOf(
-                                                 numberPicker
-                                                     .getValue()))
-                                         .commit();
-                                   }
-                                 }
+                                 (dialog, which) -> PreferenceManager
+                                     .getDefaultSharedPreferences(
+                                         context)
+                                     .edit()
+                                     .putString(
+                                         Constants
+                                             .Preferences
+                                             .FONT_SIZE,
+                                         String.valueOf(
+                                             numberPicker
+                                                 .getValue()))
+                                     .apply()
                ).
                setNegativeButton(android.R.string.cancel,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog,
-                                                       int which) {
-                                     dialog.cancel();
-                                   }
-                                 }
+                                 (dialog, which) -> dialog.cancel()
                );
     AlertDialog dialog = builder.create();
     dialog.show();
@@ -311,41 +289,31 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     builder.setTitle(R.string.preferences_set_wpm).
         setView(linearLayout).
                setPositiveButton(android.R.string.ok,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog,
-                                                       int which) {
-                                     int nWPM = 0;
-                                     if (StringUtil.isNumeric(
-                                         String.valueOf(editText.getText())))
-                                       nWPM = Integer.parseInt(
-                                           String.valueOf(editText.getText()));
-                                     if (nWPM >= min && nWPM <= max)
-                                       PreferenceManager
-                                           .getDefaultSharedPreferences(
-                                               context)
-                                           .edit()
-                                           .putString(
-                                               Constants.Preferences.WPM,
-                                               Integer.toString(
-                                                   mWordsPerMinute = nWPM))
-                                           .commit();
-                                     else
-                                       Toast.makeText(context,
-                                                      R.string.illegal_value,
-                                                      Toast.LENGTH_SHORT).
-                                                show();
-                                   }
+                                 (dialog, which) -> {
+                                   int nWPM = 0;
+                                   if (StringUtil.isNumeric(
+                                       String.valueOf(editText.getText())))
+                                     nWPM = Integer.parseInt(
+                                         String.valueOf(editText.getText()));
+                                   if (nWPM >= min && nWPM <= max)
+                                     PreferenceManager
+                                         .getDefaultSharedPreferences(
+                                             context)
+                                         .edit()
+                                         .putString(
+                                             Constants.Preferences.WPM,
+                                             Integer.toString(
+                                                 mWordsPerMinute = nWPM))
+                                         .apply();
+                                   else
+                                     Toast.makeText(context,
+                                                    R.string.illegal_value,
+                                                    Toast.LENGTH_SHORT).
+                                              show();
                                  }
                ).
                setNegativeButton(android.R.string.cancel,
-                                 new DialogInterface.OnClickListener() {
-                                   @Override
-                                   public void onClick(DialogInterface dialog,
-                                                       int which) {
-                                     dialog.cancel();
-                                   }
-                                 }
+                                 (dialog, which) -> dialog.cancel()
                );
     AlertDialog dialog = builder.create();
     dialog.show();

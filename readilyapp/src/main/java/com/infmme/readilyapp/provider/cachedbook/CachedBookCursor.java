@@ -1,5 +1,6 @@
 package com.infmme.readilyapp.provider.cachedbook;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -33,6 +34,8 @@ public class CachedBookCursor extends AbstractCursor
     Observable<CachedBookCursor> res = Observable.create(subscriber -> {
       CachedBookSelection where = new CachedBookSelection();
       where.id(id);
+      // To be closed in subscribed thread.
+      @SuppressLint("Recycle")
       Cursor c = context.getContentResolver().query(
           CachedBookColumns.CONTENT_URI,
           CachedBookColumns.ALL_COLUMNS_FULL_JOIN,

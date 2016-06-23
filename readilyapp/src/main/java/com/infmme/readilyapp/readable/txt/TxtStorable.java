@@ -109,7 +109,7 @@ public class TxtStorable implements ChunkedUnprocessedStorable {
       if (book.getCount() < 1) {
         result = false;
       }
-      book.close();
+      c.close();
     } else {
       result = false;
     }
@@ -148,13 +148,12 @@ public class TxtStorable implements ChunkedUnprocessedStorable {
   }
 
   @Override
-  public Storable prepareForStoringSync(Reader reader) {
+  public void prepareForStoringSync(Reader reader) {
     if (mLoadedChunks != null && !mLoadedChunks.isEmpty()) {
       mCurrentBytePosition = mLoadedChunks.getFirst().mBytePosition;
       mCurrentTextPosition = reader.getPosition();
       mChunkPercentile = reader.getPercentile();
     }
-    return this;
   }
 
   @Override

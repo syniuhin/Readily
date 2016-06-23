@@ -233,7 +233,7 @@ public class Reader implements Runnable {
 
     void showNotification(int stringResId);
 
-    boolean hideNotification(boolean force);
+    void hideNotification(boolean force);
 
     void showInfo(Reader reader);
 

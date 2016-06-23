@@ -178,12 +178,10 @@ public class XMLEvent {
   }
 
   public boolean checkHref(@NonNull final String href) {
-    if (tagAttributes != null && tagAttributes.containsKey("id") &&
-        href.indexOf('#') == 0) {
-      // Takes into account '#' in the beginning.
-      return tagAttributes.get("id").equals(href.substring(1));
-    }
-    return false;
+    // Takes into account '#' in the beginning.
+    return tagAttributes != null &&
+        tagAttributes.containsKey("id") && href.indexOf('#') == 0 &&
+        tagAttributes.get("id").equals(href.substring(1));
   }
 
   @Override

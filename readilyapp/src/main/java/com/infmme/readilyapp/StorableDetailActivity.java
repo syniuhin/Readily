@@ -218,10 +218,12 @@ public class StorableDetailActivity extends BaseActivity {
                   bookCursor.close();
                 }));
         return true;
+/*
       case R.id.action_edit:
         Snackbar.make(mRootView, "To be implemented", Snackbar.LENGTH_SHORT)
                 .show();
         break;
+*/
       case R.id.action_delete:
         addSubscription(
             removeCachedBook(this, mId)

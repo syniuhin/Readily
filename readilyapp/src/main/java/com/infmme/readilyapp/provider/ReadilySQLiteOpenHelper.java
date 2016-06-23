@@ -1,5 +1,6 @@
 package com.infmme.readilyapp.provider;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.database.DatabaseErrorHandler;
@@ -81,6 +82,8 @@ public class ReadilySQLiteOpenHelper extends SQLiteOpenHelper {
   private static final String TAG = ReadilySQLiteOpenHelper.class
       .getSimpleName();
   private static final int DATABASE_VERSION = 3;
+  // Uses application context.
+  @SuppressLint("StaticFieldLeak")
   private static ReadilySQLiteOpenHelper sInstance;
   private final Context mContext;
   private final ReadilySQLiteOpenHelperCallbacks mOpenHelperCallbacks;

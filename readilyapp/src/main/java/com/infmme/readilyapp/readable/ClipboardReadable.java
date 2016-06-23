@@ -13,14 +13,16 @@ import com.infmme.readilyapp.readable.interfaces.Unprocessed;
  */
 
 public class ClipboardReadable extends Readable implements Unprocessed {
-  private String mLink;
+  // TODO: Handle link from the clipboard.
+  // private String mLink;
   private boolean mProcessed = false;
 
+  @SuppressWarnings("deprecation")
   private ClipboardManager clipboardOld;
   private android.content.ClipboardManager clipboardNew;
 
   // I don't like this, have to think of leaks.
-  final Context mContext;
+  private final transient Context mContext;
 
   public ClipboardReadable(final Context context) {
     mContext = context;
@@ -44,6 +46,7 @@ public class ClipboardReadable extends Readable implements Unprocessed {
           .getSystemService(
               Context.CLIPBOARD_SERVICE);
     } else {
+      //noinspection deprecation
       clipboardOld = (ClipboardManager) mContext.getSystemService(
           Context.CLIPBOARD_SERVICE);
     }

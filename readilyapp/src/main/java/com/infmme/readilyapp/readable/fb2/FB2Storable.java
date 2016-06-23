@@ -234,7 +234,7 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
       if (book.getCount() < 1) {
         result = false;
       }
-      book.close();
+      c.close();
     } else {
       result = false;
     }
@@ -280,7 +280,7 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
   }
 
   @Override
-  public Storable prepareForStoringSync(Reader reader) {
+  public void prepareForStoringSync(Reader reader) {
     if (mLoadedChunks != null && !mLoadedChunks.isEmpty()) {
       ChunkInfo chunk = mLoadedChunks.getFirst();
       mCurrentBytePosition = chunk.mBytePosition;
@@ -292,7 +292,6 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
           "Preparing for storing sync id: %s title: %s position: %d",
           mCurrentPartId, mCurrentPartTitle, reader.getPosition()));
     }
-    return this;
   }
 
   @Override

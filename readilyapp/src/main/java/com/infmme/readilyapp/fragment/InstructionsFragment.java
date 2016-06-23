@@ -43,22 +43,12 @@ public class InstructionsFragment extends Fragment {
         break;
       case 3:
         view = inflater.inflate(R.layout.instructions_page4, rootView, false);
-        view.setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            getActivity().finish();
-          }
-        });
+        view.setOnClickListener(v -> getActivity().finish());
         break;
       case 4:
         view = inflater.inflate(R.layout.instructions_page4, rootView, false);
         ((TextView) view.findViewById(R.id.text_view_enjoy_it)).setText("");
-        view.setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            getActivity().finish();
-          }
-        });
+        view.setOnClickListener(v -> getActivity().finish());
         break;
       default:
         getActivity().finish();

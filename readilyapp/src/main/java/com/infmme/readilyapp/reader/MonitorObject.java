@@ -25,7 +25,7 @@ public class MonitorObject {
     }
   }
 
-  public synchronized void resumeTask() throws InterruptedException {
+  public synchronized void resumeTask() {
     if (isPaused()) {
       Log.d(MonitorObject.class.getName(), "Resuming task");
       mPaused = false;

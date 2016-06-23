@@ -20,9 +20,8 @@ public interface Storable extends Serializable {
   /**
    * Uses reader information to update current state.
    * @param reader Reader instance during onStop of ReaderFragment.
-   * @return Storable with an updated state.
    */
-  Storable prepareForStoringSync(Reader reader);
+  void prepareForStoringSync(Reader reader);
 
   /**
    * Processes this storable in order to save it to a db (e.g. fetches cover

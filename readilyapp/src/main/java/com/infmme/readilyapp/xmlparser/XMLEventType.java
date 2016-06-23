@@ -6,5 +6,5 @@ package com.infmme.readilyapp.xmlparser;
 
 public enum XMLEventType {
   DOCUMENT_START, DOCUMENT_CLOSE, TAG, TAG_START, TAG_CLOSE, TAG_SINGLE,
-  TAG_COMMENT, EMPTINESS, CONTENT;
+  TAG_COMMENT, EMPTINESS, CONTENT
 }

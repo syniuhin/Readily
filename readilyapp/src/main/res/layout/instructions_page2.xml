@@ -10,89 +10,85 @@
             android:text="@string/instructions_source_text"
             android:id="@+id/instructions_header_source"/>
 
-    <RelativeLayout
+    <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:layout_below="@+id/instructions_header_source"
             android:layout_marginTop="5dp">
 
-        <ScrollView
+        <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true">
+                android:layout_height="wrap_content">
 
-            <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+            <TextView
+                    style="@style/instructions_text_ordinar"
+                    android:text="@string/instructions_second_paragraph"
+                    android:id="@+id/text_view_second_paragraph"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_toStartOf="@+id/imageView_action_paste"
+                    android:layout_toLeftOf="@+id/imageView_action_paste"/>
 
-                <TextView
-                        style="@style/instructions_text_ordinar"
-                        android:text="@string/instructions_second_paragraph"
-                        android:id="@+id/text_view_second_paragraph"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_toLeftOf="@+id/imageView_action_paste"/>
+            <ImageView
+                    android:id="@+id/imageView_action_paste"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_content_paste_white_24dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignBottom="@+id/text_view_second_paragraph"
+                    android:layout_alignTop="@+id/text_view_second_paragraph"
+                    android:contentDescription="@string/preferences_clipboard"/>
 
-                <ImageView
-                        android:id="@+id/imageView_action_paste"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_content_paste_white_24dp"
-                        android:layout_marginTop="3dp"
-                        android:layout_marginEnd="15dp"
-                        android:layout_marginRight="15dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignBottom="@+id/text_view_second_paragraph"
-                        android:layout_alignTop="@+id/text_view_second_paragraph"
-                        android:contentDescription="@string/preferences_clipboard"/>
+            <TextView
+                    style="@style/instructions_text_ordinar"
+                    android:text="@string/instructions_third_paragraph"
+                    android:id="@+id/text_view_third_paragraph"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/text_view_second_paragraph"
+                    android:layout_toStartOf="@+id/imageView_action_storage"
+                    android:layout_toLeftOf="@+id/imageView_action_storage"/>
 
-                <TextView
-                        style="@style/instructions_text_ordinar"
-                        android:text="@string/instructions_third_paragraph"
-                        android:id="@+id/text_view_third_paragraph"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_below="@+id/text_view_second_paragraph"
-                        android:layout_toStartOf="@+id/imageView_action_storage"
-                        android:layout_toLeftOf="@+id/imageView_action_storage"/>
+            <ImageView
+                    android:id="@+id/imageView_action_storage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_storage_white_24dp"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignBottom="@+id/text_view_third_paragraph"
+                    android:layout_alignTop="@+id/text_view_third_paragraph"
+                    android:contentDescription="@string/preferences_pick_file"/>
 
-                <ImageView
-                        android:id="@+id/imageView_action_storage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_storage_white_24dp"
-                        android:layout_marginTop="3dp"
-                        android:layout_marginEnd="15dp"
-                        android:layout_marginRight="15dp"
-                        android:layout_alignParentEnd="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignBottom="@+id/text_view_third_paragraph"
-                        android:layout_alignTop="@+id/text_view_third_paragraph"
-                        android:contentDescription="@string/preferences_pick_file"/>
+            <TextView
+                    style="@style/instructions_text_ordinar"
+                    android:text="@string/instructions_fourth_paragraph"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:id="@+id/text_view_fourth_paragraph"
+                    android:layout_below="@+id/imageView_action_storage"/>
 
-                <TextView
-                        style="@style/instructions_text_ordinar"
-                        android:text="@string/instructions_fourth_paragraph"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentLeft="true"
-                        android:id="@+id/text_view_fourth_paragraph"
-                        android:layout_below="@+id/imageView_action_storage"/>
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/share_screenshot"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_below="@+id/text_view_fourth_paragraph"
+                    android:layout_centerHorizontal="true"
+                    android:contentDescription="@string/share"/>
 
-                <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/share_screenshot"
-                        android:layout_marginLeft="3dp"
-                        android:layout_marginRight="3dp"
-                        android:layout_below="@+id/text_view_fourth_paragraph"
-                        android:layout_centerHorizontal="true"
-                        android:contentDescription="@string/share"/>
+        </RelativeLayout>
 
-            </RelativeLayout>
-
-        </ScrollView>
-
-    </RelativeLayout>
+    </ScrollView>
 
 </RelativeLayout>

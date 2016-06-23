@@ -1,5 +1,6 @@
 package com.infmme.readilyapp.provider.cachedbook;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -31,6 +32,7 @@ public class CachedBookSelection
    */
   public CachedBookCursor query(ContentResolver contentResolver,
                                 String[] projection) {
+    @SuppressLint("Recycle")
     Cursor cursor = contentResolver.query(uri(), projection, sel(), args(),
                                           order());
     if (cursor == null) return null;
@@ -54,6 +56,7 @@ public class CachedBookSelection
    * the first entry, or null.
    */
   public CachedBookCursor query(Context context, String[] projection) {
+    @SuppressLint("Recycle")
     Cursor cursor = context.getContentResolver()
                            .query(uri(), projection, sel(), args(), order());
     if (cursor == null) return null;

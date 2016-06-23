@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
           package="com.infmme.readilyapp"
           android:installLocation="auto">
 
@@ -12,7 +13,9 @@
             android:icon="@drawable/ic_launcher"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme"
-            android:name=".ReadilyApp">
+            android:name=".ReadilyApp"
+            android:fullBackupContent="@xml/default_backup_scheme"
+            android:supportsRtl="true">
         <activity
                 android:name=".MainActivity"
                 android:configChanges="orientation|screenSize"
@@ -77,20 +80,12 @@
         <activity android:name=".InstructionsActivity">
         </activity>
         <activity
-                android:name=".settings.OldSettingsActivity"
-                android:label="@string/title_activity_settings"
-                android:parentActivityName=".MainActivity"
-                android:theme="@style/AppTheme">
-            <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.infmme.readilyapp.MainActivity"/>
-        </activity>
-        <activity
                 android:name=".navigation.BookPartListActivity"
                 android:label="@string/title_bookpart_list"
                 android:launchMode="singleTop"
-                android:parentActivityName=".MainActivity"
-                android:theme="@style/AppTheme.NoActionBar">
+                android:parentActivityName=".StorableDetailActivity"
+                android:theme="@style/AppTheme.NoActionBar"
+                tools:ignore="parentActivityName">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.infmme.readilyapp.MainActivity"/>
@@ -99,7 +94,8 @@
                 android:name=".navigation.BookPartDetailActivity"
                 android:label="@string/title_bookpart_detail"
                 android:parentActivityName=".navigation.BookPartListActivity"
-                android:theme="@style/AppTheme.NoActionBar">
+                android:theme="@style/AppTheme.NoActionBar"
+                tools:ignore="parentActivityName">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.infmme.readilyapp.navigation.BookPartListActivity"/>
@@ -118,7 +114,8 @@
                 android:name=".StorableDetailActivity"
                 android:label="@string/storable_detail_title"
                 android:parentActivityName=".MainActivity"
-                android:theme="@style/AppTheme.NoActionBar">
+                android:theme="@style/AppTheme.NoActionBar"
+                tools:ignore="parentActivityName">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.infmme.readilyapp.MainActivity"/>
@@ -130,18 +127,11 @@
         </service>
 
         <activity
-                android:name=".settings.SettingsActivity"
-                android:label="@string/title_activity_settings"
-                android:parentActivityName=".MainActivity">
-            <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.infmme.readilyapp.MainActivity"/>
-        </activity>
-        <activity
                 android:name=".settings.SettingsActivity2"
                 android:label="@string/title_activity_settings2"
                 android:parentActivityName=".MainActivity"
-                android:theme="@style/AppTheme.NoActionBar">
+                android:theme="@style/AppTheme.NoActionBar"
+                tools:ignore="parentActivityName">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.infmme.readilyapp.MainActivity"/>

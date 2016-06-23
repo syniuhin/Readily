@@ -1,5 +1,6 @@
 package com.infmme.readilyapp.provider.epubbook;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -26,6 +27,7 @@ public class EpubBookSelection extends AbstractSelection<EpubBookSelection> {
    */
   public EpubBookCursor query(ContentResolver contentResolver,
                               String[] projection) {
+    @SuppressLint("Recycle")
     Cursor cursor = contentResolver.query(uri(), projection, sel(), args(),
                                           order());
     if (cursor == null) return null;
@@ -49,6 +51,7 @@ public class EpubBookSelection extends AbstractSelection<EpubBookSelection> {
    * first entry, or null.
    */
   public EpubBookCursor query(Context context, String[] projection) {
+    @SuppressLint("Recycle")
     Cursor cursor = context.getContentResolver()
                            .query(uri(), projection, sel(), args(), order());
     if (cursor == null) return null;

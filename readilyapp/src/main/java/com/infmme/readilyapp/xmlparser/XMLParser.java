@@ -95,7 +95,7 @@ public class XMLParser {
       // Consider random position as pointing to content of text.
       currentEvent = new XMLEvent(type = XMLEventType.CONTENT);
     } else {
-      currentEvent = new XMLEvent(type = XMLEventType.DOCUMENT_CLOSE);
+      currentEvent = new XMLEvent(XMLEventType.DOCUMENT_CLOSE);
       currentEvent.setStartPosition(startPosition);
       currentEvent.setEndPosition(isr.getPosition());
       return;

@@ -409,7 +409,7 @@ public class ReaderFragment extends Fragment
   }
 
   @Override
-  public boolean hideNotification(boolean force) {
+  public void hideNotification(boolean force) {
     if (!mNotificationHided) {
       if (force || System.currentTimeMillis() - mLocalTime >
           NOTIF_SHOWING_LENGTH) {
@@ -426,7 +426,6 @@ public class ReaderFragment extends Fragment
         mNotificationHided = true;
       }
     }
-    return mNotificationHided;
   }
 
   @Override
@@ -436,7 +435,7 @@ public class ReaderFragment extends Fragment
   }
 
   private void showInfo(int wpm, String percentLeft) {
-    mWpmTextView.setText(wpm + " WPM");
+    mWpmTextView.setText(String.valueOf(wpm) + " " + getResources().getString(R.string.wpm));
     mPositionTextView.setText(percentLeft);
 
     if (mInfoHided) {
