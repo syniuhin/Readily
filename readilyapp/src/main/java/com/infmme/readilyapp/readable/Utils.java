@@ -1,6 +1,9 @@
 package com.infmme.readilyapp.readable;
 
 import com.infmme.readilyapp.util.Constants;
+import com.infmme.readilyapp.xmlparser.XMLEvent;
+import com.infmme.readilyapp.xmlparser.XMLEventType;
+import com.infmme.readilyapp.xmlparser.XMLParser;
 import org.mozilla.universalchardet.UniversalDetector;
 
 import java.io.IOException;
@@ -31,6 +34,17 @@ public class Utils {
     if (encoding != null)
       return encoding;
     return Constants.DEFAULT_ENCODING;
+  }
+
+  public static String getCharsetFromXML(InputStream is) throws IOException {
+    XMLParser parser = new XMLParser();
+    parser.setInput(is, "UTF-8");
+    XMLEvent event = parser.next();
+    XMLEventType eventType = event.getType();
+    if (eventType == XMLEventType.DOCUMENT_START) {
+      return event.getTagAttributes().get("encoding");
+    }
+    return null;
   }
 
   public static boolean isExtensionValid(String extension) {

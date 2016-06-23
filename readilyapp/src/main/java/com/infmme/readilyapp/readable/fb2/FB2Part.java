@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.infmme.readilyapp.readable.Utils.guessCharset;
+import static com.infmme.readilyapp.readable.Utils.getCharsetFromXML;
 
 /**
  * Created with love, by infm dated on 6/5/16.
@@ -63,7 +63,8 @@ public class FB2Part implements AbstractTocReference {
     if (cachedPreview == null) {
       File file = new File(filePath);
       FileInputStream encodingHelper = new FileInputStream(file);
-      String encoding = guessCharset(encodingHelper);
+      // String encoding = guessCharset(encodingHelper);
+      String encoding = getCharsetFromXML(encodingHelper);
       encodingHelper.close();
 
       FileInputStream inputStream = new FileInputStream(file);

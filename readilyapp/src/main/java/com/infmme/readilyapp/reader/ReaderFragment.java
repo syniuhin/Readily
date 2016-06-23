@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -331,6 +332,8 @@ public class ReaderFragment extends Fragment
                               mSettingsBundle.getFontSize());
     mRightTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,
                                mSettingsBundle.getFontSize());
+    mNextTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,
+                              mSettingsBundle.getFontSize());
   }
 
   private void setReaderBackground() {
@@ -435,7 +438,8 @@ public class ReaderFragment extends Fragment
   }
 
   private void showInfo(int wpm, String percentLeft) {
-    mWpmTextView.setText(String.valueOf(wpm) + " " + getResources().getString(R.string.wpm));
+    mWpmTextView.setText(
+        String.valueOf(wpm) + " " + getResources().getString(R.string.wpm));
     mPositionTextView.setText(percentLeft);
 
     if (mInfoHided) {
@@ -504,28 +508,37 @@ public class ReaderFragment extends Fragment
     }
   }
 
-  public void startReader(Reading reading) {
+  public void startReader(@Nullable Reading reading) {
     if (BuildConfig.DEBUG) {
       Log.d(ReaderFragment.class.getName(), "Starting reader...");
     }
-    mReading = reading;
-
-    mReader.changeReading(reading);
     Activity activity = getActivity();
-    if (activity != null) {
-      activity.runOnUiThread(() -> {
-        stopShowingProgress();
-        showNotification(R.string.tap_to_start);
-        // mProgress = mReading.calcProgress(initialPosition, 0);
-        mReader.setPosition(Math.max(
-            0,
-            mReader.getPosition() - Constants.READER_START_OFFSET));
-        mReader.updateReaderView();
-        showInfo(mReader);
-        YoYo.with(Techniques.FadeIn)
-            .duration(READER_PULSE_DURATION)
-            .playOn(mReaderLayout);
-      });
+    if (reading == null) {
+      if (activity != null) {
+        activity.runOnUiThread(() -> {
+          stopShowingProgress();
+          mReader.setCompleted(true);
+        });
+      }
+    } else {
+      mReading = reading;
+
+      mReader.changeReading(reading);
+      if (activity != null) {
+        activity.runOnUiThread(() -> {
+          stopShowingProgress();
+          showNotification(R.string.tap_to_start);
+          // mProgress = mReading.calcProgress(initialPosition, 0);
+          mReader.setPosition(Math.max(
+              0,
+              mReader.getPosition() - Constants.READER_START_OFFSET));
+          mReader.updateReaderView();
+          showInfo(mReader);
+          YoYo.with(Techniques.FadeIn)
+              .duration(READER_PULSE_DURATION)
+              .playOn(mReaderLayout);
+        });
+      }
     }
     mHasReaderStarted = true;
   }
@@ -557,7 +570,7 @@ public class ReaderFragment extends Fragment
   }
 
   @Override
-  public void produce(Reading reading) throws InterruptedException {
+  public void produce(@Nullable Reading reading) throws InterruptedException {
     if (!hasStarted()) {
       startReader(reading);
       mStarted = true;
@@ -748,6 +761,12 @@ public class ReaderFragment extends Fragment
                   showNotification(R.string.error_occurred);
                   mReader.setCompleted(true);
                 }
+              }, throwable -> {
+                throwable.printStackTrace();
+                // TODO: Report to Firebase.
+                stopShowingProgress();
+                showNotification(R.string.error_occurred);
+                mReader.setCompleted(true);
               })
       );
     } else {

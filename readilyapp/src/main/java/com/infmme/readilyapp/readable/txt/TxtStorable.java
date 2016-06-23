@@ -220,6 +220,7 @@ public class TxtStorable implements ChunkedUnprocessedStorable {
     File file = new File(mPath);
     mFileSize = file.length();
     FileInputStream encodingHelper = new FileInputStream(file);
+    // TODO: Solve this.
     String encoding = guessCharset(encodingHelper);
     encodingHelper.close();
 

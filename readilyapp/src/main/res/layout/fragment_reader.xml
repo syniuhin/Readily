@@ -102,32 +102,28 @@
                     style="@style/reader_emphasis_text"
                     android:id="@+id/reader_current_letter"
                     android:layout_alignStart="@+id/pointerTopImageView"
-                    android:layout_alignLeft="@+id/pointerTopImageView"
-                    android:text="@string/letter_sample"/>
+                    android:layout_alignLeft="@+id/pointerTopImageView"/>
 
             <TextView
                     style="@style/reader_word_text"
                     android:id="@+id/reader_word_left"
                     android:layout_alignBaseline="@+id/reader_current_letter"
                     android:layout_toStartOf="@+id/reader_current_letter"
-                    android:layout_toLeftOf="@+id/reader_current_letter"
-                    android:text="@string/just_sample"/>
+                    android:layout_toLeftOf="@+id/reader_current_letter"/>
 
             <TextView
                     style="@style/reader_word_text"
                     android:id="@+id/reader_word_right"
                     android:layout_alignBaseline="@+id/reader_current_letter"
                     android:layout_toEndOf="@+id/reader_current_letter"
-                    android:layout_toRightOf="@+id/reader_current_letter"
-                    android:text="@string/just_sample"/>
+                    android:layout_toRightOf="@+id/reader_current_letter"/>
 
             <TextView
                     style="@style/reader_next_words_text"
                     android:id="@+id/reader_next_words"
                     android:layout_alignBaseline="@+id/reader_current_letter"
                     android:layout_toEndOf="@+id/reader_word_right"
-                    android:layout_toRightOf="@+id/reader_word_right"
-                    android:text="@string/just_sample"/>
+                    android:layout_toRightOf="@+id/reader_word_right"/>
 
             <ImageView
                     style="@style/reader_pointer"
@@ -160,7 +156,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:id="@+id/reader_info_layout"
-            android:background="@color/primary">
+            android:background="@color/primary" android:visibility="invisible">
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

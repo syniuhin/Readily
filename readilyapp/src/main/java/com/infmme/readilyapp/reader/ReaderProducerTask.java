@@ -1,5 +1,6 @@
 package com.infmme.readilyapp.reader;
 
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 import com.infmme.readilyapp.readable.interfaces.Chunked;
@@ -111,6 +112,8 @@ public class ReaderProducerTask implements Runnable {
               duplicateAdjacentData(mCurrentReading, nextReading);
               Log.d(ReaderProducerTask.class.getName(), "Producing a reading.");
               mCallback.produce(nextReading);
+            } else {
+              mCallback.produce(null);
             }
             mCurrentReading = nextReading;
           }
@@ -152,6 +155,6 @@ public class ReaderProducerTask implements Runnable {
 
     boolean hasStarted();
 
-    void produce(Reading reading) throws InterruptedException;
+    void produce(@Nullable Reading reading) throws InterruptedException;
   }
 }

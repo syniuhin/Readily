@@ -83,7 +83,7 @@
                 android:name=".navigation.BookPartListActivity"
                 android:label="@string/title_bookpart_list"
                 android:launchMode="singleTop"
-                android:parentActivityName=".StorableDetailActivity"
+                android:parentActivityName=".MainActivity"
                 android:theme="@style/AppTheme.NoActionBar"
                 tools:ignore="parentActivityName">
             <meta-data

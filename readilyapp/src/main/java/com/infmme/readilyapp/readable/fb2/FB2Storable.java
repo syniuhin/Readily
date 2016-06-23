@@ -41,7 +41,7 @@ import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor
     .getFkFb2BookId;
 import static com.infmme.readilyapp.provider.cachedbook.CachedBookCursor
     .getFkInfoId;
-import static com.infmme.readilyapp.readable.Utils.guessCharset;
+import static com.infmme.readilyapp.readable.Utils.getCharsetFromXML;
 
 /**
  * Created with love, by infm dated on 6/14/16.
@@ -540,7 +540,12 @@ public class FB2Storable implements ChunkedUnprocessedStorable, Structured {
     File file = new File(mPath);
     mFileSize = file.length();
     FileInputStream encodingHelper = new FileInputStream(file);
-    String encoding = guessCharset(encodingHelper);
+    // String encoding = guessCharset(encodingHelper);
+    String encoding = getCharsetFromXML(encodingHelper);
+    if (BuildConfig.DEBUG) {
+      Log.d(FB2Storable.class.getName(),
+            String.format("FB2 encoding: %s", encoding));
+    }
     encodingHelper.close();
 
     FileInputStream inputStream = new FileInputStream(file);

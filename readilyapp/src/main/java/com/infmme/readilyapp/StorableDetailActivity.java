@@ -131,12 +131,16 @@ public class StorableDetailActivity extends BaseActivity {
            .into(mImageView, new Callback() {
              @Override
              public void onSuccess() {
-               scheduleStartPostponedTransition(mImageView);
+               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                 scheduleStartPostponedTransition(mImageView);
+               }
              }
 
              @Override
              public void onError() {
-               scheduleStartPostponedTransition(mImageView);
+               if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                 scheduleStartPostponedTransition(mImageView);
+               }
              }
            });
     addSubscription(
