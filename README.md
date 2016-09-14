@@ -26,14 +26,15 @@ With this technology you can read up to 1200 words per minute instead of 220 whe
 * **Shared text**: simply share to Readily from your browser, reader, note app, etc.
 * **Files**: choose file of supported extension
   * `.txt`
-  * `.epub`(*alpha*).
-  * `.fb2` (*alpha*).
+  * `.epub`
+  * `.fb2`
 
 ##Languages supported
 
 * English
 * Russian
 * Ukrainian
+* French
 * Indonesian (*very soon*)
 
 *If you know some other language and want to help - please, [contact me], I'd appreciate it a lot!*
@@ -42,31 +43,9 @@ With this technology you can read up to 1200 words per minute instead of 220 whe
 
 This app is under [MIT License].
 
-##Thanks
-
-Libraries and code:
-
-* Paul Burke and Ian Lake for [aFileChooser](https://github.com/iPaulPro/aFileChooser)
-* Peter Karich for [snacktory](https://github.com/karussell/snacktory)
-* Paul Siegmann for [epubLib](http://www.siegmann.nl/epublib)
-* daimajia for [animations](https://github.com/daimajia/AndroidViewAnimations)
-* [Anton Bredykhin](https://github.com/abredykhin)
-
 Artwork:
 
 * Griko Nibras for [Flex](http://grikomsn.deviantart.com/art/Flex-361665214)
-
-Translation:
-* **Indonesian**: Griko Nibras
-
-Ideas and inspiration:
-
-* [Spritz](http://www.spritzinc.com)
-* [Catherine Lyubchenko](https://plus.google.com/114417077430631558278)
-* [Dayana Shevchenko](https://vk.com/kruasan.sovest)
-* [Lesha Sushkov](http://instagram.com/Maelemotion)
-* [Alexander Kizka](https://www.facebook.com/alexkizka)
-* [Anton Bredykhin](https://github.com/abredykhin)
 
 [RSVP]:http://en.wikipedia.org/wiki/Rapid_Serial_Visual_Presentation "Rapid Serial Visual Representation"
 [Spritzer]:http://www.spritzinc.com
